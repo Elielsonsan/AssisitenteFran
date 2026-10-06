@@ -1,0 +1,661 @@
+{% extends "base.html" %}
+
+{% block title %}Realizando {{ avaliacao.tipo }} — {{ avaliacao.titulo }} | Aluno{% endblock %}
+
+{% block content %}
+<div class="page-container" style="max-width: 960px; margin: 0 auto;">
+    <!-- Cabeçalho do Exame com Título e Cronômetro -->
+    <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+        <div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap;">
+                <span class="hero-tag" style="margin-bottom: 0;">
+                    <svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                    </svg>{{ avaliacao.tipo }}
+                </span>
+                <span style="display: inline-flex; align-items: center; gap: 4px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #10b981; font-weight: 700; font-size: 0.78rem; padding: 2px 10px; border-radius: 9999px;">
+                    🎯 Valor Total: {{ questoes|sum(attribute='pontuacao_maxima')|round(1) }} pts
+                </span>
+                <a href="/aluno/atividades" class="btn btn-secondary btn-sm" style="font-size: 0.78rem; padding: 2px 10px; text-decoration: none;" onclick="return confirm('Deseja sair da avaliação? Suas respostas em rascunho serão preservadas.')">
+                    &larr; Voltar
+                </a>
+            </div>
+            <h1 class="hero-title" style="margin-bottom: 0; font-size: 1.8rem;">{{ avaliacao.titulo }}</h1>
+        </div>
+
+        <!-- Card do Cronômetro Regressivo -->
+        <div id="timerCard" class="exam-timer-badge" title="Tempo restante para conclusão do exame">
+            <span class="timer-icon">
+                <svg class="line-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+            </span>
+            <div>
+                <span class="timer-label">TEMPO RESTANTE</span>
+                <div id="timerDisplay" class="timer-digits">30:00</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Banner de Alerta dos Últimos Minutos -->
+    <div id="timerAlertBanner" class="timer-alert hidden">
+        <svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        <strong>Atenção:</strong> Restam menos de 5 minutos! Revise suas respostas antes do encerramento automático.
+    </div>
+
+    {% if questoes and questoes|length > 0 %}
+    <!-- Barra de Progresso Superior Fixa e Navegador de Questões -->
+    <div class="prova-progress-container" id="barraProgressoProva">
+        <div class="prova-progress-header">
+            <div class="prova-progress-title">
+                <svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #38bdf8;">
+                    <polyline points="9 11 12 14 22 4"></polyline>
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                </svg>
+                <span>Progresso: <strong id="progressoContador">0</strong> de {{ questoes|length }} respondidas</span>
+            </div>
+            <span class="prova-progress-pct" id="progressoPorcentagem">0% concluído</span>
+        </div>
+
+        <div class="prova-progress-track">
+            <div class="prova-progress-fill" id="provaProgressFill"></div>
+        </div>
+
+        <!-- Pílulas de Navegação Rápida entre Questões -->
+        <div class="question-pills-row" id="pillsNavegacaoRow">
+            <span style="font-size: 0.78rem; color: var(--text-muted); margin-right: 4px; flex-shrink: 0;">Itens:</span>
+            {% for q in questoes %}
+            <button type="button" 
+                    class="question-pill-btn" 
+                    id="pillQuestao_{{ q.id }}" 
+                    onclick="rolarParaQuestao({{ q.id }})" 
+                    title="Ir para o Item {{ loop.index }}">
+                <span>{{ loop.index }}</span>
+                <span class="pill-check" id="checkPill_{{ q.id }}" style="display: none;">✓</span>
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Formulário do Exame -->
+    <form id="provaForm">
+        <input type="hidden" name="avaliacao_id" id="formAvaliacaoId" value="{{ avaliacao.id }}">
+
+        {% for q in questoes %}
+        <div class="card-questao-box" 
+             id="cardQuestao_{{ q.id }}" 
+             data-qid="{{ q.id }}"
+             data-tipo="{{ q.tipo_questao }}">
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="badge-level-student lvl-a2" style="font-size: 0.78rem; padding: 3px 10px; font-weight: 700;">
+                        Item {{ loop.index }} de {{ questoes|length }}
+                    </span>
+                    <span style="font-size: 0.75rem; background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 2px 8px; font-weight: 600;">
+                        {% if q.tipo_questao == 'ditado' %}Ditado FLE
+                        {% elif q.tipo_questao == 'leitura_oral' %}Leitura & Fala
+                        {% elif q.tipo_questao == 'conjugacao' %}Conjugação
+                        {% elif q.tipo_questao == 'traducao' %}Tradução
+                        {% elif q.tipo_questao == 'multipla_escolha' %}Múltipla Escolha
+                        {% elif q.tipo_questao == 'verdadeiro_falso' %}Verdadeiro / Falso
+                        {% elif q.tipo_questao == 'complete' %}Complete a Frase
+                        {% elif q.tipo_questao == 'teste' %}Teste
+                        {% else %}Exercício{% endif %}
+                    </span>
+                    {% if q.pontuacao_maxima %}
+                    <span style="font-size: 0.75rem; font-weight: 700; color: #10b981; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; padding: 2px 7px;">
+                        {{ q.pontuacao_maxima }} pts
+                    </span>
+                    {% endif %}
+                </div>
+
+                <button type="button" class="btn-audio-pill" data-enunciado="{{ q.enunciado | e }}" onclick="ouvirTexto(this.getAttribute('data-enunciado'), this)" title="Ouvir enunciado em francês com voz nativa">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                    </svg>
+                    <span>Ouvir</span>
+                </button>
+            </div>
+
+            <h3 style="font-size: 1.08rem; color: var(--text-light); margin-bottom: 14px; font-weight: 600; line-height: 1.6; white-space: pre-line;">
+                {{ q.enunciado }}
+            </h3>
+            
+            {% if q.tipo_questao == 'ditado' %}
+            <div style="margin: 15px 0;">
+                <button type="button" class="btn-audio-pill" data-texto="{{ q.texto_referencia | e }}" onclick="ouvirTexto(this.getAttribute('data-texto'), this)" title="Ouvir áudio do ditado em francês">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                    </svg>
+                    <span>Ouvir Ditado</span>
+                </button>
+            </div>
+            <label style="display: block; font-size: 0.82rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">
+                Sua Transcrição em Francês:
+            </label>
+            <textarea name="questao_{{ q.id }}" 
+                      id="inputQuestao_{{ q.id }}" 
+                      class="form-textarea" 
+                      rows="3" 
+                      placeholder="Transcreva em francês a frase ouvida com a acentuação correta..." 
+                      oninput="aoDigitarResposta({{ q.id }})" 
+                      required></textarea>
+            
+            {% elif q.tipo_questao == 'leitura_oral' %}
+            <div class="feedback-student-box" style="margin: 15px 0; background: rgba(56, 189, 248, 0.08); border-left: 3px solid #38bdf8; padding: 14px 18px; border-radius: 8px;">
+                <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Leia a seguinte frase em voz alta com boa articulação:</span>
+                <p style="font-size: 1.15rem; font-weight: 600; color: #38bdf8; margin: 0;">"{{ q.texto_referencia }}"</p>
+            </div>
+            <div style="margin-top: 15px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <button type="button" id="btnGravar_{{ q.id }}" class="btn btn-primary" onclick="iniciarGravacao({{ q.id }})">
+                    <svg class="line-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                        <line x1="12" y1="19" x2="12" y2="23"></line>
+                        <line x1="8" y1="23" x2="16" y2="23"></line>
+                    </svg>Iniciar Gravação
+                </button>
+                <button type="button" id="btnParar_{{ q.id }}" class="btn btn-secondary hidden btn-recording" onclick="pararGravacao({{ q.id }})">
+                    <svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;">
+                        <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                    </svg>Parar Gravação
+                </button>
+                <span id="statusAudio_{{ q.id }}" style="color: #10B981; font-weight: 600; font-size: 0.85rem;" class="hidden">
+                    <svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>Áudio gravado com sucesso!
+                </span>
+            </div>
+
+            {% elif q.tipo_questao == 'traducao' %}
+            {% if q.texto_referencia and q.texto_referencia != 'La phrase' and q.texto_referencia != 'Tradução contextual' %}
+            <div class="feedback-student-box" style="margin: 15px 0; background: rgba(56, 189, 248, 0.08); border-left: 3px solid #38bdf8; padding: 14px 18px; border-radius: 10px;">
+                <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 4px; font-weight: 600;">
+                    <svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px; vertical-align: text-bottom;"><path d="m5 8 6 6"></path><path d="m4 14 6-6 2-3"></path><path d="M2 5h12"></path><path d="M7 2h1"></path><path d="m22 22-5-10-5 10"></path><path d="M14 18h6"></path></svg>Frase para Traduzir para o Francês:
+                </span>
+                <p style="font-size: 1.18rem; font-weight: 700; color: var(--text-light); margin: 0; line-height: 1.4;">"{{ q.texto_referencia }}"</p>
+            </div>
+            {% endif %}
+            <label style="display: block; font-size: 0.82rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">
+                Sua Tradução em Francês:
+            </label>
+            <textarea name="questao_{{ q.id }}" 
+                      id="inputQuestao_{{ q.id }}" 
+                      class="form-textarea" 
+                      rows="3" 
+                      placeholder="Digite aqui sua tradução em francês..." 
+                      oninput="aoDigitarResposta({{ q.id }})" 
+                      required 
+                      style="font-size: 0.95rem;"></textarea>
+
+            {% else %}
+            <!-- Exercício prático, teste, conjugação ou dissertativa -->
+            {% if q.texto_referencia and q.texto_referencia|length > 3 and q.texto_referencia != 'La phrase' and q.texto_referencia != 'Tradução contextual' and q.texto_referencia != q.enunciado %}
+            <div class="feedback-student-box" style="margin: 15px 0; background: rgba(167, 139, 250, 0.08); border-left: 3px solid #a78bfa; padding: 14px 18px; border-radius: 10px;">
+                <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 4px; font-weight: 600;">
+                    Frase / Contexto de Referência:
+                </span>
+                <p style="font-size: 1.12rem; font-weight: 700; color: var(--text-light); margin: 0; font-family: 'JetBrains Mono', monospace; line-height: 1.4;">"{{ q.texto_referencia }}"</p>
+            </div>
+            {% endif %}
+
+            {% if q.tipo_questao == 'verdadeiro_falso' %}
+            <div style="margin: 8px 0 12px 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Selecione sua resposta:</span>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="selecionarOpcaoVF({{ q.id }}, 'Vrai')" style="border-radius: 9999px; font-weight: 700; color: #10b981; border-color: rgba(16, 185, 129, 0.4);">
+                    ✓ Vrai (Verdadeiro)
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="selecionarOpcaoVF({{ q.id }}, 'Faux')" style="border-radius: 9999px; font-weight: 700; color: #ef4444; border-color: rgba(239, 68, 68, 0.4);">
+                    ✗ Faux (Falso)
+                </button>
+            </div>
+            {% elif q.tipo_questao == 'multipla_escolha' or q.tipo_questao == 'teste' %}
+            {% set texto_lower = (q.enunciado or '')|lower %}
+            {% set tem_letras = ('(a)' in texto_lower or 'a)' in texto_lower) %}
+            {% if tem_letras or q.tipo_questao == 'multipla_escolha' %}
+            <div style="margin: 8px 0 12px 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Alternativa:</span>
+                {% if '(a)' in texto_lower or 'a)' in texto_lower or not tem_letras %}
+                <button type="button" class="btn btn-secondary btn-sm" onclick="selecionarOpcaoQCM({{ q.id }}, '(a)')" style="border-radius: 8px; font-weight: 800; min-width: 38px;">(a)</button>
+                {% endif %}
+                {% if '(b)' in texto_lower or 'b)' in texto_lower or not tem_letras %}
+                <button type="button" class="btn btn-secondary btn-sm" onclick="selecionarOpcaoQCM({{ q.id }}, '(b)')" style="border-radius: 8px; font-weight: 800; min-width: 38px;">(b)</button>
+                {% endif %}
+                {% if '(c)' in texto_lower or 'c)' in texto_lower or not tem_letras %}
+                <button type="button" class="btn btn-secondary btn-sm" onclick="selecionarOpcaoQCM({{ q.id }}, '(c)')" style="border-radius: 8px; font-weight: 800; min-width: 38px;">(c)</button>
+                {% endif %}
+                {% if '(d)' in texto_lower or 'd)' in texto_lower or (not tem_letras and q.tipo_questao == 'multipla_escolha') %}
+                <button type="button" class="btn btn-secondary btn-sm" onclick="selecionarOpcaoQCM({{ q.id }}, '(d)')" style="border-radius: 8px; font-weight: 800; min-width: 38px;">(d)</button>
+                {% endif %}
+                {% if '(e)' in texto_lower or 'e)' in texto_lower %}
+                <button type="button" class="btn btn-secondary btn-sm" onclick="selecionarOpcaoQCM({{ q.id }}, '(e)')" style="border-radius: 8px; font-weight: 800; min-width: 38px;">(e)</button>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% endif %}
+
+            <label style="display: block; font-size: 0.82rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">
+                {% if q.tipo_questao == 'verdadeiro_falso' %}
+                Sua Resposta e Justificativa em Francês:
+                {% elif q.tipo_questao == 'multipla_escolha' or q.tipo_questao == 'teste' %}
+                Opção Selecionada e Resposta:
+                {% elif q.tipo_questao == 'complete' %}
+                Palavra / Frase que Completa a Lacuna:
+                {% else %}
+                Formulário de Resposta do Aluno:
+                {% endif %}
+            </label>
+            <textarea name="questao_{{ q.id }}" 
+                      id="inputQuestao_{{ q.id }}" 
+                      class="form-textarea" 
+                      rows="3" 
+                      placeholder="Digite aqui sua resposta completa em francês..." 
+                      oninput="aoDigitarResposta({{ q.id }})" 
+                      required 
+                      style="font-size: 0.95rem;"></textarea>
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        <div class="form-actions" style="margin-top: 2.5rem; margin-bottom: 3rem;">
+            <button type="button" class="btn btn-primary" id="btnFinalizarProva" style="width: 100%; padding: 0.95rem; font-size: 1.08rem; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="confirmarOuEnviarProva()">
+                <svg class="line-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>Finalizar e Enviar {{ avaliacao.tipo }}
+            </button>
+        </div>
+    </form>
+    {% else %}
+    <div class="form-card" style="text-align: center; padding: 3rem 1.5rem; border-radius: 16px;">
+        <div style="margin-bottom: 1rem;">
+            <svg class="line-icon" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--warning, #f59e0b);"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        </div>
+        <h3 style="color: var(--text-light); margin-bottom: 0.5rem;">Nenhuma questão encontrada</h3>
+        <p style="color: var(--text-muted); max-width: 480px; margin: 0 auto 1.5rem auto;">
+            Esta avaliação ainda não possui questões publicadas pelo seu professor. Por favor, volte mais tarde ou avise seu docente.
+        </p>
+        <a href="/aluno/atividades" class="btn btn-primary" style="display: inline-block; text-decoration: none;">Voltar para Minhas Atividades</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block modals %}
+<!-- Modal de Confirmação de Envio com Questões em Branco -->
+<div id="modalConfirmacaoEnvio" class="modal-overlay" style="display: none;" onclick="if(event.target === this) fecharModalConfirmacao();">
+    <div class="glass-card modal-content" style="max-width: 520px; width: 90%; margin: auto; padding: 1.5rem; border-radius: 16px;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 1rem;">
+            <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(245, 158, 11, 0.15); display: flex; align-items: center; justify-content: center; color: #f59e0b; flex-shrink: 0;">
+                <svg class="line-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+            </div>
+            <div>
+                <h3 style="margin: 0; font-size: 1.2rem; color: var(--text-light);">Atenção às Questões Pendentes</h3>
+                <p style="margin: 2px 0 0 0; font-size: 0.85rem; color: var(--text-muted);">Revise antes de entregar sua avaliação definitiva.</p>
+            </div>
+        </div>
+
+        <p id="msgConfirmacaoPendentes" style="font-size: 0.95rem; line-height: 1.5; color: var(--text-light); margin-bottom: 1.5rem;">
+            Você ainda possui questões não respondidas. Deseja enviar assim mesmo ou prefere revisar suas respostas?
+        </p>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" class="btn btn-secondary" onclick="fecharModalConfirmacao()">
+                Revisar Questões
+            </button>
+            <button type="button" class="btn btn-primary" onclick="executarEnvioFinal(false)" style="background: #ef4444; border-color: #dc2626;">
+                Enviar Mesmo Assim
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let mediaRecorders = {};
+    let audioBlobs = {};
+    const avaliacaoId = "{{ avaliacao.id }}";
+    const totalQuestoes = {{ questoes|length if questoes else 0 }};
+    let respondidasMap = {};
+
+    // Síntese de Voz Nativa em Francês
+    function ouvirTexto(texto, btnElement) {
+        if (!texto) return;
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            let msg = new SpeechSynthesisUtterance(texto.trim());
+            msg.lang = 'fr-FR';
+            msg.rate = 0.92; // Ritmo didático
+            
+            if (btnElement) {
+                const originalHtml = btnElement.innerHTML;
+                btnElement.style.opacity = '0.7';
+                msg.onend = () => { btnElement.style.opacity = '1'; };
+                msg.onerror = () => { btnElement.style.opacity = '1'; };
+            }
+            window.speechSynthesis.speak(msg);
+        } else {
+            alert('Síntese de voz não suportada pelo seu navegador.');
+        }
+    }
+
+    // Gravação de Áudio
+    async function iniciarGravacao(qid) {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const mediaRecorder = new MediaRecorder(stream);
+            let chunks = [];
+
+            mediaRecorder.ondataavailable = (e) => {
+                if (e.data.size > 0) chunks.push(e.data);
+            };
+
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(chunks, { type: 'audio/webm' });
+                audioBlobs[qid] = blob;
+                marcarQuestaoRespondida(qid, true);
+                document.getElementById('statusAudio_' + qid).classList.remove('hidden');
+            };
+
+            mediaRecorders[qid] = mediaRecorder;
+            mediaRecorder.start();
+
+            document.getElementById('btnGravar_' + qid).classList.add('hidden');
+            document.getElementById('btnParar_' + qid).classList.remove('hidden');
+        } catch (err) {
+            alert('Erro ao acessar microfone: ' + err);
+        }
+    }
+
+    function pararGravacao(qid) {
+        if (mediaRecorders[qid]) {
+            mediaRecorders[qid].stop();
+            document.getElementById('btnParar_' + qid).classList.add('hidden');
+            const btnGravar = document.getElementById('btnGravar_' + qid);
+            btnGravar.classList.remove('hidden');
+            btnGravar.innerHTML = '<svg class="line-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>Gravar Novamente';
+        }
+    }
+
+    // ===================== RESPOSTA RÁPIDA V/F & QCM =====================
+    function selecionarOpcaoVF(qid, opcao) {
+        const input = document.getElementById('inputQuestao_' + qid);
+        if (input) {
+            input.value = `${opcao} - `;
+            input.focus();
+            aoDigitarResposta(qid);
+        }
+    }
+
+    function selecionarOpcaoQCM(qid, opcao) {
+        const input = document.getElementById('inputQuestao_' + qid);
+        if (input) {
+            input.value = `${opcao} `;
+            input.focus();
+            aoDigitarResposta(qid);
+        }
+    }
+
+    // ===================== PROGRESSO & RASCUNHOS =====================
+    function aoDigitarResposta(qid) {
+        const input = document.getElementById('inputQuestao_' + qid);
+        const valor = input ? input.value.trim() : '';
+        const respondida = valor.length > 0;
+        marcarQuestaoRespondida(qid, respondida);
+
+        // Salva rascunho no localStorage
+        if (respondida) {
+            localStorage.setItem(`fran_rascunho_${avaliacaoId}_${qid}`, input.value);
+        } else {
+            localStorage.removeItem(`fran_rascunho_${avaliacaoId}_${qid}`);
+        }
+    }
+
+    function marcarQuestaoRespondida(qid, respondida) {
+        respondidasMap[qid] = respondida;
+        
+        // Atualiza a pílula do navegador
+        const pill = document.getElementById('pillQuestao_' + qid);
+        const check = document.getElementById('checkPill_' + qid);
+        if (pill) {
+            if (respondida) {
+                pill.classList.add('answered');
+                if (check) check.style.display = 'inline';
+            } else {
+                pill.classList.remove('answered');
+                if (check) check.style.display = 'none';
+            }
+        }
+
+        atualizarBarraProgresso();
+    }
+
+    function atualizarBarraProgresso() {
+        let totalResp = 0;
+        for (let qid in respondidasMap) {
+            if (respondidasMap[qid]) totalResp++;
+        }
+
+        const pct = totalQuestoes > 0 ? Math.round((totalResp / totalQuestoes) * 100) : 0;
+        
+        const elContador = document.getElementById('progressoContador');
+        const elPct = document.getElementById('progressoPorcentagem');
+        const elFill = document.getElementById('provaProgressFill');
+
+        if (elContador) elContador.innerText = totalResp;
+        if (elPct) elPct.innerText = `${pct}% concluído`;
+        if (elFill) elFill.style.width = `${pct}%`;
+    }
+
+    function rolarParaQuestao(qid) {
+        const card = document.getElementById('cardQuestao_' + qid);
+        if (card) {
+            // Remove destaque anterior e aplica na questão clicada
+            document.querySelectorAll('.card-questao-box').forEach(c => c.classList.remove('active-question-highlight'));
+            card.classList.add('active-question-highlight');
+            card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            
+            // Destaque visual na pílula correspondente
+            document.querySelectorAll('.question-pill-btn').forEach(p => p.classList.remove('active-focus'));
+            const pill = document.getElementById('pillQuestao_' + qid);
+            if (pill) pill.classList.add('active-focus');
+
+            // Foco no campo se for textarea ou input
+            const ta = card.querySelector('textarea, input:not([type="hidden"])');
+            if (ta) ta.focus();
+        }
+    }
+
+    // Restaura rascunhos ao carregar
+    function restaurarRascunhos() {
+        document.querySelectorAll('.card-questao-box').forEach(card => {
+            const qid = card.getAttribute('data-qid');
+            const tipo = card.getAttribute('data-tipo');
+            
+            if (tipo !== 'leitura_oral') {
+                const rascunho = localStorage.getItem(`fran_rascunho_${avaliacaoId}_${qid}`);
+                const input = document.getElementById('inputQuestao_' + qid);
+                if (rascunho && input) {
+                    input.value = rascunho;
+                    marcarQuestaoRespondida(qid, true);
+                } else {
+                    marcarQuestaoRespondida(qid, false);
+                }
+            } else {
+                marcarQuestaoRespondida(qid, false);
+            }
+        });
+    }
+
+    // ===================== CRONÔMETRO REGRESSIVO =====================
+    const urlParams = new URLSearchParams(window.location.search);
+    let tempoTotalSegundos = parseInt(urlParams.get('tempo')) ? parseInt(urlParams.get('tempo')) * 60 : (30 * 60);
+    let tempoRestante = tempoTotalSegundos;
+    let timerInterval = null;
+    let provaJaEnviada = false;
+
+    function formatarTempo(segundos) {
+        const m = Math.floor(segundos / 60);
+        const s = segundos % 60;
+        return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function iniciarCronometro() {
+        const display = document.getElementById('timerDisplay');
+        const badge = document.getElementById('timerCard');
+        const alertBanner = document.getElementById('timerAlertBanner');
+
+        if (!display) return;
+        display.innerText = formatarTempo(tempoRestante);
+
+        timerInterval = setInterval(() => {
+            tempoRestante--;
+
+            if (tempoRestante < 0) {
+                clearInterval(timerInterval);
+                display.innerText = "00:00";
+                tempoEsgotado();
+                return;
+            }
+
+            display.innerText = formatarTempo(tempoRestante);
+
+            if (tempoRestante <= 300 && tempoRestante > 60) {
+                badge.classList.add('warning');
+                if (alertBanner) alertBanner.classList.remove('hidden');
+            } else if (tempoRestante <= 60) {
+                badge.classList.remove('warning');
+                badge.classList.add('danger');
+                if (alertBanner) {
+                    alertBanner.classList.remove('hidden');
+                    alertBanner.innerHTML = '<svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg><strong>URGENTE:</strong> Menos de 1 minuto restante! Suas respostas serão submetidas automaticamente.';
+                }
+            }
+        }, 1000);
+    }
+
+    function tempoEsgotado() {
+        if (provaJaEnviada) return;
+        alert("O tempo limite da avaliação expirou! Suas respostas preenchidas estão sendo enviadas agora.");
+        executarEnvioFinal(true);
+    }
+
+    // ===================== CONFIRMAÇÃO E ENVIO =====================
+    function confirmarOuEnviarProva() {
+        let totalResp = 0;
+        for (let qid in respondidasMap) {
+            if (respondidasMap[qid]) totalResp++;
+        }
+
+        const pendentes = totalQuestoes - totalResp;
+
+        if (pendentes > 0) {
+            const modal = document.getElementById('modalConfirmacaoEnvio');
+            const msg = document.getElementById('msgConfirmacaoPendentes');
+            if (modal && msg) {
+                msg.innerHTML = `Você respondeu <strong>${totalResp}</strong> de <strong>${totalQuestoes}</strong> questões (${pendentes} questão(ões) em branco).<br>Deseja enviar assim mesmo ou prefere revisar?`;
+                modal.style.display = 'flex';
+                return;
+            }
+        }
+
+        executarEnvioFinal(false);
+    }
+
+    function fecharModalConfirmacao() {
+        const modal = document.getElementById('modalConfirmacaoEnvio');
+        if (modal) modal.style.display = 'none';
+    }
+
+    function executarEnvioFinal(autoSubmit = false) {
+        if (provaJaEnviada) return;
+        provaJaEnviada = true;
+        fecharModalConfirmacao();
+        if (timerInterval) clearInterval(timerInterval);
+
+        const form = document.getElementById('provaForm');
+        
+        // Se for auto-submit por tempo ou submissão confirmada com vazios
+        form.querySelectorAll('textarea').forEach(ta => {
+            if (!ta.value.trim()) {
+                ta.value = "[Não respondida]";
+            }
+        });
+
+        const formData = new FormData(form);
+
+        // Anexar áudios gravados
+        for (let qid in audioBlobs) {
+            formData.append(`audio_questao_${qid}`, audioBlobs[qid], `audio_${qid}.webm`);
+        }
+
+        const submitBtn = document.getElementById('btnFinalizarProva');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<svg class="line-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg> Enviando e Avaliando com a IA...';
+        }
+
+        fetch("/api/enviar_prova", {
+            method: "POST",
+            body: formData
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === "sucesso") {
+                // Limpa rascunhos do localStorage
+                for (let i = 0; i < localStorage.length; i++) {
+                    const k = localStorage.key(i);
+                    if (k && k.startsWith(`fran_rascunho_${avaliacaoId}_`)) {
+                        localStorage.removeItem(k);
+                    }
+                }
+                alert("{{ avaliacao.tipo }} enviada com sucesso! Respostas registradas e avaliadas.");
+                window.location.href = "/aluno/atividades";
+            } else {
+                alert("Erro ao enviar: " + data.mensagem);
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<svg class="line-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>Finalizar e Enviar {{ avaliacao.tipo }}';
+                }
+                provaJaEnviada = false;
+            }
+        })
+        .catch(err => {
+            alert("Erro de comunicação ao enviar prova: " + err);
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<svg class="line-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>Finalizar e Enviar {{ avaliacao.tipo }}';
+            }
+            provaJaEnviada = false;
+        });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        iniciarCronometro();
+        restaurarRascunhos();
+    });
+</script>
+<style>
+    @keyframes spin {
+        100% { transform: rotate(360deg); }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Em Construção | Assistente Fran{% endblock %}
+
+{% block content %}
+<div class="page-container" style="display: flex; justify-content: center; align-items: center; min-height: 80vh;">
+    <div class="result-card" style="text-align: center; max-width: 500px; padding: 40px;">
+        <div style="margin-bottom: 20px;">
+            <svg class="line-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+            </svg>
+        </div>
+        <h2 style="color: var(--text-color); margin-bottom: 15px;">Módulo {{ module }}</h2>
+        <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 30px;">
+            Esta área da arquitetura do LMS está sendo preparada para receber as novas funcionalidades de gestão e acompanhamento pedagógico.
+        </p>
+        <button onclick="history.back()" class="btn-secondary">Voltar</button>
+    </div>
+</div>
+{% endblock %}

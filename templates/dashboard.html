@@ -1,0 +1,1902 @@
+{% extends "base.html" %}
+
+{% block title %}Painel do Professor | Assistente Fran — Analytics Pedagógico de Francês{% endblock %}
+
+{% block extra_head %}
+<!-- CDN Chart.js para renderização de gráficos interativos -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- CDN html2pdf.js para captura e geração de relatórios em PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="page-container dashboard-page">
+    <!-- Barra Lateral Flutuante Glassmorphic (Menu Docente & Filtros Expansível no Hover) -->
+    <aside class="dash-sidebar no-print" id="dashSidebar" aria-label="Menu de Gestão Docente">
+        <div class="dash-sidebar-inner">
+            <div class="sidebar-nav-list">
+                <!-- 1. Filtros & Análise (Abre Popover saindo do Ícone) -->
+                <div class="sidebar-item-wrap">
+                    <button type="button" class="sidebar-btn" id="btnToggleFiltrosPopover" onclick="toggleFiltrosPopover(event)" title="Filtros & Análise de Desempenho" aria-label="Abrir Filtros">
+                        <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                        </svg>
+                        <span class="sidebar-text">Filtros & Análise</span>
+                        <span class="sidebar-badge-dot" id="filtroAtivoDot" style="display: none;" title="Filtro ativo"></span>
+                    </button>
+
+                    <!-- Modal Popover Ancorado ao Ícone de Filtros -->
+                    <div class="popover-filtros-modal" id="popoverFiltros" onclick="event.stopPropagation()">
+                        <div class="popover-header">
+                            <div class="popover-title">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                                </svg>
+                                <span>Filtros do Painel</span>
+                            </div>
+                            <button type="button" class="popover-close-btn" onclick="fecharFiltrosPopover()" aria-label="Fechar Filtros">&times;</button>
+                        </div>
+                        <form id="formFiltros" class="popover-form" onsubmit="event.preventDefault(); aplicarFiltroEFechar();">
+                            <div class="popover-field">
+                                <label for="filtroTurma">Turma:</label>
+                                <select id="filtroTurma" class="form-control glass-input" onchange="carregarAlunosPorTurma()">
+                                    <option value="todas">Todas as Turmas</option>
+                                    {% for t in turmas %}
+                                    <option value="{{ t['id'] }}">{{ t['nome'] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="popover-field">
+                                <label for="filtroNivel">Nível CEFR:</label>
+                                <select id="filtroNivel" class="form-control glass-input">
+                                    <option value="todos">Todos os Níveis</option>
+                                    <option value="A1">A1</option>
+                                    <option value="A2">A2</option>
+                                    <option value="B1">B1</option>
+                                    <option value="B2">B2</option>
+                                </select>
+                            </div>
+                            <div class="popover-field">
+                                <label for="filtroAluno">Aluno:</label>
+                                <select id="filtroAluno" class="form-control glass-input">
+                                    <option value="todos">Visão Macro / Todos os Alunos</option>
+                                </select>
+                            </div>
+                            <div class="popover-actions">
+                                <button type="button" class="btn btn-primary btn-apply-filter" onclick="aplicarFiltroEFechar()">
+                                    <span id="btnRelatorioText">Aplicar Filtros</span>
+                                </button>
+                                <button type="button" class="btn-clear-filter" onclick="limparFiltrosDashboard()" title="Redefinir filtros para o padrão">
+                                    Limpar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="sidebar-divider"></div>
+
+                <!-- 2. Turmas (Gestão Completa: Criar, Editar e Listar) -->
+                <button type="button" id="btnGerenciarTurmas" class="sidebar-btn" onclick="abrirModalGestaoTurmas()" title="Gestão de Turmas (Criar, Editar e Listar)" aria-label="Turmas">
+                    <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span class="sidebar-text">Turmas</span>
+                </button>
+
+                <!-- 3. Alunos (Gestão Completa: Adicionar, Editar e Listar) -->
+                <button type="button" id="btnGerenciarAlunos" class="sidebar-btn" onclick="abrirModalGestaoAlunos()" title="Gestão de Alunos (Adicionar, Editar e Listar)" aria-label="Alunos">
+                    <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <span class="sidebar-text">Alunos</span>
+                </button>
+
+                <!-- 4. Enviar Recado -->
+                <button type="button" id="btnNovoRecado" class="sidebar-btn" onclick="abrirModalRecado()" title="Enviar recado para alunos ou turmas" aria-label="Enviar Recado">
+                    <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                    <span class="sidebar-text">Enviar Recado</span>
+                </button>
+
+                <!-- 5. Exportar CSV -->
+                <button type="button" id="btnExportarCsv" class="sidebar-btn" onclick="exportarPlanilhaCSV()" title="Exportar dados de notas e submissões em CSV" aria-label="Exportar CSV">
+                    <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="8" y1="13" x2="16" y2="13"></line>
+                        <line x1="8" y1="17" x2="16" y2="17"></line>
+                    </svg>
+                    <span class="sidebar-text">Exportar CSV</span>
+                </button>
+
+                <!-- 6. Boletim Escolar -->
+                <button type="button" id="btnBoletimTurma" class="sidebar-btn" onclick="abrirBoletimEscolar()" title="Visualizar e emitir boletim escolar" aria-label="Boletim Escolar">
+                    <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                    </svg>
+                    <span class="sidebar-text">Boletim Escolar</span>
+                </button>
+
+                <!-- 7. Exportar PDF -->
+                <button type="button" id="btnExportarPdf" class="sidebar-btn sidebar-btn-pdf" onclick="exportarRelatorioPDF()" title="Exportar relatório consolidado da turma em PDF" aria-label="Exportar PDF">
+                    <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span class="sidebar-text">Exportar Relatório PDF</span>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- DIV CAPTURADA PELO HTML2PDF.JS PARA O RELATORIO -->
+    <div id="conteudo-relatorio" class="relatorio-wrapper">
+        <!-- Cabeçalho Principal do Painel com Moldura Hero Card -->
+        <div class="hero-card-outer dashboard-hero-outer card-moldura-outer" id="dashboardHeroCard">
+            <div class="dashboard-hero-card hero-card-inner">
+                <span class="hero-tag">
+                    <svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>Analytics Pedagógico • FLE & Inteligência Artificial
+                </span>
+                <h1 class="hero-title">Painel Geral do Professor</h1>
+                <p class="hero-description">
+                    Acompanhe métricas em tempo real, precisão gramatical por tópico e diagnósticos automatizados da turma.
+                </p>
+                <div class="hero-quick-meta" style="display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 0.85rem;">
+                    <span style="font-size: 0.82rem; background: rgba(56, 189, 248, 0.12); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 9999px; padding: 4px 14px; font-weight: 600;">
+                        📊 Monitoramento em Tempo Real
+                    </span>
+                    <span style="font-size: 0.82rem; background: rgba(16, 185, 129, 0.12); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 9999px; padding: 4px 14px; font-weight: 600;">
+                        🎯 Precisão: {{ pct_acerto }}%
+                    </span>
+                    <span style="font-size: 0.82rem; background: rgba(99, 102, 241, 0.12); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 9999px; padding: 4px 14px; font-weight: 600;">
+                        📚 {{ total_submissoes }} Exercícios Submetidos
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quadro Unificado de Indicadores & Gráficos com Efeito Hero Card (Apenas Uma Moldura para Todos os Cards) -->
+        <div class="hero-card-outer dashboard-box-outer card-moldura-outer" id="dashboardMetricasBoxOuter">
+            <div class="hero-card-inner dashboard-box-inner">
+                <!-- Cabeçalho do Quadro Unificado -->
+                <div class="dashboard-box-header" style="width: 100%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 1.25rem; text-align: left;">
+                    <div>
+                        <span class="hero-tag" style="margin-bottom: 0.25rem;">
+                            <svg class="line-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="3" y1="9" x2="21" y2="9"></line>
+                                <line x1="9" y1="21" x2="9" y2="9"></line>
+                            </svg>Vue d'Ensemble • Indicateurs & Graphiques
+                        </span>
+                        <h2 style="font-size: 1.25rem; font-weight: 800; margin: 0; color: var(--text-primary);">Indicadores Globais & Desempenho Gráfico</h2>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin: 2px 0 0 0;">Visão panorâmica consolidada das atividades e distribuição de domínio linguístico.</p>
+                    </div>
+                    <div class="no-print" style="display: flex; align-items: center; gap: 8px;">
+                        <span class="badge-count" id="dashBoxSubmissoesBadge" style="font-size: 0.8rem; padding: 4px 12px; background: rgba(56, 189, 248, 0.12); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 9999px; font-weight: 700;">
+                            {{ total_submissoes }} submissões
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Cards com Métricas Rápidas (Interativos: Clique para filtrar todo o painel) -->
+                <div class="metrics-grid" style="width: 100%;">
+            <!-- Card 1: Total de Exercícios -->
+            <div class="metric-card metric-card-modern metric-total" id="cardMetricTotal" onclick="alternarFiltroInterativoStatus('TODOS', 'card')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); alternarFiltroInterativoStatus('TODOS', 'card');}" title="Clique para ver todos os exercícios / redefinir filtros">
+                <div class="metric-top-row">
+                    <div class="metric-badge-value">
+                        <span class="metric-icon-badge badge-primary">
+                            <svg class="line-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                            </svg>
+                        </span>
+                        <span class="metric-value-modern" id="valMetricTotal">{{ total_submissoes }}</span>
+                    </div>
+                    <button type="button" class="metric-dots-btn" onclick="event.stopPropagation(); alternarFiltroInterativoStatus('TODOS', 'card')" title="Visão Geral / Redefinir" aria-label="Opções">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="5" r="1.5"></circle>
+                            <circle cx="12" cy="12" r="1.5"></circle>
+                            <circle cx="12" cy="19" r="1.5"></circle>
+                        </svg>
+                    </button>
+                </div>
+                <div class="metric-title-modern">
+                    Total de Exercícios
+                    <span class="metric-filter-hint" id="hintMetricTotal">Visão Geral</span>
+                </div>
+                <div class="metric-progress-track">
+                    <div class="metric-progress-fill fill-primary" id="barMetricTotal" style="width: 100%;"></div>
+                </div>
+                <div class="metric-footer-row">
+                    <span class="metric-footer-label">Respostas na visão</span>
+                    <span class="metric-footer-pct" id="pctMetricTotal">100%</span>
+                </div>
+            </div>
+
+            <!-- Card 2: Domínio Pleno (Correto) -->
+            <div class="metric-card metric-card-modern metric-correta" id="cardMetricCorretas" onclick="alternarFiltroInterativoStatus('Correto', 'card')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); alternarFiltroInterativoStatus('Correto', 'card');}" title="Clique para filtrar por Domínio Pleno (Correto)">
+                <div class="metric-top-row">
+                    <div class="metric-badge-value">
+                        <span class="metric-icon-badge badge-success">
+                            <svg class="line-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        </span>
+                        <span class="metric-value-modern" id="valMetricCorretas">{{ total_corretos }}</span>
+                    </div>
+                    <button type="button" class="metric-dots-btn" title="Filtrar por Domínio Pleno" onclick="event.stopPropagation(); alternarFiltroInterativoStatus('Correto', 'card')" aria-label="Opções">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="5" r="1.5"></circle>
+                            <circle cx="12" cy="12" r="1.5"></circle>
+                            <circle cx="12" cy="19" r="1.5"></circle>
+                        </svg>
+                    </button>
+                </div>
+                <div class="metric-title-modern">
+                    Domínio Pleno (Correto)
+                    <span class="metric-filter-hint text-success" id="hintMetricCorretas">Filtrar</span>
+                </div>
+                <div class="metric-progress-track">
+                    <div class="metric-progress-fill fill-success" id="barMetricCorretas" style="width: {{ pct_acerto }}%;"></div>
+                </div>
+                <div class="metric-footer-row">
+                    <span class="metric-footer-label">Precisão gramatical</span>
+                    <span class="metric-footer-pct text-success" id="pctMetricCorretas">{{ pct_acerto }}%</span>
+                </div>
+            </div>
+
+            <!-- Card 3: Parcialmente Corretas -->
+            <div class="metric-card metric-card-modern metric-parcial" id="cardMetricParciais" onclick="alternarFiltroInterativoStatus('Parcialmente Correto', 'card')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); alternarFiltroInterativoStatus('Parcialmente Correto', 'card');}" title="Clique para filtrar por Parcialmente Corretas">
+                <div class="metric-top-row">
+                    <div class="metric-badge-value">
+                        <span class="metric-icon-badge badge-warning">
+                            <svg class="line-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+                                <line x1="12" y1="9" x2="12" y2="13"></line>
+                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                            </svg>
+                        </span>
+                        <span class="metric-value-modern" id="valMetricParciais">{{ total_parciais }}</span>
+                    </div>
+                    <button type="button" class="metric-dots-btn" title="Filtrar por Parcialmente Corretas" onclick="event.stopPropagation(); alternarFiltroInterativoStatus('Parcialmente Correto', 'card')" aria-label="Opções">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="5" r="1.5"></circle>
+                            <circle cx="12" cy="12" r="1.5"></circle>
+                            <circle cx="12" cy="19" r="1.5"></circle>
+                        </svg>
+                    </button>
+                </div>
+                <div class="metric-title-modern">
+                    Parcialmente Corretas
+                    <span class="metric-filter-hint text-warning" id="hintMetricParciais">Filtrar</span>
+                </div>
+                <div class="metric-progress-track">
+                    <div class="metric-progress-fill fill-warning" id="barMetricParciais" style="width: {{ pct_parcial }}%;"></div>
+                </div>
+                <div class="metric-footer-row">
+                    <span class="metric-footer-label">Pequenos desvios</span>
+                    <span class="metric-footer-pct text-warning" id="pctMetricParciais">{{ pct_parcial }}%</span>
+                </div>
+            </div>
+
+            <!-- Card 4: Respostas Incorretas -->
+            <div class="metric-card metric-card-modern metric-incorreta" id="cardMetricIncorretas" onclick="alternarFiltroInterativoStatus('Incorreto', 'card')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); alternarFiltroInterativoStatus('Incorreto', 'card');}" title="Clique para filtrar por Incorretas">
+                <div class="metric-top-row">
+                    <div class="metric-badge-value">
+                        <span class="metric-icon-badge badge-danger">
+                            <svg class="line-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="15" y1="9" x2="9" y2="15"></line>
+                                <line x1="9" y1="9" x2="15" y2="15"></line>
+                            </svg>
+                        </span>
+                        <span class="metric-value-modern" id="valMetricIncorretas">{{ total_incorretos }}</span>
+                    </div>
+                    <button type="button" class="metric-dots-btn" title="Filtrar por Incorretas" onclick="event.stopPropagation(); alternarFiltroInterativoStatus('Incorreto', 'card')" aria-label="Opções">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="5" r="1.5"></circle>
+                            <circle cx="12" cy="12" r="1.5"></circle>
+                            <circle cx="12" cy="19" r="1.5"></circle>
+                        </svg>
+                    </button>
+                </div>
+                <div class="metric-title-modern">
+                    Respostas Incorretas
+                    <span class="metric-filter-hint text-danger" id="hintMetricIncorretas">Filtrar</span>
+                </div>
+                <div class="metric-progress-track">
+                    <div class="metric-progress-fill fill-danger" id="barMetricIncorretas" style="width: {{ pct_incorreto }}%;"></div>
+                </div>
+                <div class="metric-footer-row">
+                    <span class="metric-footer-label">Requerem reforço</span>
+                    <span class="metric-footer-pct text-danger" id="pctMetricIncorretas">{{ pct_incorreto }}%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Banner Interativo de Filtro Ativo -->
+        <div id="bannerFiltroInterativo" class="filter-active-banner no-print">
+            <div class="filter-banner-text">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                </svg>
+                <span>Filtro Interativo Ativo: <strong id="textoFiltroAtivo">Domínio Pleno (Correto)</strong></span>
+                <span class="badge-count" id="badgeFiltroAtivoCount" style="margin-left: 8px;"></span>
+            </div>
+            <button type="button" class="filter-banner-btn-clear" onclick="alternarFiltroInterativoStatus('TODOS', 'banner')" title="Limpar filtro interativo">
+                ✕ Redefinir para Todos
+            </button>
+        </div>
+
+        <!-- SEÇÃO DOS DOIS GRÁFICOS (CHART.JS) -->
+        <div class="charts-grid">
+            <!-- Gráfico A: Rosca (Doughnut) - Visão Geral das Respostas -->
+            <div class="chart-card">
+                <div class="chart-card-header">
+                    <h3 class="chart-title">Visão Geral das Respostas</h3>
+                    <span class="chart-badge">Distribuição por Status</span>
+                </div>
+                <div class="chart-container doughnut-container">
+                    <canvas id="graficoStatus"></canvas>
+                </div>
+            </div>
+
+            <!-- Gráfico B: Barras Comparativo - Acertos vs Erros por Tópico Gramatical -->
+            <div class="chart-card">
+                <div class="chart-card-header">
+                    <h3 class="chart-title">Desempenho por Tópico Gramatical</h3>
+                    <span class="chart-badge">Comparativo Temático</span>
+                </div>
+                <div class="chart-container bar-container">
+                    <canvas id="graficoTemas"></canvas>
+                </div>
+            </div>
+        </div>
+        <!-- FIM DO QUADRO UNIFICADO DE INDICADORES & GRÁFICOS -->
+    </div>
+</div>
+
+
+        <!-- TABELA DE ALUNOS COM DIFICULDADE / ALUNOS EM RISCO (COM MOLDURA TRANSLÚCIDA) -->
+        <div class="dashboard-box-outer hero-card-outer card-moldura-outer risk-box-outer" id="riskBoxOuter">
+            <div class="table-card risk-table-card table-box-inner" id="cardTabelaRisco">
+                <div class="table-card-header risk-table-header">
+                <div class="table-header-left">
+                    <div class="risk-title-badge-wrap">
+                        <span class="risk-pulse-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Intervenção Docente</span>
+                        <h3 class="table-title">Alunos com Dificuldade Recente (Respostas Incorretas)</h3>
+                    </div>
+                    <span class="badge-count risk-count">{{ alunos_em_risco|length }} ocorrências identificadas</span>
+                </div>
+            </div>
+
+            {% if alunos_em_risco %}
+            <div class="table-responsive">
+                <table class="submissions-table risk-table" id="tabelaAlunosRisco">
+                    <thead>
+                        <tr>
+                            <th width="130">Data</th>
+                            <th width="130">Turma</th>
+                            <th width="170">Nome do Aluno</th>
+                            <th width="190">Tópico Gramatical</th>
+                            <th>Resposta Incorreta do Aluno (Francês)</th>
+                            <th width="115" class="text-center no-print">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in alunos_em_risco %}
+                        <tr class="risk-row" data-index="{{ loop.index0 }}">
+                            <td class="cell-date" title="{{ item['data_hora']|data_hora_br }}">
+                                <span class="date-display">{{ item['data_hora']|data_br }}</span>
+                            </td>
+                            <td class="cell-turma">
+                                <span class="turma-plain-text">{{ item['turma_nome'] }}</span>
+                            </td>
+                            <td class="cell-student">
+                                <div class="student-name-wrap">
+                                    <span class="student-name">{{ item['aluno_nome'] }}</span>
+                                    <span class="student-mat">Mat: {{ item['aluno_matricula'] }}</span>
+                                </div>
+                            </td>
+                            <td class="cell-tema">
+                                <span class="tema-plain-text">{{ item['tema_aula'] }}</span>
+                            </td>
+                            <td class="cell-content">
+                                <div class="answer-preview french-answer error-box">
+                                    <em>« {{ item['resposta_aluno'] }} »</em>
+                                </div>
+                                <div class="question-preview small">
+                                    <strong>Exercício:</strong> {{ item['exercicio'] }}
+                                </div>
+                            </td>
+                            <td class="cell-actions text-center no-print">
+                                <button type="button" class="btn-detail btn-detail-risk" onclick="abrirModalFeedback({{ item['id'] }})" title="Ver diagnóstico detalhado">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Diagnóstico
+                                </button>
+                                <button type="button" class="btn-primary btn-sm" style="margin-top: 5px; width: 100%;" onclick="gerarReforcoRadar({{ item['aluno_id'] }}, {{ item['tema_id'] }})" title="Gerar reforço pedagógico com IA">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Intervir
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Rodapé Interativo com Paginação e Seletor de Linhas -->
+            <div class="table-pagination-footer risk-pagination-footer no-print" id="paginacaoRiscoFooter">
+                <div class="pagination-size-wrap">
+                    <label for="selectRiscoPageSize" class="pagination-size-label">Linhas:</label>
+                    <select id="selectRiscoPageSize" class="pagination-size-select" onchange="mudarQtdLinhasRisco(this.value)" aria-label="Quantidade de linhas por página">
+                        <option value="5">5</option>
+                        <option value="10" selected>10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="todos">Todas</option>
+                    </select>
+                    <span class="pagination-info" id="infoPaginacaoRisco">
+                        Exibindo <strong>1 - {{ [10, alunos_em_risco|length]|min }}</strong> de <strong>{{ alunos_em_risco|length }}</strong> ocorrências
+                    </span>
+                </div>
+
+                <div class="pagination-controls-wrap">
+                    <button type="button" class="btn-pagination-nav" id="btnRiscoPrev" onclick="mudarPaginaRisco(-1)" disabled title="Página Anterior">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        <span>Anterior</span>
+                    </button>
+                    <div class="pagination-page-numbers" id="numerosPaginaRisco"></div>
+                    <button type="button" class="btn-pagination-nav" id="btnRiscoNext" onclick="mudarPaginaRisco(1)" title="Próxima Página">
+                        <span>Próxima</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
+            </div>
+            {% else %}
+            <div class="empty-state success-state">
+                <p><strong>Félicitations !</strong> Nenhum erro com status 'Incorreto' registrado para a seleção atual.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+        <!-- TABELA COM O HISTÓRICO COMPLETO COM MOLDURA TRANSLÚCIDA -->
+        <div class="dashboard-box-outer hero-card-outer card-moldura-outer submissoes-box-outer" id="submissoesBoxOuter">
+            <div class="table-card table-box-inner" id="cardTabelaSubmissoes">
+                <div class="table-card-header dashboard-table-header">
+                <div class="table-header-left">
+                    <h3 class="table-title">Histórico de Atividades Avaliadas em Francês</h3>
+                    <span class="badge-count" id="badgeSubmissoesCount">{{ submissoes|length }} submissões</span>
+                </div>
+
+                <!-- Filtros Interativos em Tempo Real -->
+                <div class="table-filters no-print">
+                    <div class="filter-group">
+                        <span class="filter-label">Nível:</span>
+                        <div class="filter-pills" id="filtroCefrPills">
+                            <button type="button" class="dash-filter-pill active" data-filter-cefr="TODOS" onclick="filtrarTabelaCefr('TODOS')">Todos</button>
+                            <button type="button" class="dash-filter-pill" data-filter-cefr="A1" onclick="filtrarTabelaCefr('A1')">A1</button>
+                            <button type="button" class="dash-filter-pill" data-filter-cefr="A2" onclick="filtrarTabelaCefr('A2')">A2</button>
+                            <button type="button" class="dash-filter-pill" data-filter-cefr="B1" onclick="filtrarTabelaCefr('B1')">B1</button>
+                            <button type="button" class="dash-filter-pill" data-filter-cefr="B2" onclick="filtrarTabelaCefr('B2')">B2</button>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <span class="filter-label">Status:</span>
+                        <div class="filter-pills" id="filtroStatusPills">
+                            <button type="button" class="dash-filter-pill active" data-filter-status="TODOS" onclick="filtrarTabelaStatus('TODOS')">Todos</button>
+                            <button type="button" class="dash-filter-pill" data-filter-status="Correto" onclick="filtrarTabelaStatus('Correto')">Correto</button>
+                            <button type="button" class="dash-filter-pill" data-filter-status="Parcialmente Correto" onclick="filtrarTabelaStatus('Parcialmente Correto')">Parcial</button>
+                            <button type="button" class="dash-filter-pill" data-filter-status="Incorreto" onclick="filtrarTabelaStatus('Incorreto')">Incorreto</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if submissoes %}
+            <div class="table-responsive">
+                <table class="submissions-table" id="tabelaSubmissoes">
+                    <thead>
+                        <tr>
+                            <th width="60">ID</th>
+                            <th width="120">Data</th>
+                            <th width="160">Aluno / Turma</th>
+                            <th width="190">Tópico Gramatical</th>
+                            <th>Exercício e Resposta do Aluno</th>
+                            <th width="130">Status</th>
+                            <th width="100" class="text-center no-print">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sub in submissoes %}
+                        <tr class="submission-row" data-tema="{{ sub['tema_aula'] }}" data-status="{{ sub['status_resposta'] }}" data-cefr="{{ (sub['nivel_cefr'] or 'A2')|upper }}" data-index="{{ loop.index0 }}">
+                            <td class="cell-id">#{{ sub['id'] }}</td>
+                            <td class="cell-date" title="{{ sub['data_hora']|data_hora_br }}">
+                                <span class="date-display">{{ sub['data_hora']|data_br }}</span>
+                            </td>
+                            <td class="cell-student">
+                                <div class="student-name-wrap">
+                                    <span class="student-name">{{ sub['aluno_nome'] or 'Aluno' }}</span>
+                                    <span class="turma-plain-text small">{{ sub['turma_nome'] or '' }}</span>
+                                </div>
+                            </td>
+                            <td class="cell-tema">
+                                <span class="tema-plain-text">{{ sub['tema_aula'] or 'Geral' }}</span>
+                                {% if sub['nivel_cefr'] %}
+                                <span class="cefr-plain-tag">({{ sub['nivel_cefr'] }})</span>
+                                {% endif %}
+                            </td>
+                            <td class="cell-content">
+                                <div class="question-preview"><strong>Exercício:</strong> {{ sub['pergunta'] or sub['exercicio'] }}</div>
+                                <div class="answer-preview french-answer"><strong>Resposta:</strong> <em>« {{ sub['resposta_aluno'] }} »</em></div>
+                            </td>
+                            <td class="cell-status">
+                                {% if sub['status_resposta'] == 'Correto' %}
+                                <span class="status-badge status-correta">Correto</span>
+                                {% elif sub['status_resposta'] == 'Parcialmente Correto' %}
+                                <span class="status-badge status-parcial">Parcial</span>
+                                {% else %}
+                                <span class="status-badge status-incorreta">Incorreto</span>
+                                {% endif %}
+                                {% if sub['tentativa'] and sub['tentativa'] > 1 %}
+                                <span class="tentativa-chip">Tentativa {{ sub['tentativa'] }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="cell-actions text-center no-print">
+                                <button type="button" class="btn-detail" onclick="abrirModalFeedback({{ sub['id'] }})">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Detalhes
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <!-- Rodapé Interativo com Paginação e Seletor de Linhas -->
+                <div class="table-pagination-footer submissoes-pagination-footer no-print" id="paginacaoSubmissoesFooter">
+                    <div class="pagination-size-wrap">
+                        <label for="selectSubmissoesPageSize" class="pagination-size-label">Linhas:</label>
+                        <select id="selectSubmissoesPageSize" class="pagination-size-select" onchange="mudarQtdLinhasSubmissoes(this.value)" aria-label="Quantidade de linhas por página">
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="todos">Todas</option>
+                        </select>
+                        <span class="pagination-info" id="infoPaginacaoSubmissoes">
+                            Exibindo <strong>1 - {{ [10, submissoes|length]|min }}</strong> de <strong>{{ submissoes|length }}</strong> submissões
+                        </span>
+                    </div>
+
+                    <div class="pagination-controls-wrap">
+                        <button type="button" class="btn-pagination-nav" id="btnSubmissoesPrev" onclick="mudarPaginaSubmissoes(-1)" disabled title="Página Anterior">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                            <span>Anterior</span>
+                        </button>
+                        <div class="pagination-page-numbers" id="numerosPaginaSubmissoes"></div>
+                        <button type="button" class="btn-pagination-nav" id="btnSubmissoesNext" onclick="mudarPaginaSubmissoes(1)" title="Próxima Página">
+                            <span>Próxima</span>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>Nenhuma submissão registrada no momento para esta seleção.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    </div>
+    <!-- FIM DA DIV CONTEUDO-RELATORIO -->
+</div>
+
+<!-- Modal para Visualização Completa do Feedback e Análise do Professor -->
+<div id="feedbackModal" class="modal hidden" onclick="fecharModalSeClicarFora(event)">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title-wrap">
+                    <span id="modalTopicBadge" class="topic-chip">Tópico</span>
+                    <span id="modalCefrBadge" class="cefr-level-badge">A2</span>
+                    <span id="modalTentativaBadge" class="tentativa-chip hidden">Tentativa 1</span>
+                    <h3 id="modalTitle" class="modal-title">Submissão #0</h3>
+                </div>
+                <button type="button" class="btn-close-modal" onclick="fecharModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-section">
+                    <label class="modal-label">Exercício Proposto:</label>
+                    <p id="modalQuestion" class="modal-text"></p>
+                </div>
+                <div class="modal-section">
+                    <div class="modal-label-row">
+                        <label class="modal-label">Resposta do Aluno em Francês:</label>
+                        <button type="button" id="btnAudioModal" class="btn-audio-pill" onclick="ouvirRespostaModal()" title="Ouvir pronúncia da resposta">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+                            <span>Ouvir</span>
+                        </button>
+                    </div>
+                    <div id="modalAnswer" class="modal-box french-box"></div>
+                </div>
+                <div class="modal-section">
+                    <label class="modal-label">Análise Gramatical Técnica (Professor / Log):</label>
+                    <div id="modalAnaliseText" class="modal-box analise-docente-box"></div>
+                </div>
+                <div class="modal-section">
+                    <div class="modal-feedback-header">
+                        <label class="modal-label">Feedback Formativo para o Estudante (Gemini):</label>
+                        <span id="modalStatusBadge" class="status-badge">Status</span>
+                    </div>
+                    <div id="modalFeedbackText" class="modal-box feedback-box markdown-body"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span id="modalTimestamp" class="text-muted">Data</span>
+                <button type="button" class="btn-secondary" onclick="fecharModal()">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE GESTÃO COMPLETA DE ALUNOS (LISTAR, ADICIONAR E EDITAR) -->
+<div id="modalAluno" class="modal hidden" onclick="fecharModalAlunoSeClicarFora(event)">
+    <div class="modal-dialog modal-lg" style="max-width: 780px;">
+        <div class="modal-content modal-aluno-content" style="border-radius: 18px;">
+            <div class="modal-header">
+                <div>
+                    <h3 id="modalAlunoTitulo" class="modal-title">Gestão de Alunos FLE</h3>
+                    <p class="modal-subtitle text-muted" style="font-size: 0.85rem; margin-top: 2px;">Cadastre novos estudantes, consulte informações e edite perfis pedagógicos.</p>
+                </div>
+                <button type="button" class="btn-close-modal" onclick="fecharModalAluno()" aria-label="Fechar">&times;</button>
+            </div>
+
+            <!-- Abas do Modal de Alunos -->
+            <div class="modal-tab-header">
+                <button type="button" id="tabBtnListaAlunos" class="modal-tab-btn active" onclick="alternarAbaAlunoModal('lista')">
+                    <span>Alunos Cadastrados (<span id="totalAlunosModal">{{ alunos_cadastrados|length }}</span>)</span>
+                </button>
+                <button type="button" id="tabBtnFormAluno" class="modal-tab-btn" onclick="alternarAbaAlunoModal('form')">
+                    <span id="labelTabFormAluno">+ Cadastrar Novo Aluno</span>
+                </button>
+            </div>
+
+            <!-- ABA 1: LISTA & BUSCA DE ALUNOS -->
+            <div id="abaConteudoListaAlunos" style="display: block; padding: 20px;">
+                <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; align-items: center;">
+                    <input type="text" id="buscaAlunoModal" class="form-input" style="flex: 1; min-width: 220px;" placeholder="Buscar por nome ou matrícula..." oninput="filtrarAlunosModal()">
+                    <select id="filtroTurmaModalAluno" class="form-input" style="width: auto; min-width: 170px;" onchange="filtrarAlunosModal()">
+                        <option value="todas">Todas as Turmas</option>
+                        {% for t in turmas %}
+                        <option value="{{ t['id'] }}">{{ t['nome'] }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="button" class="btn-primary btn-sm" onclick="prepararNovoAlunoModal()">
+                        <span>+ Novo Aluno</span>
+                    </button>
+                </div>
+
+                <div id="modalListaAlunosContainer" style="max-height: 360px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
+                    {% for a in alunos_cadastrados %}
+                    <div class="aluno-modal-item" data-nome="{{ a['nome']|lower }}" data-mat="{{ a['matricula']|lower }}" data-turma="{{ a['turma_id'] }}" id="aluno-modal-card-{{ a['id'] }}">
+                        <div class="aluno-modal-profile">
+                            <div class="aluno-modal-avatar">{{ a['nome'][:1].upper() }}</div>
+                            <div class="aluno-modal-meta">
+                                <span class="aluno-modal-name">{{ a['nome'] }}</span>
+                                <div class="aluno-modal-sub">
+                                    <code>{{ a['matricula'] }}</code>
+                                    <span>•</span>
+                                    <span class="turma-chip small">{{ a['turma_nome'] }}</span>
+                                    <span>•</span>
+                                    <span class="badge-level-student lvl-{{ a['nivel_cefr']|lower }}">{{ a['nivel_cefr'] }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <button type="button" class="btn-detail btn-sm" onclick="abrirModalEdicaoAluno({{ a['id'] }}, '{{ a['nome']|escape }}', '{{ a['matricula']|escape }}', {{ a['turma_id'] }}, '{{ a['nivel_cefr'] }}')" title="Editar dados cadastrais">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Editar
+                            </button>
+                            <button type="button" class="btn-secondary btn-sm" onclick="excluirAlunoModal({{ a['id'] }}, '{{ a['nome']|escape }}')" title="Excluir aluno" style="color: #ef4444;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- ABA 2: FORMULÁRIO DE CADASTRO / EDIÇÃO -->
+            <div id="abaConteudoFormAluno" style="display: none;">
+                <form id="formModalAluno" onsubmit="salvarAluno(event)">
+                    <input type="hidden" id="aluno_form_id" name="aluno_id" value="">
+                    <div class="modal-body modal-form-body" style="padding: 20px;">
+                        <div class="form-group">
+                            <label for="aluno_nome" class="form-label">
+                                <span class="label-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span> Nome Completo do Aluno:
+                            </label>
+                            <input type="text" id="aluno_nome" name="nome" class="form-input" placeholder="Ex: Jean Dupont" required>
+                        </div>
+
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label for="aluno_matricula" class="form-label">
+                                    <span class="label-icon"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span> Matrícula:
+                                </label>
+                                <input type="text" id="aluno_matricula" name="matricula" class="form-input" placeholder="Ex: 202604" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="aluno_senha" class="form-label">
+                                    <span class="label-icon"><svg viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg></span> <span id="labelSenha">Senha de Acesso:</span>
+                                </label>
+                                <input type="password" id="aluno_senha" name="senha" class="form-input" placeholder="Ex: 123456">
+                                <small class="form-hint" id="hintSenha" style="display:none; color: var(--text-muted); font-size: 0.8rem; margin-top: 0.25rem;">Deixe em branco para manter a senha atual.</small>
+                            </div>
+                        </div>
+
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label for="aluno_turma_id" class="form-label">
+                                    <span class="label-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> Turma:
+                                </label>
+                                <select id="aluno_turma_id" name="turma_id" class="form-input" required>
+                                    {% for t in turmas %}
+                                    <option value="{{ t['id'] }}">{{ t['nome'] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="aluno_nivel_cefr" class="form-label">
+                                    <span class="label-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> Nível de Francês (CEFR):
+                                </label>
+                                <select id="aluno_nivel_cefr" name="nivel_cefr" class="form-input" required>
+                                    <option value="A1">A1 • Débutant (Iniciante)</option>
+                                    <option value="A2" selected>A2 • Élémentaire (Básico)</option>
+                                    <option value="B1">B1 • Intermédiaire (Intermediário)</option>
+                                    <option value="B2">B2 • Avancé (Avançado)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="alunoFormMsg" class="form-alert-msg" style="display:none;"></div>
+                    </div>
+                    <div class="modal-footer" style="padding: 12px 20px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between;">
+                        <button type="button" class="btn-secondary" onclick="alternarAbaAlunoModal('lista')">← Voltar para Lista</button>
+                        <div style="display: flex; gap: 10px;">
+                            <button type="button" class="btn-secondary" onclick="fecharModalAluno()">Cancelar</button>
+                            <button type="submit" id="btnSalvarAluno" class="btn-primary">
+                                <span>Salvar Aluno</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Enviar Recado -->
+<div id="modalRecado" class="modal hidden">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content" style="border-radius: 16px;">
+            <div class="modal-header">
+                <h3 class="modal-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Enviar Recado / Mensagem</h3>
+                <button class="btn-close-modal" onclick="fecharModalRecado()">&times;</button>
+            </div>
+            <div style="padding: 20px;">
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label class="form-label">Tipo de Destinatário:</label>
+                    <select id="msg_tipo_dest" class="form-input" onchange="alternarTipoDestinatario()">
+                        <option value="aluno">Aluno Individual</option>
+                        <option value="turma">Turma Inteira</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="grp_dest_aluno" style="margin-bottom: 15px;">
+                    <label class="form-label">Selecionar Aluno:</label>
+                    <select id="msg_dest_aluno" class="form-input">
+                        {% for a in alunos_cadastrados %}
+                        <option value="{{ a.id }}">{{ a.nome }} ({{ a.turma_nome }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group hidden" id="grp_dest_turma" style="margin-bottom: 15px;">
+                    <label class="form-label">Selecionar Turma:</label>
+                    <select id="msg_dest_turma" class="form-input">
+                        {% for t in turmas %}
+                        <option value="{{ t.id }}">{{ t.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label class="form-label">Assunto:</label>
+                    <input type="text" id="msg_assunto" class="form-input" placeholder="Ex: Aviso sobre a prova oral de francês">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label class="form-label">Mensagem:</label>
+                    <textarea id="msg_corpo" class="form-textarea" rows="4" placeholder="Escreva a mensagem para a caixa de entrada do estudante..."></textarea>
+                </div>
+
+                <button type="button" id="btnEnviarRecado" class="btn-primary" style="width: 100%;" onclick="enviarRecado()">
+                    Enviar Mensagem
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Gestão Completa de Turmas (Criar, Editar e Listar) -->
+<div id="modalGestaoTurmas" class="modal hidden" onclick="fecharModalGestaoTurmasSeClicarFora(event)">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content" style="border-radius: 18px;">
+            <div class="modal-header">
+                <div>
+                    <h3 class="modal-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Gestão de Turmas FLE</h3>
+                    <p class="modal-subtitle text-muted" style="font-size: 0.85rem; margin-top: 2px;">Crie novas turmas, visualize alunos e edite turmas existentes.</p>
+                </div>
+                <button type="button" class="btn-close-modal" onclick="fecharModalGestaoTurmas()" aria-label="Fechar">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 20px; display: flex; flex-direction: column; gap: 18px;">
+                <!-- Formulário de Criação / Edição -->
+                <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 16px;">
+                    <h4 id="turmaFormTitulo" style="font-size: 0.95rem; font-weight: 700; margin-bottom: 10px; color: var(--text-primary); display: flex; align-items: center; gap: 6px;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon"><path d="M12 5v14M5 12h14"/></svg> <span id="turmaFormAcaoText">Cadastrar Nova Turma</span>
+                    </h4>
+                    <input type="hidden" id="turma_edit_id" value="">
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <input type="text" id="turma_input_nome" class="form-input" style="flex: 1; min-width: 220px;" placeholder="Ex: Francês Intermediário - B1" onkeydown="if(event.key==='Enter'){event.preventDefault(); salvarTurmaGestao();}">
+                        <button type="button" id="btnSalvarTurmaGestao" class="btn-primary" onclick="salvarTurmaGestao()" style="white-space: nowrap;">
+                            <span>Salvar Turma</span>
+                        </button>
+                        <button type="button" id="btnCancelarEdicaoTurma" class="btn-secondary" onclick="cancelarEdicaoTurma()" style="display: none; white-space: nowrap;">
+                            <span>Cancelar</span>
+                        </button>
+                    </div>
+                    <div id="turmaGestaoMsg" class="form-alert-msg" style="display: none; margin-top: 10px;"></div>
+                </div>
+
+                <!-- Lista de Turmas Cadastradas -->
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <h4 style="font-size: 0.88rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">
+                            Turmas no Sistema (<span id="contagemTurmasModal">{{ turmas|length }}</span>)
+                        </h4>
+                        <button type="button" class="btn-secondary btn-sm" onclick="carregarTurmasGestao()" style="font-size: 0.78rem; padding: 3px 8px;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg> Atualizar
+                        </button>
+                    </div>
+                    <div id="listaTurmasContainer" style="max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
+                        {% for t in turmas %}
+                        <div class="turma-mgmt-row" id="turma-row-item-{{ t['id'] }}">
+                            <div class="turma-mgmt-info">
+                                <span style="font-size: 1.2rem; display: flex; align-items: center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+                                <div style="display: flex; flex-direction: column;">
+                                    <span class="turma-mgmt-name" id="turma-nome-label-{{ t['id'] }}">{{ t['nome'] }}</span>
+                                </div>
+                            </div>
+                            <div class="turma-mgmt-actions">
+                                <button type="button" class="btn-sm btn-secondary" onclick="prepararEdicaoTurma({{ t['id'] }}, '{{ t['nome']|escape }}')" title="Editar nome da turma">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Editar
+                                </button>
+                                <button type="button" class="btn-sm btn-secondary" onclick="excluirTurmaGestao({{ t['id'] }}, '{{ t['nome']|escape }}')" title="Excluir turma" style="color: #ef4444;">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 12px 20px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: flex-end;">
+                <button type="button" class="btn-secondary" onclick="fecharModalGestaoTurmas()">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ===================== CONTROLADOR DO POPOVER DE FILTROS =====================
+function toggleFiltrosPopover(event) {
+    if (event) event.stopPropagation();
+    const popover = document.getElementById('popoverFiltros');
+    const btn = document.getElementById('btnToggleFiltrosPopover');
+    if (!popover) return;
+    
+    const isOpen = popover.classList.contains('open');
+    if (isOpen) {
+        fecharFiltrosPopover();
+    } else {
+        popover.classList.add('open');
+        if (btn) btn.classList.add('active');
+    }
+}
+
+function fecharFiltrosPopover() {
+    const popover = document.getElementById('popoverFiltros');
+    const btn = document.getElementById('btnToggleFiltrosPopover');
+    if (popover) popover.classList.remove('open');
+    if (btn) btn.classList.remove('active');
+}
+
+function aplicarFiltroEFechar() {
+    fecharFiltrosPopover();
+    atualizarIndicadorFiltroAtivo();
+    if (typeof gerarRelatorioVisual === 'function') {
+        gerarRelatorioVisual();
+    }
+}
+
+function limparFiltrosDashboard() {
+    if (typeof alternarFiltroInterativoStatus === 'function') {
+        alternarFiltroInterativoStatus('TODOS', 'code');
+    }
+    const sTurma = document.getElementById('filtroTurma');
+    const sNivel = document.getElementById('filtroNivel');
+    const sAluno = document.getElementById('filtroAluno');
+    if (sTurma) sTurma.value = 'todas';
+    if (sNivel) sNivel.value = 'todos';
+    if (sAluno) {
+        sAluno.innerHTML = '<option value="todos">Visão Macro / Todos os Alunos</option>';
+        sAluno.value = 'todos';
+    }
+    atualizarIndicadorFiltroAtivo();
+    if (typeof gerarRelatorioVisual === 'function') {
+        gerarRelatorioVisual();
+    }
+    fecharFiltrosPopover();
+    if (typeof mostrarToast === 'function') {
+        mostrarToast('Filtros redefinidos para a visão macro geral.', 'info');
+    }
+}
+
+function atualizarIndicadorFiltroAtivo() {
+    const sTurma = document.getElementById('filtroTurma')?.value || 'todas';
+    const sNivel = document.getElementById('filtroNivel')?.value || 'todos';
+    const sAluno = document.getElementById('filtroAluno')?.value || 'todos';
+    const dot = document.getElementById('filtroAtivoDot');
+    if (!dot) return;
+    if (sTurma !== 'todas' || sNivel !== 'todos' || sAluno !== 'todos') {
+        dot.style.display = 'inline-block';
+    } else {
+        dot.style.display = 'none';
+    }
+}
+
+// Fechar popover ao clicar fora ou pressionar ESC
+document.addEventListener('click', function(e) {
+    const popover = document.getElementById('popoverFiltros');
+    const btn = document.getElementById('btnToggleFiltrosPopover');
+    if (popover && popover.classList.contains('open')) {
+        if (!popover.contains(e.target) && (!btn || !btn.contains(e.target))) {
+            fecharFiltrosPopover();
+        }
+    }
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        fecharFiltrosPopover();
+    }
+});
+
+// ===================== CONTROLADOR DE GESTÃO DE TURMAS =====================
+function abrirModalGestaoTurmas() {
+    const modal = document.getElementById('modalGestaoTurmas');
+    if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        cancelarEdicaoTurma();
+        carregarTurmasGestao();
+    }
+}
+
+function fecharModalGestaoTurmas() {
+    const modal = document.getElementById('modalGestaoTurmas');
+    if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+}
+
+function fecharModalGestaoTurmasSeClicarFora(event) {
+    if (event.target.id === 'modalGestaoTurmas') {
+        fecharModalGestaoTurmas();
+    }
+}
+
+// Aliases para compatibilidade legada
+window.abrirModalTurma = abrirModalGestaoTurmas;
+window.fecharModalTurma = fecharModalGestaoTurmas;
+
+async function carregarTurmasGestao() {
+    try {
+        const resp = await fetch('/api/turmas');
+        const data = await resp.json();
+        if (data.status === 'sucesso' && Array.isArray(data.turmas)) {
+            const container = document.getElementById('listaTurmasContainer');
+            const contagem = document.getElementById('contagemTurmasModal');
+            if (contagem) contagem.textContent = data.turmas.length;
+            if (!container) return;
+
+            if (data.turmas.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-muted);">Nenhuma turma cadastrada.</div>';
+                return;
+            }
+
+            container.innerHTML = data.turmas.map(t => `
+                <div class="turma-mgmt-row" id="turma-row-item-${t.id}">
+                    <div class="turma-mgmt-info">
+                        <span style="font-size: 1.2rem; display: flex; align-items: center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+                        <div style="display: flex; flex-direction: column;">
+                            <span class="turma-mgmt-name" id="turma-nome-label-${t.id}">${escapeHtmlTurma(t.nome)}</span>
+                        </div>
+                    </div>
+                    <div class="turma-mgmt-actions">
+                        <span class="turma-badge-alunos">${t.total_alunos} ${t.total_alunos === 1 ? 'aluno' : 'alunos'}</span>
+                        <button type="button" class="btn-sm btn-secondary" onclick="prepararEdicaoTurma(${t.id}, '${escapeHtmlTurma(t.nome).replace(/'/g, "\\'")}')" title="Editar nome da turma">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Editar
+                        </button>
+                        <button type="button" class="btn-sm btn-secondary" onclick="excluirTurmaGestao(${t.id}, '${escapeHtmlTurma(t.nome).replace(/'/g, "\\'")}')" title="Excluir turma" style="color: #ef4444;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+    } catch (e) {
+        console.error("Erro ao carregar turmas:", e);
+    }
+}
+
+function escapeHtmlTurma(str) {
+    if (!str) return '';
+    return str.replace(/[&<>"']/g, m => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+    })[m]);
+}
+
+function prepararEdicaoTurma(id, nome) {
+    const input = document.getElementById('turma_input_nome');
+    const editId = document.getElementById('turma_edit_id');
+    const btnSalvar = document.getElementById('btnSalvarTurmaGestao');
+    const btnCancelar = document.getElementById('btnCancelarEdicaoTurma');
+    const labelAcao = document.getElementById('turmaFormAcaoText');
+    const msg = document.getElementById('turmaGestaoMsg');
+
+    if (input) input.value = nome;
+    if (editId) editId.value = id;
+    if (btnSalvar) btnSalvar.innerHTML = '<span>Atualizar</span>';
+    if (btnCancelar) btnCancelar.style.display = 'inline-block';
+    if (labelAcao) labelAcao.textContent = `Editar Turma: ${nome}`;
+    if (msg) {
+        msg.style.display = 'none';
+        msg.textContent = '';
+    }
+    if (input) input.focus();
+}
+
+function cancelarEdicaoTurma() {
+    const input = document.getElementById('turma_input_nome');
+    const editId = document.getElementById('turma_edit_id');
+    const btnSalvar = document.getElementById('btnSalvarTurmaGestao');
+    const btnCancelar = document.getElementById('btnCancelarEdicaoTurma');
+    const labelAcao = document.getElementById('turmaFormAcaoText');
+    const msg = document.getElementById('turmaGestaoMsg');
+
+    if (input) input.value = '';
+    if (editId) editId.value = '';
+    if (btnSalvar) btnSalvar.innerHTML = '<span>Salvar Turma</span>';
+    if (btnCancelar) btnCancelar.style.display = 'none';
+    if (labelAcao) labelAcao.textContent = 'Cadastrar Nova Turma';
+    if (msg) {
+        msg.style.display = 'none';
+        msg.textContent = '';
+    }
+}
+
+async function salvarTurmaGestao() {
+    const input = document.getElementById('turma_input_nome');
+    const editId = document.getElementById('turma_edit_id')?.value;
+    const btn = document.getElementById('btnSalvarTurmaGestao');
+    const msg = document.getElementById('turmaGestaoMsg');
+
+    const nome = input ? input.value.trim() : '';
+    if (!nome) {
+        if (msg) {
+            msg.className = 'form-alert-msg error';
+            msg.textContent = 'Digite o nome da turma.';
+            msg.style.display = 'block';
+        }
+        return;
+    }
+
+    try {
+        btn.disabled = true;
+        btn.innerHTML = '<span>Salvando...</span>';
+
+        const endpoint = editId ? `/api/turmas/${editId}/editar` : '/api/turmas/cadastrar';
+        const resp = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nome: nome })
+        });
+        const data = await resp.json();
+
+        if (resp.ok && data.status === 'sucesso') {
+            if (msg) {
+                msg.className = 'form-alert-msg success';
+                msg.textContent = data.mensagem;
+                msg.style.display = 'block';
+            }
+            if (typeof mostrarToast === 'function') {
+                mostrarToast(data.mensagem, 'sucesso');
+            }
+            cancelarEdicaoTurma();
+            carregarTurmasGestao();
+            // Atualiza os selects de turma na página
+            atualizarSelectsTurmaPagina();
+        } else {
+            if (msg) {
+                msg.className = 'form-alert-msg error';
+                msg.textContent = data.mensagem || 'Falha ao salvar turma.';
+                msg.style.display = 'block';
+            }
+        }
+    } catch (e) {
+        if (msg) {
+            msg.className = 'form-alert-msg error';
+            msg.textContent = 'Erro de conexão com o servidor: ' + e;
+            msg.style.display = 'block';
+        }
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = editId ? '<span>Atualizar</span>' : '<span>Salvar Turma</span>';
+    }
+}
+
+async function excluirTurmaGestao(id, nome) {
+    if (!confirm(`Deseja realmente excluir a turma '${nome}'?`)) return;
+
+    try {
+        const resp = await fetch(`/api/turmas/${id}/excluir`, { method: 'POST' });
+        const data = await resp.json();
+        if (resp.ok && data.status === 'sucesso') {
+            if (typeof mostrarToast === 'function') {
+                mostrarToast(data.mensagem, 'sucesso');
+            }
+            carregarTurmasGestao();
+            atualizarSelectsTurmaPagina();
+        } else {
+            alert('Atenção: ' + (data.mensagem || 'Não foi possível excluir.'));
+        }
+    } catch (e) {
+        alert('Erro ao excluir: ' + e);
+    }
+}
+
+async function atualizarSelectsTurmaPagina() {
+    try {
+        const resp = await fetch('/api/turmas');
+        const data = await resp.json();
+        if (data.status === 'sucesso' && Array.isArray(data.turmas)) {
+            // Atualiza select do modal de alunos
+            const selModal = document.getElementById('aluno_turma_id');
+            if (selModal) {
+                const valAtual = selModal.value;
+                selModal.innerHTML = data.turmas.map(t => `<option value="${t.id}">${escapeHtmlTurma(t.nome)}</option>`).join('');
+                if (valAtual) selModal.value = valAtual;
+            }
+            // Atualiza select de filtro do modal de alunos
+            const selFiltroModal = document.getElementById('filtroTurmaModalAluno');
+            if (selFiltroModal) {
+                const valAtual = selFiltroModal.value;
+                selFiltroModal.innerHTML = '<option value="todas">Todas as Turmas</option>' + data.turmas.map(t => `<option value="${t.id}">${escapeHtmlTurma(t.nome)}</option>`).join('');
+                if (valAtual) selFiltroModal.value = valAtual;
+            }
+            // Atualiza select de filtro do dashboard
+            const selDash = document.getElementById('filtroTurma');
+            if (selDash) {
+                const valAtual = selDash.value;
+                selDash.innerHTML = '<option value="todas">Todas as Turmas</option>' + data.turmas.map(t => `<option value="${t.id}">${escapeHtmlTurma(t.nome)}</option>`).join('');
+                if (valAtual) selDash.value = valAtual;
+            }
+        }
+    } catch (e) {
+        console.error("Erro ao sincronizar selects de turmas:", e);
+    }
+}
+
+// ===================== CONTROLADOR DE GESTÃO DE ALUNOS =====================
+function abrirModalGestaoAlunos(aba = 'lista') {
+    const modal = document.getElementById('modalAluno');
+    if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        alternarAbaAlunoModal(aba);
+        carregarAlunosModal();
+    }
+}
+
+function alternarAbaAlunoModal(aba) {
+    const btnLista = document.getElementById('tabBtnListaAlunos');
+    const btnForm = document.getElementById('tabBtnFormAluno');
+    const secLista = document.getElementById('abaConteudoListaAlunos');
+    const secForm = document.getElementById('abaConteudoFormAluno');
+
+    if (aba === 'lista') {
+        if (btnLista) btnLista.classList.add('active');
+        if (btnForm) btnForm.classList.remove('active');
+        if (secLista) secLista.style.display = 'block';
+        if (secForm) secForm.style.display = 'none';
+    } else {
+        if (btnLista) btnLista.classList.remove('active');
+        if (btnForm) btnForm.classList.add('active');
+        if (secLista) secLista.style.display = 'none';
+        if (secForm) secForm.style.display = 'block';
+    }
+}
+
+function prepararNovoAlunoModal() {
+    const form = document.getElementById('formModalAluno');
+    const formId = document.getElementById('aluno_form_id');
+    const titulo = document.getElementById('modalAlunoTitulo');
+    const labelTab = document.getElementById('labelTabFormAluno');
+    const hintSenha = document.getElementById('hintSenha');
+    const labelSenha = document.getElementById('labelSenha');
+    const senhaInput = document.getElementById('aluno_senha');
+    const msgBox = document.getElementById('alunoFormMsg');
+
+    if (form) form.reset();
+    if (formId) formId.value = '';
+    if (titulo) titulo.textContent = 'Cadastrar Novo Aluno';
+    if (labelTab) labelTab.textContent = '+ Cadastrar Novo Aluno';
+    if (hintSenha) hintSenha.style.display = 'none';
+    if (labelSenha) labelSenha.textContent = 'Senha de Acesso:';
+    if (senhaInput) {
+        senhaInput.required = true;
+        senhaInput.placeholder = 'Ex: 123456';
+    }
+    if (msgBox) {
+        msgBox.style.display = 'none';
+        msgBox.textContent = '';
+    }
+
+    alternarAbaAlunoModal('form');
+}
+
+async function carregarAlunosModal() {
+    try {
+        const resp = await fetch('/api/alunos');
+        const data = await resp.json();
+        if (data.status === 'sucesso' && Array.isArray(data.alunos)) {
+            const container = document.getElementById('modalListaAlunosContainer');
+            const totalSpan = document.getElementById('totalAlunosModal');
+            if (totalSpan) totalSpan.textContent = data.alunos.length;
+            if (!container) return;
+
+            if (data.alunos.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding: 25px; color: var(--text-muted);">Nenhum aluno cadastrado no sistema.</div>';
+                return;
+            }
+
+            container.innerHTML = data.alunos.map(a => `
+                <div class="aluno-modal-item" data-nome="${escapeHtmlTurma(a.nome).toLowerCase()}" data-mat="${escapeHtmlTurma(a.matricula).toLowerCase()}" data-turma="${a.turma_id}" id="aluno-modal-card-${a.id}">
+                    <div class="aluno-modal-profile">
+                        <div class="aluno-modal-avatar">${escapeHtmlTurma(a.nome.charAt(0).toUpperCase())}</div>
+                        <div class="aluno-modal-meta">
+                            <span class="aluno-modal-name">${escapeHtmlTurma(a.nome)}</span>
+                            <div class="aluno-modal-sub">
+                                <code>${escapeHtmlTurma(a.matricula)}</code>
+                                <span>•</span>
+                                <span class="turma-chip small">${escapeHtmlTurma(a.turma_nome)}</span>
+                                <span>•</span>
+                                <span class="badge-level-student lvl-${(a.nivel_cefr || 'A2').toLowerCase()}">${a.nivel_cefr || 'A2'}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <button type="button" class="btn-detail btn-sm" onclick="abrirModalEdicaoAluno(${a.id}, '${escapeHtmlTurma(a.nome).replace(/'/g, "\\'")}', '${escapeHtmlTurma(a.matricula).replace(/'/g, "\\'")}', ${a.turma_id}, '${a.nivel_cefr || 'A2'}')" title="Editar dados cadastrais">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Editar
+                        </button>
+                        <button type="button" class="btn-secondary btn-sm" onclick="excluirAlunoModal(${a.id}, '${escapeHtmlTurma(a.nome).replace(/'/g, "\\'")}')" title="Excluir aluno" style="color: #ef4444;">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            filtrarAlunosModal();
+        }
+    } catch (e) {
+        console.error("Erro ao carregar lista de alunos:", e);
+    }
+}
+
+function filtrarAlunosModal() {
+    const q = (document.getElementById('buscaAlunoModal')?.value || '').toLowerCase().trim();
+    const turmaFiltro = document.getElementById('filtroTurmaModalAluno')?.value || 'todas';
+    const items = document.querySelectorAll('#modalListaAlunosContainer .aluno-modal-item');
+
+    items.forEach(item => {
+        const nome = item.getAttribute('data-nome') || '';
+        const mat = item.getAttribute('data-mat') || '';
+        const turma = item.getAttribute('data-turma') || '';
+
+        const bateTexto = !q || nome.includes(q) || mat.includes(q);
+        const bateTurma = turmaFiltro === 'todas' || turma === turmaFiltro;
+
+        item.style.display = (bateTexto && bateTurma) ? 'flex' : 'none';
+    });
+}
+
+async function excluirAlunoModal(id, nome) {
+    if (!confirm(`Deseja realmente excluir o aluno '${nome}' e seu histórico de submissões?`)) return;
+
+    try {
+        const resp = await fetch(`/api/alunos/${id}/excluir`, { method: 'POST' });
+        const data = await resp.json();
+        if (resp.ok && data.status === 'sucesso') {
+            if (typeof mostrarToast === 'function') {
+                mostrarToast(data.mensagem, 'sucesso');
+            }
+            carregarAlunosModal();
+            // Remove da tabela da página caso visível
+            const rowPagina = document.getElementById(`aluno-row-${id}`);
+            if (rowPagina) rowPagina.remove();
+        } else {
+            alert('Atenção: ' + (data.mensagem || 'Não foi possível excluir o aluno.'));
+        }
+    } catch (e) {
+        alert('Erro ao excluir: ' + e);
+    }
+}
+
+
+function exportarPlanilhaCSV() {
+    const turmaId = document.getElementById('filtroTurma') ? document.getElementById('filtroTurma').value : 'todas';
+    const nivelCefr = document.getElementById('filtroNivel') ? document.getElementById('filtroNivel').value : 'todos';
+    
+    let url = '/api/relatorio/exportar_csv?';
+    const params = [];
+    if (turmaId && turmaId !== 'todas') params.push(`turma_id=${encodeURIComponent(turmaId)}`);
+    if (nivelCefr && nivelCefr !== 'todos') params.push(`nivel_cefr=${encodeURIComponent(nivelCefr)}`);
+    
+    url += params.join('&');
+    window.location.href = url;
+}
+
+function abrirModalRecado() { document.getElementById('modalRecado').classList.remove('hidden'); }
+function fecharModalRecado() { document.getElementById('modalRecado').classList.add('hidden'); }
+function alternarTipoDestinatario() {
+    const tipo = document.getElementById('msg_tipo_dest').value;
+    document.getElementById('grp_dest_aluno').classList.toggle('hidden', tipo !== 'aluno');
+    document.getElementById('grp_dest_turma').classList.toggle('hidden', tipo !== 'turma');
+}
+async function enviarRecado() {
+    const tipo = document.getElementById('msg_tipo_dest').value;
+    const destId = tipo === 'aluno' ? document.getElementById('msg_dest_aluno').value : document.getElementById('msg_dest_turma').value;
+    const assunto = document.getElementById('msg_assunto').value.trim();
+    const corpo = document.getElementById('msg_corpo').value.trim();
+    const btn = document.getElementById('btnEnviarRecado');
+
+    if (!assunto || !corpo) {
+        alert("Preencha o assunto e a mensagem.");
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerText = "Enviando...";
+
+    try {
+        const resp = await fetch("/api/professor/enviar_mensagem", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                tipo_destinatario: tipo,
+                destinatario_id: destId,
+                assunto: assunto,
+                corpo: corpo
+            })
+        });
+        const data = await resp.json();
+        if (data.status === "sucesso") {
+            alert(data.mensagem);
+            fecharModalRecado();
+            document.getElementById('msg_assunto').value = '';
+            document.getElementById('msg_corpo').value = '';
+        } else {
+            alert("Erro: " + data.mensagem);
+        }
+    } catch (e) {
+        alert("Erro na conexão: " + e);
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "Enviar Mensagem";
+    }
+}
+
+// ===================== CONTROLADOR DO BOLETIM ESCOLAR DA TURMA =====================
+
+async function abrirBoletimEscolar() {
+    const modal = document.getElementById('modalBoletim');
+    const turmaId = document.getElementById('filtroTurma') ? document.getElementById('filtroTurma').value : 'todas';
+    const nivelCefr = document.getElementById('filtroNivel') ? document.getElementById('filtroNivel').value : 'todos';
+
+    modal.classList.remove('hidden');
+    document.getElementById('boletimLoading').classList.remove('hidden');
+    document.getElementById('boletimConteudo').classList.add('hidden');
+
+    try {
+        let url = `/api/relatorio/boletim_dados?turma_id=${encodeURIComponent(turmaId)}&nivel_cefr=${encodeURIComponent(nivelCefr)}`;
+        const resp = await fetch(url);
+        const data = await resp.json();
+
+        if (data.status === 'sucesso') {
+            document.getElementById('boletimTurmaNome').innerText = data.turma_nome;
+            document.getElementById('boletimNivelNome').innerText = data.nivel_cefr_filtro;
+            document.getElementById('boletimDataEmissao').innerText = data.data_emissao;
+            document.getElementById('boletimTotalAlunos').innerText = data.total_alunos;
+            document.getElementById('boletimMediaAprov').innerText = data.media_aproveitamento_turma + '%';
+            document.getElementById('boletimMediaProvas').innerText = data.media_provas_turma;
+            document.getElementById('boletimTaxaAprov').innerText = data.taxa_aprovacao_turma + '%';
+
+            const tbody = document.getElementById('boletimTabelaBody');
+            tbody.innerHTML = '';
+
+            if (data.alunos.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 20px; color: var(--text-muted);">Nenhum aluno localizado para os filtros selecionados.</td></tr>';
+            } else {
+                data.alunos.forEach((a, idx) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td style="text-align: center; font-weight: 600; padding: 6px 4px;">${idx + 1}</td>
+                        <td style="font-weight: 600; padding: 6px 6px; word-break: break-word;">${a.nome}</td>
+                        <td style="text-align: center; font-family: monospace; padding: 6px 4px; font-size: 0.82rem;">${a.matricula}</td>
+                        <td style="text-align: center; padding: 6px 4px;">${a.turma_nome}</td>
+                        <td style="text-align: center; padding: 6px 4px;"><span class="badge-nivel badge-nivel-${a.nivel_cefr}">${a.nivel_cefr}</span></td>
+                        <td style="text-align: center; padding: 6px 4px;">${a.total_atividades}</td>
+                        <td style="text-align: center; padding: 6px 4px;">${a.acertos}</td>
+                        <td style="text-align: center; font-weight: 700; padding: 6px 4px; color: ${a.taxa_aproveitamento >= 70 ? '#10b981' : (a.taxa_aproveitamento >= 50 ? '#f59e0b' : '#ef4444')};">
+                            ${a.taxa_aproveitamento}%
+                        </td>
+                        <td style="text-align: center; font-weight: 700; padding: 6px 4px;">${a.media_provas}</td>
+                        <td style="text-align: center; padding: 6px 4px;"><span class="conceito-pill">${a.conceito}</span></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            document.getElementById('boletimLoading').classList.add('hidden');
+            document.getElementById('boletimConteudo').classList.remove('hidden');
+        } else {
+            alert('Erro ao carregar dados do boletim: ' + data.mensagem);
+        }
+    } catch (e) {
+        alert('Erro de conexão ao carregar boletim: ' + e);
+    }
+}
+
+function fecharBoletimEscolar() {
+    document.getElementById('modalBoletim').classList.add('hidden');
+}
+
+function fecharModalBoletimSeClicarFora(e) {
+    if (e.target.id === 'modalBoletim') fecharBoletimEscolar();
+}
+
+function imprimirBoletim() {
+    window.print();
+}
+
+function baixarBoletimPDF() {
+    const elemento = document.getElementById('areaBoletimImpressao');
+    const botao = document.getElementById('btnBaixarPdfBoletim');
+
+    if (!elemento) return;
+
+    if (typeof html2pdf === "undefined") {
+        window.print();
+        return;
+    }
+
+    const textoOriginal = botao ? botao.innerHTML : '';
+    if (botao) {
+        botao.innerHTML = "<span>Gerando PDF...</span>";
+        botao.disabled = true;
+    }
+
+    const clone = elemento.cloneNode(true);
+    clone.style.background = "#ffffff";
+    clone.style.color = "#0f172a";
+    clone.style.padding = "20px 24px";
+    clone.style.width = "1050px";
+    clone.style.boxSizing = "border-box";
+    clone.style.fontFamily = "'Plus Jakarta Sans', Arial, sans-serif";
+
+    clone.querySelectorAll('*').forEach(el => {
+        el.style.color = "#0f172a";
+        if (el.tagName === 'TH' || el.tagName === 'TD' || el.classList.contains('boletim-stat-box')) {
+            el.style.borderColor = "#cbd5e1";
+        }
+    });
+    clone.querySelectorAll('.boletim-stat-box').forEach(el => {
+        el.style.background = "#f8fafc";
+        el.style.border = "1px solid #cbd5e1";
+    });
+    clone.querySelectorAll('.boletim-table th').forEach(el => {
+        el.style.background = "#f1f5f9";
+        el.style.color = "#0f172a";
+        el.style.fontWeight = "bold";
+    });
+    clone.querySelectorAll('.boletim-table-wrap, .table-responsive').forEach(el => {
+        el.style.overflow = "visible";
+    });
+
+    clone.style.position = "fixed";
+    clone.style.left = "-9999px";
+    clone.style.top = "0";
+    document.body.appendChild(clone);
+
+    const turmaNome = (document.getElementById('boletimTurmaNome').innerText || 'turma').replace(/\s+/g, '_').toLowerCase();
+    const dataHoje = new Date().toISOString().slice(0, 10);
+    const opcoes = {
+        margin: [6, 8, 6, 8],
+        filename: `boletim_escolar_${turmaNome}_${dataHoje}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            backgroundColor: '#ffffff'
+        },
+        jsPDF: {
+            unit: 'mm',
+            format: 'a4',
+            orientation: 'landscape'
+        }
+    };
+
+    html2pdf()
+        .set(opcoes)
+        .from(clone)
+        .save()
+        .then(() => {
+            if (document.body.contains(clone)) document.body.removeChild(clone);
+            if (botao) {
+                botao.innerHTML = textoOriginal;
+                botao.disabled = false;
+            }
+        })
+        .catch(err => {
+            console.error("Erro na exportação para PDF:", err);
+            if (document.body.contains(clone)) document.body.removeChild(clone);
+            if (botao) {
+                botao.innerHTML = textoOriginal;
+                botao.disabled = false;
+            }
+            window.print();
+        });
+}
+</script>
+
+<!-- MODAL DE VISUALIZAÇÃO E IMPRESSÃO DO BOLETIM ESCOLAR DA TURMA -->
+<div id="modalBoletim" class="modal hidden" onclick="fecharModalBoletimSeClicarFora(event)">
+    <div class="modal-dialog modal-xl" style="max-width: 1100px; width: 96%;">
+        <div class="modal-content" style="background: var(--bg-card, #131b2e); border: 1px solid rgba(255,255,255,0.15); border-radius: 16px;">
+            <!-- Modal Header (Não impresso) -->
+            <div class="modal-header no-print" style="padding: 1.25rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div>
+                    <h3 class="modal-title" style="margin: 0; font-size: 1.3rem; display: flex; align-items: center; gap: 8px;">
+                        <span>Boletim Escolar de Francês (FLE)</span>
+                    </h3>
+                    <p class="modal-subtitle text-muted" style="margin: 4px 0 0 0; font-size: 0.85rem;">
+                        Visão acadêmica consolidada de proficiência, notas de provas e aproveitamento.
+                    </p>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                    <button type="button" id="btnBaixarPdfBoletim" class="btn-primary" style="background: #10b981; border-color: #10b981; font-weight: 600;" onclick="baixarBoletimPDF()" title="Download direto em PDF em folha A4 paisagem">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Baixar PDF (A4)
+                    </button>
+                    <button type="button" class="btn-primary" onclick="imprimirBoletim()" title="Abrir diálogo de impressão do navegador">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> Imprimir
+                    </button>
+                    <button type="button" class="btn-secondary" onclick="exportarPlanilhaCSV()" title="Exportar dados brutos em planilha CSV">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Baixar CSV
+                    </button>
+                    <button type="button" class="btn-close-modal" onclick="fecharBoletimEscolar()" aria-label="Fechar">&times;</button>
+                </div>
+            </div>
+
+            <!-- Modal Body com Área Imprimível -->
+            <div class="modal-body" style="padding: 1.5rem; max-height: 82vh; overflow-y: auto;">
+                <!-- Loading State -->
+                <div id="boletimLoading" style="text-align: center; padding: 3rem 1rem;">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                    <p style="color: var(--text-muted);">Compilando dados de rendimento e notas da turma...</p>
+                </div>
+
+                <!-- Conteúdo do Boletim -->
+                <div id="boletimConteudo" class="hidden">
+                    <div id="areaBoletimImpressao" class="boletim-sheet">
+                        <!-- Cabeçalho Institucional Escolar -->
+                        <div class="boletim-header-inst">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #3b82f6; padding-bottom: 12px; margin-bottom: 16px;">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <svg width="32" height="22" viewBox="0 0 640 480" style="border-radius: 3px; box-shadow: 0 1px 4px rgba(0,0,0,0.25); flex-shrink: 0;" aria-label="Bandeira da França">
+                                        <rect width="213.3" height="480" fill="#002654"/>
+                                        <rect x="213.3" width="213.3" height="480" fill="#ffffff"/>
+                                        <rect x="426.6" width="213.3" height="480" fill="#ce1126"/>
+                                    </svg>
+                                    <div>
+                                        <h2 style="margin: 0; font-size: 1.35rem; font-weight: 800; color: var(--text, #fff); letter-spacing: 0.5px;">
+                                            ASSISTENTE FRAN — PLATAFORMA DE ENSINO FLE
+                                        </h2>
+                                        <span style="font-size: 0.88rem; color: var(--text-muted, #94a3b8);">
+                                            Boletim de Avaliação Formativa & Desempenho Linguístico
+                                        </span>
+                                    </div>
+                                </div>
+                                <div style="text-align: right; font-size: 0.85rem; color: var(--text-muted, #94a3b8); flex-shrink: 0;">
+                                    <div><strong>Emissão:</strong> <span id="boletimDataEmissao">--/--/----</span></div>
+                                    <div><strong>Sistema:</strong> Mini-LMS Francês</div>
+                                </div>
+                            </div>
+
+                            <!-- Faixa de Metadados -->
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; background: var(--box-bg); padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border-subtle); margin-bottom: 16px;">
+                                <div><small style="color: var(--text-muted); display: block; font-size: 0.75rem;">TURMA</small><strong id="boletimTurmaNome" style="font-size: 1.05rem;">Todas as Turmas</strong></div>
+                                <div><small style="color: var(--text-muted); display: block; font-size: 0.75rem;">FILTRO DE NÍVEL</small><strong id="boletimNivelNome">Todos os Níveis</strong></div>
+                                <div><small style="color: var(--text-muted); display: block; font-size: 0.75rem;">TOTAL DE ALUNOS</small><strong id="boletimTotalAlunos">0</strong></div>
+                            </div>
+
+                            <!-- Mini Cards de Indicadores da Turma -->
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px;">
+                                <div class="boletim-stat-box">
+                                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Aproveitamento Médio</span>
+                                    <div id="boletimMediaAprov" style="font-size: 1.4rem; font-weight: 800; color: #3b82f6;">0%</div>
+                                </div>
+                                <div class="boletim-stat-box">
+                                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Média das Provas</span>
+                                    <div id="boletimMediaProvas" style="font-size: 1.4rem; font-weight: 800; color: #10b981;">—</div>
+                                </div>
+                                <div class="boletim-stat-box">
+                                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Taxa de Domínio Pleno</span>
+                                    <div id="boletimTaxaAprov" style="font-size: 1.4rem; font-weight: 800; color: #8b5cf6;">0%</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tabela Oficial de Notas e Aproveitamento -->
+                        <div class="boletim-table-wrap" style="width: 100%; margin-bottom: 24px; overflow-x: auto;">
+                            <table class="boletim-table" style="width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 0.85rem;">
+                                <thead>
+                                    <tr style="background: rgba(255,255,255,0.06); text-align: left;">
+                                        <th style="width: 4%; padding: 8px 4px; border-bottom: 2px solid rgba(255,255,255,0.15); text-align: center;">#</th>
+                                        <th style="width: 21%; padding: 8px 6px; border-bottom: 2px solid rgba(255,255,255,0.15); text-align: left;">Aluno</th>
+                                        <th style="width: 10%; padding: 8px 4px; border-bottom: 2px solid rgba(255,255,255,0.15); text-align: center;">Matrícula</th>
+                                        <th style="width: 11%; padding: 8px 4px; border-bottom: 2px solid rgba(255,255,255,0.15); text-align: center;">Turma</th>
+                                        <th style="width: 7%; padding: 8px 4px; border-bottom: 2px solid rgba(255,255,255,0.15); text-align: center;">Nível</th>
+                                        <th style="width: 8%; padding: 8px 4px; border-bottom: 2px solid rgba(255,255,255,0.15); text-align: center;">Ativ.</th>
+                                        <th style="width: 8%; padding: 8px 4px; border-bottom: 2px solid rgba(255,255,255,0.15); text-align: center;">Acertos</th>
+                                        <th style="width: 11%; padding: 8px 4px; border-bottom: 2px solid rgba(255,255,255,0.15); text-align: center;">Aprov. (%)</th>
+                                        <th style="width: 9%; padding: 8px 4px; border-bottom: 2px solid rgba(255,255,255,0.15); text-align: center;">Média Provas</th>
+                                        <th style="width: 11%; padding: 8px 4px; border-bottom: 2px solid rgba(255,255,255,0.15); text-align: center;">Conceito FLE</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="boletimTabelaBody">
+                                    <!-- Inserido dinamicamente via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Rodapé de Assinaturas (Visível na impressão e no PDF) -->
+                        <div class="boletim-signature-block" style="display: flex; justify-content: space-around; margin-top: 36px; padding-top: 18px; border-top: 1px dashed rgba(255,255,255,0.2);">
+                            <div style="text-align: center; min-width: 250px;">
+                                <div style="border-top: 1px solid var(--text, #333); margin-bottom: 6px; width: 100%;"></div>
+                                <span style="font-size: 0.85rem; color: var(--text-muted, #555);">Professor Responsável (FLE)</span>
+                            </div>
+                            <div style="text-align: center; min-width: 250px;">
+                                <div style="border-top: 1px solid var(--text, #333); margin-bottom: 6px; width: 100%;"></div>
+                                <span style="font-size: 0.85rem; color: var(--text-muted, #555);">Coordenação Pedagógica</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer (Não impresso) -->
+            <div class="modal-footer no-print" style="padding: 1rem 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center;">
+                <span class="text-muted" style="font-size: 0.85rem;">Dica: Use <strong>"Baixar PDF"</strong> para download instantâneo ou <strong>"Imprimir"</strong> para enviar à impressora.</span>
+                <button type="button" class="btn-secondary" onclick="fecharBoletimEscolar()">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.boletim-stat-box {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 12px 16px;
+    text-align: center;
+}
+.boletim-table tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+.boletim-table td {
+    padding: 8px 4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.conceito-pill {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-muted);
+}
+
+@page {
+    size: A4 landscape;
+    margin: 8mm 10mm;
+}
+
+@media print {
+    html, body {
+        width: 100% !important;
+        height: auto !important;
+        background: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+    }
+    body * {
+        visibility: hidden !important;
+    }
+    #modalBoletim, #modalBoletim * {
+        visibility: visible !important;
+    }
+    #modalBoletim {
+        position: static !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        color: #0f172a !important;
+        display: block !important;
+        overflow: visible !important;
+    }
+    #modalBoletim .modal-dialog,
+    #modalBoletim .modal-content,
+    #modalBoletim .modal-body {
+        position: static !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        box-shadow: none !important;
+        border: none !important;
+        overflow: visible !important;
+        max-height: none !important;
+    }
+    .no-print, .btn-close-modal, .modal-footer, .glass-sidebar, .sidebar {
+        display: none !important;
+    }
+    .boletim-table-wrap, .table-responsive {
+        overflow: visible !important;
+        overflow-x: visible !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    .boletim-sheet {
+        color: #0f172a !important;
+        background: #ffffff !important;
+        padding: 0 !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    .boletim-header-inst h2 {
+        color: #0f172a !important;
+    }
+    .boletim-header-inst span, .boletim-header-inst small, .boletim-header-inst div {
+        color: #475569 !important;
+    }
+    .boletim-stat-box {
+        background: #f8fafc !important;
+        border: 1px solid #cbd5e1 !important;
+        color: #0f172a !important;
+    }
+    .boletim-stat-box span {
+        color: #475569 !important;
+    }
+    .boletim-table {
+        width: 100% !important;
+        table-layout: fixed !important;
+        color: #0f172a !important;
+        border: 1px solid #cbd5e1 !important;
+        border-collapse: collapse !important;
+        font-size: 8.5pt !important;
+    }
+    .boletim-table th {
+        background: #f1f5f9 !important;
+        color: #0f172a !important;
+        border: 1px solid #cbd5e1 !important;
+        font-weight: 700 !important;
+        padding: 6px 4px !important;
+        font-size: 8.5pt !important;
+    }
+    .boletim-table td {
+        border: 1px solid #e2e8f0 !important;
+        color: #0f172a !important;
+        padding: 5px 4px !important;
+        font-size: 8.5pt !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+    }
+    .conceito-pill {
+        background: none !important;
+        color: #0f172a !important;
+        padding: 0 !important;
+        font-size: 8pt !important;
+        font-weight: 600 !important;
+    }
+    .badge-nivel {
+        background: none !important;
+        color: #0f172a !important;
+        border: none !important;
+        padding: 0 !important;
+        font-weight: 700 !important;
+    }
+    .boletim-signature-block {
+        border-top: 1px dashed #94a3b8 !important;
+        margin-top: 25px !important;
+        padding-top: 15px !important;
+    }
+    .boletim-signature-block div div {
+        border-top: 1px solid #0f172a !important;
+    }
+    .boletim-signature-block span {
+        color: #334155 !important;
+    }
+}
+</style>
+
+<!-- Container de Toast Notification Flutuante -->
+<div id="toastNotification" class="toast-notification"></div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script id="dashboard-data" type="application/json">
+{
+    "status_labels": {{ status_labels|tojson }},
+    "status_valores": {{ status_valores|tojson }},
+    "tema_labels": {{ tema_labels|tojson }},
+    "tema_acertos": {{ tema_acertos|tojson }},
+    "tema_erros": {{ tema_erros|tojson }},
+    "tema_parciais": {{ tema_parciais|tojson }},
+    "submissoes": {{ submissoes_dict|tojson }}
+}
+</script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

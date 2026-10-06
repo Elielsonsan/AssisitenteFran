@@ -1,0 +1,1327 @@
+{% extends "base.html" %}
+
+{% block title %}Planos de Aula & Sequências Didáticas | Assistente Fran{% endblock %}
+
+{% block content %}
+<div class="page-container dashboard-page planos-page">
+    <!-- Barra Lateral Flutuante Glassmorphic (Menu de Planos de Aula & Filtros Expansível no Hover) -->
+    <aside class="dash-sidebar no-print" id="dashSidebar" aria-label="Menu de Planos de Aula & Filtros">
+        <div class="dash-sidebar-inner">
+            <div class="sidebar-nav-list">
+                <!-- 1. Filtros & Busca (Abre Popover saindo do Ícone) -->
+                <div class="sidebar-item-wrap">
+                    <button type="button" class="sidebar-btn" id="btnToggleFiltrosPopover" onclick="toggleFiltrosPopover(event)" title="Filtros & Busca de Planos" aria-label="Abrir Filtros">
+                        <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                        </svg>
+                        <span class="sidebar-text">Filtros & Busca</span>
+                        <span class="sidebar-badge-dot" id="filtroAtivoDot" style="display: none;" title="Filtro ativo"></span>
+                    </button>
+
+                    <!-- Modal Popover Ancorado ao Ícone de Filtros -->
+                    <div class="popover-filtros-modal popover-planos-modal" id="popoverFiltros" onclick="event.stopPropagation()">
+                        <div class="popover-header">
+                            <div class="popover-title">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                                </svg>
+                                <span>Filtros & Busca de Planos</span>
+                            </div>
+                            <button type="button" class="popover-close-btn" onclick="fecharFiltrosPopover()" aria-label="Fechar Filtros">&times;</button>
+                        </div>
+                        <div class="popover-form">
+                            <div class="popover-field">
+                                <label for="inputBuscaPlano">Buscar por Tema ou Gramática:</label>
+                                <input type="text" id="inputBuscaPlano" class="form-control glass-input" placeholder="Ex: Passé composé, restaurant..." oninput="filtrarCardsLocalmente()">
+                            </div>
+                            <div class="popover-field">
+                                <label>Ciclo / Nível QECR:</label>
+                                <div style="display: flex; gap: 6px; flex-wrap: wrap;" id="tabCiclos">
+                                    <button type="button" class="btn-tab active" data-ciclo="TODOS" onclick="setTabCiclo(this, 'TODOS')">Todos ({{ total_planos }})</button>
+                                    <button type="button" class="btn-tab" data-ciclo="INICIANTE" onclick="setTabCiclo(this, 'INICIANTE')">A1–A2 ({{ total_iniciante }})</button>
+                                    <button type="button" class="btn-tab" data-ciclo="INTERMEDIARIO" onclick="setTabCiclo(this, 'INTERMEDIARIO')">B1–B2 ({{ total_intermediario }})</button>
+                                    <button type="button" class="btn-tab" data-ciclo="AVANCADO" onclick="setTabCiclo(this, 'AVANCADO')">C1–C2 ({{ total_avancado }})</button>
+                                </div>
+                            </div>
+                            <div class="popover-field">
+                                <label>Competência Comunicativa (FLE):</label>
+                                <div style="display: flex; gap: 6px; flex-wrap: wrap;" id="tabHabilidades">
+                                    <button type="button" class="btn-skill-filter active" data-skill="TODAS" onclick="setFiltroSkill(this, 'TODAS')">Todas</button>
+                                    <button type="button" class="btn-skill-filter" data-skill="CO" onclick="setFiltroSkill(this, 'CO')" title="Compréhension Orale">CO (Oral)</button>
+                                    <button type="button" class="btn-skill-filter" data-skill="CE" onclick="setFiltroSkill(this, 'CE')" title="Compréhension Écrite">CE (Escrita)</button>
+                                    <button type="button" class="btn-skill-filter" data-skill="PO" onclick="setFiltroSkill(this, 'PO')" title="Production Orale">PO (Fala)</button>
+                                    <button type="button" class="btn-skill-filter" data-skill="PE" onclick="setFiltroSkill(this, 'PE')" title="Production Écrite">PE (Redação)</button>
+                                    <button type="button" class="btn-skill-filter" data-skill="IO" onclick="setFiltroSkill(this, 'IO')" title="Interaction Orale">IO (Diálogo)</button>
+                                    <button type="button" class="btn-skill-filter" data-skill="GR" onclick="setFiltroSkill(this, 'GR')" title="Gramática">Gramática</button>
+                                </div>
+                            </div>
+                            <div class="popover-actions">
+                                <button type="button" class="btn btn-primary btn-apply-filter" onclick="fecharFiltrosPopover()">
+                                    Pronto
+                                </button>
+                                <button type="button" class="btn-clear-filter" onclick="resetarFiltros()" title="Redefinir filtros">
+                                    Limpar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Métricas & Ciclos de Aprendizagem (Abre Popover com os 4 Cards Detalhados) -->
+                <div class="sidebar-item-wrap">
+                    <button type="button" class="sidebar-btn" id="btnToggleMetricasPopover" onclick="toggleMetricasPopover(event)" title="Métricas & Cobertura por Ciclo ({{ total_planos }} planos)" aria-label="Abrir Métricas">
+                        <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                        </svg>
+                        <span class="sidebar-text">Métricas & Ciclos</span>
+                        <span class="sidebar-cycle-badge" style="margin-left: auto;">{{ total_planos }}</span>
+                    </button>
+
+                    <!-- Popover com os 4 Cards de Métricas (Degradê Francês no Topo) -->
+                    <div class="popover-filtros-modal popover-metricas-modal" id="popoverMetricas" onclick="event.stopPropagation()">
+                        <div class="popover-header">
+                            <div class="popover-title">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                                </svg>
+                                <span>Métricas & Cobertura Pedagógica</span>
+                            </div>
+                            <button type="button" class="popover-close-btn" onclick="fecharMetricasPopover()" aria-label="Fechar">&times;</button>
+                        </div>
+                        <div class="popover-metric-cards-grid">
+                            <div class="popover-metric-card-item active" id="popCardCicloTodos" onclick="filtrarPorCiclo('TODOS'); fecharMetricasPopover();" title="Ver todos os planos de aula">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span class="popover-card-title">Catálogo Completo</span>
+                                    <svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                                </div>
+                                <div class="popover-card-val" id="countTotal">{{ total_planos }}</div>
+                                <span class="popover-card-sub">Planos estruturados</span>
+                            </div>
+                            <div class="popover-metric-card-item" id="popCardCicloIniciante" onclick="filtrarPorCiclo('INICIANTE'); fecharMetricasPopover();" title="Filtrar por Iniciante (A1–A2)">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span class="popover-card-title">Iniciante (A1–A2)</span>
+                                    <svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.8"><path d="M12 22v-9"></path><path d="M12 13a5 5 0 0 0 5-5c0-3-2-5-5-5s-5 2-5 5a5 5 0 0 0 5 5z"></path></svg>
+                                </div>
+                                <div class="popover-card-val" id="countIniciante">{{ total_iniciante }}</div>
+                                <span class="popover-card-sub">8 aulas no ciclo intro</span>
+                            </div>
+                            <div class="popover-metric-card-item" id="popCardCicloInter" onclick="filtrarPorCiclo('INTERMEDIARIO'); fecharMetricasPopover();" title="Filtrar por Intermediário (B1–B2)">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span class="popover-card-title">Intermediário (B1–B2)</span>
+                                    <svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.8"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path></svg>
+                                </div>
+                                <div class="popover-card-val" id="countIntermediario">{{ total_intermediario }}</div>
+                                <span class="popover-card-sub">8 aulas ciclo interm.</span>
+                            </div>
+                            <div class="popover-metric-card-item" id="popCardCicloAvancado" onclick="filtrarPorCiclo('AVANCADO'); fecharMetricasPopover();" title="Filtrar por Avançado (C1–C2)">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span class="popover-card-title">Avançado (C1–C2)</span>
+                                    <svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.8"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+                                </div>
+                                <div class="popover-card-val" id="countAvancado">{{ total_avancado }}</div>
+                                <span class="popover-card-sub">8 aulas ciclo maestria</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-divider"></div>
+
+                <!-- 3. Gerar com IA (Gemini) -->
+                <button type="button" id="btnGerarIASidebar" class="sidebar-btn sidebar-btn-ia" onclick="abrirModalGerarIA()" title="Gerar Sequência Didática com IA (Gemini)" aria-label="Gerar com IA">
+                    <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"></path>
+                        <path d="M19 16l1 3 3 1-3 1-1 3-1-3-3-1 3-1z"></path>
+                    </svg>
+                    <span class="sidebar-text">Gerar com IA</span>
+                </button>
+
+                <!-- 4. + Novo Plano Manual -->
+                <button type="button" id="btnNovoPlanoSidebar" class="sidebar-btn" onclick="abrirModalCriarPlano()" title="Criar Novo Plano de Aula Manualmente" aria-label="Novo Plano">
+                    <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    <span class="sidebar-text">+ Novo Plano</span>
+                </button>
+
+                <!-- 5. Guia & Distribuição -->
+                <button type="button" id="btnGuiaSidebar" class="sidebar-btn" onclick="abrirModalGuia()" title="Guia Pedagógico & Distribuição FLE" aria-label="Guia Pedagógico">
+                    <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="9" y1="18" x2="15" y2="18"></line>
+                        <line x1="10" y1="22" x2="14" y2="22"></line>
+                        <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path>
+                    </svg>
+                    <span class="sidebar-text">Guia & Distribuição</span>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Header da Página -->
+    <div class="planos-hero-outer hero-card-outer no-print">
+        <div class="hero-card-inner">
+            <span class="hero-tag"><svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>Ingénierie Pédagogique • FLE</span>
+            <h1 class="hero-title" style="margin-bottom: 0.5rem;">Planos de Aula & Sequências Didáticas</h1>
+            <p class="hero-description">
+                Estrutura pedagógica completa no modelo <strong>P.P.P. (Présentation → Pratique → Production)</strong>, integrando objetivos comunicativos, habilidades do QECR e conexão direta com avaliações e reforço formativo.
+            </p>
+        </div>
+    </div>
+
+    <div class="planos-box-outer card-moldura-outer">
+        <div class="hero-card-inner" style="text-align: left; align-items: stretch; display: block;">
+            <!-- Banner de Filtro Ativo -->
+            <div id="bannerFiltroAtivoPlanos" class="planos-filter-banner no-print">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                    <span style="font-weight: 600; font-size: 0.9rem;">Filtro Ativo: <strong id="textoFiltroAtivoPlanos">Todos os Ciclos</strong></span>
+                    <span class="badge-count" id="badgeFiltroAtivoPlanosCount" style="margin-left: 6px;"></span>
+                </div>
+                <button type="button" class="btn-clear-filter" onclick="resetarFiltros()" style="padding: 4px 12px; font-size: 0.82rem;">
+                    ✕ Redefinir para Todos
+                </button>
+            </div>
+
+            <!-- Grade de Planos de Aula -->
+            <div id="gridPlanosAula" class="planos-grid">
+                {% for p in planos %}
+                <div class="plano-card" data-nivel="{{ p.nivel }}" data-tema="{{ p.tema|lower }}" data-conteudo="{{ p.conteudos|lower }}" data-skills="{{ p.habilidades|upper }}" data-id="{{ p.id }}">
+                    <div class="plano-card-header">
+                        <div class="plano-meta-top">
+                            {% if p.aula_numero and p.aula_numero < 90 %}
+                            <span class="badge-aula">Aula {{ p.aula_numero }}</span>
+                            {% else %}
+                            <span class="badge-aula badge-ia"><svg class="line-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 3px; vertical-align: text-bottom;"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"></path><path d="M19 16l1 3 3 1-3 1-1 3-1-3-3-1 3-1z"></path></svg>Gerada com IA</span>
+                            {% endif %}
+                            <span class="badge-duracao"><svg class="line-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 3px; vertical-align: text-bottom;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>{{ p.duracao }}</span>
+                        </div>
+                        <span class="badge-nivel badge-nivel-{{ p.nivel }}">{{ p.nivel }}</span>
+                    </div>
+
+                    <h3 class="plano-title">{{ p.tema }}</h3>
+                    <p class="plano-objetivo">{{ p.objetivos }}</p>
+
+                    <div class="plano-skills">
+                        {% for hab in p.habilidades.split(',') %}
+                        <span class="skill-tag">{{ hab.strip() }}</span>
+                        {% endfor %}
+                    </div>
+
+                    <div class="plano-conteudo-box">
+                        <small class="text-muted" style="display: block; font-weight: 600; margin-bottom: 2px;">Conteúdo Principal:</small>
+                        <span class="conteudo-snippet">{{ p.conteudos }}</span>
+                    </div>
+
+                    <div class="plano-card-footer no-print">
+                        <button type="button" class="btn-primary btn-sm" onclick="abrirDetalhesPlano({{ p.id }})">
+                            <svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>Ver Plano (P.P.P.)
+                        </button>
+                        <button type="button" class="btn-secondary btn-sm" title="Criar avaliação vinculada a este plano" onclick="abrirModalGerarProvaPlano({{ p.id }}, '{{ p.tema | e }}', '{{ p.nivel }}')">
+                            <svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"></path><path d="M19 16l1 3 3 1-3 1-1 3-1-3-3-1 3-1z"></path></svg>Gerar Prova
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyPlanos" class="empty-state-box hidden" style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
+                <p style="font-size: 1.2rem;">Nenhum plano de aula encontrado para este filtro.</p>
+                <button type="button" class="btn-secondary" onclick="resetarFiltros()">Limpar Filtros</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block modals %}
+<!-- ===================== MODAIS ===================== -->
+
+<!-- 1. Modal Detalhes do Plano de Aula (Template Completo + P.P.P.) -->
+<div id="modalDetalhesPlano" class="modal hidden">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="max-height: 90vh; display: flex; flex-direction: column;">
+            <div class="modal-header">
+                <div>
+                    <span id="detalheNivelBadge" class="badge-nivel badge-nivel-A2" style="margin-bottom: 6px; display: inline-block;">A2</span>
+                    <h2 id="detalheTema" class="modal-title" style="font-size: 1.4rem;">Tema da Aula</h2>
+                    <p id="detalheSubtitulo" class="modal-subtitle text-muted">Duração • Habilidades</p>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button type="button" class="btn-secondary btn-sm no-print" onclick="imprimirPlanoModal()"><svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>Imprimir / PDF</button>
+                    <button type="button" class="btn-close-modal" onclick="fecharModalDetalhes()">&times;</button>
+                </div>
+            </div>
+
+            <div class="modal-body" id="detalhesImprimiveis" style="overflow-y: auto; flex: 1; padding: 1.5rem;">
+                <!-- Seção 1: Elementos Centrais do Plano -->
+                <div class="detalhe-secao">
+                    <h4 class="secao-titulo"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>Objetivos de Aprendizagem</h4>
+                    <p id="detalheObjetivos" class="secao-texto"></p>
+                </div>
+
+                <div class="detalhes-grid-2">
+                    <div class="detalhe-secao">
+                        <h4 class="secao-titulo"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>Conteúdos (Gramática, Léxico, Cultural)</h4>
+                        <p id="detalheConteudos" class="secao-texto"></p>
+                    </div>
+                    <div class="detalhe-secao">
+                        <h4 class="secao-titulo"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><circle cx="12" cy="12" r="9"></circle><path d="M9 10h.01"></path><path d="M15 10h.01"></path><path d="M9.5 15a3.5 3.5 0 0 0 5 0"></path></svg>Metodologia & Abordagem</h4>
+                        <p id="detalheMetodologia" class="secao-texto"></p>
+                    </div>
+                </div>
+
+                <div class="detalhe-secao">
+                    <h4 class="secao-titulo"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>Recursos & Materiais Didáticos</h4>
+                    <p id="detalheRecursos" class="secao-texto"></p>
+                </div>
+
+                <!-- Seção 2: Linha do Tempo da Sequência Didática P.P.P. -->
+                <div class="detalhe-secao" style="margin-top: 1.5rem;">
+                    <h4 class="secao-titulo" style="color: var(--primary); display: flex; align-items: center; gap: 8px;">
+                        <span><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>Sequência Didática — Modelo P.P.P.</span>
+                    </h4>
+                    <div class="ppp-timeline">
+                        <!-- 1. Aquecimento -->
+                        <div class="ppp-step">
+                            <div class="ppp-badge">1. Aquecimento (5–10 min)</div>
+                            <div class="ppp-content" id="detalheAquecimento"></div>
+                        </div>
+                        <!-- 2. Apresentação -->
+                        <div class="ppp-step">
+                            <div class="ppp-badge ppp-badge-pres">2. Apresentação (15–20 min)</div>
+                            <div class="ppp-content" id="detalheApresentacao"></div>
+                        </div>
+                        <!-- 3. Prática Guiada -->
+                        <div class="ppp-step">
+                            <div class="ppp-badge ppp-badge-prat">3. Prática Guiada (15–20 min)</div>
+                            <div class="ppp-content" id="detalhePratica"></div>
+                        </div>
+                        <!-- 4. Produção Livre -->
+                        <div class="ppp-step">
+                            <div class="ppp-badge ppp-badge-prod">4. Produção Livre (15–20 min)</div>
+                            <div class="ppp-content" id="detalheProducao"></div>
+                        </div>
+                        <!-- 5. Fechamento -->
+                        <div class="ppp-step">
+                            <div class="ppp-badge ppp-badge-fech">5. Fechamento & Síntese (5–10 min)</div>
+                            <div class="ppp-content" id="detalheFechamento"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seção 3: Conexão Didática (Avaliações, Dever de Casa e Reforço) -->
+                <div class="detalhes-grid-2" style="margin-top: 1.5rem;">
+                    <div class="detalhe-secao" style="border-left: 3px solid #10b981; padding-left: 12px;">
+                        <h4 class="secao-titulo" style="color: #10b981;"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>Avaliação Formativa (Em Aula)</h4>
+                        <p id="detalheAvalFormativa" class="secao-texto"></p>
+                    </div>
+                    <div class="detalhe-secao" style="border-left: 3px solid #3b82f6; padding-left: 12px;">
+                        <h4 class="secao-titulo" style="color: #3b82f6;"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>Avaliação Somativa (Prova Sugerida)</h4>
+                        <p id="detalheAvalSomativa" class="secao-texto"></p>
+                    </div>
+                </div>
+
+                <div class="detalhes-grid-2" style="margin-top: 1rem;">
+                    <div class="detalhe-secao" style="border-left: 3px solid #f59e0b; padding-left: 12px;">
+                        <h4 class="secao-titulo" style="color: #f59e0b;"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>Exercício de Fixação (Casa)</h4>
+                        <p id="detalheDeverCasa" class="secao-texto"></p>
+                    </div>
+                    <div class="detalhe-secao" style="border-left: 3px solid #ec4899; padding-left: 12px;">
+                        <h4 class="secao-titulo" style="color: #ec4899;"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>Reforço & Remediação</h4>
+                        <p id="detalheReforco" class="secao-texto"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer no-print">
+                <button type="button" class="btn-secondary" onclick="fecharModalDetalhes()">Fechar</button>
+                <button type="button" id="btnGerarProvaDoDetalhe" class="btn-primary" onclick="dispararProvaDoPlanoAtual()">
+                    <svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"></path><path d="M19 16l1 3 3 1-3 1-1 3-1-3-3-1 3-1z"></path></svg>Gerar Avaliação Deste Plano
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 2. Modal Geração de Plano com IA (Gemini) -->
+<div id="modalGerarPlanoIA" class="modal hidden">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h3 class="modal-title"><svg class="line-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"></path><path d="M19 16l1 3 3 1-3 1-1 3-1-3-3-1 3-1z"></path></svg>Gerar Plano de Aula com IA</h3>
+                    <p class="modal-subtitle text-muted">O Google Gemini construirá os 10 elementos e a sequência P.P.P.</p>
+                </div>
+                <button type="button" class="btn-close-modal" onclick="fecharModalGerarIA()">&times;</button>
+            </div>
+            <form onsubmit="gerarPlanoIA(event)">
+                <div class="modal-body" style="padding: 1.5rem;">
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label class="form-label">Tema ou Situação Comunicativa da Aula:</label>
+                        <input type="text" id="ia_tema" class="form-input" placeholder="Ex: L'art de la négociation, Exprimer la cause, Le subjonctif" required>
+                    </div>
+
+                    <div class="form-row-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Nível CEFR:</label>
+                            <select id="ia_nivel" class="form-input">
+                                <option value="A1">A1 • Débutant</option>
+                                <option value="A2" selected>A2 • Élémentaire</option>
+                                <option value="B1">B1 • Intermédiaire</option>
+                                <option value="B2">B2 • Avancé</option>
+                                <option value="C1">C1 • Autonome</option>
+                                <option value="C2">C2 • Maîtrise</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Duração Prevista:</label>
+                            <select id="ia_duracao" class="form-input">
+                                <option value="50 min" selected>50 minutos (1 aula)</option>
+                                <option value="100 min">100 minutos (2 aulas geminadas)</option>
+                                <option value="120 min">120 minutos (Oficina/Workshop)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label class="form-label">Foco / Ênfase Específica (Opcional):</label>
+                        <input type="text" id="ia_foco" class="form-input" placeholder="Ex: Foco em conversação oral, preparação DELF, falso cognatos...">
+                    </div>
+
+                    <button type="submit" id="btnSubmitIA" class="btn-primary" style="width: 100%;">
+                        <svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"></path><path d="M19 16l1 3 3 1-3 1-1 3-1-3-3-1 3-1z"></path></svg>Gerar Sequência Didática Completa
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 3. Modal Criar Plano Manual -->
+<div id="modalCriarPlano" class="modal hidden">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="max-height: 90vh; display: flex; flex-direction: column;">
+            <div class="modal-header">
+                <div>
+                    <h3 class="modal-title">+ Novo Plano de Aula Manual</h3>
+                    <p class="modal-subtitle text-muted">Preencha os elementos do template pedagógico</p>
+                </div>
+                <button type="button" class="btn-close-modal" onclick="fecharModalCriarPlano()">&times;</button>
+            </div>
+            <form onsubmit="salvarPlanoManual(event)" style="display: flex; flex-direction: column; flex: 1; overflow: hidden;">
+                <div class="modal-body" style="overflow-y: auto; flex: 1; padding: 1.5rem;">
+                    <div class="form-row-2" style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Tema da Aula: *</label>
+                            <input type="text" id="novo_tema" class="form-input" placeholder="Ex: Exprimer l'hypothèse" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Nível CEFR: *</label>
+                            <select id="novo_nivel" class="form-input">
+                                <option value="A1">A1</option>
+                                <option value="A2">A2</option>
+                                <option value="B1" selected>B1</option>
+                                <option value="B2">B2</option>
+                                <option value="C1">C1</option>
+                                <option value="C2">C2</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Duração: *</label>
+                            <input type="text" id="novo_duracao" class="form-input" value="50 min" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Habilidades (siglas separadas por vírgula):</label>
+                            <input type="text" id="novo_habilidades" class="form-input" placeholder="Ex: PO, PE, GR">
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label class="form-label">Objetivos de Aprendizagem: *</label>
+                        <textarea id="novo_objetivos" class="form-textarea" rows="2" placeholder="O que o estudante saberá fazer ao término da aula..." required></textarea>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label class="form-label">Conteúdos (Gramática, Léxico, Aspectos Culturais):</label>
+                        <textarea id="novo_conteudos" class="form-textarea" rows="2" placeholder="Tópicos gramaticais e vocabulário..."></textarea>
+                    </div>
+
+                    <div class="form-row-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Metodologia:</label>
+                            <input type="text" id="novo_metodologia" class="form-input" value="Abordagem comunicativa e ação-orientada">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Recursos Didáticos:</label>
+                            <input type="text" id="novo_recursos" class="form-input" placeholder="Slides, áudios, fichas de trabalho...">
+                        </div>
+                    </div>
+
+                    <h4 style="color: var(--primary); margin: 1.5rem 0 0.75rem 0;"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>Sequência Didática P.P.P.</h4>
+                    
+                    <div class="form-group" style="margin-bottom: 0.75rem;">
+                        <label class="form-label">1. Aquecimento (5–10 min):</label>
+                        <input type="text" id="novo_aquecimento" class="form-input" placeholder="Ativação de conhecimentos prévios...">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0.75rem;">
+                        <label class="form-label">2. Apresentação (15–20 min):</label>
+                        <input type="text" id="novo_apresentacao" class="form-input" placeholder="Introdução e modelagem do conteúdo...">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0.75rem;">
+                        <label class="form-label">3. Prática Guiada (15–20 min):</label>
+                        <input type="text" id="novo_pratica" class="form-input" placeholder="Exercícios estruturados com correção mediada...">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0.75rem;">
+                        <label class="form-label">4. Produção Livre (15–20 min):</label>
+                        <input type="text" id="novo_producao" class="form-input" placeholder="Tarefa comunicativa real, diálogo ou redação...">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label class="form-label">5. Fechamento (5–10 min):</label>
+                        <input type="text" id="novo_fechamento" class="form-input" placeholder="Síntese, feedback e orientações finais...">
+                    </div>
+
+                    <h4 style="color: var(--primary); margin: 1.5rem 0 0.75rem 0;"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>Avaliações e Fixação</h4>
+
+                    <div class="form-row-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Avaliação Formativa (Aula):</label>
+                            <input type="text" id="novo_aval_formativa" class="form-input" placeholder="Ex: Role-play em duplas com rubrica">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Avaliação Somativa (Prova):</label>
+                            <input type="text" id="novo_aval_somativa" class="form-input" placeholder="Ex: Questão de produção escrita na prova">
+                        </div>
+                    </div>
+
+                    <div class="form-row-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Exercício de Casa:</label>
+                            <input type="text" id="novo_dever_casa" class="form-input" placeholder="Ex: Redigir diálogo de 10 linhas">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Reforço / Remediação:</label>
+                            <input type="text" id="novo_reforco" class="form-input" placeholder="Ex: Missões no radar do Assistente Fran">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="fecharModalCriarPlano()">Cancelar</button>
+                    <button type="submit" id="btnSalvarPlano" class="btn-primary"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>Salvar Plano no Catálogo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 4. Modal Conexão Plano -> Gerar Prova -->
+<div id="modalGerarProvaPlano" class="modal hidden">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h3 class="modal-title"><svg class="line-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"></path><path d="M19 16l1 3 3 1-3 1-1 3-1-3-3-1 3-1z"></path></svg>Criar Avaliação a Partir do Plano</h3>
+                    <p class="modal-subtitle text-muted">A prova será criada automaticamente com questões alinhadas a este plano.</p>
+                </div>
+                <button type="button" class="btn-close-modal" onclick="fecharModalGerarProvaPlano()">&times;</button>
+            </div>
+            <div style="padding: 1.5rem;">
+                <input type="hidden" id="prova_plano_id">
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label class="form-label">Plano de Origem:</label>
+                    <input type="text" id="prova_plano_tema" class="form-input" readonly style="opacity: 0.8;">
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label class="form-label">Atribuir à Turma:</label>
+                    <select id="prova_turma_id" class="form-input">
+                        {% for t in turmas %}
+                        <option value="{{ t.id }}">{{ t.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label class="form-label">Data Limite para Entrega:</label>
+                    <input type="datetime-local" id="prova_data_limite" class="form-input" value="2026-12-31T23:59">
+                </div>
+                <button type="button" id="btnConfirmarCriarProva" class="btn-primary" style="width: 100%;" onclick="confirmarCriarProvaDoPlano()">
+                    <svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"></path><path d="M19 16l1 3 3 1-3 1-1 3-1-3-3-1 3-1z"></path></svg>Gerar Avaliação Alinhada
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 5. Modal Guia Pedagógico & Recomendações de Distribuição -->
+<div id="modalGuiaPedagogico" class="modal hidden">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="max-height: 85vh; display: flex; flex-direction: column;">
+            <div class="modal-header">
+                <div>
+                    <h3 class="modal-title"><svg class="line-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><line x1="9" y1="18" x2="15" y2="18"></line><line x1="10" y1="22" x2="14" y2="22"></line><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path></svg>Guia Metodológico & Distribuição Pedagógica FLE</h3>
+                    <p class="modal-subtitle text-muted">Alinhamento entre Plano de Aula, Avaliações e Remediação</p>
+                </div>
+                <button type="button" class="btn-close-modal" onclick="fecharModalGuia()">&times;</button>
+            </div>
+            <div class="modal-body" style="overflow-y: auto; flex: 1; padding: 1.5rem; font-size: 0.95rem; line-height: 1.6;">
+                <h4 style="color: var(--primary); margin-top: 0;">1. As Três Perguntas Centrais de Cada Plano</h4>
+                <p>Para garantir coerência didática, todo plano responde a três pilares:</p>
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 12px; margin-bottom: 1.5rem;">
+                    <p><strong>1. O que o aluno vai aprender?</strong> → Objetivos claros e conteúdos comunicativos e gramaticais.</p>
+                    <p><strong>2. Como vou verificar se aprendeu?</strong> → Avaliação formativa (ao longo da aula) e somativa (prova/teste periódico).</p>
+                    <p><strong>3. Como vou reforçar?</strong> → Exercícios de casa e missões de remediação no Assistente Fran.</p>
+                </div>
+
+                <h4 style="color: var(--primary);">2. Recomendações para a Distribuição de Carga</h4>
+                <ul style="padding-left: 1.2rem; margin-bottom: 1.5rem;">
+                    <li style="margin-bottom: 8px;"><strong>Frequência de Avaliações Somativas:</strong> A cada <strong>4 a 6 aulas</strong> (ao final de cada unidade ou ciclo temático).</li>
+                    <li style="margin-bottom: 8px;"><strong>Avaliação Formativa Contínua:</strong> Em <strong>todas as aulas</strong> através da observação ativa do role-play (produção livre), participação oral e correção imediata na fase de prática guiada.</li>
+                    <li style="margin-bottom: 8px;"><strong>Exercícios de Casa (Devoirs):</strong> Semanais e variados (combinando escrita, escuta e gravação de áudio).</li>
+                    <li style="margin-bottom: 8px;"><strong>Reforço & Remediação:</strong> Ativado imediatamente após avaliações somativas com base nas lacunas detectadas no Radar do Aluno.</li>
+                </ul>
+
+                <h4 style="color: var(--primary);">3. O Modelo P.P.P. (Sequência Didática)</h4>
+                <p>O fluxo P.P.P. garante que o estudante passe da compreensão receptiva para a autonomia comunicativa:</p>
+                <ol style="padding-left: 1.2rem;">
+                    <li><strong>Aquecimento (5–10 min):</strong> Ativação de conhecimentos prévios e quebra-gelo comunicativo.</li>
+                    <li><strong>Apresentação (15–20 min):</strong> Introdução indutiva do conteúdo com modelagem.</li>
+                    <li><strong>Prática Guiada (15–20 min):</strong> Fixação estruturada em duplas com correção imediata.</li>
+                    <li><strong>Produção Livre (15–20 min):</strong> Aplicação em tarefa autêntica (Role-play, redação, debate).</li>
+                    <li><strong>Fechamento (5–10 min):</strong> Síntese coletiva e encaminhamento das atividades de fixação.</li>
+                </ol>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-primary" onclick="fecharModalGuia()">Entendido</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Estilos Específicos do Módulo de Planos de Aula */
+.planos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.25rem;
+}
+.plano-card {
+    background: rgba(11, 19, 43, 0.60);
+    backdrop-filter: blur(24px) saturate(190%);
+    -webkit-backdrop-filter: blur(24px) saturate(190%);
+    border: 1px solid rgba(56, 189, 248, 0.18);
+    border-radius: 18px;
+    padding: 1.35rem 1.45rem;
+    box-shadow: 0 16px 40px rgba(2, 6, 23, 0.45);
+    transition: transform 0.25s ease, box-shadow 0.28s ease, border-color 0.28s ease, opacity 0.25s ease, filter 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+.plano-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(56, 189, 248, 0.35);
+    box-shadow: 0 20px 50px rgba(2, 6, 23, 0.65);
+}
+[data-theme="light"] .plano-card {
+    background: rgba(255, 255, 255, 0.50) !important;
+    backdrop-filter: blur(24px) saturate(190%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.70) !important;
+    box-shadow: 0 16px 40px rgba(31, 38, 135, 0.08) !important;
+    border-radius: 18px !important;
+}
+[data-theme="light"] .plano-card:hover {
+    box-shadow: 0 20px 50px rgba(31, 38, 135, 0.14) !important;
+    border-color: rgba(14, 165, 233, 0.45) !important;
+    transform: translateY(-3px);
+}
+.plano-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.85rem;
+}
+.plano-meta-top {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.badge-aula {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 3px 9px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: var(--text-light);
+}
+[data-theme="light"] .badge-aula:not(.badge-ia) {
+    background: rgba(15, 23, 42, 0.08) !important;
+    color: #1e293b !important;
+}
+.badge-ia {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(59, 130, 246, 0.3));
+    color: #c084fc;
+    border: 1px solid rgba(139, 92, 246, 0.4);
+}
+.badge-duracao {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+[data-theme="light"] .badge-duracao {
+    color: #64748b !important;
+}
+.badge-nivel {
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+}
+.badge-nivel-A1, .badge-nivel-A2 {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+.badge-nivel-B1, .badge-nivel-B2 {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+.badge-nivel-C1, .badge-nivel-C2 {
+    background: rgba(139, 92, 246, 0.15);
+    color: #a78bfa;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+}
+.plano-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    color: var(--text);
+    line-height: 1.35;
+}
+[data-theme="light"] .plano-title {
+    color: #0f172a !important;
+}
+.plano-objetivo {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 0 0 0.75rem 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.45;
+}
+[data-theme="light"] .plano-objetivo {
+    color: #475569 !important;
+}
+.plano-skills {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 0.85rem;
+}
+.skill-tag {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    color: #7dd3fc;
+}
+[data-theme="light"] .skill-tag {
+    background: rgba(14, 165, 233, 0.08) !important;
+    border: 1px solid rgba(14, 165, 233, 0.22) !important;
+    color: #0284c7 !important;
+}
+.plano-conteudo-box {
+    background: rgba(15, 23, 42, 0.45);
+    border: 1px solid rgba(56, 189, 248, 0.12);
+    padding: 10px 12px;
+    border-radius: 12px;
+    font-size: 0.82rem;
+    color: var(--text-light);
+    margin-bottom: 1.1rem;
+    flex: 1;
+}
+[data-theme="light"] .plano-conteudo-box {
+    background: rgba(241, 245, 249, 0.7) !important;
+    border: 1px solid rgba(203, 213, 225, 0.6) !important;
+    color: #334155 !important;
+}
+[data-theme="light"] .plano-conteudo-box small {
+    color: #64748b !important;
+}
+.conteudo-snippet {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.4;
+}
+.plano-card-footer {
+    display: flex;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 0.5rem;
+}
+.plano-card-footer .btn-primary,
+.plano-card-footer .btn-secondary {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.55rem 0.75rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+}
+.btn-tab {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--text-muted);
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.btn-tab:hover {
+    color: var(--text);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+.btn-tab.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+    font-weight: 600;
+}
+.btn-skill-filter {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-muted);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.btn-skill-filter:hover {
+    color: var(--text);
+    border-color: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.08);
+}
+.btn-skill-filter.active {
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+    border-color: rgba(59, 130, 246, 0.5);
+    font-weight: 600;
+}
+
+/* Timeline P.P.P. */
+.ppp-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 10px;
+}
+.ppp-step {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 10px 14px;
+}
+.ppp-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #f59e0b;
+    margin-bottom: 4px;
+}
+.ppp-badge-pres { color: #3b82f6; }
+.ppp-badge-prat { color: #10b981; }
+.ppp-badge-prod { color: #ec4899; }
+.ppp-badge-fech { color: #8b5cf6; }
+.ppp-content {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    line-height: 1.4;
+}
+
+.secao-titulo {
+    font-size: 0.95rem;
+    margin: 0 0 4px 0;
+    color: var(--text-muted);
+}
+.secao-texto {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin: 0 0 10px 0;
+    line-height: 1.45;
+}
+.detalhes-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+}
+@media (max-width: 768px) {
+    .detalhes-grid-2 { grid-template-columns: 1fr; }
+    .planos-grid { grid-template-columns: 1fr; }
+}
+
+/* Impressão Limpa */
+@media print {
+    body { background: white !important; color: black !important; }
+    .no-print, .sidebar, .top-nav { display: none !important; }
+    .page-container { margin: 0 !important; padding: 0 !important; width: 100% !important; }
+    #modalDetalhesPlano {
+        position: static !important;
+        display: block !important;
+        background: none !important;
+    }
+    .modal-dialog, .modal-content {
+        max-height: none !important;
+        box-shadow: none !important;
+        border: none !important;
+        color: black !important;
+    }
+    .ppp-step, .detalhe-secao {
+        border-color: #ccc !important;
+        color: black !important;
+    }
+    .ppp-content, .secao-texto { color: #222 !important; }
+}
+</style>
+
+<script>
+let planoAtualCarregado = null;
+let cicloAtual = 'TODOS';
+let skillAtual = 'TODAS';
+
+// ===================== CONTROLE DOS POPOVERS DA SIDEBAR =====================
+
+function toggleFiltrosPopover(event) {
+    if (event) event.stopPropagation();
+    const popover = document.getElementById('popoverFiltros');
+    const popoverMetricas = document.getElementById('popoverMetricas');
+    if (popoverMetricas) popoverMetricas.classList.remove('open');
+    if (popover) {
+        popover.classList.toggle('open');
+        if (popover.classList.contains('open')) {
+            const input = document.getElementById('inputBuscaPlano');
+            if (input) setTimeout(() => input.focus(), 100);
+        }
+    }
+}
+
+function fecharFiltrosPopover() {
+    const popover = document.getElementById('popoverFiltros');
+    if (popover) popover.classList.remove('open');
+}
+
+function toggleMetricasPopover(event) {
+    if (event) event.stopPropagation();
+    const popover = document.getElementById('popoverMetricas');
+    const popoverFiltros = document.getElementById('popoverFiltros');
+    if (popoverFiltros) popoverFiltros.classList.remove('open');
+    if (popover) {
+        popover.classList.toggle('open');
+    }
+}
+
+function fecharMetricasPopover() {
+    const popover = document.getElementById('popoverMetricas');
+    if (popover) popover.classList.remove('open');
+}
+
+// Fechar popovers ao clicar fora
+document.addEventListener('click', function(e) {
+    const popoverFiltros = document.getElementById('popoverFiltros');
+    const btnToggleFiltros = document.getElementById('btnToggleFiltrosPopover');
+    if (popoverFiltros && popoverFiltros.classList.contains('open')) {
+        if (!popoverFiltros.contains(e.target) && (!btnToggleFiltros || !btnToggleFiltros.contains(e.target))) {
+            fecharFiltrosPopover();
+        }
+    }
+    const popoverMetricas = document.getElementById('popoverMetricas');
+    const btnToggleMetricas = document.getElementById('btnToggleMetricasPopover');
+    if (popoverMetricas && popoverMetricas.classList.contains('open')) {
+        if (!popoverMetricas.contains(e.target) && (!btnToggleMetricas || !btnToggleMetricas.contains(e.target))) {
+            fecharMetricasPopover();
+        }
+    }
+});
+
+// ===================== FILTROS E PESQUISA =====================
+
+function setTabCiclo(btn, ciclo) {
+    document.querySelectorAll('#tabCiclos .btn-tab').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    cicloAtual = ciclo;
+    atualizarBotoesCicloSidebar(ciclo);
+    atualizarCardsCicloPopover(ciclo);
+    filtrarCardsLocalmente();
+}
+
+function filtrarPorCiclo(ciclo) {
+    cicloAtual = ciclo;
+    const btn = document.querySelector(`#tabCiclos .btn-tab[data-ciclo="${ciclo}"]`);
+    if (btn) {
+        document.querySelectorAll('#tabCiclos .btn-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+    atualizarBotoesCicloSidebar(ciclo);
+    atualizarCardsCicloPopover(ciclo);
+    filtrarCardsLocalmente();
+}
+
+function atualizarBotoesCicloSidebar(ciclo) {
+    // Mantido por compatibilidade
+}
+
+function atualizarCardsCicloPopover(ciclo) {
+    document.querySelectorAll('.popover-metric-card-item').forEach(c => c.classList.remove('active'));
+    const mapCard = {
+        'TODOS': 'popCardCicloTodos',
+        'INICIANTE': 'popCardCicloIniciante',
+        'INTERMEDIARIO': 'popCardCicloInter',
+        'AVANCADO': 'popCardCicloAvancado'
+    };
+    const id = mapCard[ciclo];
+    if (id) {
+        const target = document.getElementById(id);
+        if (target) target.classList.add('active');
+    }
+}
+
+function setFiltroSkill(btn, skill) {
+    document.querySelectorAll('#tabHabilidades .btn-skill-filter').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    skillAtual = skill;
+    filtrarCardsLocalmente();
+}
+
+function filtrarCardsLocalmente() {
+    const input = document.getElementById('inputBuscaPlano');
+    const termo = (input ? input.value : '').trim().toLowerCase();
+
+    const cards = document.querySelectorAll('.plano-card');
+    let visiveis = 0;
+
+    cards.forEach(card => {
+        const nivel = card.getAttribute('data-nivel') || '';
+        const tema = card.getAttribute('data-tema') || '';
+        const conteudo = card.getAttribute('data-conteudo') || '';
+        const cardSkills = (card.getAttribute('data-skills') || '').toUpperCase();
+
+        // Filtro por ciclo
+        let matchCiclo = false;
+        if (cicloAtual === 'TODOS') matchCiclo = true;
+        else if (cicloAtual === 'INICIANTE' && (nivel === 'A1' || nivel === 'A2')) matchCiclo = true;
+        else if (cicloAtual === 'INTERMEDIARIO' && (nivel === 'B1' || nivel === 'B2')) matchCiclo = true;
+        else if (cicloAtual === 'AVANCADO' && (nivel === 'C1' || nivel === 'C2')) matchCiclo = true;
+
+        // Filtro por competência comunicativa
+        let matchSkill = false;
+        if (skillAtual === 'TODAS') {
+            matchSkill = true;
+        } else {
+            matchSkill = cardSkills.includes(skillAtual);
+        }
+
+        // Filtro por texto
+        let matchTexto = true;
+        if (termo) {
+            matchTexto = tema.includes(termo) || conteudo.includes(termo);
+        }
+
+        if (matchCiclo && matchSkill && matchTexto) {
+            card.style.display = 'flex';
+            visiveis++;
+        } else {
+            card.style.display = 'none';
+        }
+    });
+
+    const emptyBox = document.getElementById('emptyPlanos');
+    if (emptyBox) {
+        emptyBox.classList.toggle('hidden', visiveis > 0);
+    }
+
+    // Indicador de Filtro Ativo na Sidebar
+    const temFiltroAtivo = (cicloAtual !== 'TODOS' || skillAtual !== 'TODAS' || termo !== '');
+    const dot = document.getElementById('filtroAtivoDot');
+    if (dot) dot.style.display = temFiltroAtivo ? 'inline-block' : 'none';
+
+    // Banner de Filtro Ativo no Topo
+    const banner = document.getElementById('bannerFiltroAtivoPlanos');
+    const textoBanner = document.getElementById('textoFiltroAtivoPlanos');
+    const countBadge = document.getElementById('badgeFiltroAtivoPlanosCount');
+    if (banner && textoBanner && countBadge) {
+        if (temFiltroAtivo) {
+            banner.classList.add('show');
+            const nomesCiclos = {
+                'TODOS': 'Todos os Ciclos',
+                'INICIANTE': 'Iniciante (A1–A2)',
+                'INTERMEDIARIO': 'Intermediário (B1–B2)',
+                'AVANCADO': 'Avançado (C1–C2)'
+            };
+            let partes = [];
+            if (cicloAtual !== 'TODOS') partes.push(nomesCiclos[cicloAtual]);
+            if (skillAtual !== 'TODAS') partes.push(`Competência: ${skillAtual}`);
+            if (termo) partes.push(`Busca: "${termo}"`);
+            textoBanner.innerText = partes.join(' • ');
+            countBadge.innerText = `${visiveis} aula${visiveis === 1 ? '' : 's'}`;
+        } else {
+            banner.classList.remove('show');
+        }
+    }
+}
+
+function resetarFiltros() {
+    const input = document.getElementById('inputBuscaPlano');
+    if (input) input.value = '';
+    const allSkillsBtn = document.querySelector('#tabHabilidades .btn-skill-filter[data-skill="TODAS"]');
+    if (allSkillsBtn) {
+        document.querySelectorAll('#tabHabilidades .btn-skill-filter').forEach(b => b.classList.remove('active'));
+        allSkillsBtn.classList.add('active');
+    }
+    skillAtual = 'TODAS';
+    filtrarPorCiclo('TODOS');
+}
+
+// ===================== DETALHES DO PLANO =====================
+
+async function abrirDetalhesPlano(planoId) {
+    try {
+        const resp = await fetch(`/api/planos-aula/${planoId}`);
+        const data = await resp.json();
+        if (data.status !== 'sucesso') {
+            alert("Erro ao carregar detalhes: " + data.mensagem);
+            return;
+        }
+
+        const p = data.plano;
+        planoAtualCarregado = p;
+
+        document.getElementById('detalheTema').innerText = p.tema;
+        document.getElementById('detalheSubtitulo').innerText = `${p.duracao} • Habilidades: ${p.habilidades || 'FLE'}`;
+        
+        const badge = document.getElementById('detalheNivelBadge');
+        badge.className = `badge-nivel badge-nivel-${p.nivel}`;
+        badge.innerText = p.nivel;
+
+        document.getElementById('detalheObjetivos').innerText = p.objetivos || '-';
+        document.getElementById('detalheConteudos').innerText = p.conteudos || '-';
+        document.getElementById('detalheMetodologia').innerText = p.metodologia || '-';
+        document.getElementById('detalheRecursos').innerText = p.recursos || '-';
+
+        // P.P.P.
+        document.getElementById('detalheAquecimento').innerText = p.etapa_aquecimento || 'Ativação de conhecimentos prévios.';
+        document.getElementById('detalheApresentacao').innerText = p.etapa_apresentacao || 'Introdução do novo conteúdo.';
+        document.getElementById('detalhePratica').innerText = p.etapa_pratica || 'Prática guiada com correção imediata.';
+        document.getElementById('detalheProducao').innerText = p.etapa_producao || 'Tarefa comunicativa livre.';
+        document.getElementById('detalheFechamento').innerText = p.etapa_fechamento || 'Síntese, feedback e orientações.';
+
+        // Avaliação & Reforço
+        document.getElementById('detalheAvalFormativa').innerText = p.avaliacao_formativa || 'Role-play e observação direta.';
+        document.getElementById('detalheAvalSomativa').innerText = p.avaliacao_somativa || 'Prova do ciclo.';
+        document.getElementById('detalheDeverCasa').innerText = p.dever_casa || 'Exercício de fixação no caderno.';
+        document.getElementById('detalheReforco').innerText = p.reforco || 'Atividades de remediação no sistema.';
+
+        document.getElementById('modalDetalhesPlano').classList.remove('hidden');
+    } catch (e) {
+        alert("Erro de conexão ao buscar plano: " + e);
+    }
+}
+
+function fecharModalDetalhes() {
+    document.getElementById('modalDetalhesPlano').classList.add('hidden');
+}
+
+function imprimirPlanoModal() {
+    window.print();
+}
+
+function dispararProvaDoPlanoAtual() {
+    if (!planoAtualCarregado) return;
+    fecharModalDetalhes();
+    abrirModalGerarProvaPlano(planoAtualCarregado.id, planoAtualCarregado.tema, planoAtualCarregado.nivel);
+}
+
+// ===================== GERAÇÃO DE PROVA A PARTIR DO PLANO =====================
+
+function abrirModalGerarProvaPlano(planoId, tema, nivel) {
+    document.getElementById('prova_plano_id').value = planoId;
+    document.getElementById('prova_plano_tema').value = `${tema} (${nivel})`;
+    document.getElementById('modalGerarProvaPlano').classList.remove('hidden');
+}
+
+function fecharModalGerarProvaPlano() {
+    document.getElementById('modalGerarProvaPlano').classList.add('hidden');
+}
+
+async function confirmarCriarProvaDoPlano() {
+    const planoId = document.getElementById('prova_plano_id').value;
+    const turmaId = document.getElementById('prova_turma_id').value;
+    const dataLimite = document.getElementById('prova_data_limite').value;
+    const btn = document.getElementById('btnConfirmarCriarProva');
+
+    btn.disabled = true;
+    btn.innerText = "Criando prova e gerando questões...";
+
+    try {
+        const resp = await fetch(`/api/planos-aula/${planoId}/gerar-prova`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                turma_id: turmaId,
+                data_limite: dataLimite
+            })
+        });
+        const data = await resp.json();
+        if (data.status === 'sucesso') {
+            alert("Sucesso! " + data.mensagem);
+            fecharModalGerarProvaPlano();
+            // Redireciona opcionalmente para a tela de avaliações
+            if (confirm("Deseja ir para a tela de Avaliações para ver a prova criada?")) {
+                window.location.href = "/professor/avaliacoes";
+            }
+        } else {
+            alert("Erro: " + data.mensagem);
+        }
+    } catch (e) {
+        alert("Erro de conexão: " + e);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"></path><path d="M19 16l1 3 3 1-3 1-1 3-1-3-3-1 3-1z"></path></svg>Gerar Avaliação Alinhada';
+    }
+}
+
+// ===================== GERAÇÃO DE PLANO COM IA =====================
+
+function abrirModalGerarIA() {
+    document.getElementById('ia_tema').value = '';
+    document.getElementById('ia_foco').value = '';
+    document.getElementById('modalGerarPlanoIA').classList.remove('hidden');
+}
+function fecharModalGerarIA() {
+    document.getElementById('modalGerarPlanoIA').classList.add('hidden');
+}
+
+async function gerarPlanoIA(event) {
+    event.preventDefault();
+    const tema = document.getElementById('ia_tema').value.trim();
+    const nivel = document.getElementById('ia_nivel').value;
+    const duracao = document.getElementById('ia_duracao').value;
+    const foco = document.getElementById('ia_foco').value.trim();
+    const btn = document.getElementById('btnSubmitIA');
+
+    if (!tema) {
+        alert("Por favor, informe o tema da aula.");
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = "<span>Gemini estruturando a sequência P.P.P...</span>";
+
+    try {
+        const resp = await fetch("/api/planos-aula/gerar-ia", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ tema, nivel, duracao, foco })
+        });
+        const data = await resp.json();
+        if (data.status === "sucesso") {
+            alert(data.mensagem);
+            fecharModalGerarIA();
+            window.location.reload();
+        } else {
+            alert("Erro na IA: " + data.mensagem);
+        }
+    } catch (e) {
+        alert("Erro de conexão: " + e);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"></path><path d="M19 16l1 3 3 1-3 1-1 3-1-3-3-1 3-1z"></path></svg>Gerar Sequência Didática Completa';
+    }
+}
+
+// ===================== CRIAÇÃO MANUAL =====================
+
+function abrirModalCriarPlano() {
+    document.getElementById('modalCriarPlano').classList.remove('hidden');
+}
+function fecharModalCriarPlano() {
+    document.getElementById('modalCriarPlano').classList.add('hidden');
+}
+
+async function salvarPlanoManual(event) {
+    event.preventDefault();
+    const payload = {
+        tema: document.getElementById('novo_tema').value.trim(),
+        nivel: document.getElementById('novo_nivel').value,
+        duracao: document.getElementById('novo_duracao').value.trim(),
+        habilidades: document.getElementById('novo_habilidades').value.trim(),
+        objetivos: document.getElementById('novo_objetivos').value.trim(),
+        conteudos: document.getElementById('novo_conteudos').value.trim(),
+        metodologia: document.getElementById('novo_metodologia').value.trim(),
+        recursos: document.getElementById('novo_recursos').value.trim(),
+        etapa_aquecimento: document.getElementById('novo_aquecimento').value.trim(),
+        etapa_apresentacao: document.getElementById('novo_apresentacao').value.trim(),
+        etapa_pratica: document.getElementById('novo_pratica').value.trim(),
+        etapa_producao: document.getElementById('novo_producao').value.trim(),
+        etapa_fechamento: document.getElementById('novo_fechamento').value.trim(),
+        avaliacao_formativa: document.getElementById('novo_aval_formativa').value.trim(),
+        avaliacao_somativa: document.getElementById('novo_aval_somativa').value.trim(),
+        dever_casa: document.getElementById('novo_dever_casa').value.trim(),
+        reforco: document.getElementById('novo_reforco').value.trim()
+    };
+
+    const btn = document.getElementById('btnSalvarPlano');
+    btn.disabled = true;
+    btn.innerText = "Salvando...";
+
+    try {
+        const resp = await fetch("/api/planos-aula/cadastrar", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+        const data = await resp.json();
+        if (data.status === "sucesso") {
+            alert(data.mensagem);
+            fecharModalCriarPlano();
+            window.location.reload();
+        } else {
+            alert("Erro: " + data.mensagem);
+        }
+    } catch (e) {
+        alert("Erro de conexão: " + e);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>Salvar Plano no Catálogo';
+    }
+}
+
+// ===================== GUIA PEDAGÓGICO =====================
+
+function abrirModalGuia() {
+    document.getElementById('modalGuiaPedagogico').classList.remove('hidden');
+}
+function fecharModalGuia() {
+    document.getElementById('modalGuiaPedagogico').classList.add('hidden');
+}
+</script>
+{% endblock %}

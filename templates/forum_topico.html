@@ -1,0 +1,478 @@
+{% extends "base.html" %}
+
+{% block title %}{{ topico['titulo'] }} - Fórum Socrático{% endblock %}
+
+{% block content %}
+<div class="page-container forum-topic-container" style="max-width: 1040px; margin: 0 auto; padding: 2rem 1.5rem 4rem;">
+    <!-- Botão de Retorno -->
+    <div style="margin-bottom: 1.25rem;">
+        <a href="/forum" class="btn-voltar-forum">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            <span>Voltar ao Fórum</span>
+        </a>
+    </div>
+
+    <!-- Header do Tópico (Hero Card Glassmorphic com Borda Externa e Degradê Tricolor) -->
+    <div class="hero-card-outer topic-detail-hero-outer card-moldura-outer" id="topicoHeroOuter" style="margin-bottom: 2rem;">
+        <div class="hero-card-inner topic-detail-hero-inner" style="align-items: stretch; text-align: left; padding: 1.6rem 1.8rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 0.85rem;">
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    {% if topico['turma_nome'] %}
+                    <span class="badge-scope badge-turma">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                        {{ topico['turma_nome'] }}
+                    </span>
+                    {% else %}
+                    <span class="badge-scope badge-geral">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                        Fórum Geral (Aberto a Todos)
+                    </span>
+                    {% endif %}
+
+                    {% if topico['categoria'] == 'cultura' %}
+                    <span class="badge-cat badge-cat-cultura">🎬 Cultura & Mídia</span>
+                    {% elif topico['categoria'] == 'gramatica' %}
+                    <span class="badge-cat badge-cat-gramatica">📖 Gramática</span>
+                    {% elif topico['categoria'] == 'dicas' %}
+                    <span class="badge-cat badge-cat-dicas">💡 Fonética & Dicas</span>
+                    {% elif topico['categoria'] == 'duvidas' %}
+                    <span class="badge-cat badge-cat-duvidas">❓ Dúvidas Gerais</span>
+                    {% elif topico['categoria'] == 'vocabulario' %}
+                    <span class="badge-cat badge-cat-vocabulario">📝 Vocabulário</span>
+                    {% elif topico['categoria'] == 'debate' %}
+                    <span class="badge-cat badge-cat-debate">🗣️ Debate B2</span>
+                    {% else %}
+                    <span class="badge-cat badge-cat-geral">💬 Conversação</span>
+                    {% endif %}
+                </div>
+
+                <span style="font-size: 0.8rem; color: var(--text-muted); display: inline-flex; align-items: center; gap: 4px;">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    Iniciado em {{ topico['data_criacao'][:10] }}
+                </span>
+            </div>
+
+            <h1 style="font-size: 1.65rem; font-weight: 800; margin: 0 0 0.75rem 0; line-height: 1.3; letter-spacing: -0.4px;">
+                {{ topico['titulo'] }}
+            </h1>
+            <p style="font-size: 0.98rem; line-height: 1.6; color: var(--text-light); margin: 0 0 1rem 0;">
+                {{ topico['descricao'] }}
+            </p>
+
+            <div style="font-size: 0.82rem; color: var(--text-muted); border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 0.75rem; display: flex; align-items: center; gap: 6px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <span>Criado por <strong>{{ topico['criador_nome'] }}</strong></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feed de Mensagens -->
+    <div class="chat-container" id="chatContainer" style="display: flex; flex-direction: column; gap: 1.25rem; margin-bottom: 2.5rem;">
+        {% for msg in mensagens %}
+        
+        {% set is_ia = (msg['autor_tipo'] == 'IA') %}
+        {% set is_prof_msg = (msg['autor_tipo'] == 'Professor') %}
+        {% set is_me = (msg['autor_id'] == session.get('aluno_id') and not is_prof) or (msg['autor_id'] == session.get('prof_id') and is_prof) %}
+        
+        <div class="message-wrapper {% if is_ia %}msg-ia-wrap{% elif is_me %}msg-me-wrap{% else %}msg-other-wrap{% endif %}">
+            <div class="message-bubble {% if is_ia %}bubble-ia{% elif is_prof_msg %}bubble-prof{% elif is_me %}bubble-me{% else %}bubble-other{% endif %}">
+                <!-- Cabeçalho da Mensagem -->
+                <div class="msg-header">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        {% if is_ia %}
+                        <span class="avatar-ia">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+                        </span>
+                        <strong style="color: #38bdf8;">Assistente Fran</strong>
+                        <span class="badge-role badge-role-ia">Tutora IA</span>
+                        {% elif is_prof_msg %}
+                        <span class="avatar-prof">P</span>
+                        <strong style="color: var(--primary-light);">{{ msg['autor_nome'] }}</strong>
+                        <span class="badge-role badge-role-prof">Docente</span>
+                        {% else %}
+                        <span class="avatar-aluno">{{ msg['autor_nome'][:1] }}</span>
+                        <strong>{% if is_me %}Você{% else %}{{ msg['autor_nome'] }}{% endif %}</strong>
+                        <span class="badge-role badge-role-aluno">Estudante</span>
+                        {% endif %}
+                    </div>
+                    <span class="msg-time">{{ msg['data_envio'][11:16] }}</span>
+                </div>
+
+                <!-- Conteúdo -->
+                <div class="msg-body">
+                    {{ msg['conteudo'] | e | replace('\n', '<br>') | safe }}
+                </div>
+            </div>
+        </div>
+        
+        {% else %}
+        <div class="forum-empty-messages">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            <p>Seja o primeiro a participar desta discussão! Escreva uma pergunta, comentário ou prática abaixo.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Área de Envio de Resposta -->
+    <div class="forum-reply-card">
+        <form id="formResponder">
+            <input type="hidden" id="topico_id" value="{{ topico['id'] }}">
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label for="conteudo" style="font-size: 0.88rem; font-weight: 600; margin-bottom: 6px; display: block;">
+                    Sua Contribuição para a Discussão:
+                </label>
+                <textarea id="conteudo" class="form-input" rows="3" placeholder="Escreva sua mensagem em francês ou português. A Assistente Fran poderá dar feedbacks pedagógicos!" required style="resize: vertical; font-size: 0.95rem;"></textarea>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap;">
+                <div id="typingIndicator" class="typing-indicator" style="display: none;">
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                    <span>A Assistente Fran está analisando e formulando resposta...</span>
+                </div>
+                
+                <div style="margin-left: auto;">
+                    <button type="submit" class="btn btn-primary btn-enviar-msg" id="btnResponder">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                        <span>Publicar Resposta</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Botão Voltar */
+.btn-voltar-forum {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--primary-light);
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.2s ease;
+}
+.btn-voltar-forum:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(-2px);
+}
+[data-theme="light"] .btn-voltar-forum {
+    color: #4f46e5;
+    background: rgba(241, 245, 249, 0.8);
+    border-color: rgba(203, 213, 225, 0.8);
+}
+
+/* Badges */
+.badge-scope {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 6px;
+}
+.badge-turma {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.35);
+}
+.badge-geral {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.25));
+    color: #a78bfa;
+    border: 1px solid rgba(139, 92, 246, 0.4);
+}
+.badge-cat {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-light);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+[data-theme="light"] .badge-cat {
+    background: rgba(0, 0, 0, 0.04);
+    color: #475569;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Bolhas de Mensagem */
+.message-wrapper {
+    display: flex;
+    width: 100%;
+}
+.msg-me-wrap {
+    justify-content: flex-end;
+}
+.msg-ia-wrap {
+    justify-content: center;
+}
+.msg-other-wrap {
+    justify-content: flex-start;
+}
+
+.message-bubble {
+    max-width: 82%;
+    padding: 1.15rem 1.45rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease;
+}
+
+/* Estilos de cada autor */
+.bubble-ia {
+    width: 90%;
+    max-width: 90%;
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    box-shadow: 0 10px 30px rgba(56, 189, 248, 0.15);
+}
+[data-theme="light"] .bubble-ia {
+    background: rgba(240, 249, 255, 0.9);
+    border-color: rgba(56, 189, 248, 0.5);
+    box-shadow: 0 10px 30px rgba(56, 189, 248, 0.12);
+}
+
+.bubble-me {
+    background: rgba(99, 102, 241, 0.15);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(99, 102, 241, 0.35);
+}
+[data-theme="light"] .bubble-me {
+    background: rgba(238, 242, 255, 0.9);
+    border-color: rgba(99, 102, 241, 0.35);
+}
+
+.bubble-other, .bubble-prof {
+    background: rgba(11, 19, 43, 0.60);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+[data-theme="light"] .bubble-other, [data-theme="light"] .bubble-prof {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: rgba(226, 232, 240, 0.9);
+}
+
+.msg-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.86rem;
+}
+
+.msg-body {
+    line-height: 1.55;
+    font-size: 0.94rem;
+    color: var(--text-primary);
+}
+[data-theme="light"] .msg-body {
+    color: #1e293b;
+}
+
+.msg-time {
+    font-size: 0.74rem;
+    color: var(--text-muted);
+}
+
+/* Avatares e Badges de Papel */
+.avatar-ia, .avatar-prof, .avatar-aluno {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+.avatar-ia {
+    background: linear-gradient(135deg, #0284c7, #38bdf8);
+    color: #fff;
+}
+.avatar-prof {
+    background: #6366f1;
+    color: #fff;
+}
+.avatar-aluno {
+    background: #10b981;
+    color: #fff;
+}
+
+.badge-role {
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+.badge-role-ia {
+    background: rgba(56, 189, 248, 0.18);
+    color: #38bdf8;
+}
+.badge-role-prof {
+    background: rgba(99, 102, 241, 0.18);
+    color: #818cf8;
+}
+.badge-role-aluno {
+    background: rgba(16, 185, 129, 0.18);
+    color: #34d399;
+}
+
+/* Card de Resposta */
+.forum-reply-card {
+    background: rgba(11, 19, 43, 0.55);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(56, 189, 248, 0.16);
+    border-radius: 18px;
+    padding: 1.5rem 1.75rem;
+    box-shadow: 0 16px 40px rgba(2, 6, 23, 0.35);
+}
+[data-theme="light"] .forum-reply-card {
+    background: rgba(255, 255, 255, 0.75);
+    border-color: rgba(226, 232, 240, 0.95);
+    box-shadow: 0 16px 40px rgba(31, 38, 135, 0.08);
+}
+
+.btn-enviar-msg {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.65rem 1.45rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.92rem;
+}
+
+/* Indicador de Digitação */
+.typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: #38bdf8;
+}
+.typing-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #38bdf8;
+    animation: typingBounce 1.4s infinite ease-in-out both;
+}
+.typing-dot:nth-child(1) { animation-delay: -0.32s; }
+.typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes typingBounce {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1); }
+}
+
+.forum-empty-messages {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 14px;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Scroll suave para a última mensagem ao carregar
+    window.addEventListener('load', () => {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    });
+
+    // Envio de Resposta
+    document.getElementById('formResponder')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btnResponder');
+        const conteudoInput = document.getElementById('conteudo');
+        const conteudo = conteudoInput.value.trim();
+        const topico_id = document.getElementById('topico_id').value;
+        const typing = document.getElementById('typingIndicator');
+        const chatContainer = document.getElementById('chatContainer');
+        
+        if (!conteudo) return;
+
+        btn.disabled = true;
+        btn.innerHTML = '<svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation: spin 1s linear infinite;"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a10 10 0 0 1 10 10"></path></svg> Enviando...';
+        
+        try {
+            const res = await fetch('/api/forum/responder', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ topico_id: topico_id, conteudo: conteudo })
+            });
+            const data = await res.json();
+            
+            if (data.status === 'sucesso') {
+                conteudoInput.value = '';
+                btn.innerHTML = 'Publicar Resposta';
+                btn.disabled = false;
+                
+                function escapeHtml(text) {
+                    const div = document.createElement('div');
+                    div.textContent = text;
+                    return div.innerHTML;
+                }
+
+                // Renderiza imediatamente a mensagem do usuário na tela
+                const meDiv = document.createElement('div');
+                meDiv.className = 'message-wrapper msg-me-wrap';
+                meDiv.innerHTML = `
+                    <div class="message-bubble bubble-me">
+                        <div class="msg-header">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="avatar-aluno">V</span>
+                                <strong>Você</strong>
+                                <span class="badge-role badge-role-aluno">Agora</span>
+                            </div>
+                            <span class="msg-time">agora</span>
+                        </div>
+                        <div class="msg-body">
+                            ${escapeHtml(conteudo).replace(/\n/g, '<br>')}
+                        </div>
+                    </div>
+                `;
+                
+                // Remove placeholder vazio se existir
+                const emptyMsg = chatContainer.querySelector('.forum-empty-messages');
+                if (emptyMsg) emptyMsg.remove();
+                
+                chatContainer.appendChild(meDiv);
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                
+                // Ativa o typing indicator da Assistente Fran e atualiza após 3.5s
+                if (typing) typing.style.display = 'flex';
+                
+                setTimeout(() => {
+                    window.location.reload();
+                }, 3800);
+                
+            } else {
+                alert('Erro ao enviar mensagem: ' + (data.mensagem || 'Tente novamente.'));
+                btn.innerHTML = 'Publicar Resposta';
+                btn.disabled = false;
+            }
+        } catch (err) {
+            alert('Erro de conexão ao enviar resposta.');
+            btn.innerHTML = 'Publicar Resposta';
+            btn.disabled = false;
+        }
+    });
+</script>
+{% endblock %}

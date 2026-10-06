@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}Perfil e Mensagens | Assistente Fran{% endblock %}
+
+{% block content %}
+<div class="page-container dashboard-page perfil-page">
+    <!-- ============================================================= -->
+    <!-- HEADER HERO CARD (EFEITO DE UM CARD SOBRE OUTRO COM LISTRA)   -->
+    <!-- ============================================================= -->
+    <div class="dashboard-header hero-card-outer perfil-hero-outer perfil-hero-card" id="perfilHeroCard">
+        <div class="hero-card-inner perfil-hero-inner">
+            <div class="perfil-hero-header">
+                <span class="hero-tag">
+                    <svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>FLE - Mon Profil Académique
+                </span>
+                <h1 class="hero-title">Perfil &amp; Caixa de Mensagens</h1>
+                <p class="hero-description">
+                    Consulte suas informações acadêmicas, progresso de nível CEFR e os comunicados pedagógicos enviados pelos seus professores.
+                </p>
+
+                <!-- Ações e Badges de Contexto dentro do Hero Card -->
+                <div class="perfil-hero-actions">
+                    <span class="badge-scope badge-turma" style="font-size: 0.82rem; padding: 4px 12px;">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                        {{ aluno.turma_nome or 'Turma FLE' }}
+                    </span>
+                    <span class="badge-level-student lvl-{{ aluno.nivel_cefr|lower if aluno.nivel_cefr else 'a1' }}" style="font-size: 0.82rem; padding: 4px 12px; font-weight: 700;">
+                        Nível {{ aluno.nivel_cefr or 'A1' }}
+                    </span>
+                    <span class="perfil-stat-pill" style="font-size: 0.82rem; padding: 4px 12px; background: rgba(56, 189, 248, 0.12); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 8px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                        {{ mensagens|length }} {{ 'recado' if mensagens|length == 1 else 'recados' }}
+                    </span>
+                    <span class="perfil-stat-pill" style="font-size: 0.82rem; padding: 4px 12px; background: rgba(16, 185, 129, 0.12); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                        {{ total_submissoes }} submissões
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================= -->
+    <!-- QUADRO UNIFICADO DO PERFIL COM MOLDURA GLASSMORPHIC           -->
+    <!-- ============================================================= -->
+    <div class="perfil-box-outer hero-card-outer card-moldura-outer" id="perfilBoxOuter">
+        <div class="perfil-box-inner hero-card-inner">
+            <div class="perfil-split-grid">
+                
+                <!-- ======================================================= -->
+                <!-- COLUNA 1: DADOS ACADÊMICOS DO ESTUDANTE                 -->
+                <!-- ======================================================= -->
+                <div class="perfil-card-box perfil-info-card">
+                    <!-- Topo: Avatar e Identificação -->
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <div style="width: 66px; height: 66px; border-radius: 50%; background: linear-gradient(135deg, #0284c7 0%, #4f46e5 50%, #7c3aed 100%); display: flex; align-items: center; justify-content: center; font-size: 1.85rem; color: #fff; font-weight: 800; box-shadow: 0 4px 16px rgba(79, 70, 229, 0.35); flex-shrink: 0;">
+                            {{ aluno.nome[:1] if aluno.nome else 'E' }}
+                        </div>
+                        <div style="overflow: hidden;">
+                            <h2 style="font-size: 1.35rem; font-weight: 800; margin: 0 0 4px 0; color: var(--text-primary); letter-spacing: -0.3px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
+                                {{ aluno.nome }}
+                            </h2>
+                            <span style="font-size: 0.85rem; color: var(--text-muted); display: inline-flex; align-items: center; gap: 6px;">
+                                Matrícula: <code style="background: rgba(56, 189, 248, 0.12); color: #38bdf8; padding: 2px 7px; border-radius: 6px; font-weight: 700; font-size: 0.85rem;">{{ aluno.matricula }}</code>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="perfil-card-divider"></div>
+
+                    <!-- Lista de Atributos Acadêmicos -->
+                    <div class="perfil-info-list">
+                        <div class="perfil-info-row">
+                            <span class="perfil-info-label">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                                Turma Atual
+                            </span>
+                            <span class="perfil-info-val">{{ aluno.turma_nome or 'Turma Geral' }}</span>
+                        </div>
+
+                        <div class="perfil-info-row">
+                            <span class="perfil-info-label">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+                                Nível CEFR
+                            </span>
+                            <span class="badge-level-student lvl-{{ aluno.nivel_cefr|lower if aluno.nivel_cefr else 'a1' }}" style="padding: 2px 10px; font-size: 0.82rem; font-weight: 700;">
+                                {{ aluno.nivel_cefr or 'A1' }}
+                            </span>
+                        </div>
+
+                        <div class="perfil-info-row">
+                            <span class="perfil-info-label">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                Turno de Aulas
+                            </span>
+                            <span class="perfil-info-val">{{ aluno.turno or 'Matutino' }}</span>
+                        </div>
+
+                        <div class="perfil-info-row">
+                            <span class="perfil-info-label">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                                Sala / Espaço
+                            </span>
+                            <span class="perfil-info-val">{{ aluno.sala or 'Sala 01' }}</span>
+                        </div>
+
+                        <div class="perfil-info-row">
+                            <span class="perfil-info-label">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                                Total Praticado
+                            </span>
+                            <span class="perfil-info-val" style="color: #10b981;">{{ total_submissoes }} submissões</span>
+                        </div>
+                    </div>
+
+                    <div class="perfil-card-divider"></div>
+
+                    <!-- Botão Encerrar Sessão -->
+                    <div style="margin-top: 0.5rem;">
+                        <a href="/logout" class="btn-perfil-logout" title="Sair da sua conta">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                            <span>Encerrar Sessão</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- ======================================================= -->
+                <!-- COLUNA 2: RECADOS E COMUNICADOS DOS PROFESSORES         -->
+                <!-- ======================================================= -->
+                <div class="perfil-card-box perfil-mensagens-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="margin: 0; font-size: 1.18rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+                            <svg class="line-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                            <span>Recados dos Professores</span>
+                        </h3>
+                        <span style="font-size: 0.8rem; font-weight: 700; background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); padding: 3px 10px; border-radius: 9999px;">
+                            {{ mensagens|length }} {{ 'mensagem' if mensagens|length == 1 else 'mensagens' }}
+                        </span>
+                    </div>
+
+                    <div class="perfil-card-divider"></div>
+
+                    {% if mensagens %}
+                    <div class="perfil-msg-list">
+                        {% for m in mensagens %}
+                        <div class="perfil-msg-item">
+                            <div class="perfil-msg-header">
+                                <span class="perfil-msg-subject">{{ m.assunto }}</span>
+                                <span style="font-size: 0.76rem; color: var(--text-muted); display: inline-flex; align-items: center; gap: 4px;">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                    {{ m.data_envio }}
+                                </span>
+                            </div>
+                            <div class="perfil-msg-meta">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                <span>De: <strong>{{ m.remetente_nome or 'Professor(a)' }}</strong></span>
+                            </div>
+                            <div class="perfil-msg-body">
+                                {{ m.corpo }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div style="text-align: center; padding: 3rem 1.5rem; color: var(--text-muted);">
+                        <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(56, 189, 248, 0.10); color: #38bdf8; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                        </div>
+                        <h4 style="font-size: 1.05rem; font-weight: 700; margin: 0 0 6px 0; color: var(--text-primary);">Nenhum recado pendente</h4>
+                        <p style="margin: 0 auto; max-width: 360px; font-size: 0.88rem; line-height: 1.5;">
+                            Seus professores publicarão comunicados, avisos de avaliação e orientações pedagógicas por aqui.
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

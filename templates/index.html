@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+
+{% block title %}Prática de Francês | Assistente Fran — Feedback Inteligente{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <!-- Header Hero Card: Efeito de um card sobre outro (Borda de Vidro externa com Card interno) -->
+    <div class="hero-card-outer home-hero-card" id="homeHeroCard">
+        <div class="hero-card-inner">
+            <span class="hero-tag"><svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>Tuteur Pédagogique Virtuel • Français</span>
+            <h1 class="hero-title">Pratique seu Francês com Feedback Inteligente</h1>
+            <p class="hero-description">
+                Envie sua frase ou exercício em francês. O <strong>Assistente Fran</strong> diagnostica erros gramaticais e sintáticos, oferece dicas formativas e encoraja você a construir seu próprio aprendizado!
+            </p>
+
+        </div>
+    </div>
+
+    <!-- Formulário Principal do Aluno com Moldura Hero Card (Primeira Imagem) -->
+    <div class="form-wrapper">
+        <div class="hero-card-outer form-box-outer" id="formBoxOuter">
+            <div class="form-card form-box-inner" id="formCard">
+                <!-- Identificação do Aluno Conectado (Quadro de Bonjour) -->
+                <div class="student-profile-bar">
+                    <div class="profile-avatar"><svg class="line-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg></div>
+                    <div class="profile-details">
+                        <span class="profile-greeting">Bonjour, <strong>{{ session.get('aluno_nome', 'Estudante') }}</strong> !</span>
+                        <span class="profile-sub">
+                            Turma: <span class="badge-class">{{ session.get('turma_nome', 'Geral') }}</span> 
+                            • Matrícula: <code>{{ session.get('matricula', '') }}</code>
+                            • Nível Pedagógico: <span class="badge-level-student lvl-{{ session.get('nivel_cefr', 'A2')|lower }}" id="studentAssignedLevelBadge">{{ session.get('nivel_cefr', 'A2') }}</span>
+                        </span>
+                    </div>
+                    <a href="/logout" class="profile-logout-btn" title="Trocar de Aluno / Sair">
+                        Sair <svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 3px; vertical-align: text-bottom;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    </a>
+                </div>
+
+                <!-- Pílulas de Exemplos Rápidos / Desafio IA (Segunda Imagem) Abaixo do Quadro de Bonjour -->
+                <div class="examples-container form-examples-bar" id="examplesContainer">
+                    <span class="examples-label"><svg class="line-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;"><line x1="9" y1="18" x2="15" y2="18"></line><line x1="10" y1="22" x2="14" y2="22"></line><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path></svg>Desafios & Prática de Francês:</span>
+                    <div class="examples-pills">
+                        <button type="button" id="btnGerarDesafio" class="pill-btn pill-btn-generator" onclick="gerarNovoDesafioIA()" title="Gera um desafio inédito de francês adequado ao nível selecionado via IA">
+                            <svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>Gerar Desafio com IA (<span id="btnGerarNivel">{{ session.get('nivel_cefr', 'A2') }}</span>)
+                        </button>
+                    </div>
+                </div>
+
+            {% if reforco %}
+            <div id="reforco-banner" class="active-dica-banner" style="margin-bottom: 20px; border-color: var(--primary-color);">
+                <div class="dica-banner-header">
+                    <div class="dica-header-left">
+                        <span class="dica-badge" style="background: var(--primary-color); display: inline-flex; align-items: center; gap: 4px;"><svg class="line-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>Reforço Pedagógico</span>
+                        <span class="dica-title">Mensagem do seu Professor:</span>
+                    </div>
+                </div>
+                <div class="dica-banner-body markdown-body" style="color: var(--text-color);">
+                    {{ reforco['mensagem_tutor'] }}
+                </div>
+                <div style="padding: 10px 16px; border-top: 1px solid rgba(255,255,255,0.05); text-align: right;">
+                    <button type="button" id="btnAceitarReforco" class="btn-primary btn-sm" onclick="aceitarReforco({{ reforco['id'] }})">
+                        <svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>Iniciar Exercício de Reforço
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+
+            <form id="submissionForm" action="/avaliar" method="POST" class="submission-form">
+                <!-- Nível CEFR gerenciado pelo professor -->
+                <input type="hidden" id="nivel_cefr" name="nivel_cefr" value="{{ session.get('nivel_cefr', 'A2') }}">
+                <input type="hidden" id="exercicio_id" name="exercicio_id" value="{{ exercicio_inicial.id if exercicio_inicial else '' }}">
+                <div class="form-group">
+                    <label for="tema_aula" class="form-label">
+                        <span class="label-icon"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg></span>
+                        Tema da Atividade
+                    </label>
+                    <input 
+                        type="text" 
+                        id="tema_aula" 
+                        name="tema_aula" 
+                        class="form-input readonly-field" 
+                        value="{{ exercicio_inicial.nome_tema if exercicio_inicial else '' }}"
+                        placeholder="Selecione um exemplo acima ou clique em 'Gerar Desafio com IA'..." 
+                        readonly
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <div class="label-with-hint">
+                        <label for="pergunta" class="form-label">
+                            <span class="label-icon"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></span>
+                            Exercício Proposto
+                        </label>
+                        <button type="button" id="btnAudioPergunta" class="btn-audio-pill" onclick="ouvirEnunciado()" title="Ouvir enunciado e frases em francês com sotaque nativo">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+                            <span>Ouvir</span>
+                        </button>
+                    </div>
+                    <textarea 
+                        id="pergunta" 
+                        name="pergunta" 
+                        class="form-textarea readonly-field" 
+                        rows="3" 
+                        placeholder="O enunciado do exercício aparecerá aqui automaticamente..." 
+                        readonly
+                        required
+                    >{{ exercicio_inicial.enunciado if exercicio_inicial else '' }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <div class="label-with-hint">
+                        <label for="resposta_aluno" class="form-label">
+                            <span class="label-icon"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></span>
+                            Sua Resposta em Francês
+                        </label>
+                    </div>
+
+                    <!-- Banner de Ciclo Formativo de Aprendizagem (Tentativa Ativa com Dica) -->
+                    <div id="activeDicaBanner" class="active-dica-banner hidden">
+                        <div class="dica-banner-header">
+                            <div class="dica-header-left">
+                                <span class="dica-badge" id="badgeTentativa" style="display: inline-flex; align-items: center; gap: 4px;"><svg class="line-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="2" r="2"></circle></svg>Tentativa 2</span>
+                                <span class="dica-title" style="display: inline-flex; align-items: center; gap: 4px;"><svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="18" x2="15" y2="18"></line><line x1="10" y1="22" x2="14" y2="22"></line><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path></svg>Dica Ativa para Orientar sua Correção:</span>
+                            </div>
+                            <button type="button" class="btn-cancel-retry" onclick="cancelarTentativa()" title="Descartar e começar novo exercício">&times; Cancelar</button>
+                        </div>
+                        <div id="activeDicaText" class="dica-banner-body markdown-body"></div>
+                    </div>
+
+                    <!-- Barra de Caracteres Especiais Franceses -->
+                    <div class="french-chars-toolbar">
+                        <div class="toolbar-header">
+                            <span class="toolbar-title">
+                                <svg class="line-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><line x1="6" y1="8" x2="6" y2="8"></line><line x1="10" y1="8" x2="10" y2="8"></line><line x1="14" y1="8" x2="14" y2="8"></line><line x1="18" y1="8" x2="18" y2="8"></line><line x1="6" y1="12" x2="6" y2="12"></line><line x1="10" y1="12" x2="10" y2="12"></line><line x1="14" y1="12" x2="14" y2="12"></line><line x1="18" y1="12" x2="18" y2="12"></line><line x1="7" y1="16" x2="17" y2="16"></line></svg>Acentos & Caracteres Franceses:
+                            </span>
+                            <span class="toolbar-hint">Clique para inserir na resposta</span>
+                        </div>
+                        <div class="toolbar-buttons">
+                            <button type="button" class="french-char-btn" data-char="é" data-char-maj="É" onclick="inserirCharBotao(this)">é</button>
+                            <button type="button" class="french-char-btn" data-char="è" data-char-maj="È" onclick="inserirCharBotao(this)">è</button>
+                            <button type="button" class="french-char-btn" data-char="ê" data-char-maj="Ê" onclick="inserirCharBotao(this)">ê</button>
+                            <button type="button" class="french-char-btn" data-char="ë" data-char-maj="Ë" onclick="inserirCharBotao(this)">ë</button>
+                            <button type="button" class="french-char-btn" data-char="à" data-char-maj="À" onclick="inserirCharBotao(this)">à</button>
+                            <button type="button" class="french-char-btn" data-char="â" data-char-maj="Â" onclick="inserirCharBotao(this)">â</button>
+                            <button type="button" class="french-char-btn" data-char="ç" data-char-maj="Ç" onclick="inserirCharBotao(this)">ç</button>
+                            <button type="button" class="french-char-btn" data-char="ù" data-char-maj="Ù" onclick="inserirCharBotao(this)">ù</button>
+                            <button type="button" class="french-char-btn" data-char="û" data-char-maj="Û" onclick="inserirCharBotao(this)">û</button>
+                            <button type="button" class="french-char-btn" data-char="î" data-char-maj="Î" onclick="inserirCharBotao(this)">î</button>
+                            <button type="button" class="french-char-btn" data-char="ï" data-char-maj="Ï" onclick="inserirCharBotao(this)">ï</button>
+                            <button type="button" class="french-char-btn" data-char="ô" data-char-maj="Ô" onclick="inserirCharBotao(this)">ô</button>
+                            <button type="button" class="french-char-btn" data-char="œ" data-char-maj="Œ" onclick="inserirCharBotao(this)">œ</button>
+                            <button type="button" class="french-char-btn" data-char="« »" data-char-maj="« »" onclick="inserirCharBotao(this)">« »</button>
+                            <button type="button" id="btnToggleMaj" class="french-char-btn btn-maj" onclick="toggleMaj()" title="Alternar Maiúsculas / Minúsculas">a/A</button>
+                            <button type="button" id="btnAudioInput" class="french-char-btn btn-audio" onclick="ouvirTextoDigitado()" title="Ouvir pronúncia do texto digitado em francês (fr-FR)">
+                                <svg class="line-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 3px; vertical-align: text-bottom;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>Ouvir
+                            </button>
+                            <button type="button" id="btnDictation" class="french-char-btn btn-mic" onclick="alternarDitadoVoz()" title="Falar em Francês (Ditado por Microfone - fr-FR)">
+                                <svg class="line-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 3px; vertical-align: text-bottom;"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>Falar
+                            </button>
+                        </div>
+                    </div>
+
+                    <textarea 
+                        id="resposta_aluno" 
+                        name="resposta_aluno" 
+                        class="form-textarea french-text-input" 
+                        rows="5" 
+                        placeholder="Escreva sua frase ou texto em francês aqui (ex: Hier, nous avons allé au cinéma ensemble)..." 
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" id="btnSubmit" class="btn-primary">
+                        <span id="btnText" class="btn-text">Analisar com o Assistente Fran</span>
+                        <svg id="btnIcon" class="btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Indicador Visual de Carregamento -->
+            <div id="loadingIndicator" class="loading-state hidden">
+                <div class="loading-pulse-ring">
+                    <div class="spinner"></div>
+                </div>
+                <h3 class="loading-title">Analyse en cours...</h3>
+                <p class="loading-subtitle">
+                    O Assistente Fran (Google Gemini) está analisando sua conjugação, gramática e concordância em francês...
+                </p>
+                <div class="loading-progress-bar">
+                    <div class="loading-progress-fill"></div>
+                </div>
+            </div>
+
+            <!-- Card de Retorno do Feedback da IA -->
+            <div id="resultContainer" class="result-container hidden">
+                <div class="result-card">
+                    <div class="result-header">
+                        <div class="status-wrapper">
+                            <span class="status-label">Diagnóstico do Assistente:</span>
+                            <span id="statusBadge" class="status-badge status-correta">Correto</span>
+                            <span id="cefrBadge" class="cefr-level-badge">Niveau A2</span>
+                        </div>
+                        <div class="result-header-actions">
+                            <button type="button" id="btnOuvirResposta" class="btn-audio-pill" onclick="ouvirRespostaSubmetida()" title="Ouvir pronúncia da sua frase em francês nativo">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+                                <span>Ouvir</span>
+                            </button>
+                            <span id="resultTimestamp" class="result-time">Agora</span>
+                        </div>
+                    </div>
+
+                    <div class="result-body">
+                        <!-- Feedback Amigável para o Aluno -->
+                        <div class="feedback-student-box">
+                            <h4 class="feedback-heading">
+                                <svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>Feedback Formativo para o Estudante:
+                            </h4>
+                            <div id="feedbackContent" class="feedback-content markdown-body">
+                                <!-- Inserido dinamicamente via JS/marked -->
+                            </div>
+                        </div>
+
+                        <!-- Análise Gramatical Técnica do Professor (Expansível) -->
+                        <div class="professor-analysis-toggle-wrap">
+                            <button type="button" class="btn-toggle-analysis" onclick="toggleAnaliseProfessor()">
+                                <span id="toggleIcon"><svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></span>
+                                <span id="toggleText">Ver Análise Gramatical Técnica (Professor)</span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="arrowIcon">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </button>
+                            <div id="analiseProfessorBox" class="professor-analysis-box hidden">
+                                <span class="box-title" style="display: inline-flex; align-items: center; gap: 4px;"><svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>Nota Gramatical (Log do Professor):</span>
+                                <p id="analiseProfessorText" class="analysis-text"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="result-footer">
+                        <button type="button" id="btnTentarNovamenteDica" class="btn-primary btn-retry hidden" onclick="tentarNovamenteComDica()">
+                            <svg class="line-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>Tentar Novamente com a Dica
+                        </button>
+                        <button type="button" id="btnCopiarFeedback" class="btn-secondary" onclick="copiarFeedbackFormativo()" title="Copiar feedback formativo para a área de transferência">
+                            <svg class="line-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>Copiar Feedback
+                        </button>
+                        <button type="button" class="btn-secondary" onclick="novaSubmissao()">
+                            Novo Exercício
+                        </button>
+                        <a href="/dashboard" class="btn-outline">
+                            Ver Desempenho no Painel do Professor →
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endblock %}

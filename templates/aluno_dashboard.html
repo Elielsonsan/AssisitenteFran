@@ -1,0 +1,630 @@
+{% extends "base.html" %}
+
+{% block title %}Meu Painel do Estudante — Assistente Fran{% endblock %}
+
+{% block content %}
+<div class="page-container dashboard-page student-page">
+    <!-- Barra Lateral Flutuante Glassmorphic (Navegação do Aluno) -->
+    <aside class="dash-sidebar no-print" id="dashSidebar" aria-label="Menu do Estudante">
+        <div class="dash-sidebar-inner">
+            <div class="sidebar-nav-list">
+                <!-- 1. Minhas Atividades & Avaliações -->
+                <div class="sidebar-item-wrap">
+                    <a href="/aluno/atividades" class="sidebar-btn" title="Minhas Atividades & Avaliações">
+                        <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                            <path d="m9 14 2 2 4-4"></path>
+                        </svg>
+                        <span class="sidebar-text">Atividades</span>
+                    </a>
+                </div>
+
+                <!-- 2. Prática Livre com a Fran -->
+                <div class="sidebar-item-wrap">
+                    <a href="/" class="sidebar-btn" title="Prática Livre com a Fran">
+                        <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"></path>
+                        </svg>
+                        <span class="sidebar-text">Prática Livre</span>
+                    </a>
+                </div>
+
+                <!-- 3. Rolar para Nível & XP -->
+                <div class="sidebar-item-wrap">
+                    <button type="button" class="sidebar-btn" onclick="scrollToSection('secaoNivelXP')" title="Meu Nível e XP">
+                        <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                            <polyline points="17 6 23 6 23 12"></polyline>
+                        </svg>
+                        <span class="sidebar-text">Nível & XP</span>
+                    </button>
+                </div>
+
+                <!-- 4. Rolar para Conquistas FLE -->
+                <div class="sidebar-item-wrap">
+                    <button type="button" class="sidebar-btn" onclick="scrollToSection('secaoConquistas')" title="Minhas Conquistas FLE">
+                        <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="8" r="7"></circle>
+                            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                        </svg>
+                        <span class="sidebar-text">Conquistas</span>
+                    </button>
+                </div>
+
+                <!-- 5. Fórum de Dúvidas -->
+                <div class="sidebar-item-wrap">
+                    <a href="/forum" class="sidebar-btn" title="Fórum de Dúvidas">
+                        <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        <span class="sidebar-text">Fórum</span>
+                    </a>
+                </div>
+
+                <!-- 6. Meu Perfil -->
+                <div class="sidebar-item-wrap">
+                    <a href="/aluno/perfil" class="sidebar-btn" title="Meu Perfil">
+                        <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        <span class="sidebar-text">Meu Perfil</span>
+                    </a>
+                </div>
+
+                <!-- 7. Guia Rápido Gramatical FLE -->
+                <div class="sidebar-item-wrap">
+                    <a href="/guia-fle" class="sidebar-btn" title="Guia Gramatical FLE">
+                        <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                        <span class="sidebar-text">Guia FLE</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Cabeçalho Principal do Painel com Moldura Hero Card -->
+    <div class="hero-card-outer card-moldura-outer desempenho-hero-outer" id="desempenhoHeroCard">
+        <div class="desempenho-hero-card hero-card-inner">
+            <div>
+                <span class="hero-tag" style="margin-bottom: 0.5rem;">
+                    <svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="m10 15 5-3-5-3v6z"></path>
+                    </svg>Espace Étudiant FLE
+                </span>
+                <h1 class="hero-title" style="margin-bottom: 0.35rem; font-size: 1.85rem;">Bonjour, {{ session.get('aluno_nome', 'Étudiant') }}!</h1>
+                <p class="hero-description" style="margin-bottom: 0.85rem; font-size: 0.95rem; max-width: 620px;">
+                    Acompanhe suas métricas de aprendizagem, eficácia nas missões e conquistas na língua francesa.
+                </p>
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    <span class="badge-level-student lvl-{{ aluno_nivel|lower }}" style="font-size: 0.82rem; padding: 4px 12px; font-weight: 700; border-radius: 9999px;">
+                        Niveau {{ aluno_nivel }}
+                    </span>
+                    <span style="font-size: 0.82rem; background: rgba(56, 189, 248, 0.12); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 9999px; padding: 4px 12px; font-weight: 600;">
+                        🎯 Precisão: {{ ((acertos / total_atividades) * 100)|round|int if total_atividades > 0 else 0 }}%
+                    </span>
+                    <span style="font-size: 0.82rem; background: rgba(16, 185, 129, 0.12); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 9999px; padding: 4px 12px; font-weight: 600;">
+                        📚 {{ total_atividades }} Atividades Concluídas
+                    </span>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <a href="/aluno/atividades" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
+                    <svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                    </svg>Minhas Atividades
+                </a>
+                <a href="/" class="btn btn-secondary" style="display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
+                    <svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"></path>
+                    </svg>Prática Livre
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quadro Unificado de Desempenho & Métricas com Efeito Hero Card (Apenas Uma Moldura para Todos os Cards de Métricas) -->
+    <div class="desempenho-box-outer hero-card-outer card-moldura-outer" id="desempenhoMetricasBoxOuter">
+        <div class="desempenho-box-inner hero-card-inner">
+            <!-- 1. Linha de KPIs Principais (4 Colunas) -->
+            <div id="secaoNivelXP" class="desempenho-kpis-grid" style="width: 100%;">
+                <!-- KPI 1: Nível e Progresso de XP -->
+                <div class="desempenho-kpi-card">
+                    <div class="desempenho-kpi-header">
+                        <span class="desempenho-kpi-title">Nível Atual</span>
+                        <span class="badge-level-student lvl-{{ aluno_nivel|lower }}" style="font-size: 0.75rem; padding: 2px 8px;">QECR</span>
+                    </div>
+                    <div class="desempenho-kpi-value" style="color: var(--primary);">
+                        {{ aluno_nivel }}
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--text-muted); margin-bottom: 5px;">
+                            <span>XP: {{ progresso_xp }}%</span>
+                            <span>Rumo ao {{ proximo_nivel }}</span>
+                        </div>
+                        <div class="progress-bar-container" style="background: rgba(255,255,255,0.08); border-radius: 10px; height: 8px; overflow: hidden;">
+                            <div class="progress-bar-fill" style="background: linear-gradient(90deg, #0055a5, #38bdf8); width: {{ progresso_xp }}%; height: 100%; border-radius: 10px; transition: width 1s ease-in-out;"></div>
+                        </div>
+                    </div>
+                    <div class="desempenho-kpi-footer" style="margin-top: 10px;">
+                        <span>Meta CEFR: Nível {{ proximo_nivel }}</span>
+                    </div>
+                </div>
+
+                <!-- KPI 2: Total de Atividades Realizadas -->
+                <div class="desempenho-kpi-card">
+                    <div class="desempenho-kpi-header">
+                        <span class="desempenho-kpi-title">Atividades</span>
+                        <div class="desempenho-kpi-icon-wrap">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                                <path d="m9 14 2 2 4-4"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="desempenho-kpi-value">
+                        {{ total_atividades }}
+                    </div>
+                    <p style="margin: 0; font-size: 0.82rem; color: var(--text-muted); line-height: 1.35;">
+                        Exercícios e avaliações concluídas na plataforma.
+                    </p>
+                    <div class="desempenho-kpi-footer">
+                        <a href="/aluno/atividades" style="color: #38bdf8; text-decoration: none; font-weight: 600; font-size: 0.8rem;">Ver todas as tarefas &rarr;</a>
+                    </div>
+                </div>
+
+                <!-- KPI 3: Taxa de Precisão e Acertos -->
+                <div class="desempenho-kpi-card">
+                    <div class="desempenho-kpi-header">
+                        <span class="desempenho-kpi-title">Precisão Geral</span>
+                        <div class="desempenho-kpi-icon-wrap" style="background: rgba(16, 185, 129, 0.12); color: #10b981;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="m9 12 2 2 4-4"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="desempenho-kpi-value" style="color: #10b981;">
+                        {{ ((acertos / total_atividades) * 100)|round|int if total_atividades > 0 else 0 }}%
+                    </div>
+                    <p style="margin: 0; font-size: 0.82rem; color: var(--text-muted); line-height: 1.35;">
+                        {{ acertos }} acertos perfeitos de {{ total_atividades }} itens.
+                    </p>
+                    <div class="desempenho-kpi-footer">
+                        <span style="color: #10b981; font-weight: 700;">✓ {{ acertos }}</span>
+                        <span style="color: #f59e0b; font-weight: 600;">⚠ {{ parciais }}</span>
+                        <span style="color: #ef4444; font-weight: 600;">✗ {{ erros }}</span>
+                    </div>
+                </div>
+
+                <!-- KPI 4: Correio do Tutor / Reforço -->
+                <div class="desempenho-kpi-card">
+                    <div class="desempenho-kpi-header">
+                        <span class="desempenho-kpi-title">Correio do Tutor</span>
+                        <div class="desempenho-kpi-icon-wrap" style="background: rgba(99, 102, 241, 0.12); color: #818cf8;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    {% if reforco %}
+                    <div>
+                        <span class="status-badge status-pendente" style="font-size: 0.72rem; padding: 2px 8px; animation: pulse 2s infinite;">
+                            Nova Missão Ativa
+                        </span>
+                        <p style="margin: 6px 0 0 0; font-size: 0.82rem; color: var(--text-muted); line-height: 1.35;">
+                            Seu tutor preparou um reforço sob medida.
+                        </p>
+                    </div>
+                    <div class="desempenho-kpi-footer">
+                        <button type="button" class="btn btn-primary btn-sm" style="width: 100%; font-size: 0.78rem; padding: 4px 8px;" onclick="abrirMissaoModal({{ reforco['id'] }})">
+                            Abrir Missão &rarr;
+                        </button>
+                    </div>
+                    {% else %}
+                    <div>
+                        <span style="font-size: 0.8rem; color: #10b981; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Tudo em Dia!
+                        </span>
+                        <p style="margin: 6px 0 0 0; font-size: 0.82rem; color: var(--text-muted); line-height: 1.35;">
+                            Nenhuma missão pendente de reforço.
+                        </p>
+                    </div>
+                    <div class="desempenho-kpi-footer">
+                        <a href="/" class="btn btn-secondary btn-sm" style="width: 100%; font-size: 0.78rem; padding: 4px 8px; text-decoration: none; text-align: center;">
+                            Treinar com a Fran
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- 2. Linha de Gráficos Analíticos (2 Colunas 50% / 50%) -->
+            <div class="desempenho-charts-grid" style="width: 100%; margin-bottom: 0;">
+                <!-- Gráfico 1: Eficácia nas Missões (Doughnut) -->
+                <div class="desempenho-chart-card">
+                    <div class="desempenho-chart-header">
+                        <div>
+                            <h3 class="desempenho-chart-title">Eficácia nas Missões</h3>
+                            <p class="desempenho-chart-subtitle">Distribuição entre acertos, parciais e correções</p>
+                        </div>
+                        <span style="font-size: 0.75rem; color: var(--text-muted); background: rgba(255,255,255,0.06); padding: 2px 8px; border-radius: 6px;">Geral</span>
+                    </div>
+                    <div class="desempenho-chart-canvas-wrap">
+                        <canvas id="desempenhoChart"></canvas>
+                    </div>
+                    <div class="desempenho-chart-footer">
+                        <span class="chart-pill-stat correto">
+                            ✓ {{ acertos }} Acertos ({{ ((acertos / total_atividades) * 100)|round|int if total_atividades else 0 }}%)
+                        </span>
+                        <span class="chart-pill-stat parcial">
+                            ⚠ {{ parciais }} Parciais ({{ ((parciais / total_atividades) * 100)|round|int if total_atividades else 0 }}%)
+                        </span>
+                        <span class="chart-pill-stat incorreto">
+                            ✗ {{ erros }} A revisar ({{ ((erros / total_atividades) * 100)|round|int if total_atividades else 0 }}%)
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Gráfico 2: Participação Semanal (Bar) -->
+                <div class="desempenho-chart-card">
+                    <div class="desempenho-chart-header">
+                        <div>
+                            <h3 class="desempenho-chart-title">Participação Semanal</h3>
+                            <p class="desempenho-chart-subtitle">Volume diário de exercícios entregues nos dias úteis</p>
+                        </div>
+                        <span style="font-size: 0.75rem; color: var(--text-muted); background: rgba(255,255,255,0.06); padding: 2px 8px; border-radius: 6px;">Seg - Sex</span>
+                    </div>
+                    <div class="desempenho-chart-canvas-wrap">
+                        <canvas id="participacaoChart"></canvas>
+                    </div>
+                    <div class="desempenho-chart-footer">
+                        <span style="font-size: 0.82rem; color: var(--text-muted);">
+                            Total na semana: <strong style="color: var(--text-primary);">{{ participacao_semanal|sum }} atividades</strong>
+                        </span>
+                        <span style="font-size: 0.82rem; color: #38bdf8; font-weight: 600;">
+                            Média: {{ ((participacao_semanal|sum) / 5)|round(1) }}/dia útil
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Banner da Missão de Foco Pedagógico (se houver reforço pendente) -->
+            {% if reforco %}
+            <div class="desempenho-tutor-banner" style="width: 100%; margin-top: 1.5rem; margin-bottom: 0;">
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <div style="width: 46px; height: 46px; border-radius: 12px; background: rgba(99, 102, 241, 0.2); color: #818cf8; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #818cf8; letter-spacing: 0.5px;">Orientação Individual do Tutor</span>
+                        <h3 style="margin: 2px 0 4px 0; font-size: 1.08rem; color: var(--text-primary);">Missão de Foco Pendente</h3>
+                        <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted); max-width: 650px;">
+                            "{{ reforco['mensagem_tutor'] }}"
+                        </p>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="abrirMissaoModal({{ reforco['id'] }})" style="white-space: nowrap; display: inline-flex; align-items: center; gap: 6px;">
+                    <span>Responder Missão</span> &rarr;
+                </button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 4. Quadro Unificado de Conquistas & Insígnias FLE (Apenas Uma Moldura para Todos os Cards de Conquistas) -->
+    <div class="conquistas-box-outer hero-card-outer card-moldura-outer" id="desempenhoConquistasBoxOuter">
+        <div class="conquistas-box-inner hero-card-inner">
+            <div id="secaoConquistas" class="conquistas-header-wrap">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; width: 100%;">
+                    <div>
+                        <span class="hero-tag" style="margin-bottom: 0.35rem;">
+                            <svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;">
+                                <circle cx="12" cy="8" r="7"></circle>
+                                <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                            </svg>Récompenses FLE
+                        </span>
+                        <h2 class="hero-title" style="font-size: 1.45rem; margin-bottom: 0.25rem;">Minhas Conquistas & Insígnias FLE</h2>
+                        <p class="hero-description" style="font-size: 0.88rem; margin-bottom: 0;">
+                            Desbloqueie medalhas exclusivas à medida que pratica sua escrita, vocabulário e pronúncia.
+                        </p>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.82rem; font-weight: 700; color: #f59e0b; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 9999px; padding: 4px 14px;">
+                            🏆 {{ (badges|selectattr('desbloqueado', 'equalto', true)|list)|length }} de {{ badges|length }} Desbloqueadas
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="conquistas-box-divider"></div>
+
+            <div class="desempenho-badges-grid" style="width: 100%;">
+                {% for b in badges %}
+                <div class="desempenho-badge-card {% if b.desbloqueado %}unlocked{% else %}locked{% endif %}">
+                    <div class="desempenho-badge-icon-box">
+                        {% if b.id == 'premier_pas' %}
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                        {% elif b.id == 'tir_precis' %}
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="22" y1="12" x2="18" y2="12"></line><line x1="6" y1="12" x2="2" y2="12"></line><line x1="12" y1="6" x2="12" y2="2"></line><line x1="12" y1="22" x2="12" y2="18"></line></svg>
+                        {% elif b.id == 'erudit_fle' %}
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                        {% elif b.id == 'voix_paris' %}
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                        {% elif b.id == 'niveau_avance' %}
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+                        {% else %}
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        {% endif %}
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; gap: 6px;">
+                            <h4 style="margin: 0; font-size: 0.98rem; font-weight: 700; color: var(--text-primary);">{{ b.nome }}</h4>
+                            {% if b.desbloqueado %}
+                            <span style="font-size: 0.68rem; background: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 1px 7px; border-radius: 9999px; font-weight: 700;">CONQUISTADA</span>
+                            {% else %}
+                            <span style="font-size: 0.68rem; background: rgba(255, 255, 255, 0.08); color: var(--text-muted); padding: 1px 7px; border-radius: 9999px; display: inline-flex; align-items: center; gap: 3px;">
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>BLOQUEADA
+                            </span>
+                            {% endif %}
+                        </div>
+                        <p style="margin: 0; font-size: 0.81rem; color: var(--text-muted); line-height: 1.4;">
+                            {{ b.descricao }}
+                        </p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block modals %}
+<!-- Modal da Missão de Foco (Renderizado no Top-Level fora de main-content) -->
+{% if reforco %}
+<div id="missaoModal" class="modal-overlay" style="display: none;" onclick="if(event.target === this) fecharMissaoModal();">
+    <div class="glass-card modal-content" style="max-width: 600px; width: 90%; margin: auto; position: relative;">
+        <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <svg class="line-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                <h2 style="margin: 0; font-size: 1.25rem;">Missão de Foco (Reforço)</h2>
+            </div>
+            <button type="button" class="close-modal" onclick="fecharMissaoModal()" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.5rem; line-height: 1;">
+                &times;
+            </button>
+        </div>
+        <div class="modal-body" style="margin-top: 1rem;">
+            <div style="background: rgba(var(--primary-rgb), 0.1); border-left: 4px solid var(--primary); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                <strong>Mensagem do Tutor:</strong><br>
+                {{ reforco['mensagem_tutor'] }}
+                
+                {% if reforco['exercicios_lista'] %}
+                <div style="margin-top: 1rem;">
+                    <strong>Exercícios Recomendados:</strong>
+                    <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+                        {% for ex in reforco['exercicios_lista'] %}
+                        <li style="margin-bottom: 0.5rem;">{{ ex }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+            
+            <form id="formMissao">
+                <input type="hidden" id="reforco_id" value="{{ reforco['id'] }}">
+                <div class="form-group">
+                    <label style="display: block; font-weight: 600; margin-bottom: 6px;">Sua Resposta para a Missão:</label>
+                    <textarea id="respostaMissao" rows="4" class="form-control glass-input" placeholder="Écrivez votre réponse ici en français..." required></textarea>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.25rem;">
+                    <button type="button" class="btn btn-secondary" onclick="fecharMissaoModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnEnviarMissao">
+                        <span>Enviar Resposta</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Rolagem suave para seções da página
+    function scrollToSection(id) {
+        const el = document.getElementById(id);
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
+    // Detecção dinâmica de tema para cores dos gráficos
+    function getChartThemeColors() {
+        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+        return {
+            textColor: isLight ? '#0f172a' : '#cbd5e1',
+            mutedColor: isLight ? '#334155' : '#94a3b8',
+            gridColor: isLight ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.08)',
+            doughnutBorder: isLight ? '#ffffff' : '#162032'
+        };
+    }
+
+    const themeColors = getChartThemeColors();
+
+    // Gráfico de Desempenho (Doughnut)
+    const ctx = document.getElementById('desempenhoChart');
+    let chartDesempenho = null;
+    if (ctx) {
+        chartDesempenho = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Correto', 'Parcial', 'Incorreto'],
+                datasets: [{
+                    data: [{{ acertos }}, {{ parciais }}, {{ erros }}],
+                    backgroundColor: [
+                        '#10B981', // green
+                        '#F59E0B', // amber
+                        '#EF4444'  // red
+                    ],
+                    borderColor: themeColors.doughnutBorder,
+                    borderWidth: 2,
+                    hoverOffset: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '72%',
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            color: themeColors.textColor,
+                            font: { family: 'Plus Jakarta Sans', size: 12, weight: '600' },
+                            padding: 14
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Gráfico de Participação Semanal (Bar)
+    const ctxBar = document.getElementById('participacaoChart');
+    let chartParticipacao = null;
+    if (ctxBar) {
+        chartParticipacao = new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'],
+                datasets: [{
+                    label: 'Atividades',
+                    data: {{ participacao_semanal | tojson }},
+                    backgroundColor: 'rgba(56, 189, 248, 0.75)',
+                    borderColor: '#38bdf8',
+                    borderWidth: 1.5,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        grid: { color: themeColors.gridColor }, 
+                        ticks: { color: themeColors.mutedColor, precision: 0, font: { family: 'Plus Jakarta Sans', size: 11 } } 
+                    },
+                    x: { 
+                        grid: { display: false }, 
+                        ticks: { color: themeColors.mutedColor, font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' } } 
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    }
+
+    // Observer para atualizar cores dos gráficos quando o usuário alternar o tema claro/escuro
+    const themeObserver = new MutationObserver(() => {
+        const updatedTheme = getChartThemeColors();
+        if (chartDesempenho) {
+            chartDesempenho.options.plugins.legend.labels.color = updatedTheme.textColor;
+            chartDesempenho.data.datasets[0].borderColor = updatedTheme.doughnutBorder;
+            chartDesempenho.update();
+        }
+        if (chartParticipacao) {
+            chartParticipacao.options.scales.y.grid.color = updatedTheme.gridColor;
+            chartParticipacao.options.scales.y.ticks.color = updatedTheme.mutedColor;
+            chartParticipacao.options.scales.x.ticks.color = updatedTheme.mutedColor;
+            chartParticipacao.update();
+        }
+    });
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+    // Gerenciamento do Modal de Missão
+    function abrirMissaoModal(id) {
+        const modal = document.getElementById('missaoModal');
+        if (modal) modal.style.display = 'flex';
+    }
+
+    function fecharMissaoModal() {
+        const modal = document.getElementById('missaoModal');
+        if (modal) modal.style.display = 'none';
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            fecharMissaoModal();
+        }
+    });
+
+    const formMissao = document.getElementById('formMissao');
+    if (formMissao) {
+        formMissao.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const reforcoId = document.getElementById('reforco_id').value;
+            const resposta = document.getElementById('respostaMissao').value;
+            const btn = document.getElementById('btnEnviarMissao');
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = 'Enviando...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/responder_missao', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ reforco_id: reforcoId, resposta: resposta })
+                });
+                const data = await res.json();
+                
+                if (data.status === 'sucesso') {
+                    fecharMissaoModal();
+                    const toast = document.createElement('div');
+                    toast.className = 'glass-card';
+                    toast.style.cssText = 'position:fixed; bottom:20px; right:20px; background:var(--primary); color:white; padding:15px 25px; border-radius:8px; z-index:99999; animation: slideUp 0.3s ease-out;';
+                    toast.innerHTML = '<strong>Félicitations!</strong> Missão cumprida!';
+                    document.body.appendChild(toast);
+                    
+                    setTimeout(() => {
+                        toast.style.opacity = '0';
+                        toast.style.transition = 'opacity 0.5s ease';
+                        setTimeout(() => window.location.reload(), 500);
+                    }, 2500);
+                } else {
+                    alert('Erro: ' + (data.mensagem || 'Falha ao enviar missão.'));
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                alert('Erro na conexão com o servidor.');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+    }
+</script>
+<style>
+    @keyframes slideUp {
+        from { transform: translateY(100px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+</style>
+{% endblock %}

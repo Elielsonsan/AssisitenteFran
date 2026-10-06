@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Assistente Fran — Tutor de Língua Francesa com IA{% endblock %}</title>
+    <!-- Google Fonts: Outfit + JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=20260923_v9">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        (function() {
+            try {
+                const temaSalvo = localStorage.getItem("assistente_fran_theme");
+                if (temaSalvo) {
+                    document.documentElement.setAttribute("data-theme", temaSalvo);
+                } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) {
+                    document.documentElement.setAttribute("data-theme", "light");
+                } else {
+                    document.documentElement.setAttribute("data-theme", "dark");
+                }
+            } catch (e) {
+                document.documentElement.setAttribute("data-theme", "dark");
+            }
+        })();
+    </script>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <!-- Elementos decorativos de iluminação de fundo -->
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+
+    <!-- ============================================================= -->
+    <!-- NAVBAR SUPERIOR RESPONSIVA GLASSMORPHIC (DESKTOP & MOBILE)    -->
+    <!-- Inspirada no design Dev Point com Glassmorphism e Cores Teal   -->
+    <!-- ============================================================= -->
+    <header class="app-navbar" id="appNavbar">
+        <div class="nav-container">
+            <!-- 1. Marca / Logotipo -->
+            <a href="/" class="nav-brand" title="Assistente Fran — Início">
+                <div class="nav-logo-icon" style="background: transparent; border: none; box-shadow: none; padding: 0;">
+                    <img src="/imagens/logo_fran1.png" style="width: 100%; height: 100%; object-fit: contain;" alt="Logo Fran">
+                </div>
+                <div class="nav-brand-text">
+                    <span class="nav-title">Assistente Fran</span>
+                    <span class="nav-subtitle">FLE & IA</span>
+                </div>
+            </a>
+
+            <!-- 2. Links de Navegação Desktop (Visível em Computador / PC) -->
+            <nav class="nav-links-desktop" aria-label="Navegação Principal">
+                {% if session.get('prof_id') %}
+                    <a href="/pratica" class="nav-link {% if active_page == 'student' %}active{% endif %}">
+                        <span>Prática (Chat)</span>
+                    </a>
+                    <a href="/dashboard" class="nav-link {% if active_page == 'dashboard' %}active{% endif %}">
+                        <span>Painel Docente</span>
+                    </a>
+                    <a href="/professor/avaliacoes" class="nav-link {% if active_page == 'prof_avaliacoes' %}active{% endif %}">
+                        <span>Avaliações</span>
+                    </a>
+                    <a href="/professor/planos-aula" class="nav-link {% if active_page == 'prof_planos' %}active{% endif %}">
+                        <span>Planos de Aula</span>
+                    </a>
+                    <a href="/forum" class="nav-link {% if active_page == 'prof_forum' %}active{% endif %}">
+                        <span>Fórum</span>
+                    </a>
+                    <a href="/guia-fle" class="nav-link {% if active_page == 'guia_fle' %}active{% endif %}">
+                        <span>Guia FLE</span>
+                    </a>
+                {% elif session.get('aluno_id') %}
+                    <a href="/pratica" class="nav-link {% if active_page == 'student' %}active{% endif %}">
+                        <span>Prática (Chat)</span>
+                    </a>
+                    <a href="/aluno/dashboard" class="nav-link {% if active_page == 'aluno_dashboard' %}active{% endif %}">
+                        <span>Meu Desempenho</span>
+                    </a>
+                    <a href="/aluno/atividades" class="nav-link {% if active_page == 'aluno_atividades' %}active{% endif %}">
+                        <span>Atividades</span>
+                    </a>
+                    <a href="/forum" class="nav-link {% if active_page == 'aluno_forum' %}active{% endif %}">
+                        <span>Fórum</span>
+                    </a>
+                    <a href="/aluno/perfil" class="nav-link {% if active_page == 'aluno_perfil' %}active{% endif %}">
+                        <span>Perfil</span>
+                    </a>
+                    <a href="/guia-fle" class="nav-link {% if active_page == 'guia_fle' %}active{% endif %}">
+                        <span>Guia FLE</span>
+                    </a>
+                {% else %}
+                    <a href="/" class="nav-link">Início</a>
+                    <a href="/forum" class="nav-link">Fórum</a>
+                    <a href="/guia-fle" class="nav-link {% if active_page == 'guia_fle' %}active{% endif %}">Guia FLE</a>
+                    <a href="/login" class="nav-link-login">Entrar</a>
+                {% endif %}
+            </nav>
+
+            <!-- 3. Ações no Desktop (Alternador de Tema + Perfil de Usuário) -->
+            <div class="nav-actions-desktop">
+                <button type="button" class="nav-icon-btn" id="btnThemeToggle" onclick="alternarTema()" title="Alternar Tema Claro/Escuro" aria-label="Alternar Tema">
+                    <svg class="theme-icon icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="theme-icon icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="4"></circle>
+                        <line x1="12" y1="2" x2="12" y2="4"></line>
+                        <line x1="12" y1="20" x2="12" y2="22"></line>
+                        <line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line>
+                        <line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line>
+                        <line x1="2" y1="12" x2="4" y2="12"></line>
+                        <line x1="20" y1="12" x2="22" y2="12"></line>
+                        <line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line>
+                        <line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line>
+                    </svg>
+                </button>
+
+                {% if session.get('aluno_id') or session.get('prof_id') %}
+                {% set user_foto = session.get('foto_url') or session.get('foto') %}
+                {% set user_display_nome = session.get('prof_nome') if session.get('prof_id') else session.get('aluno_nome', 'Usuário') %}
+                <div class="nav-user-dropdown" id="navUserDropdownWrap">
+                    <button type="button" class="nav-user-btn" onclick="toggleProfileFlyout(event)" aria-label="Menu do Usuário">
+                        <span class="nav-avatar-badge">
+                            {% if user_foto %}
+                                <img src="{{ user_foto }}" alt="{{ user_display_nome }}" class="avatar-photo">
+                            {% else %}
+                                <span class="avatar-initials">{{ user_display_nome | iniciais }}</span>
+                            {% endif %}
+                        </span>
+                        <span class="nav-user-name">{{ user_display_nome }}</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+                    </button>
+
+                    <!-- Popover Dropdown de Perfil -->
+                    <div class="nav-flyout-menu" id="profileFlyout" onclick="event.stopPropagation()">
+                        <div class="flyout-user-info">
+                            <div class="flyout-avatar-large">
+                                {% if user_foto %}
+                                    <img src="{{ user_foto }}" alt="{{ user_display_nome }}" class="avatar-photo-lg">
+                                {% else %}
+                                    <span class="avatar-initials">{{ user_display_nome | iniciais }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="flyout-meta">
+                                <span class="flyout-name">{{ user_display_nome }}</span>
+                                <span class="flyout-role">{% if session.get('prof_id') %}Professor FLE{% else %}{{ session.get('turma_nome', 'Turma FLE') }}{% endif %}</span>
+                                <span class="flyout-id">{% if session.get('prof_id') %}Usuário: <code>{{ session.get('prof_usuario', '---') }}</code>{% else %}Matrícula: <code>{{ session.get('matricula', '---') }}</code>{% endif %}</span>
+                            </div>
+                        </div>
+                        <div class="flyout-divider"></div>
+                        <div class="flyout-links">
+                            {% if session.get('aluno_id') %}
+                            <a href="/aluno/perfil" class="flyout-item">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                <span>Meu Perfil</span>
+                            </a>
+                            {% else %}
+                            <a href="/dashboard" class="flyout-item">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+                                <span>Painel Geral</span>
+                            </a>
+                            {% endif %}
+                            <a href="/logout" class="flyout-item flyout-logout">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                                <span>Encerrar Sessão</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <a href="/login" class="btn-nav-login">
+                    <span>Entrar</span>
+                </a>
+                {% endif %}
+            </div>
+
+            <!-- 4. Controles Mobile (Alternar Tema + Botão Hamburger) -->
+            <div class="nav-mobile-controls">
+                <button type="button" class="nav-icon-btn mobile-theme-btn" onclick="alternarTema()" title="Alternar Tema" aria-label="Alternar Tema">
+                    <svg class="theme-icon icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="theme-icon icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="4"></circle>
+                        <line x1="12" y1="2" x2="12" y2="4"></line>
+                        <line x1="12" y1="20" x2="12" y2="22"></line>
+                        <line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line>
+                        <line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line>
+                        <line x1="2" y1="12" x2="4" y2="12"></line>
+                        <line x1="20" y1="12" x2="22" y2="12"></line>
+                        <line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line>
+                        <line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line>
+                    </svg>
+                </button>
+                <button type="button" class="nav-hamburger-btn" id="btnHamburger" onclick="abrirMenuMobile()" aria-label="Abrir Menu">
+                    <span class="bar bar-1"></span>
+                    <span class="bar bar-2"></span>
+                    <span class="bar bar-3"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Drawer Lateral Mobile com Glassmorphism (Slide-over pelo lado direito) -->
+    <div class="mobile-drawer-backdrop" id="mobileDrawerBackdrop" onclick="fecharMenuMobile()"></div>
+    <aside class="mobile-nav-drawer" id="mobileNavDrawer" aria-label="Menu Mobile">
+        <div class="drawer-header">
+            <div class="drawer-brand">
+                <div class="nav-logo-icon small" style="background: transparent; border: none; box-shadow: none; padding: 0;">
+                    <img src="/imagens/logo_fran1.png" style="width: 100%; height: 100%; object-fit: contain;" alt="Logo Fran">
+                </div>
+                <span class="drawer-title">Assistente Fran</span>
+            </div>
+            <button type="button" class="drawer-close-btn" onclick="fecharMenuMobile()" aria-label="Fechar Menu">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+
+        {% if session.get('aluno_id') or session.get('prof_id') %}
+        {% set user_foto = session.get('foto_url') or session.get('foto') %}
+        {% set user_display_nome = session.get('prof_nome') if session.get('prof_id') else session.get('aluno_nome', 'Usuário') %}
+        <div class="drawer-user-card">
+            <div class="drawer-avatar">
+                {% if user_foto %}
+                    <img src="{{ user_foto }}" alt="{{ user_display_nome }}" class="avatar-photo-drawer">
+                {% else %}
+                    <span class="avatar-initials">{{ user_display_nome | iniciais }}</span>
+                {% endif %}
+            </div>
+            <div class="drawer-user-info">
+                <span class="drawer-user-name">{{ user_display_nome }}</span>
+                <span class="drawer-user-sub">{% if session.get('prof_id') %}Professor FLE{% else %}{{ session.get('turma_nome', 'Estudante') }}{% endif %}</span>
+            </div>
+        </div>
+        {% endif %}
+
+        <nav class="drawer-nav-list">
+            {% if session.get('prof_id') %}
+                <a href="/" class="drawer-link {% if active_page == 'student' %}active{% endif %}" onclick="fecharMenuMobile()">
+                    <span class="drawer-icon">
+                        <svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    </span>
+                    <span>Início / Prática</span>
+                </a>
+                <a href="/dashboard" class="drawer-link {% if active_page == 'dashboard' %}active{% endif %}" onclick="fecharMenuMobile()">
+                    <span class="drawer-icon">
+                        <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                    </span>
+                    <span>Painel Docente</span>
+                </a>
+                <a href="/professor/avaliacoes" class="drawer-link {% if active_page == 'prof_avaliacoes' %}active{% endif %}" onclick="fecharMenuMobile()">
+                    <span class="drawer-icon">
+                        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    </span>
+                    <span>Avaliações</span>
+                </a>
+                <a href="/professor/planos-aula" class="drawer-link {% if active_page == 'prof_planos' %}active{% endif %}" onclick="fecharMenuMobile()">
+                    <span class="drawer-icon">
+                        <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                    </span>
+                    <span>Planos de Aula FLE</span>
+                </a>
+                <a href="/forum" class="drawer-link {% if active_page == 'prof_forum' %}active{% endif %}" onclick="fecharMenuMobile()">
+                    <span class="drawer-icon">
+                        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    </span>
+                    <span>Fórum de Dúvidas</span>
+                </a>
+            {% elif session.get('aluno_id') %}
+                <a href="/" class="drawer-link {% if active_page == 'student' %}active{% endif %}" onclick="fecharMenuMobile()">
+                    <span class="drawer-icon">
+                        <svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    </span>
+                    <span>Início / Prática</span>
+                </a>
+                <a href="/aluno/dashboard" class="drawer-link {% if active_page == 'aluno_dashboard' %}active{% endif %}" onclick="fecharMenuMobile()">
+                    <span class="drawer-icon">
+                        <svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                    </span>
+                    <span>Meu Desempenho</span>
+                </a>
+                <a href="/aluno/atividades" class="drawer-link {% if active_page == 'aluno_atividades' %}active{% endif %}" onclick="fecharMenuMobile()">
+                    <span class="drawer-icon">
+                        <svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+                    </span>
+                    <span>Minhas Atividades</span>
+                </a>
+                <a href="/forum" class="drawer-link {% if active_page == 'aluno_forum' %}active{% endif %}" onclick="fecharMenuMobile()">
+                    <span class="drawer-icon">
+                        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    </span>
+                    <span>Fórum de Dúvidas</span>
+                </a>
+                <a href="/aluno/perfil" class="drawer-link {% if active_page == 'aluno_perfil' %}active{% endif %}" onclick="fecharMenuMobile()">
+                    <span class="drawer-icon">
+                        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </span>
+                    <span>Meu Perfil</span>
+                </a>
+            {% else %}
+                <a href="/" class="drawer-link" onclick="fecharMenuMobile()">
+                    <span class="drawer-icon">
+                        <svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    </span>
+                    <span>Início</span>
+                </a>
+                <a href="/forum" class="drawer-link" onclick="fecharMenuMobile()">
+                    <span class="drawer-icon">
+                        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    </span>
+                    <span>Fórum</span>
+                </a>
+                <a href="/login" class="drawer-link" onclick="fecharMenuMobile()">
+                    <span class="drawer-icon">
+                        <svg viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>
+                    </span>
+                    <span>Fazer Login</span>
+                </a>
+            {% endif %}
+
+            <div class="drawer-divider"></div>
+
+            <a href="/guia-fle" class="drawer-link" onclick="fecharMenuMobile()">
+                <span class="drawer-icon">
+                    <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                </span>
+                <span>Guia FLE</span>
+            </a>
+
+            {% if session.get('aluno_id') %}
+            <button type="button" class="drawer-link" onclick="fecharMenuMobile(); typeof gerarNovoDesafioIA === 'function' ? gerarNovoDesafioIA() : (window.location.href='/?gerar=1')">
+                <span class="drawer-icon">
+                    <svg viewBox="0 0 24 24"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"/></svg>
+                </span>
+                <span>Gerar Desafio IA</span>
+            </button>
+            {% endif %}
+        </nav>
+
+        <div class="drawer-footer">
+            {% if session.get('aluno_id') or session.get('prof_id') %}
+            <a href="/logout" class="drawer-btn-logout">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                <span>Encerrar Sessão</span>
+            </a>
+            {% endif %}
+        </div>
+    </aside>
+
+    <!-- Conteúdo Principal -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="app-footer">
+        <div class="footer-container">
+            <p>© 2026 Assistente Fran — Tutor Pedagógico Inteligente de Língua Francesa com Google Gemini</p>
+        </div>
+    </footer>
+
+    <!-- Bloco Global para Modais de Páginas Filhas (Isolado de Stacking Context) -->
+    {% block modals %}{% endblock %}
+
+    <!-- Script Global do Guia Gramatical & Utilitários -->
+    <script>
+        function abrirMementoGramatical() {
+            window.location.href = '/guia-fle';
+        }
+
+        function falarTextoFrancesBase(texto) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(texto.replace(/[*_#`~>«»]/g, "").trim());
+                utterance.lang = 'fr-FR';
+                utterance.rate = 0.88;
+                const vozes = window.speechSynthesis.getVoices();
+                const voz = vozes.find(v => v.lang === 'fr-FR' || v.lang.startsWith('fr'));
+                if (voz) utterance.voice = voz;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // =============================================================
+        // GERENCIAMENTO DO TEMA CLARO / ESCURO
+        // =============================================================
+        function alternarTema() {
+            const html = document.documentElement;
+            const temaAtual = html.getAttribute("data-theme") || "dark";
+            const novoTema = temaAtual === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", novoTema);
+            try {
+                localStorage.setItem("assistente_fran_theme", novoTema);
+            } catch (e) {}
+            atualizarIconeTema(novoTema);
+
+            // Atualiza cores dos gráficos Chart.js no dashboard se presentes
+            if (typeof atualizarCoresGraficosTema === "function") {
+                atualizarCoresGraficosTema(novoTema);
+            }
+        }
+
+        function atualizarIconeTema(tema) {
+            const temaAtivo = tema || document.documentElement.getAttribute("data-theme") || "dark";
+            const label = document.getElementById("themeLabelText");
+            if (label) {
+                label.textContent = temaAtivo === "dark" ? "Claro" : "Escuro";
+            }
+            const btn = document.getElementById("btnThemeToggle");
+            if (btn) {
+                btn.setAttribute("title", temaAtivo === "dark" ? "Mudar para Modo Claro" : "Mudar para Modo Escuro");
+            }
+        }
+
+        // =============================================================
+        // BARRA LATERAL GLASSMORPHISM (SIDEBAR) & NÍVEIS CEFR
+        // =============================================================
+        function clicarNivelSidebar(lvl) {
+            if (typeof selecionarNivelCEFR === "function") {
+                selecionarNivelCEFR(lvl);
+            } else {
+                window.location.href = "/?cefr=" + encodeURIComponent(lvl);
+            }
+        }
+
+        function toggleProfileFlyout(event) {
+            if (event) event.stopPropagation();
+            const flyout = document.getElementById("profileFlyout");
+            if (flyout) flyout.classList.toggle("open");
+        }
+
+        function abrirMenuMobile() {
+            const drawer = document.getElementById("mobileNavDrawer");
+            const backdrop = document.getElementById("mobileDrawerBackdrop");
+            const btn = document.getElementById("btnHamburger");
+            if (drawer) drawer.classList.add("open");
+            if (backdrop) backdrop.classList.add("open");
+            if (btn) btn.classList.add("active");
+            document.body.style.overflow = "hidden";
+        }
+
+        function fecharMenuMobile() {
+            const drawer = document.getElementById("mobileNavDrawer");
+            const backdrop = document.getElementById("mobileDrawerBackdrop");
+            const btn = document.getElementById("btnHamburger");
+            if (drawer) drawer.classList.remove("open");
+            if (backdrop) backdrop.classList.remove("open");
+            if (btn) btn.classList.remove("active");
+            document.body.style.overflow = "";
+        }
+
+        document.addEventListener("click", (e) => {
+            const wrap = document.getElementById("navUserDropdownWrap");
+            const flyout = document.getElementById("profileFlyout");
+            if (flyout && wrap && !wrap.contains(e.target)) {
+                flyout.classList.remove("open");
+            }
+        });
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+                fecharMenuMobile();
+                const flyout = document.getElementById("profileFlyout");
+                if (flyout) flyout.classList.remove("open");
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const temaAtivo = document.documentElement.getAttribute("data-theme") || "dark";
+            atualizarIconeTema(temaAtivo);
+        });
+    </script>
+
+    {% block scripts %}{% endblock %}
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

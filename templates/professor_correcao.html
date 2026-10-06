@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Correção de Áudio | Professor{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="correcao-hero-outer hero-card-outer">
+        <div class="hero-card-inner">
+            <span class="hero-tag"><svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>Correction Orale</span>
+            <h1 class="hero-title" style="margin-bottom: 0;">Correção: {{ submissao.aluno_nome }}</h1>
+        </div>
+    </div>
+
+    <div class="correcao-box-outer card-moldura-outer">
+        <div class="hero-card-inner" style="text-align: left; align-items: stretch;">
+            <h3 style="margin-top: 0; margin-bottom: 15px;">Enunciado da Questão</h3>
+            <p style="margin-bottom: 0;"><strong>Texto de Referência:</strong> {{ submissao.texto_referencia }}</p>
+        
+        <hr style="border-color: rgba(255,255,255,0.1); margin: 20px 0;">
+
+        <h3>Áudio Gravado pelo Aluno</h3>
+        <div style="margin: 20px 0;">
+            <audio controls>
+                <source src="/{{ submissao.arquivo_audio_path }}" type="audio/webm">
+                Seu navegador não suporta a tag de áudio.
+            </audio>
+        </div>
+
+        <div class="feedback-student-box">
+            <h4 class="feedback-heading"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>Análise Prévia da IA (Gemini):</h4>
+            <div class="feedback-content">{{ submissao.feedback_ia }}</div>
+        </div>
+
+        <hr style="border-color: rgba(255,255,255,0.1); margin: 20px 0;">
+
+        <div class="form-group">
+            <label class="form-label">Nota Final do Professor (0 a 10):</label>
+            <input type="number" id="nota_prof" class="form-input" min="0" max="10" step="0.1" value="{{ submissao.nota_professor if submissao.nota_professor is not none else '' }}" placeholder="Ex: 8.5" required>
+        </div>
+
+        <div class="form-group" style="margin-top: 15px;">
+            <label class="form-label">Parecer Pedagógico do Professor:</label>
+            <textarea id="analise_prof" class="form-textarea" rows="3" placeholder="Insira seus comentários e orientações para o aluno...">{{ submissao.analise_professor if submissao.analise_professor else '' }}</textarea>
+        </div>
+
+        <button type="button" id="btnSalvarNota" class="btn-primary" onclick="salvarNota()" style="margin-top: 15px;">
+            Salvar Correção
+        </button>
+        </div>
+    </div>
+</div>
+
+<script>
+async function salvarNota() {
+    const submissaoId = {{ submissao.id }};
+    const notaInput = document.getElementById("nota_prof");
+    const analiseInput = document.getElementById("analise_prof");
+    const btn = document.getElementById("btnSalvarNota");
+
+    const nota = parseFloat(notaInput.value);
+    if (isNaN(nota) || nota < 0 || nota > 10) {
+        alert("Por favor, informe uma nota válida entre 0 e 10.");
+        notaInput.focus();
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerText = "Salvando...";
+
+    try {
+        const resp = await fetch("/api/professor/salvar_correcao", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                submissao_id: submissaoId,
+                nota_professor: nota,
+                analise_professor: analiseInput.value.trim()
+            })
+        });
+
+        const data = await resp.json();
+        if (data.status === "sucesso") {
+            alert("Correção salva com sucesso!");
+            window.location.href = "/professor/avaliacoes";
+        } else {
+            alert("Erro ao salvar: " + (data.mensagem || "Erro desconhecido"));
+            btn.disabled = false;
+            btn.innerText = "Salvar Correção";
+        }
+    } catch (e) {
+        alert("Erro de conexão ao salvar nota: " + e);
+        btn.disabled = false;
+        btn.innerText = "Salvar Correção";
+    }
+}
+</script>
+{% endblock %}

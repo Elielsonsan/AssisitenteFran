@@ -1,0 +1,1605 @@
+{% extends "base.html" %}
+
+{% block title %}Avaliações | Professor{% endblock %}
+
+{% block content %}
+<div class="page-container dashboard-page">
+    <!-- Barra Lateral Flutuante Glassmorphic (Menu de Avaliações Expansível no Hover) -->
+    <aside class="dash-sidebar no-print" id="dashSidebar" aria-label="Menu de Gestão de Avaliações">
+        <div class="dash-sidebar-inner">
+            <div class="sidebar-nav-list">
+                <!-- 1. Filtros (Abre Popover saindo do Ícone) -->
+                <div class="sidebar-item-wrap">
+                    <button type="button" class="sidebar-btn" id="btnToggleFiltrosPopover" onclick="toggleFiltrosPopover(event)" title="Filtros de Avaliações" aria-label="Abrir Filtros">
+                        <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                        </svg>
+                        <span class="sidebar-text">Filtros</span>
+                        <span class="sidebar-badge-dot" id="filtroAtivoDot" style="display: none;" title="Filtro ativo"></span>
+                    </button>
+
+                    <!-- Modal Popover Ancorado ao Ícone de Filtros -->
+                    <div class="popover-filtros-modal" id="popoverFiltros" onclick="event.stopPropagation()">
+                        <div class="popover-header">
+                            <div class="popover-title">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                                </svg>
+                                <span>Filtros de Avaliações</span>
+                            </div>
+                            <button type="button" class="popover-close-btn" onclick="fecharFiltrosPopover()" aria-label="Fechar Filtros">&times;</button>
+                        </div>
+                        <form id="formFiltrosAvaliacoes" class="popover-form" onsubmit="event.preventDefault(); aplicarFiltrosAvaliacoes();">
+                            <div class="popover-field">
+                                <label for="filtroTurma">Turma:</label>
+                                <select id="filtroTurma" class="form-control glass-input">
+                                    <option value="todas">Todas as Turmas</option>
+                                    {% for t in turmas %}
+                                    <option value="{{ t.nome }}">{{ t.nome }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="popover-field">
+                                <label for="filtroTipo">Tipo de Avaliação:</label>
+                                <select id="filtroTipo" class="form-control glass-input">
+                                    <option value="todos">Todos os Tipos</option>
+                                    <option value="Teste">Teste</option>
+                                    <option value="Exercícios">Exercícios</option>
+                                    <option value="Prova">Prova</option>
+                                </select>
+                            </div>
+                            <div class="popover-field">
+                                <label for="filtroBusca">Buscar por Título:</label>
+                                <input type="text" id="filtroBusca" class="form-control glass-input" placeholder="Ex: Passé Composé, Pronoms...">
+                            </div>
+                            <div class="popover-actions">
+                                <button type="button" class="btn btn-primary btn-apply-filter" onclick="aplicarFiltrosAvaliacoes()">
+                                    Aplicar Filtros
+                                </button>
+                                <button type="button" class="btn-clear-filter" onclick="limparFiltrosAvaliacoes()" title="Redefinir filtros">
+                                    Limpar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="sidebar-divider"></div>
+
+                <!-- 2. Nova Avaliação -->
+                <button type="button" id="btnNovaAvaliacaoSidebar" class="sidebar-btn" onclick="abrirModalNovaAvaliacao()" title="Criar Nova Avaliação (Teste, Exercícios, Prova)" aria-label="Nova Avaliação">
+                    <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    <span class="sidebar-text">Nova Avaliação</span>
+                </button>
+
+                <!-- 3. Copiloto IA (Abre o Gerador de Exercícios em Modal) -->
+                <button type="button" id="btnCopilotoSidebar" class="sidebar-btn" onclick="abrirModalCopiloto()" title="Copiloto IA: Gerador de Exercícios FLE" aria-label="Copiloto IA">
+                    <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                        <rect x="9" y="9" width="6" height="6"></rect>
+                        <line x1="9" y1="1" x2="9" y2="4"></line>
+                        <line x1="15" y1="1" x2="15" y2="4"></line>
+                        <line x1="9" y1="20" x2="9" y2="23"></line>
+                        <line x1="15" y1="20" x2="15" y2="23"></line>
+                        <line x1="20" y1="9" x2="23" y2="9"></line>
+                        <line x1="20" y1="14" x2="23" y2="14"></line>
+                        <line x1="1" y1="9" x2="4" y2="9"></line>
+                        <line x1="1" y1="14" x2="4" y2="14"></line>
+                    </svg>
+                    <span class="sidebar-text">Copiloto IA</span>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Cabeçalho Principal com Moldura Hero Card e Faixa Tricolor Francesa -->
+    <div class="hero-card-outer dashboard-hero-outer card-moldura-outer avaliacoes-hero-outer" id="avaliacoesHeroCard">
+        <div class="dashboard-hero-card hero-card-inner">
+            <span class="hero-tag">
+                <svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>Évaluations & Examens • FLE
+            </span>
+            <h1 class="hero-title">Gestão de Avaliações</h1>
+            <p class="hero-description">
+                Crie, acompanhe e gerencie testes rápidos, listas de exercícios e exames formais com avaliação pedagógica e inteligência artificial.
+            </p>
+            <div class="hero-quick-meta" style="display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 0.85rem;">
+                <span style="font-size: 0.82rem; background: rgba(56, 189, 248, 0.12); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 9999px; padding: 4px 14px; font-weight: 600;">
+                    📋 {{ avaliacoes|length if avaliacoes else 0 }} Avaliações Cadastradas
+                </span>
+                <span style="font-size: 0.82rem; background: rgba(245, 158, 11, 0.12); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 9999px; padding: 4px 14px; font-weight: 600;">
+                    ⏳ {{ pendentes|length if pendentes else 0 }} Correções Manuais Pendentes
+                </span>
+                <span style="font-size: 0.82rem; background: rgba(99, 102, 241, 0.12); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 9999px; padding: 4px 14px; font-weight: 600;">
+                    👥 {{ turmas|length if turmas else 0 }} Turmas Atendidas
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela de Submissões Pendentes (Provas Orais) Envolvida por Moldura Translúcida -->
+    <div class="dashboard-box-outer hero-card-outer card-moldura-outer pendentes-box-outer" id="pendentesBoxOuter">
+        <div class="table-card table-box-inner" id="cardTabelaPendentes">
+            <div class="table-card-header pendentes-table-header" style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; border-bottom: 1.5px solid rgba(255,255,255,0.08);">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="badge-status" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.35); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; padding: 3px 8px; border-radius: 6px;">
+                        <svg class="line-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 3px; vertical-align: text-top;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>Revisão Manual
+                    </span>
+                    <h3 class="table-title" style="margin: 0; font-size: 1.05rem; font-weight: 700;">Aguardando Revisão Manual (Provas Orais)</h3>
+                </div>
+                <span class="badge-count" style="font-size: 0.8rem; padding: 3px 10px; border-radius: 12px; background: rgba(245, 158, 11, 0.15); color: #f59e0b; font-weight: 700;">
+                    {{ pendentes|length if pendentes else 0 }} pendência{{ 's' if (pendentes|length if pendentes else 0) != 1 else '' }}
+                </span>
+            </div>
+            <div class="table-responsive" style="margin: 0; padding: 0;">
+                {% if pendentes %}
+                <table class="dash-table-zebra" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th style="text-align: center; padding: 12px 16px;">Aluno</th>
+                            <th style="text-align: center; padding: 12px 16px;">Avaliação</th>
+                            <th style="text-align: center; padding: 12px 16px;">Tipo de Questão</th>
+                            <th style="text-align: center; padding: 12px 16px;">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in pendentes %}
+                        <tr class="zebra-row">
+                            <td style="text-align: center; padding: 12px 16px; font-weight: 600;">{{ p.aluno_nome }}</td>
+                            <td style="text-align: center; padding: 12px 16px;">{{ p.avaliacao_nome }}</td>
+                            <td style="text-align: center; padding: 12px 16px;">
+                                <span class="badge-tag-clean">{{ p.tipo_questao }}</span>
+                            </td>
+                            <td style="text-align: center; padding: 12px 16px;">
+                                <a href="/professor/correcao/{{ p.id }}" class="btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 4px; text-decoration: none;">
+                                    <svg class="line-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>Corrigir
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="text-muted" style="text-align: center; padding: 2rem 0; margin: 0;">Nenhuma correção manual pendente no momento.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela de Avaliações Ativas Envolvida por Moldura Translúcida -->
+    <div class="dashboard-box-outer hero-card-outer card-moldura-outer avaliacoes-box-outer" id="avaliacoesBoxOuter">
+        <div class="table-card table-box-inner" id="secaoTabelaAvaliacoes">
+            <div class="table-card-header avaliacoes-table-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 1rem 1.25rem; border-bottom: 1.5px solid rgba(255,255,255,0.08);">
+                <div class="table-header-left" style="display: flex; align-items: center; gap: 8px;">
+                    <span class="badge-status" style="background: rgba(99, 102, 241, 0.15); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.35); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; padding: 3px 8px; border-radius: 6px;">
+                        <svg class="line-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 3px; vertical-align: text-top;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>Cadastradas
+                    </span>
+                    <h3 class="table-title" style="margin: 0; font-size: 1.05rem; font-weight: 700;">Avaliações Cadastradas</h3>
+                    <span class="text-muted" style="font-size: 0.85rem;" id="infoFiltroAtivoTexto"></span>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button type="button" class="btn-secondary btn-sm" onclick="toggleFiltrosPopover(event)">
+                        <svg class="line-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>Filtrar
+                    </button>
+                    <button type="button" class="btn-primary btn-sm" onclick="abrirModalNovaAvaliacao()" style="display: inline-flex; align-items: center; gap: 4px;">
+                        <svg class="line-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>Nova Avaliação
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-responsive" style="margin: 0; padding: 0;">
+                <table class="dash-table-zebra" id="tabelaAvaliacoes" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th style="text-align: center; padding: 12px 14px; width: 65px;">ID</th>
+                            <th style="text-align: center; padding: 12px 14px;">Título</th>
+                            <th style="text-align: center; padding: 12px 14px; width: 130px;">Tipo</th>
+                            <th style="text-align: center; padding: 12px 14px;">Turma</th>
+                            <th style="text-align: center; padding: 12px 14px; width: 130px;">Data Limite</th>
+                            <th style="text-align: center; padding: 12px 14px; width: 130px;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpoTabelaAvaliacoes">
+                        {% for a in avaliacoes %}
+                        <tr class="zebra-row linha-avaliacao" data-turma="{{ a.turma_nome }}" data-tipo="{{ a.tipo }}" data-titulo="{{ a.titulo|lower }}">
+                            <td style="text-align: center; padding: 12px 14px; font-weight: 700; color: var(--text-muted);">#{{ a.id }}</td>
+                            <td style="text-align: center; padding: 12px 14px; font-weight: 600; color: var(--text-light);">{{ a.titulo }}</td>
+                            <td style="text-align: center; padding: 12px 14px;">
+                                {% set t_clean = a.tipo|lower %}
+                                {% if 'teste' in t_clean %}
+                                <span class="badge-tipo-avaliacao badge-teste">Teste</span>
+                                {% elif 'exercício' in t_clean or 'exercicio' in t_clean %}
+                                <span class="badge-tipo-avaliacao badge-exercicios">Exercícios</span>
+                                {% else %}
+                                <span class="badge-tipo-avaliacao badge-prova">Prova</span>
+                                {% endif %}
+                            </td>
+                            <td style="text-align: center; padding: 12px 14px;">{{ a.turma_nome }}</td>
+                            <td style="text-align: center; padding: 12px 14px;">
+                                <span class="date-display" title="{{ a.data_limite|data_hora_br }}" style="cursor: help;">
+                                    {{ a.data_limite|data_br }}
+                                </span>
+                            </td>
+                            <td style="text-align: center; padding: 12px 14px;">
+                                <button type="button" class="btn-secondary btn-sm" onclick="verResultadosProva({{ a.id }}, '{{ a.titulo | e }}')" title="Ver submissões dos alunos desta avaliação">
+                                    <svg class="line-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="3" r="3"></circle></svg>Resultados
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <!-- Rodapé com Paginação da Tabela -->
+                <div class="table-pagination-footer" id="paginacaoAvaliacoes" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-top: 1px solid rgba(255,255,255,0.06); flex-wrap: wrap; gap: 10px;">
+                    <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-muted);">
+                        <span>Linhas por página:</span>
+                        <select id="seletorQtdLinhas" class="glass-input" style="padding: 3px 8px; font-size: 0.85rem; border-radius: 6px;" onchange="mudarQtdLinhas(this.value)">
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                        </select>
+                        <span id="infoPaginacaoTexto" style="margin-left: 8px;"></span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <button type="button" class="btn-secondary btn-sm pagination-btn" id="btnPaginaAnterior" onclick="paginaAnterior()" title="Página anterior">
+                            <svg class="line-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>Anterior
+                        </button>
+                        <span id="indicadorPaginaAtual" style="font-size: 0.85rem; padding: 0 6px; font-weight: 600;">1 / 1</span>
+                        <button type="button" class="btn-secondary btn-sm pagination-btn" id="btnProximaPagina" onclick="proximaPagina()" title="Próxima página">
+                            Próxima<svg class="line-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 4px; vertical-align: text-bottom;"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block modals %}
+<!-- =====================================================================
+     MODAIS RENDERIZADOS NO ROOT (ISOLADOS DE QUALQUER STACKING CONTEXT)
+     ===================================================================== -->
+
+<!-- 1. MODAL REFORMULADO: NOVA AVALIAÇÃO (TESTE, EXERCÍCIOS E PROVAS) -->
+<div id="modalNovaAvaliacao" class="modal hidden">
+    <div class="modal-dialog modal-lg" style="max-width: 840px;">
+        <div class="modal-content" style="border-radius: 18px; max-height: calc(100vh - 100px); display: flex; flex-direction: column;">
+            <div class="modal-header">
+                <div>
+                    <h3 class="modal-title" style="display: flex; align-items: center; gap: 8px;">
+                        <svg class="line-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                        Criar Nova Avaliação
+                    </h3>
+                    <p class="modal-subtitle text-muted">Selecione o tipo e gere com IA ou monte as questões para a turma.</p>
+                </div>
+                <button class="btn-close-modal" onclick="fecharModalNovaAvaliacao()">&times;</button>
+            </div>
+
+            <div style="padding: 24px; overflow-y: auto; flex: 1;">
+                <!-- 1. SELETOR DE TIPO DE AVALIAÇÃO (Teste, Exercícios, Prova) -->
+                <label class="form-label" style="font-weight: 700; margin-bottom: 8px; display: block;">
+                    1. Tipo de Avaliação:
+                </label>
+                <div class="evaluation-type-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px;">
+                    <!-- Opção: Teste -->
+                    <div class="eval-type-card" id="cardTipoTeste" onclick="selecionarTipoAvaliacao('Teste')">
+                        <div class="eval-type-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                        </div>
+                        <div class="eval-type-title">Teste</div>
+                        <div class="eval-type-desc">Verificação rápida de conjugação e estruturas</div>
+                    </div>
+
+                    <!-- Opção: Exercícios (Padrão) -->
+                    <div class="eval-type-card active" id="cardTipoExercicios" onclick="selecionarTipoAvaliacao('Exercícios')">
+                        <div class="eval-type-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                        </div>
+                        <div class="eval-type-title">Exercícios</div>
+                        <div class="eval-type-desc">Lista prática de fixação gramatical e vocabulário</div>
+                    </div>
+
+                    <!-- Opção: Prova -->
+                    <div class="eval-type-card" id="cardTipoProva" onclick="selecionarTipoAvaliacao('Prova')">
+                        <div class="eval-type-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+                        </div>
+                        <div class="eval-type-title">Prova</div>
+                        <div class="eval-type-desc">Exame formal multimodal (escrita, ditado e fala)</div>
+                    </div>
+                </div>
+                <input type="hidden" id="na_tipo" value="Exercícios">
+
+                <!-- 2. CAMPOS GERAIS DA AVALIAÇÃO (COM LISTA DE TEMAS) -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                    <div>
+                        <label class="form-label" for="na_tema">
+                            <span class="label-icon"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg></span>
+                            Tópico Gramatical / Tema:
+                        </label>
+                        <!-- Lista Dropdown com todos os temas do banco de dados -->
+                        <select id="na_tema" class="form-input" onchange="aoMudarTemaModal()">
+                            {% for tema in temas %}
+                            <option value="{{ tema['nome_tema'] }}">{{ tema['nome_tema'] }}</option>
+                            {% endfor %}
+                            <option value="__outro__">+ Outro tema personalizado...</option>
+                        </select>
+                        <input type="text" id="na_tema_custom" class="form-input hidden" placeholder="Digite o tema personalizado..." style="margin-top: 8px;" oninput="atualizarSugestaoTitulo()">
+                    </div>
+                    <div>
+                        <label class="form-label" for="na_titulo">Título da Avaliação:</label>
+                        <input type="text" id="na_titulo" class="form-input" placeholder="Ex: Exercícios: Le Passé Composé">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 16px;">
+                    <div>
+                        <label class="form-label" for="na_nivel">Nível CEFR:</label>
+                        <select id="na_nivel" class="form-input">
+                            <option value="A1">A1 • Débutant</option>
+                            <option value="A2" selected>A2 • Élémentaire</option>
+                            <option value="B1">B1 • Intermédiaire</option>
+                            <option value="B2">B2 • Avancé</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label" for="na_turma_id">Turma de Destino:</label>
+                        <select id="na_turma_id" class="form-input">
+                            {% for t in turmas %}
+                            <option value="{{ t.id }}">{{ t.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label" for="na_data_limite">Data Limite de Envio:</label>
+                        <input type="datetime-local" id="na_data_limite" class="form-input">
+                    </div>
+                </div>
+
+                <!-- 2.1 CONFIGURAÇÃO DE QUANTIDADE E TIPOS DE PERGUNTAS -->
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px 16px; margin-bottom: 16px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1.3fr; gap: 18px; align-items: flex-start;">
+                        <!-- 01 - Quantidade de Perguntas -->
+                        <div>
+                            <label class="form-label" for="na_quantidade" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                <span style="display: inline-flex; align-items: center; gap: 5px;">
+                                    <svg class="line-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                                    Quantidade de Perguntas:
+                                </span>
+                            </label>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <input type="number" id="na_quantidade" class="form-input" min="1" max="20" value="4" style="width: 70px; text-align: center; font-weight: 700; height: 38px;" onchange="aoMudarQuantidadeQuestoes()">
+                                <div class="quick-qty-pills">
+                                    <button type="button" class="btn-qty-pill" onclick="definirQuantidadeQuestoes(3)">3</button>
+                                    <button type="button" class="btn-qty-pill active" onclick="definirQuantidadeQuestoes(4)">4</button>
+                                    <button type="button" class="btn-qty-pill" onclick="definirQuantidadeQuestoes(5)">5</button>
+                                    <button type="button" class="btn-qty-pill" onclick="definirQuantidadeQuestoes(8)">8</button>
+                                    <button type="button" class="btn-qty-pill" onclick="definirQuantidadeQuestoes(10)">10</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 02 - Tipos de Perguntas -->
+                        <div>
+                            <label class="form-label" for="na_formato_questoes" style="margin-bottom: 6px;">
+                                <span style="display: inline-flex; align-items: center; gap: 5px;">
+                                    <svg class="line-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                                    Tipos de Perguntas:
+                                </span>
+                            </label>
+                            <select id="na_formato_questoes" class="form-input" style="height: 38px;">
+                                <option value="aleatorio" selected>🎲 Aleatório / Misto (Sortear formatos variados)</option>
+                                <option value="multipla_escolha">🔘 Múltipla Escolha (QCM - a, b, c, d)</option>
+                                <option value="verdadeiro_falso">⚖️ Verdadeiro ou Falso (Vrai ou Faux)</option>
+                                <option value="complete">✏️ Complete a Frase / Lacunas (Texte à trous)</option>
+                                <option value="traducao">🔄 Tradução (Português ➔ Francês)</option>
+                                <option value="ditado">🎧 Compreensão Oral / Ditado FLE</option>
+                                <option value="leitura_oral">🗣️ Expressão Oral / Leitura em Voz Alta</option>
+                                <option value="dissertativa">📝 Dissertativa / Resposta Curta</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 03 - BARRA DE PONTUAÇÃO (PROVA E AVALIAÇÕES) -->
+                <div id="barraPontuacaoAvaliacao" class="score-management-bar">
+                    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        <span style="font-size: 0.88rem; font-weight: 700; color: var(--text-light); display: inline-flex; align-items: center; gap: 5px;">
+                            <svg class="line-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #38bdf8;"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>
+                            Pontuação da Prova:
+                        </span>
+                        <span id="badgePontuacaoTotal" class="badge-score-total">
+                            Total: 10.0 pts
+                        </span>
+                        <span id="statusPontuacaoTexto" style="font-size: 0.8rem; font-weight: 600; color: #10b981;">
+                            ✓ Total fecha em 10.0 pts
+                        </span>
+                    </div>
+                    <button type="button" class="btn-distribuir-pontos" onclick="distribuirPontosIgualmente(10.0)" title="Recalcular pontos de cada questão para somar exatamente 10.0 pontos">
+                        <svg class="line-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                        Distribuir 10.0 pts igualmente
+                    </button>
+                </div>
+
+                <!-- 3. GERAÇÃO DE QUESTÕES COM IA OU ADIÇÃO MANUAL -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin: 1.2rem 0 0.8rem 0; flex-wrap: wrap; gap: 10px;">
+                    <span style="font-weight: 700; font-size: 0.95rem; color: var(--text-light);">
+                        2. Questões da Avaliação:
+                    </span>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" id="btnGerarQuestoesModal" class="btn-primary btn-sm" onclick="gerarQuestoesModalIA()" style="display: inline-flex; align-items: center; gap: 5px;">
+                            <svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                            <span id="btnGerarQuestoesModalTexto">Gerar com IA</span>
+                        </button>
+                        <button type="button" class="btn-secondary btn-sm" onclick="adicionarQuestaoManualModal()" style="display: inline-flex; align-items: center; gap: 5px;">
+                            <svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>+ Questão Manual
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Lista de Questões Prontas / Editáveis -->
+                <div id="containerQuestoesModal" style="display: flex; flex-direction: column; gap: 12px; min-height: 120px;">
+                    <div id="emptyQuestoesAviso" style="text-align: center; padding: 2rem; background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.1); border-radius: 12px; color: var(--text-muted);">
+                        Clique em <strong>"Gerar com IA"</strong> ou <strong>"+ Questão Manual"</strong> para montar as questões da avaliação.
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+                <span id="na_total_questoes_badge" style="font-size: 0.85rem; color: var(--text-muted);">0 questões cadastradas</span>
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" class="btn-secondary" onclick="fecharModalNovaAvaliacao()">Cancelar</button>
+                    <button type="button" id="btnSalvarNovaAvaliacao" class="btn-primary" onclick="salvarNovaAvaliacaoFinal()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                        <svg class="line-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px; vertical-align: text-bottom;"><polyline points="20 6 9 17 4 12"></polyline></svg>Salvar e Publicar para os Alunos
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 2. MODAL DEDICADO: COPILOTO PEDAGÓGICO IA (GERADOR DE EXERCÍCIOS) -->
+<div id="modalCopiloto" class="modal hidden">
+    <div class="modal-dialog modal-lg" style="max-width: 860px;">
+        <div class="modal-content" style="border-radius: 18px; max-height: calc(100vh - 100px); display: flex; flex-direction: column;">
+            <div class="modal-header">
+                <div class="table-header-left">
+                    <div class="risk-title-badge-wrap">
+                        <span class="copiloto-badge"><svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>IA Pédagogique FLE</span>
+                        <h3 class="modal-title">Copiloto Pedagógico: Gerador de Exercícios</h3>
+                    </div>
+                    <p class="modal-subtitle text-muted">Crie sugestões práticas de exercícios com Google Gemini, revise os enunciados e publique para a turma ou salve no banco.</p>
+                </div>
+                <button class="btn-close-modal" onclick="fecharModalCopiloto()">&times;</button>
+            </div>
+
+            <div class="copiloto-body" style="padding: 24px; overflow-y: auto; flex: 1;">
+                <!-- Formulário de Parâmetros de Geração -->
+                <form id="formCopiloto" class="copiloto-form-grid" onsubmit="gerarExerciciosCopiloto(event)">
+                    <div class="form-group">
+                        <label for="copiloto_tema" class="form-label">
+                            <span class="label-icon"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg></span> Tópico Gramatical / Tema:
+                        </label>
+                        <select id="copiloto_tema" name="tema_id" class="form-input" required>
+                            {% for tema in temas %}
+                            <option value="{{ tema['id'] }}" data-nome="{{ tema['nome_tema'] }}">{{ tema['nome_tema'] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="copiloto_nivel" class="form-label">
+                            <span class="label-icon"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="2" r="2"></circle></svg></span> Nível CEFR Alvo:
+                        </label>
+                        <select id="copiloto_nivel" name="nivel" class="form-input" required>
+                            <option value="A1">A1 • Débutant</option>
+                            <option value="A2" selected>A2 • Élémentaire</option>
+                            <option value="B1">B1 • Intermédiaire</option>
+                            <option value="B2">B2 • Avancé</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="copiloto_turma" class="form-label">
+                            <span class="label-icon"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span> Turma de Destino:
+                        </label>
+                        <select id="copiloto_turma" name="turma_id" class="form-input" required>
+                            {% for t in turmas %}
+                            <option value="{{ t.id }}">{{ t.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="copiloto_quantidade" class="form-label">
+                            <span class="label-icon"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></svg></span> Quantidade:
+                        </label>
+                        <input type="number" id="copiloto_quantidade" name="quantidade" class="form-input" min="1" max="8" value="3" required>
+                    </div>
+
+                    <div class="form-group copiloto-action-group" style="grid-column: 1 / -1;">
+                        <button type="submit" id="btnGerarCopiloto" class="btn-primary btn-copiloto-generate" style="width: 100%;">
+                            <span class="btn-spinner hidden" id="spinnerCopiloto"></span>
+                            <span id="btnGerarCopilotoTexto"><svg class="line-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px; vertical-align: text-bottom;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>Gerar Sugestões de Exercícios com IA</span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Área de Pré-visualização de Exercícios Editáveis -->
+                <div id="preview-exercicios" class="preview-exercicios-container hidden" style="margin-top: 1.5rem;">
+                    <div class="preview-header">
+                        <div class="preview-title-wrap">
+                            <span class="preview-count-badge" id="previewCountBadge">0 sugestões</span>
+                            <h4 class="preview-title">Exercícios Sugeridos pela IA (Revise ou Edite antes de Publicar)</h4>
+                        </div>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <button type="button" id="btnPublicarTurmaExercicios" class="btn-primary hidden" onclick="publicarExerciciosParaTurma()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                                <svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px; vertical-align: text-bottom;"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                                <span>Publicar para os Alunos</span>
+                            </button>
+                            <button type="button" id="btnSalvarExercicios" class="btn-secondary btn-save-questions hidden" onclick="salvarExerciciosNoBanco()">
+                                <svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px; vertical-align: text-bottom;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                                <span>Salvar no Banco Geral</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="listaCardsExercicios" class="lista-cards-exercicios"></div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="fecharModalCopiloto()">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 3. MODAL RESULTADOS DA AVALIAÇÃO -->
+<div id="modalResultadosProva" class="modal hidden">
+    <div class="modal-dialog modal-lg" style="max-width: 900px;">
+        <div class="modal-content" style="border-radius: 16px; max-height: calc(100vh - 100px); display: flex; flex-direction: column;">
+            <div class="modal-header">
+                <div>
+                    <h3 class="modal-title" id="tituloResultadosProva"><svg class="line-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>Resultados da Avaliação</h3>
+                    <p class="modal-subtitle text-muted" id="subtituloResultadosProva">Submissões dos alunos</p>
+                </div>
+                <button class="btn-close-modal" onclick="fecharResultadosProva()">&times;</button>
+            </div>
+            <div id="conteudoResultadosProva" style="padding: 20px; overflow-y: auto; flex: 1;">
+                <p class="text-muted">Carregando submissões...</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="fecharResultadosProva()">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    /* =====================================================================
+       CONTROLADOR DA BARRA LATERAL & POPOVER DE FILTROS
+       ===================================================================== */
+    function toggleFiltrosPopover(event) {
+        if (event) event.stopPropagation();
+        const pop = document.getElementById('popoverFiltros');
+        if (pop) pop.classList.toggle('open');
+    }
+
+    function fecharFiltrosPopover() {
+        const pop = document.getElementById('popoverFiltros');
+        if (pop) pop.classList.remove('open');
+    }
+
+    document.addEventListener('click', function(e) {
+        const pop = document.getElementById('popoverFiltros');
+        const btn = document.getElementById('btnToggleFiltrosPopover');
+        if (pop && pop.classList.contains('open')) {
+            if (!pop.contains(e.target) && (!btn || !btn.contains(e.target))) {
+                pop.classList.remove('open');
+            }
+        }
+    });
+
+    /* =====================================================================
+       ABRIR E FECHAR MODAL DO COPILOTO PEDAGÓGICO
+       ===================================================================== */
+    function abrirModalCopiloto() {
+        const m = document.getElementById('modalCopiloto');
+        if (m) {
+            m.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function fecharModalCopiloto() {
+        const m = document.getElementById('modalCopiloto');
+        if (m) {
+            m.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+    }
+
+    /* =====================================================================
+       PAGINAÇÃO & FILTRAGEM DINÂMICA DA TABELA DE AVALIAÇÕES
+       ===================================================================== */
+    let linhasPorPagina = 10;
+    let paginaAtual = 1;
+    let filtroTurmaAtual = 'todas';
+    let filtroTipoAtual = 'todos';
+    let filtroBuscaAtual = '';
+
+    function aplicarFiltrosAvaliacoes() {
+        filtroTurmaAtual = document.getElementById('filtroTurma').value.trim();
+        filtroTipoAtual = document.getElementById('filtroTipo').value.trim();
+        filtroBuscaAtual = document.getElementById('filtroBusca').value.trim().toLowerCase();
+
+        const dot = document.getElementById('filtroAtivoDot');
+        const infoTexto = document.getElementById('infoFiltroAtivoTexto');
+        const filtroAtivo = (filtroTurmaAtual !== 'todas' || filtroTipoAtual !== 'todos' || filtroBuscaAtual !== '');
+
+        if (dot) dot.style.display = filtroAtivo ? 'inline-block' : 'none';
+
+        if (infoTexto) {
+            if (filtroAtivo) {
+                infoTexto.textContent = `(Filtrado por: ${filtroTurmaAtual !== 'todas' ? 'Turma ' + filtroTurmaAtual : ''} ${filtroTipoAtual !== 'todos' ? 'Tipo ' + filtroTipoAtual : ''} ${filtroBuscaAtual ? 'Busca: "' + filtroBuscaAtual + '"' : ''})`;
+            } else {
+                infoTexto.textContent = '';
+            }
+        }
+
+        paginaAtual = 1;
+        renderizarTabelaPaginada();
+        fecharFiltrosPopover();
+    }
+
+    function limparFiltrosAvaliacoes() {
+        document.getElementById('filtroTurma').value = 'todas';
+        document.getElementById('filtroTipo').value = 'todos';
+        document.getElementById('filtroBusca').value = '';
+        aplicarFiltrosAvaliacoes();
+    }
+
+    function mudarQtdLinhas(val) {
+        linhasPorPagina = parseInt(val) || 10;
+        paginaAtual = 1;
+        renderizarTabelaPaginada();
+    }
+
+    function paginaAnterior() {
+        if (paginaAtual > 1) {
+            paginaAtual--;
+            renderizarTabelaPaginada();
+        }
+    }
+
+    function proximaPagina() {
+        const totalPaginas = calcularTotalPaginas();
+        if (paginaAtual < totalPaginas) {
+            paginaAtual++;
+            renderizarTabelaPaginada();
+        }
+    }
+
+    function obterLinhasFiltradas() {
+        const todasLinhas = Array.from(document.querySelectorAll('#corpoTabelaAvaliacoes .linha-avaliacao'));
+        return todasLinhas.filter(linha => {
+            const tNome = linha.getAttribute('data-turma') || '';
+            const tTipo = (linha.getAttribute('data-tipo') || '').toLowerCase();
+            const tTitulo = (linha.getAttribute('data-titulo') || '').toLowerCase();
+
+            const matchTurma = (filtroTurmaAtual === 'todas' || tNome.trim() === filtroTurmaAtual);
+            let matchTipo = true;
+            if (filtroTipoAtual !== 'todos') {
+                matchTipo = tTipo.includes(filtroTipoAtual.toLowerCase());
+            }
+            const matchBusca = (!filtroBuscaAtual || tTitulo.includes(filtroBuscaAtual));
+
+            return matchTurma && matchTipo && matchBusca;
+        });
+    }
+
+    function calcularTotalPaginas() {
+        const filtradas = obterLinhasFiltradas();
+        return Math.max(1, Math.ceil(filtradas.length / linhasPorPagina));
+    }
+
+    function renderizarTabelaPaginada() {
+        const todasLinhas = Array.from(document.querySelectorAll('#corpoTabelaAvaliacoes .linha-avaliacao'));
+        const filtradas = obterLinhasFiltradas();
+        const totalPaginas = Math.max(1, Math.ceil(filtradas.length / linhasPorPagina));
+
+        if (paginaAtual > totalPaginas) paginaAtual = totalPaginas;
+
+        // Oculta todas as linhas inicialmente
+        todasLinhas.forEach(l => l.style.display = 'none');
+
+        // Exibe apenas as da página atual
+        const inicio = (paginaAtual - 1) * linhasPorPagina;
+        const fim = inicio + linhasPorPagina;
+        const visiveis = filtradas.slice(inicio, fim);
+        visiveis.forEach(l => l.style.display = '');
+
+        // Atualizar info
+        const infoTexto = document.getElementById('infoPaginacaoTexto');
+        if (infoTexto) {
+            const startNum = filtradas.length === 0 ? 0 : inicio + 1;
+            const endNum = Math.min(filtradas.length, fim);
+            infoTexto.textContent = `Mostrando ${startNum} a ${endNum} de ${filtradas.length} avaliações`;
+        }
+
+        const indPag = document.getElementById('indicadorPaginaAtual');
+        if (indPag) indPag.textContent = `${paginaAtual} / ${totalPaginas}`;
+
+        const btnAnt = document.getElementById('btnPaginaAnterior');
+        const btnProx = document.getElementById('btnProximaPagina');
+        if (btnAnt) btnAnt.disabled = (paginaAtual <= 1);
+        if (btnProx) btnProx.disabled = (paginaAtual >= totalPaginas);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        // Inicializa data limite default para 7 dias a frente
+        const inputData = document.getElementById('na_data_limite');
+        if (inputData) {
+            const d = new Date();
+            d.setDate(d.getDate() + 7);
+            d.setHours(23, 59, 0, 0);
+            inputData.value = d.toISOString().slice(0, 16);
+        }
+        renderizarTabelaPaginada();
+    });
+
+    /* =====================================================================
+       MODAL NOVA AVALIAÇÃO: TESTES, EXERCÍCIOS E PROVAS
+       ===================================================================== */
+    let questoesNovaAvaliacao = [];
+
+    function abrirModalNovaAvaliacao() {
+        const m = document.getElementById('modalNovaAvaliacao');
+        if (m) {
+            m.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            atualizarSugestaoTitulo();
+        }
+    }
+
+    function fecharModalNovaAvaliacao() {
+        const m = document.getElementById('modalNovaAvaliacao');
+        if (m) {
+            m.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+    }
+
+    function selecionarTipoAvaliacao(tipo) {
+        document.getElementById('na_tipo').value = tipo;
+        document.getElementById('cardTipoTeste').classList.toggle('active', tipo === 'Teste');
+        document.getElementById('cardTipoExercicios').classList.toggle('active', tipo === 'Exercícios');
+        document.getElementById('cardTipoProva').classList.toggle('active', tipo === 'Prova');
+        
+        const barraPontos = document.getElementById('barraPontuacaoAvaliacao');
+        if (barraPontos) {
+            barraPontos.classList.toggle('prova-mode', tipo === 'Prova');
+        }
+        atualizarSugestaoTitulo();
+    }
+
+    function definirQuantidadeQuestoes(qtd) {
+        document.getElementById('na_quantidade').value = qtd;
+        document.querySelectorAll('.quick-qty-pills .btn-qty-pill').forEach(btn => {
+            btn.classList.toggle('active', parseInt(btn.textContent.trim()) === qtd);
+        });
+    }
+
+    function aoMudarQuantidadeQuestoes() {
+        const val = parseInt(document.getElementById('na_quantidade').value) || 4;
+        document.querySelectorAll('.quick-qty-pills .btn-qty-pill').forEach(btn => {
+            btn.classList.toggle('active', parseInt(btn.textContent.trim()) === val);
+        });
+    }
+
+    function aoMudarTemaModal() {
+        const select = document.getElementById('na_tema');
+        const customInput = document.getElementById('na_tema_custom');
+        if (select.value === '__outro__') {
+            customInput.classList.remove('hidden');
+            customInput.focus();
+        } else {
+            customInput.classList.add('hidden');
+        }
+        atualizarSugestaoTitulo();
+    }
+
+    function obterTemaSelecionadoModal() {
+        const select = document.getElementById('na_tema');
+        const customInput = document.getElementById('na_tema_custom');
+        if (select && select.value === '__outro__') {
+            return customInput.value.trim() || 'Grammaire';
+        }
+        return select ? select.value.trim() : 'Grammaire';
+    }
+
+    function atualizarSugestaoTitulo() {
+        const tipo = document.getElementById('na_tipo').value || 'Exercícios';
+        const tema = obterTemaSelecionadoModal();
+        const tituloInput = document.getElementById('na_titulo');
+        if (tema) {
+            tituloInput.value = `${tipo}: ${tema}`;
+        } else {
+            tituloInput.value = `${tipo} de Francês`;
+        }
+    }
+
+    function calcularPontuacaoTotal() {
+        let total = 0;
+        questoesNovaAvaliacao.forEach(q => {
+            total += parseFloat(q.pontuacao_maxima !== undefined ? q.pontuacao_maxima : 2.5);
+        });
+        return Math.round(total * 100) / 100;
+    }
+
+    function atualizarControlesPontuacao() {
+        const total = calcularPontuacaoTotal();
+        const badge = document.getElementById('badgePontuacaoTotal');
+        const status = document.getElementById('statusPontuacaoTexto');
+        if (badge) badge.textContent = `Total: ${total.toFixed(1)} pts`;
+        if (status) {
+            if (Math.abs(total - 10.0) < 0.05) {
+                status.innerHTML = `<span style="color: #10b981; font-weight: 700;">✓ Total fecha em 10.0 pts</span>`;
+            } else if (total > 0) {
+                status.innerHTML = `<span style="color: #f59e0b; font-weight: 700;">⚠️ Soma: ${total.toFixed(1)} pts (Recomendado: 10.0 pts)</span>`;
+            } else {
+                status.innerHTML = `<span style="color: var(--text-muted);">0.0 pts</span>`;
+            }
+        }
+    }
+
+    function atualizarPontuacaoQuestao(idx, valor) {
+        if (questoesNovaAvaliacao[idx]) {
+            questoesNovaAvaliacao[idx].pontuacao_maxima = parseFloat(valor) || 0;
+            atualizarControlesPontuacao();
+        }
+    }
+
+    function distribuirPontosIgualmente(totalDesejado = 10.0, deveRenderizar = true) {
+        const n = questoesNovaAvaliacao.length;
+        if (n === 0) return;
+        const base = Math.floor((totalDesejado / n) * 10) / 10;
+        let soma = 0;
+        for (let i = 0; i < n - 1; i++) {
+            questoesNovaAvaliacao[i].pontuacao_maxima = base;
+            soma += base;
+        }
+        // O último item recebe a diferença para fechar com precisão decimal
+        questoesNovaAvaliacao[n - 1].pontuacao_maxima = Math.round((totalDesejado - soma) * 10) / 10;
+        if (deveRenderizar) {
+            renderizarQuestoesModal();
+            mostrarToast(`Pontuação distribuída igualmente: ${totalDesejado.toFixed(1)} pts!`, "sucesso");
+        } else {
+            atualizarControlesPontuacao();
+        }
+    }
+
+    function alterarTipoQuestaoIndividual(idx, novoTipo) {
+        if (questoesNovaAvaliacao[idx]) {
+            questoesNovaAvaliacao[idx].tipo_questao = novoTipo;
+            renderizarQuestoesModal();
+        }
+    }
+
+    async function gerarQuestoesModalIA() {
+        const tipo = document.getElementById('na_tipo').value;
+        const tema = obterTemaSelecionadoModal();
+        const nivel = document.getElementById('na_nivel').value;
+        const quantidade = parseInt(document.getElementById('na_quantidade').value) || 4;
+        const formato_questoes = document.getElementById('na_formato_questoes').value || 'aleatorio';
+        const btn = document.getElementById('btnGerarQuestoesModal');
+        const btnTexto = document.getElementById('btnGerarQuestoesModalTexto');
+
+        btn.disabled = true;
+        btnTexto.textContent = "Gerando com Gemini...";
+
+        try {
+            const resp = await fetch("/api/gerar_prova_completa_ia", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({ tema, nivel, tipo, quantidade, formato_questoes })
+            });
+            const data = await resp.json();
+
+            if (data.status === "sucesso" && Array.isArray(data.questoes) && data.questoes.length > 0) {
+                questoesNovaAvaliacao = data.questoes;
+                distribuirPontosIgualmente(10.0, false);
+                renderizarQuestoesModal();
+                mostrarToast(`${questoesNovaAvaliacao.length} questões (${formato_questoes}) geradas com IA!`, "sucesso");
+            } else {
+                mostrarToast("Não foi possível gerar as questões no momento.", "erro");
+            }
+        } catch (e) {
+            console.error(e);
+            mostrarToast("Erro de comunicação com o servidor.", "erro");
+        } finally {
+            btn.disabled = false;
+            btnTexto.textContent = "Gerar com IA";
+        }
+    }
+
+    function adicionarQuestaoManualModal() {
+        const formatoPref = document.getElementById('na_formato_questoes').value;
+        let tipoQ = formatoPref;
+        if (tipoQ === 'aleatorio') {
+            const opcoes = ['complete', 'multipla_escolha', 'verdadeiro_falso', 'traducao', 'exercicio'];
+            tipoQ = opcoes[Math.floor(Math.random() * opcoes.length)];
+        }
+
+        let enunciadoPadrao = "Complétez la phrase suivante en français :";
+        let textoRef = "";
+
+        if (tipoQ === 'multipla_escolha') {
+            enunciadoPadrao = 'Choisissez l\'option correcte : "Hier, nous ___ au cinéma ensemble."\n(a) sommes allés\n(b) avons allés\n(c) sommes allé\n(d) ont allé';
+        } else if (tipoQ === 'verdadeiro_falso') {
+            enunciadoPadrao = 'Indiquez si l\'affirmation est Vraie (Vrai) ou Fausse (Faux) et justifiez : "Le verbe \'partir\' utilise l\'auxiliaire \'avoir\' au passé composé."';
+        } else if (tipoQ === 'complete') {
+            enunciadoPadrao = 'Complétez avec la forme correcte du verbe entre parenthèses : "Demain matin, ils ___ (partir) pour Paris."';
+        } else if (tipoQ === 'traducao') {
+            enunciadoPadrao = 'Traduza para o francês a seguinte frase:';
+            textoRef = 'Ontem nós compramos pão na padaria.';
+        } else if (tipoQ === 'ditado') {
+            enunciadoPadrao = 'Ouça o áudio com atenção e transcreva a frase em francês:';
+            textoRef = 'Nous avons passé de très bonnes vacances en France.';
+        } else if (tipoQ === 'leitura_oral') {
+            enunciadoPadrao = 'Leia o texto em voz alta com boa articulação e ritmo:';
+            textoRef = 'Bonjour, je voudrais une baguette et deux croissants s\'il vous plaît.';
+        }
+
+        questoesNovaAvaliacao.push({
+            tipo_questao: tipoQ,
+            enunciado: enunciadoPadrao,
+            texto_referencia: textoRef,
+            pontuacao_maxima: 2.5
+        });
+
+        distribuirPontosIgualmente(10.0, false);
+        renderizarQuestoesModal();
+    }
+
+    function removerQuestaoModal(index) {
+        questoesNovaAvaliacao.splice(index, 1);
+        distribuirPontosIgualmente(10.0, false);
+        renderizarQuestoesModal();
+    }
+
+    function renderizarQuestoesModal() {
+        const container = document.getElementById('containerQuestoesModal');
+        const badgeTotal = document.getElementById('na_total_questoes_badge');
+
+        if (questoesNovaAvaliacao.length === 0) {
+            container.innerHTML = `
+                <div id="emptyQuestoesAviso" style="text-align: center; padding: 2rem; background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.1); border-radius: 12px; color: var(--text-muted);">
+                    Clique em <strong>"Gerar com IA"</strong> ou <strong>"+ Questão Manual"</strong> para montar as questões da avaliação.
+                </div>
+            `;
+            if (badgeTotal) badgeTotal.textContent = "0 questões cadastradas";
+            atualizarControlesPontuacao();
+            return;
+        }
+
+        const totalPts = calcularPontuacaoTotal();
+        if (badgeTotal) badgeTotal.textContent = `${questoesNovaAvaliacao.length} questão(ões) • Total: ${totalPts.toFixed(1)} pts`;
+
+        let html = '';
+        questoesNovaAvaliacao.forEach((q, idx) => {
+            const tipoAtual = (q.tipo_questao || 'exercicio').toLowerCase();
+            const ptsAtual = q.pontuacao_maxima !== undefined ? q.pontuacao_maxima : 2.5;
+
+            html += `
+                <div class="exercise-editable-item" style="margin-bottom: 0;">
+                    <div class="exercise-item-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="exercise-num-badge">Questão #${idx + 1}</span>
+                            <select class="form-input" style="padding: 3px 8px; font-size: 0.8rem; border-radius: 6px; width: auto; font-weight: 600;" 
+                                onchange="alterarTipoQuestaoIndividual(${idx}, this.value)">
+                                <option value="multipla_escolha" ${tipoAtual === 'multipla_escolha' ? 'selected' : ''}>🔘 Múltipla Escolha</option>
+                                <option value="verdadeiro_falso" ${tipoAtual === 'verdadeiro_falso' ? 'selected' : ''}>⚖️ Verdadeiro ou Falso</option>
+                                <option value="complete" ${tipoAtual === 'complete' ? 'selected' : ''}>✏️ Complete a Frase</option>
+                                <option value="traducao" ${tipoAtual === 'traducao' ? 'selected' : ''}>🔄 Tradução</option>
+                                <option value="ditado" ${tipoAtual === 'ditado' ? 'selected' : ''}>🎧 Ditado FLE</option>
+                                <option value="leitura_oral" ${tipoAtual === 'leitura_oral' ? 'selected' : ''}>🗣️ Expressão Oral</option>
+                                <option value="exercicio" ${(tipoAtual === 'exercicio' || tipoAtual === 'teste' || tipoAtual === 'dissertativa' || tipoAtual === 'conjugacao') ? 'selected' : ''}>📝 Dissertativa / Prática</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div class="question-score-input-wrap">
+                                <label style="font-size: 0.75rem; font-weight: 700; color: #38bdf8; margin: 0;">Pontos:</label>
+                                <input type="number" step="0.25" min="0" max="100" class="score-input"
+                                    value="${ptsAtual}" 
+                                    oninput="atualizarPontuacaoQuestao(${idx}, this.value)">
+                                <span style="font-size: 0.75rem; color: var(--text-muted);">pts</span>
+                            </div>
+                            <button type="button" class="btn-remove-preview" onclick="removerQuestaoModal(${idx})" title="Remover questão">&times;</button>
+                        </div>
+                    </div>
+                    <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 3px;">
+                        Enunciado com a instrução / frase da questão:
+                    </label>
+                    <textarea class="form-textarea exercise-editable-textarea" rows="2" 
+                        placeholder="Enunciado com a frase ou alternativas da questão..." 
+                        oninput="questoesNovaAvaliacao[${idx}].enunciado = this.value">${escapeHtml(q.enunciado || '')}</textarea>
+                    ${(tipoAtual === 'ditado' || tipoAtual === 'leitura_oral' || tipoAtual === 'traducao' || q.texto_referencia) ? `
+                        <div style="margin-top: 8px;">
+                            <label style="font-size: 0.78rem; font-weight: 600; color: #38bdf8; display: block; margin-bottom: 3px;">
+                                ${tipoAtual === 'traducao' ? 'Frase em Português para Traduzir:' : 
+                                  tipoAtual === 'ditado' ? 'Frase em Francês para o Áudio do Ditado:' :
+                                  tipoAtual === 'leitura_oral' ? 'Frase/Texto em Francês para Leitura Oral:' : 'Frase/Contexto de Referência:'}
+                            </label>
+                            <input type="text" class="form-input" style="font-size: 0.85rem; padding: 6px 10px; width: 100%; border-radius: 6px;"
+                                placeholder="Insira o texto de referência ou áudio..." 
+                                value="${escapeHtml(q.texto_referencia || '')}" 
+                                oninput="questoesNovaAvaliacao[${idx}].texto_referencia = this.value">
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+        atualizarControlesPontuacao();
+    }
+
+    async function salvarNovaAvaliacaoFinal() {
+        const tipo = document.getElementById('na_tipo').value;
+        const tema = obterTemaSelecionadoModal();
+        let titulo = document.getElementById('na_titulo').value.trim();
+        const turmaId = document.getElementById('na_turma_id').value;
+        let dataLimite = document.getElementById('na_data_limite').value;
+        const btnSalvar = document.getElementById('btnSalvarNovaAvaliacao');
+
+        if (!titulo) {
+            titulo = `${tipo}: ${tema || 'Prática de Francês'}`;
+        }
+
+        if (questoesNovaAvaliacao.length === 0) {
+            alert("Por favor, gere ou adicione pelo menos uma questão antes de salvar.");
+            return;
+        }
+
+        if (!dataLimite) {
+            dataLimite = "2026-12-31 23:59:00";
+        } else {
+            dataLimite = dataLimite.replace('T', ' ') + ':00';
+        }
+
+        btnSalvar.disabled = true;
+        btnSalvar.innerText = "Publicando para a turma...";
+
+        try {
+            const resp = await fetch("/api/salvar_avaliacao", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    titulo: titulo,
+                    tipo: tipo,
+                    turma_id: parseInt(turmaId),
+                    data_limite: dataLimite,
+                    questoes: questoesNovaAvaliacao
+                })
+            });
+
+            const data = await resp.json();
+
+            if (resp.ok && data.status === "sucesso") {
+                alert(`Avaliação de ${tipo} salva e publicada para a turma com sucesso! O formulário de respostas já está disponível para os alunos.`);
+                window.location.reload();
+            } else {
+                alert("Erro ao salvar avaliação: " + (data.mensagem || "Falha"));
+                btnSalvar.disabled = false;
+                btnSalvar.innerHTML = `<svg class="line-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px; vertical-align: text-bottom;"><polyline points="20 6 9 17 4 12"></polyline></svg>Salvar e Publicar para os Alunos`;
+            }
+        } catch (e) {
+            alert("Erro de conexão: " + e);
+            btnSalvar.disabled = false;
+            btnSalvar.innerHTML = `<svg class="line-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px; vertical-align: text-bottom;"><polyline points="20 6 9 17 4 12"></polyline></svg>Salvar e Publicar para os Alunos`;
+        }
+    }
+
+    /* =====================================================================
+       CO-PILOTO: PUBLICAÇÃO DIRETA PARA TURMA DE EXERCÍCIOS
+       ===================================================================== */
+    async function publicarExerciciosParaTurma() {
+        const temaSelect = document.getElementById("copiloto_tema");
+        const turmaSelect = document.getElementById("copiloto_turma");
+        const textareas = document.querySelectorAll("#listaCardsExercicios .exercise-editable-textarea");
+        const btnPublicar = document.getElementById("btnPublicarTurmaExercicios");
+
+        const temaNome = temaSelect ? temaSelect.options[temaSelect.selectedIndex].getAttribute("data-nome") || temaSelect.value : "Exercícios";
+        const turmaId = turmaSelect ? turmaSelect.value : 1;
+        const turmaNome = turmaSelect ? turmaSelect.options[turmaSelect.selectedIndex].text : "Turma";
+
+        const exercicios = [];
+        textareas.forEach(t => {
+            const v = t.value.trim();
+            if (v) exercicios.push(v);
+        });
+
+        if (exercicios.length === 0) {
+            mostrarToast("Gere e mantenha pelo menos um exercício antes de publicar.", "erro");
+            return;
+        }
+
+        const d = new Date();
+        d.setDate(d.getDate() + 7);
+        const dataLimite = d.toISOString().slice(0, 10) + " 23:59:00";
+
+        const questoesFormatadas = exercicios.map(ex => ({
+            tipo_questao: "exercicio",
+            enunciado: ex,
+            texto_referencia: "",
+            pontuacao_maxima: 2.5
+        }));
+
+        try {
+            if (btnPublicar) {
+                btnPublicar.disabled = true;
+                btnPublicar.innerHTML = `<span>Publicando para ${escapeHtml(turmaNome)}...</span>`;
+            }
+
+            const response = await fetch("/api/salvar_avaliacao", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    titulo: `Exercícios: ${temaNome}`,
+                    tipo: "Exercícios",
+                    turma_id: parseInt(turmaId),
+                    data_limite: dataLimite,
+                    questoes: questoesFormatadas
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.status === "sucesso") {
+                mostrarToast(`Atividade de Exercícios publicada com sucesso para ${turmaNome}!`, "sucesso");
+                setTimeout(() => window.location.reload(), 1400);
+            } else {
+                mostrarToast(data.mensagem || "Erro ao publicar atividade.", "erro");
+                if (btnPublicar) {
+                    btnPublicar.disabled = false;
+                    btnPublicar.innerHTML = `<span>Tentar Novamente</span>`;
+                }
+            }
+        } catch (err) {
+            console.error(err);
+            mostrarToast("Falha de conexão com o servidor.", "erro");
+            if (btnPublicar) {
+                btnPublicar.disabled = false;
+                btnPublicar.innerHTML = `<span>Tentar Novamente</span>`;
+            }
+        }
+    }
+
+    /* =====================================================================
+       MODAL RESULTADOS DA AVALIAÇÃO
+       ===================================================================== */
+    function fecharResultadosProva() {
+        const m = document.getElementById('modalResultadosProva');
+        if (m) {
+            m.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+    }
+
+    async function verResultadosProva(avaliacaoId, titulo) {
+        document.getElementById('tituloResultadosProva').innerHTML = `<svg class="line-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>Resultados: ${escapeHtml(titulo)}`;
+        document.getElementById('subtituloResultadosProva').innerText = `Avaliação #${avaliacaoId}`;
+        const container = document.getElementById('conteudoResultadosProva');
+        container.innerHTML = '<p class="text-muted">Carregando submissões...</p>';
+        
+        const m = document.getElementById('modalResultadosProva');
+        if (m) {
+            m.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        try {
+            const resp = await fetch(`/api/avaliacoes/${avaliacaoId}/submissoes`);
+            const data = await resp.json();
+
+            if (data.status !== 'sucesso') {
+                container.innerHTML = `<p style="color: var(--danger);">${escapeHtml(data.mensagem || 'Erro ao carregar dados.')}</p>`;
+                return;
+            }
+
+            const submissoes = data.submissoes;
+            if (!submissoes || submissoes.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-muted);">Nenhum aluno respondeu a esta avaliação ainda.</div>';
+                return;
+            }
+
+            let html = `
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid rgba(255,255,255,0.1); text-align: left;">
+                            <th style="padding: 8px;">Aluno</th>
+                            <th style="padding: 8px;">Questão / Tipo</th>
+                            <th style="padding: 8px;">Resposta</th>
+                            <th style="padding: 8px;">Status / Nota</th>
+                            <th style="padding: 8px;">Feedback IA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            submissoes.forEach(s => {
+                let statusBadge = '';
+                if (s.status_resposta === 'Correto') {
+                    statusBadge = '<span style="color: var(--success, #22c55e); font-weight: 500; display: inline-flex; align-items: center; gap: 4px;"><svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>Correto</span>';
+                } else if (s.status_resposta === 'Incorreto') {
+                    statusBadge = '<span style="color: var(--danger, #ef4444); font-weight: 500; display: inline-flex; align-items: center; gap: 4px;"><svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>Incorreto</span>';
+                } else {
+                    statusBadge = `<span style="color: var(--warning, #f59e0b); font-weight: 500; display: inline-flex; align-items: center; gap: 4px;"><svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>${escapeHtml(s.status_resposta)}</span>`;
+                }
+
+                let notaInfo = '';
+                if (s.nota_professor !== null && s.nota_professor !== undefined) {
+                    notaInfo = `<br><small style="color: #60a5fa;">Nota Prof: ${s.nota_professor}/10</small>`;
+                }
+
+                let respostaConteudo = '';
+                if (s.tipo_questao === 'Oral' && s.arquivo_audio_path) {
+                    respostaConteudo = `<audio controls style="height: 30px; width: 160px;"><source src="/${s.arquivo_audio_path}" type="audio/webm">Áudio</audio>`;
+                } else {
+                    respostaConteudo = `<span style="font-family: monospace;">${escapeHtml(s.resposta_aluno || '-')}</span>`;
+                }
+
+                html += `
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <td style="padding: 8px;">
+                            <strong>${escapeHtml(s.aluno_nome)}</strong><br>
+                            <small class="text-muted">${escapeHtml(s.matricula)}</small>
+                        </td>
+                        <td style="padding: 8px; max-width: 220px;">
+                            <span style="font-size: 0.75rem; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px;">${escapeHtml(s.tipo_questao)}</span>
+                            <div style="font-size: 0.82rem; margin-top: 4px; color: var(--text-light);">${escapeHtml(s.enunciado || '')}</div>
+                        </td>
+                        <td style="padding: 8px;">${respostaConteudo}</td>
+                        <td style="padding: 8px;">${statusBadge}${notaInfo}</td>
+                        <td style="padding: 8px; font-size: 0.8rem; max-width: 200px; color: var(--text-muted);">${escapeHtml(s.feedback_ia || '-')}</td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        } catch (e) {
+            container.innerHTML = `<p style="color: var(--danger);">Erro de conexão ao carregar resultados: ${escapeHtml(String(e))}</p>`;
+        }
+    }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        return String(text)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    /* =====================================================================
+       CO-PILOTO PEDAGÓGICO: GERADOR DE EXERCÍCIOS COM IA
+       ===================================================================== */
+    function mostrarToast(mensagem, tipo = "info") {
+        const container = document.getElementById("toastNotification");
+        if (!container) return;
+
+        container.textContent = mensagem;
+        container.className = `toast-notification visible ${tipo}`;
+
+        if (window._toastTimer) clearTimeout(window._toastTimer);
+        window._toastTimer = setTimeout(() => {
+            container.className = "toast-notification";
+        }, 3800);
+    }
+
+    async function gerarExerciciosCopiloto(event) {
+        if (event) event.preventDefault();
+
+        const temaSelect = document.getElementById("copiloto_tema");
+        const nivelSelect = document.getElementById("copiloto_nivel");
+        const quantInput = document.getElementById("copiloto_quantidade");
+        const btnGerar = document.getElementById("btnGerarCopiloto");
+        const btnTexto = document.getElementById("btnGerarCopilotoTexto");
+        const spinner = document.getElementById("spinnerCopiloto");
+        const previewContainer = document.getElementById("preview-exercicios");
+        const listaCards = document.getElementById("listaCardsExercicios");
+        const btnSalvar = document.getElementById("btnSalvarExercicios");
+        const btnPublicar = document.getElementById("btnPublicarTurmaExercicios");
+        const countBadge = document.getElementById("previewCountBadge");
+
+        const tema = temaSelect ? temaSelect.value : "";
+        const nivel = nivelSelect ? nivelSelect.value : "A2";
+        const quantidade = quantInput ? parseInt(quantInput.value, 10) || 3 : 3;
+
+        try {
+            if (btnGerar) btnGerar.disabled = true;
+            if (spinner) spinner.classList.remove("hidden");
+            if (btnTexto) btnTexto.textContent = "Gerando sugestões com Gemini...";
+
+            const response = await fetch("/api/copiloto/gerar_exercicio", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({ tema_id: tema, nivel, quantidade })
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.status === "sucesso" && Array.isArray(data.exercicios) && data.exercicios.length > 0) {
+                if (listaCards) {
+                    listaCards.innerHTML = "";
+                    data.exercicios.forEach((enunciado, index) => {
+                        const card = document.createElement("div");
+                        card.className = "exercise-editable-item";
+                        card.innerHTML = `
+                            <div class="exercise-item-header">
+                                <span class="exercise-num-badge">Item #${index + 1}</span>
+                                <span class="exercise-item-meta">${escapeHtml(data.tema)} • Nível ${escapeHtml(data.nivel)}</span>
+                                <button type="button" class="btn-remove-preview" onclick="removerExercicioPreview(this)" title="Remover este item">&times;</button>
+                            </div>
+                            <textarea class="form-textarea exercise-editable-textarea" rows="2" placeholder="Enunciado do exercício...">${escapeHtml(enunciado)}</textarea>
+                        `;
+                        listaCards.appendChild(card);
+                    });
+                }
+
+                if (countBadge) {
+                    countBadge.textContent = `${data.exercicios.length} sugestões prontas`;
+                }
+
+                if (previewContainer) {
+                    previewContainer.classList.remove("hidden");
+                    previewContainer.scrollIntoView({ behavior: "smooth", block: "nearest" });
+                }
+
+                if (btnSalvar) btnSalvar.classList.remove("hidden");
+                if (btnPublicar) btnPublicar.classList.remove("hidden");
+
+                mostrarToast(`${data.exercicios.length} exercícios gerados com sucesso pelo Gemini!`, "sucesso");
+            } else {
+                mostrarToast(data.mensagem || "Falha ao gerar exercícios com IA.", "erro");
+            }
+        } catch (err) {
+            console.error("Erro ao gerar exercícios com Co-piloto:", err);
+            mostrarToast("Falha de comunicação com o servidor.", "erro");
+        } finally {
+            if (btnGerar) btnGerar.disabled = false;
+            if (spinner) spinner.classList.add("hidden");
+            if (btnTexto) btnTexto.innerHTML = '<svg class="line-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px; vertical-align: text-bottom;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>Gerar Sugestões de Exercícios com IA';
+        }
+    }
+
+    function removerExercicioPreview(btn) {
+        const card = btn.closest(".exercise-editable-item");
+        if (card) {
+            card.remove();
+            const listaCards = document.getElementById("listaCardsExercicios");
+            const countBadge = document.getElementById("previewCountBadge");
+            const btnSalvar = document.getElementById("btnSalvarExercicios");
+            const btnPublicar = document.getElementById("btnPublicarTurmaExercicios");
+            const items = listaCards ? listaCards.querySelectorAll(".exercise-editable-item") : [];
+
+            if (countBadge) {
+                countBadge.textContent = `${items.length} sugestões`;
+            }
+
+            if (items.length === 0) {
+                if (btnSalvar) btnSalvar.classList.add("hidden");
+                if (btnPublicar) btnPublicar.classList.add("hidden");
+            }
+        }
+    }
+
+    async function salvarExerciciosNoBanco() {
+        const temaSelect = document.getElementById("copiloto_tema");
+        const nivelSelect = document.getElementById("copiloto_nivel");
+        const btnSalvar = document.getElementById("btnSalvarExercicios");
+        const textareas = document.querySelectorAll("#listaCardsExercicios .exercise-editable-textarea");
+
+        const tema = temaSelect ? temaSelect.value : "Geral";
+        const nivel = nivelSelect ? nivelSelect.value : "A2";
+        const exercicios = [];
+
+        textareas.forEach(t => {
+            const val = t.value.trim();
+            if (val) exercicios.push(val);
+        });
+
+        if (exercicios.length === 0) {
+            mostrarToast("Nenhum exercício válido na lista para salvar.", "erro");
+            return;
+        }
+
+        try {
+            if (btnSalvar) {
+                btnSalvar.disabled = true;
+                btnSalvar.innerHTML = `<span>Salvando no banco...</span>`;
+            }
+
+            const response = await fetch("/api/copiloto/salvar_exercicios", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({ tema_id: tema, nivel, exercicios })
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.status === "sucesso") {
+                mostrarToast(data.mensagem || "Exercícios salvos no banco geral com sucesso!", "sucesso");
+                if (btnSalvar) {
+                    btnSalvar.innerHTML = `<span>Salvo no Banco Geral!</span>`;
+                    setTimeout(() => {
+                        btnSalvar.innerHTML = `<svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px; vertical-align: text-bottom;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg><span>Salvar no Banco Geral</span>`;
+                        btnSalvar.disabled = false;
+                    }, 2400);
+                }
+            } else {
+                mostrarToast(data.mensagem || "Erro ao salvar no banco de dados.", "erro");
+                if (btnSalvar) btnSalvar.disabled = false;
+            }
+        } catch (err) {
+            console.error("Erro ao salvar exercícios:", err);
+            mostrarToast("Falha de comunicação com o servidor.", "erro");
+            if (btnSalvar) btnSalvar.disabled = false;
+        }
+    }
+</script>
+
+<style>
+/* =====================================================================
+   ESTILOS ESPECÍFICOS PARA GESTÃO DE AVALIAÇÕES & BADGES
+   ===================================================================== */
+.badge-tipo-avaliacao {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: capitalize;
+    letter-spacing: 0.3px;
+}
+.badge-teste {
+    background: rgba(139, 92, 246, 0.18);
+    color: #c4b5fd;
+    border: 1px solid rgba(139, 92, 246, 0.35);
+}
+.badge-exercicios {
+    background: rgba(16, 185, 129, 0.18);
+    color: #6ee7b7;
+    border: 1px solid rgba(16, 185, 129, 0.35);
+}
+.badge-prova {
+    background: rgba(245, 158, 11, 0.18);
+    color: #fcd34d;
+    border: 1px solid rgba(245, 158, 11, 0.35);
+}
+
+[data-theme="light"] .badge-teste {
+    background: rgba(139, 92, 246, 0.15);
+    color: #6d28d9;
+    border-color: rgba(139, 92, 246, 0.4);
+}
+[data-theme="light"] .badge-exercicios {
+    background: rgba(16, 185, 129, 0.15);
+    color: #047857;
+    border-color: rgba(16, 185, 129, 0.4);
+}
+[data-theme="light"] .badge-prova {
+    background: rgba(245, 158, 11, 0.15);
+    color: #b45309;
+    border-color: rgba(245, 158, 11, 0.4);
+}
+
+/* Efeito Zebra para linhas de tabela */
+.dash-table-zebra thead th {
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+}
+[data-theme="light"] .dash-table-zebra thead th {
+    border-bottom: 2px solid #e2e8f0;
+    color: #64748b;
+}
+
+.zebra-row:nth-child(even) {
+    background: rgba(255, 255, 255, 0.02);
+}
+.zebra-row:nth-child(odd) {
+    background: transparent;
+}
+.zebra-row:hover {
+    background: rgba(56, 189, 248, 0.06);
+}
+[data-theme="light"] .zebra-row:nth-child(even) {
+    background: rgba(241, 245, 249, 0.6);
+}
+[data-theme="light"] .zebra-row:nth-child(odd) {
+    background: #ffffff;
+}
+[data-theme="light"] .zebra-row:hover {
+    background: rgba(14, 165, 233, 0.08);
+}
+
+/* Seletor de Tipo no Modal de Nova Avaliação */
+.eval-type-card {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    padding: 14px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    user-select: none;
+}
+.eval-type-card:hover {
+    border-color: rgba(56, 189, 248, 0.4);
+    background: rgba(56, 189, 248, 0.06);
+    transform: translateY(-2px);
+}
+.eval-type-card.active {
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.14);
+    box-shadow: 0 0 16px rgba(56, 189, 248, 0.2);
+}
+.eval-type-icon {
+    color: #38bdf8;
+    margin-bottom: 6px;
+}
+.eval-type-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text-light);
+    margin-bottom: 2px;
+}
+.eval-type-desc {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    line-height: 1.3;
+}
+
+[data-theme="light"] .eval-type-card {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+[data-theme="light"] .eval-type-card:hover {
+    background: #f0f9ff;
+    border-color: #0284c7;
+}
+[data-theme="light"] .eval-type-card.active {
+    background: #e0f2fe;
+    border-color: #0284c7;
+    box-shadow: 0 0 14px rgba(2, 132, 199, 0.15);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+</style>
+
+<div id="toastNotification" class="toast-notification"></div>
+{% endblock %}

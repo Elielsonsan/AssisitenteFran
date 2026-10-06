@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Login | Assistente Fran — Mini-LMS de Língua Francesa{% endblock %}
+
+{% block content %}
+<div class="page-container auth-page">
+    <!-- Header Hero Card: Efeito de um card sobre outro (Borda de Vidro externa com Card interno) -->
+    <div class="hero-card-outer card-moldura-outer auth-hero-outer auth-hero-card" id="authHeroCard">
+        <div class="hero-card-inner auth-hero-inner">
+            <span class="hero-tag"><svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>Portail Étudiant • Français FLE</span>
+            <h1 class="hero-title">Bem-vindo ao Assistente Fran</h1>
+            <p class="hero-description">
+                Acesse seu ambiente de aprendizagem com sua <strong>matrícula</strong> e <strong>senha</strong> para praticar francês e receber feedback formativo inteligente em tempo real.
+            </p>
+        </div>
+    </div>
+
+    <!-- Card de Autenticação com Moldura Translúcida (Borda de Vidro Externa) -->
+    <div class="auth-wrapper">
+        <div class="hero-card-outer card-moldura-outer auth-box-outer" id="authBoxOuter">
+            <div class="auth-card auth-box-inner" id="authCard">
+            <div class="auth-card-header">
+                <div class="logo-icon french-flag-border auth-logo" style="background: transparent; border: none; box-shadow: none; padding: 0;">
+                    <img src="/imagens/logo_fran1.png" style="width: 100%; height: 100%; object-fit: contain;" alt="Logo Fran">
+                </div>
+                <h2 class="auth-heading">Connexion</h2>
+                <span class="auth-sub">Acesse seu ambiente de aprendizagem</span>
+            </div>
+
+            <!-- Alerta de Erro de Autenticação -->
+            {% if erro %}
+            <div class="auth-alert error">
+                <div class="alert-icon"><svg class="line-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>
+                <div class="alert-content">
+                    <strong>Atenção:</strong> {{ erro }}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Formulário de Login -->
+            <form action="/login" method="POST" class="auth-form">
+                <!-- Seletor de Perfil -->
+                <div class="profile-selector" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <label style="flex: 1; padding: 10px; text-align: center; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer;" id="label-aluno" class="profile-active">
+                        <input type="radio" name="tipo_acesso" value="aluno" checked onchange="trocarPerfil()" style="display:none;">
+                        <span style="display: inline-flex; align-items: center; justify-content: center; gap: 6px;"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>Sou Aluno</span>
+                    </label>
+                    <label style="flex: 1; padding: 10px; text-align: center; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer;" id="label-prof">
+                        <input type="radio" name="tipo_acesso" value="professor" onchange="trocarPerfil()" style="display:none;">
+                        <span style="display: inline-flex; align-items: center; justify-content: center; gap: 6px;"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>Sou Professor</span>
+                    </label>
+                </div>
+
+                <div class="form-group" id="group-matricula">
+                    <label for="matricula" class="form-label">
+                        <span class="label-icon"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg></span>
+                        Matrícula Escolar
+                    </label>
+                    <input 
+                        type="text" 
+                        id="matricula" 
+                        name="matricula" 
+                        class="form-input" 
+                        placeholder="Digite sua matrícula (ex: 202601)" 
+                        value="{{ request.form.get('matricula', '') }}"
+                        autofocus
+                    >
+                </div>
+
+                <div class="form-group hidden" id="group-usuario">
+                    <label for="usuario" class="form-label">
+                        <span class="label-icon"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span>
+                        Usuário do Professor
+                    </label>
+                    <input 
+                        type="text" 
+                        id="usuario" 
+                        name="usuario" 
+                        class="form-input" 
+                        placeholder="Digite seu usuário de professor" 
+                        value="{{ request.form.get('usuario', '') }}"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="senha" class="form-label">
+                        <span class="label-icon"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
+                        Senha de Acesso
+                    </label>
+                    <div class="password-input-wrap">
+                        <input 
+                            type="password" 
+                            id="senha" 
+                            name="senha" 
+                            class="form-input" 
+                            placeholder="Sua senha de 6 dígitos" 
+                            required
+                        >
+                        <button type="button" class="btn-toggle-password" onclick="toggleVisibilidadeSenha()" title="Mostrar/Ocultar Senha">
+                            <svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary auth-submit-btn">
+                        <span>Entrar no Ambiente de Francês</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Card de Apoio com Credenciais de Demonstração Pré-Cadastradas -->
+            <div class="demo-accounts-box">
+                <div class="demo-accounts-header">
+                    <svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);"><line x1="9" y1="18" x2="15" y2="18"></line><line x1="10" y1="22" x2="14" y2="22"></line><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path></svg>
+                    <strong>Contas de Demonstração (Clique para Preencher):</strong>
+                </div>
+                <div class="demo-accounts-grid">
+                    <button type="button" class="demo-account-pill" onclick="preencherCredenciais('202601', '123456', 'aluno')">
+                        <span class="demo-name">Lucas Silva</span>
+                        <span class="demo-badge">1º Ano A</span>
+                        <span class="demo-cred">Mat: 202601</span>
+                    </button>
+                    <button type="button" class="demo-account-pill" onclick="preencherCredenciais('202602', '123456', 'aluno')">
+                        <span class="demo-name">Camila Rodrigues</span>
+                        <span class="demo-badge">1º Ano A</span>
+                        <span class="demo-cred">Mat: 202602</span>
+                    </button>
+                    <button type="button" class="demo-account-pill" onclick="preencherCredenciais('admin', 'admin', 'professor')" style="border-color: var(--primary-color);">
+                        <span class="demo-name">Prof. Admin</span>
+                        <span class="demo-badge highlight">Professor</span>
+                        <span class="demo-cred">Usuário: admin</span>
+                    </button>
+                </div>
+                <span class="demo-hint">* Senha padrão de teste dos alunos: <code>123456</code> | Professor: <code>admin</code></span>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function preencherCredenciais(loginStr, pass, tipo) {
+        document.querySelector(`input[name="tipo_acesso"][value="${tipo}"]`).checked = true;
+        trocarPerfil();
+        
+        if (tipo === 'aluno') {
+            document.getElementById("matricula").value = loginStr;
+        } else {
+            document.getElementById("usuario").value = loginStr;
+        }
+        
+        const inputPass = document.getElementById("senha");
+        if (inputPass) {
+            inputPass.value = pass;
+            inputPass.focus();
+        }
+    }
+
+    function trocarPerfil() {
+        const isAluno = document.querySelector('input[name="tipo_acesso"]:checked').value === "aluno";
+        
+        document.getElementById("group-matricula").classList.toggle("hidden", !isAluno);
+        document.getElementById("group-usuario").classList.toggle("hidden", isAluno);
+        
+        document.getElementById("label-aluno").style.background = isAluno ? "var(--primary-color)" : "transparent";
+        document.getElementById("label-prof").style.background = !isAluno ? "var(--primary-color)" : "transparent";
+        
+        if (isAluno) {
+            document.getElementById("matricula").focus();
+        } else {
+            document.getElementById("usuario").focus();
+        }
+    }
+    
+    // Initialize profile UI
+    document.addEventListener("DOMContentLoaded", () => {
+        trocarPerfil();
+    });
+
+    function toggleVisibilidadeSenha() {
+        const inputPass = document.getElementById("senha");
+        if (!inputPass) return;
+        if (inputPass.type === "password") {
+            inputPass.type = "text";
+        } else {
+            inputPass.type = "password";
+        }
+    }
+</script>
+{% endblock %}
