@@ -38,7 +38,7 @@
             {% endif %}
 
             <!-- Formulário de Login -->
-            <form action="/login" method="POST" class="auth-form">
+            <form action="/login" method="POST" class="auth-form">`n                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <!-- Seletor de Perfil -->
                 <div class="profile-selector" style="display: flex; gap: 10px; margin-bottom: 20px;">
                     <label style="flex: 1; padding: 10px; text-align: center; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer;" id="label-aluno" class="profile-active">

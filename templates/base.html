@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Assistente Fran — Tutor de Língua Francesa com IA{% endblock %}</title>
+    <meta name="description" content="Assistente Fran: Uma plataforma inovadora de ensino de Francês (FLE) potencializada por Inteligência Artificial. Pratique conversação, gramática e muito mais.">`n    <meta property="og:title" content="Assistente Fran — Tutor IA">`n    <meta property="og:description" content="Aprenda francês com inteligência artificial e feedback em tempo real.">`n    <meta property="og:image" content="{{ url_for('static', filename='img/logo_fran.jpg') }}">`n    <title>{% block title %}Assistente Fran — Tutor de Língua Francesa com IA{% endblock %}</title>
     <!-- Google Fonts: Outfit + JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -480,5 +480,5 @@
 
     {% block scripts %}{% endblock %}
     {% block extra_js %}{% endblock %}
-</body>
+    <!-- TOAST CONTAINER -->`n    <div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px;"></div>`n</body>
 </html>

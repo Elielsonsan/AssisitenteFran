@@ -106,7 +106,7 @@ async function gerarNovoDesafioIA() {
 
     } catch (err) {
         console.error("Erro ao gerar desafio:", err);
-        alert("Não foi possível gerar o desafio no momento. Tente novamente.");
+        showToast("Não foi possível gerar o desafio no momento. Tente novamente.", 'erro');
     } finally {
         if (btn) {
             btn.disabled = false;
@@ -140,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const exercicioId = document.getElementById("exercicio_id").value;
 
         if (!tema || !pergunta || !resposta) {
-            alert("Por favor, preencha todos os campos antes de enviar.");
+            showToast("Por favor, preencha todos os campos antes de enviar.");
             return;
         }
 
@@ -183,7 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         } catch (err) {
             console.error("Erro:", err);
-            alert("Erro ao avaliar a resposta: " + err.message);
+            showToast("Erro ao avaliar a resposta: " + err.message, 'erro');
         } finally {
             // 4. Restaurar botão e ocultar loading
             btnSubmit.disabled = false;
@@ -397,12 +397,12 @@ if ('speechSynthesis' in window) {
 
 function falarTextoFrances(texto, btnElement = null) {
     if (!('speechSynthesis' in window)) {
-        alert("Seu navegador não possui suporte à síntese de voz nativa.");
+        showToast("Seu navegador não possui suporte à síntese de voz nativa.");
         return;
     }
 
     if (!texto || !texto.trim()) {
-        alert("Digite ou selecione uma frase em francês para ouvir a pronúncia.");
+        showToast("Digite ou selecione uma frase em francês para ouvir a pronúncia.");
         return;
     }
 
@@ -444,7 +444,7 @@ function ouvirTextoDigitado() {
     const textarea = document.getElementById("resposta_aluno");
     const btn = document.getElementById("btnAudioInput");
     if (!textarea || !textarea.value.trim()) {
-        alert("Digite uma frase em francês no campo abaixo para ouvir a pronúncia.");
+        showToast("Digite uma frase em francês no campo abaixo para ouvir a pronúncia.");
         if (textarea) textarea.focus();
         return;
     }
@@ -456,7 +456,7 @@ function ouvirRespostaSubmetida() {
     const textarea = document.getElementById("resposta_aluno");
     const texto = ultimaRespostaSubmetida || (textarea ? textarea.value : "");
     if (!texto) {
-        alert("Nenhuma frase submetida para reproduzir.");
+        showToast("Nenhuma frase submetida para reproduzir.", 'erro');
         return;
     }
     falarTextoFrances(texto, btn);
@@ -466,7 +466,7 @@ function ouvirEnunciado() {
     const perguntaInput = document.getElementById("pergunta");
     const btn = document.getElementById("btnAudioPergunta");
     if (!perguntaInput || !perguntaInput.value.trim()) {
-        alert("Nenhum exercício carregado para ouvir.");
+        showToast("Nenhum exercício carregado para ouvir.", 'erro');
         return;
     }
     falarTextoFrances(perguntaInput.value, btn);
@@ -481,7 +481,7 @@ let gravandoVoz = false;
 function alternarDitadoVoz() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-        alert("Seu navegador não possui suporte ao reconhecimento de voz nativo.\nRecomendamos usar Google Chrome, Microsoft Edge ou Safari para ditar em francês.");
+        showToast("Seu navegador não possui suporte ao reconhecimento de voz nativo.\nRecomendamos usar Google Chrome, Microsoft Edge ou Safari para ditar em francês.");
         return;
     }
 
@@ -525,7 +525,7 @@ function alternarDitadoVoz() {
         reconhecimentoVoz.onerror = (event) => {
             console.warn("Aviso no reconhecimento de voz:", event.error);
             if (event.error === 'not-allowed') {
-                alert("Acesso ao microfone foi negado. Por favor, libere a permissão no navegador para usar o ditado em francês.");
+                showToast("Acesso ao microfone foi negado. Por favor, libere a permissão no navegador para usar o ditado em francês.", 'erro');
             }
         };
 
@@ -541,7 +541,7 @@ function alternarDitadoVoz() {
 
     } catch (e) {
         console.error("Falha ao iniciar SpeechRecognition:", e);
-        alert("Não foi possível iniciar o microfone no momento.");
+        showToast("Não foi possível iniciar o microfone no momento.", 'erro');
     }
 }
 
@@ -556,7 +556,7 @@ function copiarFeedbackFormativo() {
     const feedbackEl = document.getElementById("feedbackContent");
     const texto = feedbackEl ? feedbackEl.innerText.trim() : "";
     if (!texto) {
-        alert("Nenhum feedback para copiar.");
+        showToast("Nenhum feedback para copiar.", 'erro');
         return;
     }
 
@@ -568,7 +568,7 @@ function copiarFeedbackFormativo() {
             setTimeout(() => { btn.innerHTML = original; }, 2000);
         }
     }).catch(() => {
-        alert("Não foi possível copiar o texto automaticamente.");
+        showToast("Não foi possível copiar o texto automaticamente.", 'erro');
     });
 }
 
@@ -642,7 +642,7 @@ async function aceitarReforco(reforcoId) {
                 setTimeout(() => formCard.classList.remove("highlight-generator"), 1200);
             }
         } else {
-            alert(data.mensagem || "Erro ao carregar o reforço.");
+            showToast(data.mensagem || "Erro ao carregar o reforço.", 'erro');
             if (btn) {
                 btn.disabled = false;
                 btn.innerHTML = originalHtml;
@@ -650,10 +650,33 @@ async function aceitarReforco(reforcoId) {
         }
     } catch (err) {
         console.error("Erro ao aceitar reforço:", err);
-        alert("Erro de conexão ao carregar o exercício de reforço.");
+        showToast("Erro de conexão ao carregar o exercício de reforço.", 'erro');
         if (btn) {
             btn.disabled = false;
             btn.innerHTML = originalHtml;
         }
     }
+}
+
+
+// Sistema Global de Toasts
+function showToast(mensagem, tipo = 'sucesso') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+    const toast = document.createElement('div');
+    const bg = tipo === 'erro' ? '#ef4444' : '#10b981';
+    toast.style.cssText = \ackground: \; color: white; padding: 12px 24px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-size: 0.95rem; font-weight: 500; opacity: 0; transform: translateY(10px); transition: all 0.3s ease;\;
+    toast.innerText = mensagem;
+    container.appendChild(toast);
+    
+    requestAnimationFrame(() => {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateY(0)';
+    });
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        setTimeout(() => toast.remove(), 300);
+    }, 3500);
 }

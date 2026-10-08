@@ -11187,3 +11187,31 @@ h1.hero-title {
     flex: 1 1 auto !important;
     min-width: 0 !important;
 }
+
+
+/* Chat Bubble Style para o Result Card da Fran */
+.result-container .result-card {
+    border-radius: 4px 16px 16px 16px !important;
+    position: relative;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+[data-theme='light'] .result-container .result-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+.result-container .result-card::before {
+    content: '';
+    position: absolute;
+    left: -10px;
+    top: 0;
+    border-top: 10px solid rgba(15, 23, 42, 0.7);
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+}
+[data-theme='light'] .result-container .result-card::before {
+    border-top: 10px solid #ffffff;
+}
+

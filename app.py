@@ -1,13 +1,19 @@
 import os
 from flask import Flask, send_from_directory
+from flask_wtf.csrf import CSRFProtect
+from flask_compress import Compress
 from dotenv import load_dotenv
 
 # Carrega variaveis do arquivo .env
 load_dotenv()
 
 app = Flask(__name__)
+csrf = CSRFProtect(app)
+compress = Compress(app)
+
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'assistente_fran_dev_key_2026')
 app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000 # Cache de 1 ano para arquivos estáticos (Performance)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 

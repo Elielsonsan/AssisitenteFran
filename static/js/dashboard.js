@@ -330,7 +330,7 @@ function ouvirRespostaModal() {
     const modalAnswer = document.getElementById("modalAnswer");
     const texto = modalAnswer ? modalAnswer.textContent : "";
     if (!texto || !texto.trim()) {
-        alert("Nenhuma resposta para reproduzir.");
+        showToast("Nenhuma resposta para reproduzir.", 'erro');
         return;
     }
     falarTextoFrancesDashboard(texto, btn);
@@ -338,7 +338,7 @@ function ouvirRespostaModal() {
 
 function falarTextoFrancesDashboard(texto, btnElement = null) {
     if (!('speechSynthesis' in window)) {
-        alert("Seu navegador não possui suporte à síntese de voz nativa.");
+        showToast("Seu navegador não possui suporte à síntese de voz nativa.");
         return;
     }
 

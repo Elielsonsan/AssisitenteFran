@@ -65,7 +65,7 @@
             </div>
             {% endif %}
 
-            <form id="submissionForm" action="/avaliar" method="POST" class="submission-form">
+            <form id="submissionForm" action="/avaliar" method="POST" class="submission-form">`n                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <!-- Nível CEFR gerenciado pelo professor -->
                 <input type="hidden" id="nivel_cefr" name="nivel_cefr" value="{{ session.get('nivel_cefr', 'A2') }}">
                 <input type="hidden" id="exercicio_id" name="exercicio_id" value="{{ exercicio_inicial.id if exercicio_inicial else '' }}">
@@ -197,7 +197,7 @@
             </div>
 
             <!-- Card de Retorno do Feedback da IA -->
-            <div id="resultContainer" class="result-container hidden">
+            <div id="resultContainer" class="result-container hidden" style="display: flex; gap: 15px; margin-top: 25px;">`n                  <div class="fran-chat-avatar" style="flex-shrink: 0; margin-top: 5px;">`n                      <img src="{{ url_for('static', filename='../imagens/logo_fran1.png') }}" alt="Fran" style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">`n                  </div>
                 <div class="result-card">
                     <div class="result-header">
                         <div class="status-wrapper">
