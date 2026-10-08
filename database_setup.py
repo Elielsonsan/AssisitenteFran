@@ -1,6 +1,5 @@
 import sqlite3
 import os
-import json
 from werkzeug.security import generate_password_hash
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -25,18 +24,10 @@ def init_db():
     cursor.execute("DROP TABLE IF EXISTS exercicios;")
     cursor.execute("DROP TABLE IF EXISTS temas;")
     cursor.execute("DROP TABLE IF EXISTS alunos;")
+    cursor.execute("DROP TABLE IF EXISTS professor_turmas;")
+    cursor.execute("DROP TABLE IF EXISTS professor_disciplinas;")
     cursor.execute("DROP TABLE IF EXISTS professores;")
     cursor.execute("DROP TABLE IF EXISTS turmas;")
-
-    # Tabela: professores
-    cursor.execute("""
-        CREATE TABLE professores (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nome TEXT NOT NULL,
-            usuario TEXT UNIQUE NOT NULL,
-            senha_hash TEXT NOT NULL
-        );
-    """)
 
     # 1. Tabela: turmas
     cursor.execute("""
@@ -46,17 +37,87 @@ def init_db():
         );
     """)
 
-    # 2. Tabela: alunos
+    # 2. Tabela: professores
+    cursor.execute("""
+        CREATE TABLE professores (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome_completo TEXT NOT NULL,
+            nome_social TEXT,
+            cpf TEXT UNIQUE,
+            rg TEXT,
+            data_nascimento TEXT,
+            email TEXT,
+            telefone TEXT,
+            endereco TEXT,
+            cidade_uf TEXT,
+            foto_perfil TEXT,
+            codigo_professor TEXT UNIQUE,
+            formacao_academica TEXT,
+            especializacao TEXT,
+            areas_atuacao TEXT,
+            mini_curriculo TEXT,
+            experiencia_profissional TEXT,
+            certificados_links TEXT,
+            email_acesso TEXT UNIQUE NOT NULL,
+            usuario TEXT UNIQUE NOT NULL,
+            senha_hash TEXT NOT NULL,
+            perfil_acesso TEXT DEFAULT 'Professor',
+            tipo_professor TEXT DEFAULT 'Bilíngue',
+            link_sala_virtual TEXT,
+            perm_lancar_notas BOOLEAN DEFAULT 1,
+            perm_registrar_freq BOOLEAN DEFAULT 1,
+            perm_visualizar_alunos BOOLEAN DEFAULT 1,
+            status_acesso TEXT DEFAULT 'Ativo'
+        );
+    """)
+
+    # Tabelas Relacionais N:N para Professor
+    cursor.execute("""
+        CREATE TABLE professor_disciplinas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            professor_id INTEGER NOT NULL,
+            disciplina TEXT NOT NULL,
+            FOREIGN KEY (professor_id) REFERENCES professores(id) ON DELETE CASCADE
+        );
+    """)
+
+    cursor.execute("""
+        CREATE TABLE professor_turmas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            professor_id INTEGER NOT NULL,
+            turma_id INTEGER NOT NULL,
+            FOREIGN KEY (professor_id) REFERENCES professores(id) ON DELETE CASCADE,
+            FOREIGN KEY (turma_id) REFERENCES turmas(id) ON DELETE CASCADE
+        );
+    """)
+
+    # 3. Tabela: alunos
     cursor.execute("""
         CREATE TABLE alunos (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nome TEXT NOT NULL,
+            nome_completo TEXT NOT NULL,
             matricula TEXT UNIQUE NOT NULL,
+            data_nascimento TEXT,
+            cpf TEXT UNIQUE,
+            telefone TEXT,
+            is_whatsapp BOOLEAN DEFAULT 0,
+            email TEXT,
+            endereco TEXT,
+            data_matricula TEXT DEFAULT CURRENT_TIMESTAMP,
+            resp_legal_nome TEXT,
+            resp_legal_parentesco TEXT,
+            resp_legal_cpf TEXT,
+            resp_legal_telefone TEXT,
+            contato_emergencia TEXT,
+            resp_financeiro TEXT,
+            aceite_contrato BOOLEAN DEFAULT 0,
+            aceite_politica_privacidade BOOLEAN DEFAULT 0,
+            consentimento_ia_voz BOOLEAN DEFAULT 0,
             senha_hash TEXT NOT NULL,
             turma_id INTEGER NOT NULL,
             nivel_cefr TEXT DEFAULT 'A2',
             turno TEXT DEFAULT 'Matutino',
-            sala TEXT DEFAULT 'Sala 01',
+            status_matricula TEXT DEFAULT 'Ativo',
             FOREIGN KEY (turma_id) REFERENCES turmas(id) ON DELETE CASCADE
         );
     """)
@@ -127,7 +188,7 @@ def init_db():
         );
     """)
 
-    # 3. Tabela: temas
+    # Tabela: temas
     cursor.execute("""
         CREATE TABLE temas (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -135,7 +196,7 @@ def init_db():
         );
     """)
 
-    # 4. Tabela: exercicios
+    # Tabela: exercicios
     cursor.execute("""
         CREATE TABLE exercicios (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -147,7 +208,7 @@ def init_db():
         );
     """)
 
-    # 5. Tabela: submissoes
+    # Tabela: submissoes
     cursor.execute("""
         CREATE TABLE submissoes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -168,7 +229,7 @@ def init_db():
         );
     """)
 
-    # 6. Tabela: reforcos_individuais
+    # Tabela: reforcos_individuais
     cursor.execute("""
         CREATE TABLE reforcos_individuais (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -195,19 +256,24 @@ def init_db():
     # Inserção dos alunos
     senha_padrao_hash = generate_password_hash("123456")
     alunos_dados = [
-        ("Lucas Silva", "202601", senha_padrao_hash, 1, "B1", "Matutino", "Sala 02"),
-        ("Camila Rodrigues", "202602", senha_padrao_hash, 1, "A1", "Matutino", "Sala 02"),
-        ("Gabriel Santos", "202603", senha_padrao_hash, 2, "A2", "Vespertino", "Sala 05")
+        ("Lucas Silva", "202601", senha_padrao_hash, 1, "B1", "Matutino"),
+        ("Camila Rodrigues", "202602", senha_padrao_hash, 1, "A1", "Matutino"),
+        ("Gabriel Santos", "202603", senha_padrao_hash, 2, "A2", "Vespertino")
     ]
-    cursor.executemany("INSERT INTO alunos (nome, matricula, senha_hash, turma_id, nivel_cefr, turno, sala) VALUES (?, ?, ?, ?, ?, ?, ?);", alunos_dados)
+    cursor.executemany("INSERT INTO alunos (nome_completo, matricula, senha_hash, turma_id, nivel_cefr, turno) VALUES (?, ?, ?, ?, ?, ?);", alunos_dados)
 
     # Inserção do professor
     professores_dados = [
-        ("Professor Admin", "admin", generate_password_hash("admin"))
+        ("Professor Admin", "admin@escola.com", "admin", generate_password_hash("admin"))
     ]
-    cursor.executemany("INSERT INTO professores (nome, usuario, senha_hash) VALUES (?, ?, ?);", professores_dados)
+    cursor.executemany("INSERT INTO professores (nome_completo, email_acesso, usuario, senha_hash) VALUES (?, ?, ?, ?);", professores_dados)
 
-    # Inserção de temas (Seed Obrigatório)
+    # Lincando o professor admin às turmas (M:N)
+    # Admin tem id=1, turmas tem id=1 e 2
+    professor_turmas_dados = [(1, 1), (1, 2)]
+    cursor.executemany("INSERT INTO professor_turmas (professor_id, turma_id) VALUES (?, ?);", professor_turmas_dados)
+
+    # Inserção de temas
     temas_lista = [
         "Les Salutations et Présentations",
         "Les Verbes du 1er groupe au Présent",
@@ -220,7 +286,7 @@ def init_db():
     ]
     cursor.executemany("INSERT INTO temas (nome_tema) VALUES (?);", [(t,) for t in temas_lista])
 
-    # Inserção de exercícios (referenciando temas)
+    # Inserção de exercícios
     exercicios_dados = [
         (4, "A2", "Complete com o auxiliar correto e particípio de aller: 'Hier, nous ___ (aller) au cinéma ensemble.'"),
         (3, "A2", "Preencha com o artigo partitivo adequado: 'Au petit-déjeuner, je bois ___ café et je mange ___ confiture.'"),
@@ -231,12 +297,9 @@ def init_db():
 
     # Inserção de submissões de teste pedagógicas
     submissoes_dados = [
-        # Lucas
         (1, 1, "Hier, nous sommes allés au cinéma ensemble.", "**Très bien, Lucas !** ...", "Perfeita utilização...", "Correto", 1, "2026-09-17 14:10:00"),
         (1, 2, "Au petit-déjeuner, je bois le café et je mange la confiture.", "**Attention, Lucas !** ...", "Erro no uso de artigos...", "Incorreto", 1, "2026-09-17 15:35:00"),
-        # Camila
         (2, 3, "Elles sont arrivées à Paris hier soir.", "**Excellent, Camila !** ...", "Acordo correto...", "Correto", 1, "2026-09-17 14:40:00"),
-        # Gabriel
         (3, 4, "Paul ne mange pas de la viande.", "**Presque, Gabriel !** ...", "Desvio de regra...", "Parcialmente Correto", 1, "2026-09-17 16:30:00")
     ]
     cursor.executemany("""
@@ -272,17 +335,14 @@ def init_db():
         (1, 1, "Bem-vindo ao LMS", "Olá Lucas, não se esqueça de revisar os verbos do 1º grupo!"),
         (1, 2, "Aviso de Prova", "Camila, a prova será na próxima semana.")
     ]
-    # remetente_id=1 (Professor), destinatario_id=1 e 2 (Lucas e Camila)
     cursor.executemany("INSERT INTO mensagens_inbox (remetente_id, destinatario_id, assunto, corpo) VALUES (?, ?, ?, ?);", mensagens_dados)
 
-    # Inicialização dos Planos de Aula
     try:
         from seed_planos_aula import init_planos_aula
         init_planos_aula(conn)
     except Exception as e:
         print(f"[!] Aviso: Nao foi possivel inicializar planos_aula: {e}")
 
-    # Criação de índices para alta performance
     indexes = [
         "CREATE INDEX IF NOT EXISTS idx_submissoes_aluno_id ON submissoes(aluno_id);",
         "CREATE INDEX IF NOT EXISTS idx_submissoes_prova_questao_id ON submissoes(prova_questao_id);",
@@ -301,7 +361,6 @@ def init_db():
     conn.close()
     print("[OK] Banco de dados relacional 'educacao_ia.db' inicializado com sucesso com nova arquitetura e índices!")
 
-    # População com massa de dados pedagógicos completa para gráficos
     try:
         from seed_populacao_graficos import popular_banco
         popular_banco()

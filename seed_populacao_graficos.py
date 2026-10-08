@@ -32,8 +32,8 @@ def popular_banco():
     prof = cursor.fetchone()
     if not prof:
         cursor.execute(
-            "INSERT INTO professores (nome, usuario, senha_hash) VALUES (?, ?, ?);",
-            ("Professora Françoise (Fran)", "admin", senha_admin)
+            "INSERT INTO professores (nome_completo, email_acesso, usuario, senha_hash) VALUES (?, ?, ?);",
+            ("Professora Françoise (Fran)", "admin@escola.com", "admin", senha_admin)
         )
         prof_id = cursor.lastrowid
     else:
@@ -61,46 +61,46 @@ def popular_banco():
     # 3. Alunos distribuídos por turmas e níveis
     alunos_dados = [
         # 1º Ano A (A1)
-        ("Lucas Silva", "202601", turma_ids["1º Ano A (Iniciante A1)"], "A1", "Matutino", "Sala 101"),
-        ("Camila Rodrigues", "202602", turma_ids["1º Ano A (Iniciante A1)"], "A1", "Matutino", "Sala 101"),
-        ("Matheus Oliveira", "202603", turma_ids["1º Ano A (Iniciante A1)"], "A1", "Matutino", "Sala 101"),
-        ("Beatriz Lima", "202604", turma_ids["1º Ano A (Iniciante A1)"], "A2", "Matutino", "Sala 101"),
-        ("Enzo Gabriel", "202605", turma_ids["1º Ano A (Iniciante A1)"], "A1", "Matutino", "Sala 101"),
+        ("Lucas Silva", "202601", turma_ids["1º Ano A (Iniciante A1)"], "A1", "Matutino"),
+        ("Camila Rodrigues", "202602", turma_ids["1º Ano A (Iniciante A1)"], "A1", "Matutino"),
+        ("Matheus Oliveira", "202603", turma_ids["1º Ano A (Iniciante A1)"], "A1", "Matutino"),
+        ("Beatriz Lima", "202604", turma_ids["1º Ano A (Iniciante A1)"], "A2", "Matutino"),
+        ("Enzo Gabriel", "202605", turma_ids["1º Ano A (Iniciante A1)"], "A1", "Matutino"),
         
         # 1º Ano B (A2)
-        ("Gabriel Santos", "202606", turma_ids["1º Ano B (Elementar A2)"], "A2", "Matutino", "Sala 102"),
-        ("Juliana Costa", "202607", turma_ids["1º Ano B (Elementar A2)"], "A2", "Matutino", "Sala 102"),
-        ("Sofia Ferreira", "202608", turma_ids["1º Ano B (Elementar A2)"], "A1", "Matutino", "Sala 102"),
-        ("Thiago Mendes", "202609", turma_ids["1º Ano B (Elementar A2)"], "A2", "Matutino", "Sala 102"),
-        ("Larissa Duarte", "202610", turma_ids["1º Ano B (Elementar A2)"], "A2", "Matutino", "Sala 102"),
+        ("Gabriel Santos", "202606", turma_ids["1º Ano B (Elementar A2)"], "A2", "Matutino"),
+        ("Juliana Costa", "202607", turma_ids["1º Ano B (Elementar A2)"], "A2", "Matutino"),
+        ("Sofia Ferreira", "202608", turma_ids["1º Ano B (Elementar A2)"], "A1", "Matutino"),
+        ("Thiago Mendes", "202609", turma_ids["1º Ano B (Elementar A2)"], "A2", "Matutino"),
+        ("Larissa Duarte", "202610", turma_ids["1º Ano B (Elementar A2)"], "A2", "Matutino"),
 
         # 2º Ano A (B1)
-        ("Laura Martins", "202611", turma_ids["2º Ano A (Intermediário B1)"], "B1", "Vespertino", "Sala 201"),
-        ("Rafael Barbosa", "202612", turma_ids["2º Ano A (Intermediário B1)"], "B1", "Vespertino", "Sala 201"),
-        ("Manuela Ribeiro", "202613", turma_ids["2º Ano A (Intermediário B1)"], "B1", "Vespertino", "Sala 201"),
-        ("Felipe Carvalho", "202614", turma_ids["2º Ano A (Intermediário B1)"], "A2", "Vespertino", "Sala 201"),
+        ("Laura Martins", "202611", turma_ids["2º Ano A (Intermediário B1)"], "B1", "Vespertino"),
+        ("Rafael Barbosa", "202612", turma_ids["2º Ano A (Intermediário B1)"], "B1", "Vespertino"),
+        ("Manuela Ribeiro", "202613", turma_ids["2º Ano A (Intermediário B1)"], "B1", "Vespertino"),
+        ("Felipe Carvalho", "202614", turma_ids["2º Ano A (Intermediário B1)"], "A2", "Vespertino"),
 
         # 3º Ano A (B2)
-        ("Alice Gonçalves", "202615", turma_ids["3º Ano A (Avançado B2)"], "B2", "Vespertino", "Sala 301"),
-        ("Nicolas Souza", "202616", turma_ids["3º Ano A (Avançado B2)"], "B2", "Vespertino", "Sala 301"),
-        ("Heloísa Castro", "202617", turma_ids["3º Ano A (Avançado B2)"], "B1", "Vespertino", "Sala 301"),
-        ("Arthur Almeida", "202618", turma_ids["3º Ano A (Avançado B2)"], "B2", "Vespertino", "Sala 301")
+        ("Alice Gonçalves", "202615", turma_ids["3º Ano A (Avançado B2)"], "B2", "Vespertino"),
+        ("Nicolas Souza", "202616", turma_ids["3º Ano A (Avançado B2)"], "B2", "Vespertino"),
+        ("Heloísa Castro", "202617", turma_ids["3º Ano A (Avançado B2)"], "B1", "Vespertino"),
+        ("Arthur Almeida", "202618", turma_ids["3º Ano A (Avançado B2)"], "B2", "Vespertino")
     ]
 
     aluno_map = {}
-    for nome, mat, t_id, cefr, turno, sala in alunos_dados:
+    for nome, mat, t_id, cefr, turno in alunos_dados:
         cursor.execute("SELECT id FROM alunos WHERE matricula = ?;", (mat,))
         row = cursor.fetchone()
         if row:
             aluno_map[mat] = row[0]
             cursor.execute(
-                "UPDATE alunos SET nome = ?, turma_id = ?, nivel_cefr = ?, turno = ?, sala = ? WHERE id = ?;",
-                (nome, t_id, cefr, turno, sala, row[0])
+                "UPDATE alunos SET nome_completo = ?, turma_id = ?, nivel_cefr = ?, turno = ? WHERE id = ?;",
+                (nome, t_id, cefr, turno, row[0])
             )
         else:
             cursor.execute(
-                "INSERT INTO alunos (nome, matricula, senha_hash, turma_id, nivel_cefr, turno, sala) VALUES (?, ?, ?, ?, ?, ?, ?);",
-                (nome, mat, senha_padrao, t_id, cefr, turno, sala)
+                "INSERT INTO alunos (nome_completo, matricula, senha_hash, turma_id, nivel_cefr, turno) VALUES (?, ?, ?, ?, ?, ?);",
+                (nome, mat, senha_padrao, t_id, cefr, turno)
             )
             aluno_map[mat] = cursor.lastrowid
     print(f"[+] Alunos cadastrados e vinculados: {len(aluno_map)}")
