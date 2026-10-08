@@ -10341,3 +10341,849 @@ label, .form-label {
 }
 
 
+
+/* ================================================== */
+/* LENOVO FLEET MANAGER - OVERLAP & DONUT STYLE       */
+/* ================================================== */
+
+/* Deep Blue Header covering the top part */
+.lenovo-blue-header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #1d4ed8 100%) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 0 0 24px 24px !important;
+    padding-bottom: 110px !important; /* Space for cards to overlap */
+    position: relative;
+    box-shadow: 0 10px 25px rgba(29, 78, 216, 0.4) !important;
+}
+.lenovo-blue-header .hero-title, 
+.lenovo-blue-header .hero-description,
+.lenovo-blue-header .hero-tag {
+    color: #f8fafc !important;
+}
+.lenovo-blue-header::before {
+    display: none !important; /* Hide the french flag line */
+}
+
+/* Floating Metrics Wrapper overlapping the blue header */
+.overlap-metrics-wrapper {
+    margin-top: -90px !important;
+    position: relative;
+    z-index: 10;
+    width: 100%;
+}
+
+/* Redesigning Metric Cards */
+.metrics-grid.lenovo-style {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    align-items: center; /* for the pop-out card */
+}
+
+.metric-card.lenovo-card {
+    background: rgba(255, 255, 255, 0.90) !important;
+    backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
+    border-radius: 16px !important;
+    padding: 1.5rem !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1) !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    flex-direction: row !important;
+}
+
+/* The card that pops out (z-index higher, bigger scale) */
+.metric-card.lenovo-card.pop-out {
+    transform: scale(1.08) !important;
+    background: rgba(255, 255, 255, 0.98) !important;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.15) !important;
+    z-index: 20 !important;
+}
+.metric-card.lenovo-card.pop-out:hover {
+    transform: scale(1.10) !important;
+}
+
+.lenovo-card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    text-align: left;
+}
+.lenovo-card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 0.2rem;
+}
+.lenovo-stat-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    color: #475569;
+    font-weight: 600;
+}
+.lenovo-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+.lenovo-dot.primary { background: #3b82f6; }
+.lenovo-dot.success { background: #10b981; }
+.lenovo-dot.warning { background: #f59e0b; }
+.lenovo-dot.danger { background: #ef4444; }
+.lenovo-dot.muted { background: #cbd5e1; }
+
+/* CSS Donut Chart */
+.css-donut {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: conic-gradient(var(--donut-color) var(--donut-pct), #e2e8f0 0);
+    position: relative;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+}
+.css-donut::before {
+    content: "";
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.css-donut span {
+    position: relative;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--donut-color);
+}
+
+/* White Table Area matching Lenovo */
+.lenovo-table-area {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(20px) !important;
+    border-radius: 16px !important;
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
+    padding: 1.5rem !important;
+    margin-top: 2rem !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05) !important;
+}
+
+.lenovo-table-header {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* FIXES FOR LENOVO STYLE */
+.page-container.dashboard-page {
+    background: #f1f5f9; /* flat greyish background like lenovo */
+}
+
+/* Ensure the main content area stretches */
+.dash-main-content {
+    padding: 0 !important; /* Remove padding so blue header can touch edges */
+    background: #f1f5f9;
+}
+
+.dashboard-hero-outer.lenovo-blue-header {
+    background: linear-gradient(135deg, #020617 0%, #1e3a8a 50%, #2563eb 100%) !important;
+    border-radius: 0 !important;
+    padding: 3rem 2rem 130px 2rem !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    box-shadow: none !important;
+    width: 100% !important;
+}
+
+.dashboard-hero-card {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.dashboard-hero-card::before { display: none !important; }
+
+.lenovo-blue-header * {
+    color: white !important;
+}
+
+/* Ensure metrics wrapper is centered and matches width */
+.overlap-metrics-wrapper {
+    max-width: 1200px;
+    margin: -100px auto 0 auto !important;
+    padding: 0 2rem;
+}
+
+/* The white table area wrapping everything below */
+.lenovo-table-area {
+    background: #f8fafc !important;
+    margin: 2rem auto 2rem auto !important;
+    max-width: 1200px;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    padding: 2rem !important;
+    position: relative;
+    z-index: 5;
+    border: 1px solid #e2e8f0 !important;
+}
+
+/* Fix Donut */
+.css-donut {
+    width: 80px !important;
+    height: 80px !important;
+    background: conic-gradient(var(--donut-color) var(--donut-pct), #e2e8f0 0) !important;
+}
+.css-donut::before {
+    width: 60px !important;
+    height: 60px !important;
+}
+
+/* Remove tricolor from metric cards if any */
+.metric-card.lenovo-card::before {
+    display: none !important;
+}
+
+.metric-card.lenovo-card {
+    border: none !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+.metric-card.lenovo-card.pop-out {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+}
+
+
+/* FORCE FULL WIDTH BLUE HEADER */
+.dashboard-hero-outer.lenovo-blue-header {
+    width: 100vw !important;
+    position: relative !important;
+    left: 50% !important;
+    right: 50% !important;
+    margin-left: -50vw !important;
+    margin-right: -50vw !important;
+    padding: 3rem calc(50vw - 600px) 140px calc(50vw - 600px) !important; /* Center the inner content (max 1200px) */
+    background: linear-gradient(135deg, #020617 0%, #1e3a8a 50%, #2563eb 100%) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+@media (max-width: 1250px) {
+    .dashboard-hero-outer.lenovo-blue-header {
+        padding: 3rem 2rem 140px 2rem !important;
+    }
+}
+
+/* Remove Paris background if we want clean lenovo look, but let's just make the top solid blue */
+.page-container.dashboard-page {
+    /* If we want to hide the background for the whole page: */
+    /* background: #f1f5f9 !important; */
+}
+
+/* Make sure the text inside is white */
+.dashboard-hero-card.lenovo-blue-header .hero-title,
+.dashboard-hero-card .hero-title,
+.dashboard-hero-card .hero-description {
+    color: white !important;
+}
+
+.dashboard-hero-card {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.dashboard-hero-card::before { display: none !important; }
+
+/* The white table area needs to look clean */
+.lenovo-table-area {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(20px) !important;
+    margin: 0 auto 2rem auto !important;
+    max-width: 1200px;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+    padding: 2rem !important;
+    position: relative;
+    z-index: 5;
+    border: 1px solid #e2e8f0 !important;
+}
+
+/* The overlap metrics */
+.overlap-metrics-wrapper {
+    max-width: 1200px;
+    margin: -100px auto 2rem auto !important;
+    padding: 0;
+    position: relative;
+    z-index: 10;
+}
+
+/* FINAL POLISH TO MATCH LENOVO PIXEL PERFECT */
+
+/* Make chart cards flush with the white table area */
+.lenovo-table-area 
+
+.lenovo-table-area .chart-card-header h3 {
+    font-size: 1.1rem;
+    color: #334155;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Fix sidebar overlap to match Lenovo. Lenovo sidebar floats over the edge */
+.dash-sidebar {
+    background: rgba(255, 255, 255, 0.8) !important;
+    backdrop-filter: blur(20px) !important;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.05) !important;
+    z-index: 100 !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Ensure body or page-container has the solid background to match Lenovo exactly */
+body {
+    background: #f1f5f9 !important;
+    background-image: none !important;
+}
+.page-container {
+    background: transparent !important;
+}
+
+/* FADE EFFECT FOR BLUE HEADER */
+.dashboard-hero-outer.lenovo-blue-header {
+    /* Reset the width from the previous 100vw hack */
+    width: 100% !important;
+    max-width: 1200px !important;
+    left: auto !important;
+    right: auto !important;
+    margin: 0 auto !important;
+    
+    /* Efeito de esmaecimento (Fade) no fundo */
+    background: radial-gradient(ellipse at center 20%, rgba(15, 23, 42, 0.9) 0%, rgba(30, 58, 138, 0.7) 40%, transparent 80%) !important;
+    
+    /* Remover bordas e sombras rígidas */
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    
+    padding: 3rem 2rem 140px 2rem !important; 
+}
+
+/* Ensure the text has a nice shadow since the background fades */
+.dashboard-hero-card.lenovo-blue-header .hero-title,
+.dashboard-hero-card .hero-title,
+.dashboard-hero-card .hero-description {
+    color: white !important;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5) !important;
+}
+
+/* Restaurar o fundo do body para a imagem de Paris */
+body {
+    background-image: url('/static/img/fundo_paris.png') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-attachment: fixed !important;
+}
+
+/* Deixar os cartões levemente mais translúcidos para aproveitar o fundo */
+.metric-card.lenovo-card {
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(12px) !important;
+}
+
+.lenovo-table-area {
+    background: rgba(255, 255, 255, 0.88) !important;
+    backdrop-filter: blur(16px) !important;
+}
+
+/* FINAL CLEAN LENOVO LOOK - OVERRIDE EVERYTHING */
+
+/* Remove Paris background completely from dashboard to make it clean like Lenovo */
+body {
+    background: #e2e8f0 !important;
+    background-image: none !important;
+}
+
+.dash-main-content {
+    background: #e2e8f0 !important;
+    padding: 0 !important; /* Remove container padding so header can touch edges */
+}
+
+.page-container.dashboard-page {
+    padding: 0 !important;
+    max-width: 100% !important;
+    background: transparent !important;
+}
+
+/* The Blue Header - now stretches perfectly edge to edge */
+.dashboard-hero-outer.lenovo-blue-header {
+    background: linear-gradient(135deg, #020617 0%, #1e3a8a 50%, #2563eb 100%) !important;
+    width: 100vw !important; /* Force true full width */
+    max-width: 100vw !important;
+    position: relative !important;
+    left: 50% !important;
+    right: 50% !important;
+    margin-left: -50vw !important;
+    margin-right: -50vw !important;
+    border-radius: 0 !important;
+    padding: 3rem calc(50vw - 600px) 140px calc(50vw - 600px) !important; /* Keep content centered */
+    box-shadow: none !important;
+}
+
+/* Ensure text is bright white and legible */
+.dashboard-hero-card.lenovo-blue-header .hero-title,
+.dashboard-hero-card .hero-title {
+    color: #ffffff !important;
+    font-size: 2.2rem !important;
+    font-weight: 800 !important;
+    text-shadow: none !important;
+}
+
+.dashboard-hero-card .hero-description {
+    color: #e2e8f0 !important;
+    text-shadow: none !important;
+}
+
+.hero-tag {
+    color: #bfdbfe !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Fix the overlapping cards wrapper */
+.overlap-metrics-wrapper {
+    max-width: 1200px !important;
+    margin: -90px auto 2rem auto !important;
+    padding: 0 1rem !important;
+}
+
+/* Fix the table area */
+.lenovo-table-area {
+    background: #ffffff !important;
+    max-width: 1200px !important;
+    margin: 0 auto 3rem auto !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05) !important;
+    border: none !important;
+}
+
+/* Clean up card backgrounds */
+.metric-card.lenovo-card {
+    background: #ffffff !important;
+    backdrop-filter: none !important;
+}
+
+.dash-sidebar {
+    background: #ffffff !important;
+}
+
+/* Override previous fades */
+.dashboard-hero-outer.lenovo-blue-header {
+    background-image: linear-gradient(135deg, #020617 0%, #1e3a8a 50%, #2563eb 100%) !important;
+}
+
+/* ========== BANNER FIXES (PARTE 1) ========== */
+
+/* Forçar a cor do título principal para BRANCO (para não ficar preto/escuro no fundo azul) */
+.dashboard-hero-outer h1.hero-title, 
+.dashboard-hero-card h1.hero-title {
+    color: #ffffff !important;
+    font-size: 2.4rem !important;
+    font-weight: 800 !important;
+    margin-top: 1rem !important;
+    margin-bottom: 0.8rem !important;
+}
+
+/* O texto de descrição logo abaixo do título */
+.dashboard-hero-card .hero-description {
+    color: #f8fafc !important;
+    font-size: 1.05rem !important;
+    max-width: 700px;
+    margin: 0 auto !important;
+    line-height: 1.5 !important;
+}
+
+/* A Tag arredondada no topo do banner (Pill) */
+.dashboard-hero-card .hero-tag {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: #ffffff !important;
+    padding: 6px 16px !important;
+    border-radius: 9999px !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.5px;
+}
+
+/* Esconder os 3 botõezinhos extras (Monitoramento, etc) para deixar o banner limpo igual ao seu print */
+.dashboard-hero-card .hero-quick-meta {
+    display: none !important;
+}
+
+/* Ajuste do fundo do banner para ter aquele azul degradê exato */
+.dashboard-hero-outer.lenovo-blue-header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #2563eb 100%) !important;
+    padding-top: 4rem !important;
+    padding-bottom: 7rem !important; /* Espaço pro overlap dos cards depois */
+    border-radius: 0 !important;
+    text-align: center !important;
+}
+
+/* ========== BANNER FIXES (PARTE 2) ========== */
+
+/* Restore Paris Background */
+body {
+    background-image: url('/static/img/fundo_paris.png') !important;
+    background-color: transparent !important;
+}
+.dash-main-content {
+    background: transparent !important;
+}
+
+/* Make the blue banner exactly the width of the cards container (1200px) */
+.dashboard-hero-outer.lenovo-blue-header {
+    width: 100% !important;
+    max-width: 1200px !important;
+    margin: 2rem auto 0 auto !important; /* Center and give top margin */
+    left: auto !important;
+    right: auto !important;
+    padding: 3rem 2rem 100px 2rem !important; /* Normal padding */
+    border-radius: 24px 24px 0 0 !important; /* Rounded top, flat bottom where cards overlap */
+    background: linear-gradient(135deg, #020617 0%, #1e3a8a 50%, #2563eb 100%) !important;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2) !important;
+}
+
+/* Fix the Title Color to White Aggressively */
+.dashboard-hero-outer.lenovo-blue-header h1.hero-title,
+.dashboard-hero-outer h1.hero-title,
+.dashboard-hero-card h1.hero-title,
+h1.hero-title {
+    color: #ffffff !important;
+    fill: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    text-shadow: none !important;
+}
+
+/* Restore the text/pills that were removed */
+.dashboard-hero-card .hero-quick-meta {
+    display: flex !important;
+}
+
+/* Overlapping cards container */
+.overlap-metrics-wrapper {
+    max-width: 1200px !important;
+    margin: -60px auto 2rem auto !important;
+    padding: 0 1.5rem !important;
+}
+
+.lenovo-table-area {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(16px) !important;
+}
+
+/* FINAL FIX FOR CHARTS INSIDE LENOVO TABLE AREA */
+
+/* Remove any borders, shadows, backgrounds, or pseudo-elements from chart cards */
+.lenovo-table-area 
+
+/* Remove the french flag stripe from the top of the chart cards */
+.lenovo-table-area .chart-card::before,
+.lenovo-table-area .chart-card::after {
+    display: none !important;
+}
+
+/* Clean up chart headers to look like simple flat text */
+.lenovo-table-area .chart-card-header {
+    border-bottom: 1px solid #e2e8f0 !important;
+    margin-bottom: 1.5rem !important;
+    padding-bottom: 0.5rem !important;
+    justify-content: space-between !important;
+}
+
+.lenovo-table-area .chart-title {
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+    color: #1e293b !important;
+}
+
+/* Make sure the charts grid has proper gap but no extra boxes */
+.lenovo-table-area .charts-grid {
+    gap: 2rem !important;
+}
+
+/* ========== BANNER EXACT MATCH (MOCKUP) ========== */
+
+.dashboard-hero-outer.lenovo-blue-header {
+    width: 100% !important;
+    max-width: 1200px !important;
+    margin: 2rem auto 0 auto !important;
+    position: relative;
+    
+    /* The main gradient from dark (left) to light blue (right) */
+    background: linear-gradient(90deg, #091024 0%, #1e3a8a 50%, #2563eb 100%) !important;
+    
+    /* Rounded corners on all sides */
+    border-radius: 16px !important;
+    
+    /* Padding to center content */
+    padding: 4rem 2rem 5rem 2rem !important; 
+    
+    /* We need to use ::after to create that inverted gradient strip at the bottom */
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+}
+
+/* The inverted gradient strip at the bottom */
+.dashboard-hero-outer.lenovo-blue-header::after {
+    content: "" !important;
+    display: block !important;
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 40px !important; /* height of the bottom strip */
+    background: linear-gradient(90deg, #2563eb 0%, #1e3a8a 50%, #091024 100%) !important;
+}
+
+/* Adjust overlapping cards so they sit ON TOP of the bottom strip, or maybe the user wants them below?
+   In the Lenovo design they overlapped. Let's make sure the overlap wrapper is z-index high */
+.overlap-metrics-wrapper {
+    margin-top: -60px !important; /* overlaps the banner and the bottom strip */
+    z-index: 10 !important;
+    position: relative !important;
+}
+
+/* ========== BANNER: ELEGANT GRADIENT (REMOVING PAINT ARTIFACTS) ========== */
+
+.dashboard-hero-outer.lenovo-blue-header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #2563eb 100%) !important;
+    border-radius: 20px !important;
+    padding: 3.5rem 2rem 5.5rem 2rem !important; /* Proper breathing room */
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 10px 30px rgba(37, 99, 235, 0.15) !important; /* Soft blue glow */
+}
+
+/* Remove that inverted strip from the previous attempt */
+.dashboard-hero-outer.lenovo-blue-header::after {
+    display: none !important;
+}
+
+/* Ensure the layout holds together */
+.overlap-metrics-wrapper {
+    margin-top: -65px !important;
+}
+
+/* ========== CARDS HOVER & DONUT FIX ========== */
+
+/* Remove any hardcoded pop-out styles */
+.metric-card.lenovo-card {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease !important;
+    transform: scale(1) !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
+    border-radius: 12px !important;
+}
+
+/* Add the hover scale effect to all cards */
+.metric-card.lenovo-card:hover {
+    transform: scale(1.05) translateY(-5px) !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+    z-index: 20 !important;
+}
+
+/* FIX THE DONUT CHART */
+.css-donut {
+    width: 80px !important;
+    height: 80px !important;
+    border-radius: 50% !important; /* Critical for it to be a circle */
+    background: conic-gradient(var(--donut-color) var(--donut-pct), #e2e8f0 0) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+}
+
+/* Inner white circle to make it a donut and not a pie */
+.css-donut::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 65px !important;
+    height: 65px !important;
+    background: #ffffff !important;
+    border-radius: 50% !important;
+}
+
+/* Ensure the text is visible inside the donut */
+.css-donut span {
+    position: relative !important;
+    z-index: 10 !important;
+    font-weight: 700 !important;
+    font-size: 1.1rem !important;
+    color: var(--donut-color) !important;
+}
+
+/* SEPARATE THE BOTTOM BOX FROM THE TOP */
+.lenovo-table-area {
+    margin-top: 3rem !important; /* Adds clear separation from the top cards */
+    padding: 2rem !important;
+    background: #ffffff !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08) !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+/* Update charts grid to handle 3 charts */
+.lenovo-table-area .charts-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 1fr !important;
+    gap: 0.8rem !important;
+}
+@media (max-width: 1200px) {
+    .lenovo-table-area .charts-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* Make top cards 4 columns */
+.metrics-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 0.8rem !important;
+}
+@media (max-width: 1200px) {
+    .metrics-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+/* Make bottom charts 2 columns since pie is gone */
+.lenovo-table-area .charts-grid {
+    grid-template-columns: 1fr 1fr !important;
+}
+
+/* Adjust top pie chart canvas size so it fits next to the little donut cards */
+.doughnut-container {
+    min-height: 120px !important;
+    height: 140px !important;
+    position: relative;
+}
+.doughnut-container canvas {
+    max-height: 100% !important;
+}
+
+/* RESTORE CHART CARDS VISUALS */
+.chart-card {
+    background: #ffffff !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
+    border: 1px solid #e2e8f0 !important;
+    padding: 1.5rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+.chart-card-header {
+    margin-bottom: 1rem !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    padding-bottom: 0.5rem !important;
+}
+
+/* REMOVE WHITE BACKGROUND FROM TABLE AREA TO LET CARDS FLOAT */
+.lenovo-table-area {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin-top: 1.5rem !important;
+}
+
+/* FORCE SAME HEIGHT FOR TOP METRIC CARDS */
+.metrics-grid {
+    align-items: stretch !important;
+}
+.metric-card.lenovo-card {
+    height: 100% !important;
+    min-height: 160px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+}
+.lenovo-card-content {
+    flex-grow: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+}
+/* Ensure the pie chart card behaves nicely */
+#graficoStatus {
+    max-height: 120px !important;
+    max-width: 250px !important;
+    margin: 0 auto !important;
+}
+
+/* Center card titles */
+.lenovo-card-title { text-align: center !important; width: 100% !important; display: block !important; margin-bottom: 0.8rem !important; }
+
+/* Add line under titles */
+.lenovo-card-title, .pie-card-header {
+    border-bottom: 1px solid #e2e8f0 !important;
+    padding-bottom: 0.5rem !important;
+    margin-bottom: 1rem !important;
+}
+
+/* ALIGN CARDS EDGES TO THE BLUE BANNER EDGES */
+.overlap-metrics-wrapper {
+    padding: 0 2rem !important;
+}
+
+/* Ensure inner items are properly spaced */
+.lenovo-card-stats {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+/* ALIGN OUTER EDGES EXPLICITLY */
+.overlap-metrics-wrapper {
+    padding: 0 !important; /* Remove padding so cards touch the absolute edge of the 1200px container */
+    max-width: 1200px !important;
+}
+
+/* FORCE EXACTLY 4 COLUMNS, EQUAL WIDTH */
+.metrics-grid.lenovo-style {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 0.8rem !important;
+}
+
+/* Ensure data is perfectly beside charts */
+.lenovo-card-stats {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+}

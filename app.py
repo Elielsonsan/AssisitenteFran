@@ -696,6 +696,23 @@ def dashboard():
     tema_erros = [int(row["erros"] or 0) for row in rows_temas]
     tema_parciais = [int(row["parciais"] or 0) for row in rows_temas]
 
+    # --- TOP 10 BEST AND WORST LOGIC ---
+    temas_zipped = list(zip(tema_labels, tema_acertos, tema_erros, tema_parciais))
+    
+    # Top 10 Melhores (ordenado por mais acertos)
+    temas_best = sorted(temas_zipped, key=lambda x: x[1], reverse=True)[:10]
+    best_labels = [x[0] for x in temas_best]
+    best_acertos = [x[1] for x in temas_best]
+    best_erros = [x[2] for x in temas_best]
+    best_parciais = [x[3] for x in temas_best]
+    
+    # Top 10 Piores (ordenado por mais erros)
+    temas_worst = sorted(temas_zipped, key=lambda x: x[2], reverse=True)[:10]
+    worst_labels = [x[0] for x in temas_worst]
+    worst_acertos = [x[1] for x in temas_worst]
+    worst_erros = [x[2] for x in temas_worst]
+    worst_parciais = [x[3] for x in temas_worst]
+
     sql_submissoes = f"""
         SELECT s.id, a.nome as aluno_nome, a.matricula as aluno_matricula, t.nome as turma_nome, 
                te.nome_tema as tema, te.nome_tema as tema_aula,
@@ -734,6 +751,8 @@ def dashboard():
         turma_selecionada=turma_id, turma_selecionada_nome=turma_selecionada_nome,
         alunos_em_risco=alunos_em_risco, status_labels=status_labels, status_valores=status_valores,
         tema_labels=tema_labels, tema_acertos=tema_acertos, tema_erros=tema_erros, tema_parciais=tema_parciais,
+        best_labels=best_labels, best_acertos=best_acertos, best_erros=best_erros, best_parciais=best_parciais,
+        worst_labels=worst_labels, worst_acertos=worst_acertos, worst_erros=worst_erros, worst_parciais=worst_parciais,
         submissoes=submissoes, submissoes_dict=submissoes_dict, total_submissoes=total_submissoes,
         total_corretos=total_corretos, total_parciais=total_parciais, total_incorretos=total_incorretos,
         pct_acerto=pct_acerto, pct_parcial=pct_parcial, pct_incorreto=pct_incorreto,

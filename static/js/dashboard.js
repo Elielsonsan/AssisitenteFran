@@ -1,3 +1,4 @@
+Chart.register(ChartDataLabels);
 /**
  * Assistente Fran - dashboard.js
  * Inicialização dos gráficos com Chart.js e exportação de PDF com html2pdf.js
@@ -69,6 +70,7 @@ function carregarDadosDashboard() {
     if (dataScript && dataScript.textContent) {
         try {
             const dados = JSON.parse(dataScript.textContent);
+            window.dashboardData = dados;
             STATUS_LABELS = dados.status_labels || [];
             STATUS_VALORES = dados.status_valores || [];
             TEMA_LABELS = dados.tema_labels || [];
@@ -164,8 +166,21 @@ function inicializarGraficos() {
                     }
                 },
                 plugins: {
+                    datalabels: {
+                        color: '#ffffff',
+                        font: { weight: 'bold', size: 12, family: "'Plus Jakarta Sans', sans-serif" },
+                        formatter: (value, ctx) => {
+                            let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                            let percentage = sum > 0 ? ((value * 100) / sum).toFixed(1) + "%" : "0%";
+                            // ONLY RETURN PERCENTAGE TO BE DRAWN INSIDE THE SLICE
+                            return percentage;
+                        },
+                        textAlign: 'center',
+                        anchor: 'center',
+                        align: 'center'
+                    },
                     legend: {
-                        position: 'bottom',
+                        display: false,
                         onClick: (e, legendItem, legend) => {
                             const label = legendItem.text;
                             alternarFiltroInterativoStatus(label, "legend");
@@ -204,156 +219,48 @@ function inicializarGraficos() {
     // -------------------------------------------------------------
     // GRÁFICO 2: Barras Comparativo - Acertos vs Erros por Tópico Gramatical
     // -------------------------------------------------------------
-    const ctxTemas = document.getElementById('graficoTemas');
-    if (ctxTemas && typeof Chart !== "undefined") {
-        chartTemasInstance = new Chart(ctxTemas, {
+    // NOVO: Top 10 Melhores e Top 10 Piores (Horizontais)
+    const ctxBest = document.getElementById('graficoBest');
+    if (ctxBest && window.dashboardData.best_labels) {
+        new Chart(ctxBest, {
             type: 'bar',
             data: {
-                labels: TEMA_LABELS || [],
+                labels: window.dashboardData.best_labels,
                 datasets: [
-                    {
-                        label: 'Acertos (Corretos)',
-                        data: TEMA_ACERTOS || [],
-                        backgroundColor: '#10b981',
-                        borderRadius: 6
-                    },
-                    {
-                        label: 'Parciais (Desvios leves)',
-                        data: TEMA_PARCIAIS || [],
-                        backgroundColor: '#f59e0b',
-                        borderRadius: 6
-                    },
-                    {
-                        label: 'Erros (Incorretos)',
-                        data: TEMA_ERROS || [],
-                        backgroundColor: '#ef4444',
-                        borderRadius: 6
-                    }
+                    { label: 'Acertos', data: window.dashboardData.best_acertos, backgroundColor: '#10b981', borderRadius: 4 },
+                    { label: 'Parciais', data: window.dashboardData.best_parciais, backgroundColor: '#f59e0b', borderRadius: 4 },
+                    { label: 'Erros', data: window.dashboardData.best_erros, backgroundColor: '#ef4444', borderRadius: 4 }
                 ]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                onClick: (event, elements, chart) => {
-                    if (!elements || elements.length === 0) return;
-                    const idx = elements[0].index;
-                    const topico = chart.data.labels[idx];
-                    filtrarTabelaPorTopico(topico);
-                },
-                onHover: (event, elements) => {
-                    if (event && event.native && event.native.target) {
-                        event.native.target.style.cursor = elements && elements.length > 0 ? 'pointer' : 'default';
-                    }
-                },
-                scales: {
-                    x: {
-                        grid: {
-                            color: themeColors.gridColor
-                        },
-                        ticks: {
-                            color: themeColors.mutedTextColor,
-                            font: {
-                                family: 'Plus Jakarta Sans',
-                                size: 11
-                            }
-                        }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            stepSize: 1,
-                            color: themeColors.mutedTextColor,
-                            font: {
-                                family: 'Plus Jakarta Sans',
-                                size: 11
-                            }
-                        },
-                        grid: {
-                            color: themeColors.gridColor
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: {
-                            color: themeColors.textColor,
-                            font: {
-                                family: 'Plus Jakarta Sans',
-                                size: 12,
-                                weight: 600
-                            }
-                        }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            afterLabel: function() {
-                                return "Clique na barra para filtrar a tabela por este tema";
-                            }
-                        }
-                    }
-                }
+                indexAxis: 'y',
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 10 } } },
+                scales: { x: { stacked: true, beginAtZero: true, grid: { color: '#f1f5f9' } }, y: { stacked: true, ticks: { font: {size: 11} } } }
             }
         });
-
-        // Sincroniza a visibilidade das barras caso haja filtro de status ativo
-        atualizarBarChartInterativo(filtroStatusAtivo);
-    }
-}
-
-/**
- * Exportação em PDF usando html2pdf.js
- */
-function exportarRelatorioPDF() {
-    const elemento = document.getElementById('conteudo-relatorio');
-    const botao = document.getElementById('btnExportarPdf');
-
-    if (!elemento) {
-        alert("Elemento de relatório não localizado.");
-        return;
     }
 
-    if (typeof html2pdf === "undefined") {
-        alert("Biblioteca html2pdf.js não carregada. Verifique sua conexão com a internet.");
-        return;
-    }
-
-    const textoOriginal = botao.innerHTML;
-    botao.innerHTML = "<span>Génération du PDF...</span>";
-    botao.disabled = true;
-
-    const dataHoje = new Date().toISOString().slice(0, 10);
-    const opcoes = {
-        margin: [10, 10, 12, 10],
-        filename: `relatorio_frances_fran_${dataHoje}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-            scale: 2,
-            useCORS: true,
-            logging: false,
-            backgroundColor: (document.documentElement.getAttribute("data-theme") === "light") ? '#ffffff' : '#0a0e17'
-        },
-        jsPDF: {
-            unit: 'mm',
-            format: 'a4',
-            orientation: 'portrait'
-        }
-    };
-
-    html2pdf()
-        .set(opcoes)
-        .from(elemento)
-        .save()
-        .then(() => {
-            botao.innerHTML = textoOriginal;
-            botao.disabled = false;
-        })
-        .catch(err => {
-            console.error("Erro na exportação para PDF:", err);
-            alert("Ocorreu um erro ao gerar o PDF.");
-            botao.innerHTML = textoOriginal;
-            botao.disabled = false;
+    const ctxWorst = document.getElementById('graficoWorst');
+    if (ctxWorst && window.dashboardData.worst_labels) {
+        new Chart(ctxWorst, {
+            type: 'bar',
+            data: {
+                labels: window.dashboardData.worst_labels,
+                datasets: [
+                    { label: 'Erros', data: window.dashboardData.worst_erros, backgroundColor: '#ef4444', borderRadius: 4 },
+                    { label: 'Parciais', data: window.dashboardData.worst_parciais, backgroundColor: '#f59e0b', borderRadius: 4 },
+                    { label: 'Acertos', data: window.dashboardData.worst_acertos, backgroundColor: '#10b981', borderRadius: 4 }
+                ]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 10 } } },
+                scales: { x: { stacked: true, beginAtZero: true, grid: { color: '#f1f5f9' } }, y: { stacked: true, ticks: { font: {size: 11} } } }
+            }
         });
+    }
 }
 
 /**

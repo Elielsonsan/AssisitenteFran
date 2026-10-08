@@ -1,12 +1,19 @@
 {% extends "base.html" %}
 
-{% block title %}Painel do Professor | Assistente Fran — Analytics Pedagógico de Francês{% endblock %}
+{% block title %}Painel do Professor | Assistente Fran — Analytics Pedagógico de Francês        </div>
+    </div>
+</div>
+{% endblock %}
 
 {% block extra_head %}
 <!-- CDN Chart.js para renderização de gráficos interativos -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <!-- CDN html2pdf.js para captura e geração de relatórios em PDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block content %}
@@ -141,8 +148,8 @@
     <!-- DIV CAPTURADA PELO HTML2PDF.JS PARA O RELATORIO -->
     <div id="conteudo-relatorio" class="relatorio-wrapper">
         <!-- Cabeçalho Principal do Painel com Moldura Hero Card -->
-        <div class="hero-card-outer dashboard-hero-outer card-moldura-outer" id="dashboardHeroCard">
-            <div class="dashboard-hero-card hero-card-inner">
+        <div class="hero-card-outer dashboard-hero-outer lenovo-blue-header" id="dashboardHeroCard">
+            <div class="dashboard-hero-card">
                 <span class="hero-tag">
                     <svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;">
                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
@@ -167,167 +174,103 @@
         </div>
 
         <!-- Quadro Unificado de Indicadores & Gráficos com Efeito Hero Card (Apenas Uma Moldura para Todos os Cards) -->
-        <div class="hero-card-outer dashboard-box-outer card-moldura-outer" id="dashboardMetricasBoxOuter">
-            <div class="hero-card-inner dashboard-box-inner">
-                <!-- Cabeçalho do Quadro Unificado -->
-                <div class="dashboard-box-header" style="width: 100%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 1.25rem; text-align: left;">
-                    <div>
-                        <span class="hero-tag" style="margin-bottom: 0.25rem;">
-                            <svg class="line-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;">
-                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                                <line x1="3" y1="9" x2="21" y2="9"></line>
-                                <line x1="9" y1="21" x2="9" y2="9"></line>
-                            </svg>Vue d'Ensemble • Indicateurs & Graphiques
-                        </span>
-                        <h2 style="font-size: 1.25rem; font-weight: 800; margin: 0; color: var(--text-primary);">Indicadores Globais & Desempenho Gráfico</h2>
-                        <p style="font-size: 0.85rem; color: var(--text-muted); margin: 2px 0 0 0;">Visão panorâmica consolidada das atividades e distribuição de domínio linguístico.</p>
-                    </div>
-                    <div class="no-print" style="display: flex; align-items: center; gap: 8px;">
-                        <span class="badge-count" id="dashBoxSubmissoesBadge" style="font-size: 0.8rem; padding: 4px 12px; background: rgba(56, 189, 248, 0.12); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 9999px; font-weight: 700;">
-                            {{ total_submissoes }} submissões
-                        </span>
-                    </div>
-                </div>
+        <div class="overlap-metrics-wrapper" id="dashboardMetricasBoxOuter">
+            <div class="">
+                
 
                 <!-- Cards com Métricas Rápidas (Interativos: Clique para filtrar todo o painel) -->
-                <div class="metrics-grid" style="width: 100%;">
+                <div class="metrics-grid lenovo-style" style="width: 100%;">
             <!-- Card 1: Total de Exercícios -->
-            <div class="metric-card metric-card-modern metric-total" id="cardMetricTotal" onclick="alternarFiltroInterativoStatus('TODOS', 'card')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); alternarFiltroInterativoStatus('TODOS', 'card');}" title="Clique para ver todos os exercícios / redefinir filtros">
-                <div class="metric-top-row">
-                    <div class="metric-badge-value">
-                        <span class="metric-icon-badge badge-primary">
-                            <svg class="line-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                <polyline points="14 2 14 8 20 8"></polyline>
-                                <line x1="16" y1="13" x2="8" y2="13"></line>
-                                <line x1="16" y1="17" x2="8" y2="17"></line>
-                            </svg>
-                        </span>
-                        <span class="metric-value-modern" id="valMetricTotal">{{ total_submissoes }}</span>
-                    </div>
-                    <button type="button" class="metric-dots-btn" onclick="event.stopPropagation(); alternarFiltroInterativoStatus('TODOS', 'card')" title="Visão Geral / Redefinir" aria-label="Opções">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="5" r="1.5"></circle>
-                            <circle cx="12" cy="12" r="1.5"></circle>
-                            <circle cx="12" cy="19" r="1.5"></circle>
-                        </svg>
-                    </button>
-                </div>
-                <div class="metric-title-modern">
-                    Total de Exercícios
-                    <span class="metric-filter-hint" id="hintMetricTotal">Visão Geral</span>
-                </div>
-                <div class="metric-progress-track">
-                    <div class="metric-progress-fill fill-primary" id="barMetricTotal" style="width: 100%;"></div>
-                </div>
-                <div class="metric-footer-row">
-                    <span class="metric-footer-label">Respostas na visão</span>
-                    <span class="metric-footer-pct" id="pctMetricTotal">100%</span>
-                </div>
+            <div class="metric-card lenovo-card" id="cardMetricTotal" onclick="alternarFiltroInterativoStatus('TODOS', 'card')" role="button" tabindex="0">
+                <div class="lenovo-card-title">Visão Geral</div>
+                  <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex: 1;">
+                      <div class="lenovo-card-stats" style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 0.5rem; text-align: left;">
+                          <div class="lenovo-stat-row" style="justify-content: flex-start;">
+                              <div class="lenovo-dot primary"></div>
+                              <span>{{ total_submissoes }} Total</span>
+                          </div>
+                          <div class="lenovo-stat-row" style="justify-content: flex-start;">
+                              <div class="lenovo-dot muted"></div>
+                              <span>Na visão atual</span>
+                          </div>
+                      </div>
+                      <div class="css-donut" style="--donut-color: #3b82f6; --donut-pct: 100%; flex-shrink: 0;">
+                          <span>100%</span>
+                      </div>
+                  </div>
             </div>
 
-            <!-- Card 2: Domínio Pleno (Correto) -->
-            <div class="metric-card metric-card-modern metric-correta" id="cardMetricCorretas" onclick="alternarFiltroInterativoStatus('Correto', 'card')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); alternarFiltroInterativoStatus('Correto', 'card');}" title="Clique para filtrar por Domínio Pleno (Correto)">
-                <div class="metric-top-row">
-                    <div class="metric-badge-value">
-                        <span class="metric-icon-badge badge-success">
-                            <svg class="line-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                        </span>
-                        <span class="metric-value-modern" id="valMetricCorretas">{{ total_corretos }}</span>
-                    </div>
-                    <button type="button" class="metric-dots-btn" title="Filtrar por Domínio Pleno" onclick="event.stopPropagation(); alternarFiltroInterativoStatus('Correto', 'card')" aria-label="Opções">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="5" r="1.5"></circle>
-                            <circle cx="12" cy="12" r="1.5"></circle>
-                            <circle cx="12" cy="19" r="1.5"></circle>
-                        </svg>
-                    </button>
-                </div>
-                <div class="metric-title-modern">
-                    Domínio Pleno (Correto)
-                    <span class="metric-filter-hint text-success" id="hintMetricCorretas">Filtrar</span>
-                </div>
-                <div class="metric-progress-track">
-                    <div class="metric-progress-fill fill-success" id="barMetricCorretas" style="width: {{ pct_acerto }}%;"></div>
-                </div>
-                <div class="metric-footer-row">
-                    <span class="metric-footer-label">Precisão gramatical</span>
-                    <span class="metric-footer-pct text-success" id="pctMetricCorretas">{{ pct_acerto }}%</span>
-                </div>
+            <!-- Card 2: Domínio Pleno (Pop Out) -->
+            <div class="metric-card lenovo-card" id="cardMetricCorretas" onclick="alternarFiltroInterativoStatus('Correto', 'card')" role="button" tabindex="0">
+                <div class="lenovo-card-title">Domínio Pleno</div>
+                  <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex: 1;">
+                      <div class="lenovo-card-stats" style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 0.5rem; text-align: left;">
+                          <div class="lenovo-stat-row" style="justify-content: flex-start;">
+                              <div class="lenovo-dot success"></div>
+                              <span>{{ total_corretos }} Corretas</span>
+                          </div>
+                          <div class="lenovo-stat-row" style="justify-content: flex-start;">
+                              <div class="lenovo-dot muted"></div>
+                              <span>Taxa de Acerto</span>
+                          </div>
+                      </div>
+                      <div class="css-donut" style="--donut-color: #10b981; --donut-pct: {{ pct_acerto }}%; flex-shrink: 0;">
+                          <span>{{ pct_acerto }}%</span>
+                      </div>
+                  </div>
             </div>
 
-            <!-- Card 3: Parcialmente Corretas -->
-            <div class="metric-card metric-card-modern metric-parcial" id="cardMetricParciais" onclick="alternarFiltroInterativoStatus('Parcialmente Correto', 'card')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); alternarFiltroInterativoStatus('Parcialmente Correto', 'card');}" title="Clique para filtrar por Parcialmente Corretas">
-                <div class="metric-top-row">
-                    <div class="metric-badge-value">
-                        <span class="metric-icon-badge badge-warning">
-                            <svg class="line-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
-                                <line x1="12" y1="9" x2="12" y2="13"></line>
-                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                            </svg>
-                        </span>
-                        <span class="metric-value-modern" id="valMetricParciais">{{ total_parciais }}</span>
-                    </div>
-                    <button type="button" class="metric-dots-btn" title="Filtrar por Parcialmente Corretas" onclick="event.stopPropagation(); alternarFiltroInterativoStatus('Parcialmente Correto', 'card')" aria-label="Opções">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="5" r="1.5"></circle>
-                            <circle cx="12" cy="12" r="1.5"></circle>
-                            <circle cx="12" cy="19" r="1.5"></circle>
-                        </svg>
-                    </button>
-                </div>
-                <div class="metric-title-modern">
-                    Parcialmente Corretas
-                    <span class="metric-filter-hint text-warning" id="hintMetricParciais">Filtrar</span>
-                </div>
-                <div class="metric-progress-track">
-                    <div class="metric-progress-fill fill-warning" id="barMetricParciais" style="width: {{ pct_parcial }}%;"></div>
-                </div>
-                <div class="metric-footer-row">
-                    <span class="metric-footer-label">Pequenos desvios</span>
-                    <span class="metric-footer-pct text-warning" id="pctMetricParciais">{{ pct_parcial }}%</span>
-                </div>
+            <!-- Card 3: Erros -->
+            <div class="metric-card lenovo-card" id="cardMetricIncorretas" onclick="alternarFiltroInterativoStatus('Incorreto', 'card')" role="button" tabindex="0">
+                <div class="lenovo-card-title">Atenção</div>
+                  <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex: 1;">
+                      <div class="lenovo-card-stats" style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 0.5rem; text-align: left;">
+                          <div class="lenovo-stat-row" style="justify-content: flex-start;">
+                              <div class="lenovo-dot danger"></div>
+                              <span>{{ total_incorretos }} Incorretas</span>
+                          </div>
+                          <div class="lenovo-stat-row" style="justify-content: flex-start;">
+                              <div class="lenovo-dot muted"></div>
+                              <span>Necessitam revisão</span>
+                          </div>
+                      </div>
+                      <div class="css-donut" style="--donut-color: #ef4444; --donut-pct: {{ pct_incorreto }}%; flex-shrink: 0;">
+                          <span>{{ pct_incorreto }}%</span>
+                      </div>
+                  </div>
             </div>
+                      <!-- Card 4: Gráfico de Pizza -->
+              <div class="metric-card lenovo-card" style="padding: 1.5rem; display: flex; flex-direction: column;">
+                  <div class="pie-card-header" style="display: flex; justify-content: center; align-items: center; gap: 8px; text-align: center; width: 100%;">
+                      <div style="display: flex; flex-direction: column;">
+                          <h3 class="card-title" style="margin:0; font-size: 1.1rem; color: #1e293b;">Respostas</h3>
+                      </div>
+                      <span class="status-badge" style="background:#f1f5f9; color:#64748b; font-size:0.7rem; padding: 2px 8px; border-radius: 12px;">Status</span>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex: 1;">
+                      <div class="lenovo-card-stats" style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 0.5rem; text-align: left;">
+                          <div class="lenovo-stat-row" style="justify-content: flex-start;">
+                              <div class="lenovo-dot success"></div>
+                              <span style="font-size:0.8rem;">{{ total_corretos }} Corretas</span>
+                          </div>
+                          <div class="lenovo-stat-row" style="justify-content: flex-start;">
+                              <div class="lenovo-dot warning"></div>
+                              <span style="font-size:0.8rem;">{{ total_parciais }} Parciais</span>
+                          </div>
+                          <div class="lenovo-stat-row" style="justify-content: flex-start;">
+                              <div class="lenovo-dot danger"></div>
+                              <span style="font-size:0.8rem;">{{ total_incorretos }} Incorretas</span>
+                          </div>
+                      </div>
+                      <div class="chart-container doughnut-container" style="height: 100px; width: 100px; flex-shrink: 0; display: flex; justify-content: center; align-items: center; margin-left: 10px;">
+                          <canvas id="graficoStatus"></canvas>
+                      </div>
+                  </div>
+              </div>
+</div>
+          </div>
 
-            <!-- Card 4: Respostas Incorretas -->
-            <div class="metric-card metric-card-modern metric-incorreta" id="cardMetricIncorretas" onclick="alternarFiltroInterativoStatus('Incorreto', 'card')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); alternarFiltroInterativoStatus('Incorreto', 'card');}" title="Clique para filtrar por Incorretas">
-                <div class="metric-top-row">
-                    <div class="metric-badge-value">
-                        <span class="metric-icon-badge badge-danger">
-                            <svg class="line-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <line x1="15" y1="9" x2="9" y2="15"></line>
-                                <line x1="9" y1="9" x2="15" y2="15"></line>
-                            </svg>
-                        </span>
-                        <span class="metric-value-modern" id="valMetricIncorretas">{{ total_incorretos }}</span>
-                    </div>
-                    <button type="button" class="metric-dots-btn" title="Filtrar por Incorretas" onclick="event.stopPropagation(); alternarFiltroInterativoStatus('Incorreto', 'card')" aria-label="Opções">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="5" r="1.5"></circle>
-                            <circle cx="12" cy="12" r="1.5"></circle>
-                            <circle cx="12" cy="19" r="1.5"></circle>
-                        </svg>
-                    </button>
-                </div>
-                <div class="metric-title-modern">
-                    Respostas Incorretas
-                    <span class="metric-filter-hint text-danger" id="hintMetricIncorretas">Filtrar</span>
-                </div>
-                <div class="metric-progress-track">
-                    <div class="metric-progress-fill fill-danger" id="barMetricIncorretas" style="width: {{ pct_incorreto }}%;"></div>
-                </div>
-                <div class="metric-footer-row">
-                    <span class="metric-footer-label">Requerem reforço</span>
-                    <span class="metric-footer-pct text-danger" id="pctMetricIncorretas">{{ pct_incorreto }}%</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Banner Interativo de Filtro Ativo -->
+          <!-- Banner Interativo de Filtro Ativo -->
         <div id="bannerFiltroInterativo" class="filter-active-banner no-print">
             <div class="filter-banner-text">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -341,27 +284,32 @@
             </button>
         </div>
 
-        <!-- SEÇÃO DOS DOIS GRÁFICOS (CHART.JS) -->
-        <div class="charts-grid">
-            <!-- Gráfico A: Rosca (Doughnut) - Visão Geral das Respostas -->
-            <div class="chart-card">
-                <div class="chart-card-header">
-                    <h3 class="chart-title">Visão Geral das Respostas</h3>
-                    <span class="chart-badge">Distribuição por Status</span>
-                </div>
-                <div class="chart-container doughnut-container">
-                    <canvas id="graficoStatus"></canvas>
-                </div>
-            </div>
+        <div class="lenovo-table-area no-print" id="dashboardTabelaArea">
 
-            <!-- Gráfico B: Barras Comparativo - Acertos vs Erros por Tópico Gramatical -->
-            <div class="chart-card">
+
+            <!-- SEÇÃO DOS DOIS GRÁFICOS (CHART.JS) -->
+        <div class="charts-grid">
+
+
+            <!-- Gráfico B: Top 10 Melhores -->
+            <div class="chart-card lenovo-card">
                 <div class="chart-card-header">
-                    <h3 class="chart-title">Desempenho por Tópico Gramatical</h3>
-                    <span class="chart-badge">Comparativo Temático</span>
+                    <h3 class="chart-title">Top 10 Melhores Temas</h3>
+                    <span class="chart-badge">Maior % de Acertos</span>
                 </div>
                 <div class="chart-container bar-container">
-                    <canvas id="graficoTemas"></canvas>
+                    <canvas id="graficoBest"></canvas>
+                </div>
+            </div>
+            
+            <!-- Gráfico C: Top 10 Piores -->
+            <div class="chart-card lenovo-card">
+                <div class="chart-card-header">
+                    <h3 class="chart-title">Top 10 Piores Temas</h3>
+                    <span class="chart-badge">Maior % de Erros</span>
+                </div>
+                <div class="chart-container bar-container">
+                    <canvas id="graficoWorst"></canvas>
                 </div>
             </div>
         </div>
@@ -1883,6 +1831,9 @@ function baixarBoletimPDF() {
 
 <!-- Container de Toast Notification Flutuante -->
 <div id="toastNotification" class="toast-notification"></div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
@@ -1895,8 +1846,19 @@ function baixarBoletimPDF() {
     "tema_acertos": {{ tema_acertos|tojson }},
     "tema_erros": {{ tema_erros|tojson }},
     "tema_parciais": {{ tema_parciais|tojson }},
+    "best_labels": {{ best_labels|tojson }},
+    "best_acertos": {{ best_acertos|tojson }},
+    "best_erros": {{ best_erros|tojson }},
+    "best_parciais": {{ best_parciais|tojson }},
+    "worst_labels": {{ worst_labels|tojson }},
+    "worst_acertos": {{ worst_acertos|tojson }},
+    "worst_erros": {{ worst_erros|tojson }},
+    "worst_parciais": {{ worst_parciais|tojson }},
     "submissoes": {{ submissoes_dict|tojson }}
 }
 </script>
 <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+        </div>
+    </div>
+</div>
 {% endblock %}
