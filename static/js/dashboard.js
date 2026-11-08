@@ -16,6 +16,8 @@ let submissoesData = {};
 // Instâncias ativas dos gráficos Chart.js para atualização dinâmica de tema
 let chartStatusInstance = null;
 let chartTemasInstance = null;
+let chartBestInstance = null;
+let chartWorstInstance = null;
 
 /**
  * Retorna as cores apropriadas para os gráficos de acordo com o tema atual
@@ -23,10 +25,10 @@ let chartTemasInstance = null;
 function getChartThemeColors(tema) {
     const isLight = tema === "light";
     return {
-        textColor: isLight ? "#0f172a" : "#cbd5e1",
-        mutedTextColor: isLight ? "#334155" : "#94a3b8",
-        gridColor: isLight ? "rgba(15, 23, 42, 0.08)" : "rgba(255, 255, 255, 0.05)",
-        doughnutBorder: isLight ? "#ffffff" : "#162032"
+        textColor: isLight ? "#14213D" : "#E5E7EB",
+        mutedTextColor: isLight ? "#4B5563" : "#9CA3AF",
+        gridColor: isLight ? "rgba(20, 33, 61, 0.06)" : "rgba(255, 255, 255, 0.06)",
+        doughnutBorder: isLight ? "#FFFFFF" : "#181920"
     };
 }
 
@@ -47,22 +49,23 @@ window.atualizarCoresGraficosTema = function(tema) {
         chartStatusInstance.update();
     }
 
-    if (chartTemasInstance) {
-        if (chartTemasInstance.options.plugins && chartTemasInstance.options.plugins.legend) {
-            chartTemasInstance.options.plugins.legend.labels.color = colors.textColor;
+    [chartTemasInstance, chartBestInstance, chartWorstInstance].forEach(inst => {
+        if (!inst) return;
+        if (inst.options.plugins && inst.options.plugins.legend) {
+            inst.options.plugins.legend.labels.color = colors.textColor;
         }
-        if (chartTemasInstance.options.scales) {
-            if (chartTemasInstance.options.scales.x) {
-                chartTemasInstance.options.scales.x.ticks.color = colors.mutedTextColor;
-                chartTemasInstance.options.scales.x.grid.color = colors.gridColor;
+        if (inst.options.scales) {
+            if (inst.options.scales.x) {
+                inst.options.scales.x.ticks.color = colors.mutedTextColor;
+                inst.options.scales.x.grid.color = colors.gridColor;
             }
-            if (chartTemasInstance.options.scales.y) {
-                chartTemasInstance.options.scales.y.ticks.color = colors.mutedTextColor;
-                chartTemasInstance.options.scales.y.grid.color = colors.gridColor;
+            if (inst.options.scales.y) {
+                inst.options.scales.y.ticks.color = colors.mutedTextColor;
+                inst.options.scales.y.grid.color = colors.gridColor;
             }
         }
-        chartTemasInstance.update();
-    }
+        inst.update();
+    });
 };
 
 function carregarDadosDashboard() {
@@ -113,10 +116,10 @@ function atualizarDataEmissao() {
 /**
  * Inicializa os gráficos Chart.js:
  * 1. Gráfico de Rosca (Doughnut): Visão Geral das Respostas
- * 2. Gráfico de Barras: Acertos vs. Erros por Tópico Gramatical
+ * 2. Gráficos de Barras Horizontais: Top 10 Melhores e Top 10 em Atenção
  */
 function inicializarGraficos() {
-    const temaAtual = document.documentElement.getAttribute("data-theme") || "dark";
+    const temaAtual = document.documentElement.getAttribute("data-theme") || "light";
     const themeColors = getChartThemeColors(temaAtual);
 
     // Destrói instâncias anteriores se houver reinicialização
@@ -127,6 +130,14 @@ function inicializarGraficos() {
     if (chartTemasInstance) {
         chartTemasInstance.destroy();
         chartTemasInstance = null;
+    }
+    if (chartBestInstance) {
+        chartBestInstance.destroy();
+        chartBestInstance = null;
+    }
+    if (chartWorstInstance) {
+        chartWorstInstance.destroy();
+        chartWorstInstance = null;
     }
 
     // -------------------------------------------------------------
@@ -142,9 +153,9 @@ function inicializarGraficos() {
                     data: STATUS_VALORES || [],
                     backgroundColor: getDoughnutStatusColors(filtroStatusAtivo),
                     borderColor: themeColors.doughnutBorder,
-                    borderWidth: 3,
+                    borderWidth: 2.5,
                     offset: getDoughnutStatusOffsets(filtroStatusAtivo),
-                    hoverOffset: 12
+                    hoverOffset: 8
                 }]
             },
             options: {
@@ -152,7 +163,6 @@ function inicializarGraficos() {
                 maintainAspectRatio: false,
                 onClick: (event, elements, chart) => {
                     if (!elements || elements.length === 0) {
-                        // Clicou no centro ou fora dos anéis -> reseta para todos
                         alternarFiltroInterativoStatus("TODOS", "doughnut");
                         return;
                     }
@@ -167,38 +177,10 @@ function inicializarGraficos() {
                 },
                 plugins: {
                     datalabels: {
-                        color: '#ffffff',
-                        font: { weight: 'bold', size: 12, family: "'Plus Jakarta Sans', sans-serif" },
-                        formatter: (value, ctx) => {
-                            let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-                            let percentage = sum > 0 ? ((value * 100) / sum).toFixed(1) + "%" : "0%";
-                            // ONLY RETURN PERCENTAGE TO BE DRAWN INSIDE THE SLICE
-                            return percentage;
-                        },
-                        textAlign: 'center',
-                        anchor: 'center',
-                        align: 'center'
+                        display: false
                     },
                     legend: {
-                        display: false,
-                        onClick: (e, legendItem, legend) => {
-                            const label = legendItem.text;
-                            alternarFiltroInterativoStatus(label, "legend");
-                        },
-                        onHover: (event) => {
-                            if (event && event.native && event.native.target) {
-                                event.native.target.style.cursor = 'pointer';
-                            }
-                        },
-                        labels: {
-                            color: themeColors.textColor,
-                            font: {
-                                family: 'Plus Jakarta Sans',
-                                size: 12,
-                                weight: 600
-                            },
-                            padding: 16
-                        }
+                        display: false
                     },
                     tooltip: {
                         callbacks: {
@@ -206,62 +188,108 @@ function inicializarGraficos() {
                                 const total = context.dataset.data.reduce((a, b) => a + b, 0);
                                 const val = context.raw;
                                 const pct = total > 0 ? ((val / total) * 100).toFixed(1) : 0;
-                                return ` ${context.label}: ${val} exercícios (${pct}%) — Clique para filtrar`;
+                                return ` ${context.label}: ${val} (${pct}%)`;
                             }
                         }
                     }
                 },
-                cutout: '65%'
+                cutout: '68%'
             }
         });
     }
 
-    // -------------------------------------------------------------
-    // GRÁFICO 2: Barras Comparativo - Acertos vs Erros por Tópico Gramatical
-    // -------------------------------------------------------------
-    // NOVO: Top 10 Melhores e Top 10 Piores (Horizontais)
+    // Configuração comum para os gráficos horizontais editoriais
+    const criarOpcoesBarraEditorial = () => ({
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        onClick: (event, elements, chart) => {
+            if (elements && elements.length > 0) {
+                const idx = elements[0].index;
+                const topico = chart.data.labels[idx];
+                if (typeof alternarAbaPainelDocente === 'function') {
+                    alternarAbaPainelDocente('submissoes');
+                }
+                filtrarTabelaPorTopico(topico);
+            }
+        },
+        onHover: (event, elements) => {
+            if (event && event.native && event.native.target) {
+                event.native.target.style.cursor = elements && elements.length > 0 ? 'pointer' : 'default';
+            }
+        },
+        plugins: {
+            datalabels: {
+                display: false
+            },
+            legend: {
+                position: 'top',
+                align: 'end',
+                labels: {
+                    usePointStyle: true,
+                    pointStyle: 'circle',
+                    boxWidth: 8,
+                    color: themeColors.textColor,
+                    font: { family: "'Plus Jakarta Sans', sans-serif", size: 11, weight: '600' }
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    footer: () => 'Clique na barra para filtrar a tabela por este tema'
+                }
+            }
+        },
+        scales: {
+            x: {
+                stacked: true,
+                beginAtZero: true,
+                grid: { color: themeColors.gridColor, drawBorder: false },
+                ticks: { color: themeColors.mutedTextColor, font: { size: 11 } }
+            },
+            y: {
+                stacked: true,
+                grid: { display: false, drawBorder: false },
+                ticks: { color: themeColors.textColor, font: { size: 11, weight: '600' } }
+            }
+        }
+    });
+
+    // GRÁFICO 2A: Top 10 Melhores Temas
     const ctxBest = document.getElementById('graficoBest');
-    if (ctxBest && window.dashboardData.best_labels) {
-        new Chart(ctxBest, {
+    if (ctxBest && window.dashboardData && window.dashboardData.best_labels) {
+        chartBestInstance = new Chart(ctxBest, {
             type: 'bar',
             data: {
                 labels: window.dashboardData.best_labels,
                 datasets: [
-                    { label: 'Acertos', data: window.dashboardData.best_acertos, backgroundColor: '#10b981', borderRadius: 4 },
-                    { label: 'Parciais', data: window.dashboardData.best_parciais, backgroundColor: '#f59e0b', borderRadius: 4 },
-                    { label: 'Erros', data: window.dashboardData.best_erros, backgroundColor: '#ef4444', borderRadius: 4 }
+                    { label: 'Acertos', data: window.dashboardData.best_acertos, backgroundColor: '#2A9D8F', borderRadius: 6, barThickness: 16 },
+                    { label: 'Parciais', data: window.dashboardData.best_parciais, backgroundColor: '#FCA311', borderRadius: 6, barThickness: 16 },
+                    { label: 'Erros', data: window.dashboardData.best_erros, backgroundColor: '#E11D48', borderRadius: 6, barThickness: 16 }
                 ]
             },
-            options: {
-                indexAxis: 'y',
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 10 } } },
-                scales: { x: { stacked: true, beginAtZero: true, grid: { color: '#f1f5f9' } }, y: { stacked: true, ticks: { font: {size: 11} } } }
-            }
+            options: criarOpcoesBarraEditorial()
         });
     }
 
+    // GRÁFICO 2B: Top 10 Temas em Atenção
     const ctxWorst = document.getElementById('graficoWorst');
-    if (ctxWorst && window.dashboardData.worst_labels) {
-        new Chart(ctxWorst, {
+    if (ctxWorst && window.dashboardData && window.dashboardData.worst_labels) {
+        chartWorstInstance = new Chart(ctxWorst, {
             type: 'bar',
             data: {
                 labels: window.dashboardData.worst_labels,
                 datasets: [
-                    { label: 'Erros', data: window.dashboardData.worst_erros, backgroundColor: '#ef4444', borderRadius: 4 },
-                    { label: 'Parciais', data: window.dashboardData.worst_parciais, backgroundColor: '#f59e0b', borderRadius: 4 },
-                    { label: 'Acertos', data: window.dashboardData.worst_acertos, backgroundColor: '#10b981', borderRadius: 4 }
+                    { label: 'Erros', data: window.dashboardData.worst_erros, backgroundColor: '#E11D48', borderRadius: 6, barThickness: 16 },
+                    { label: 'Parciais', data: window.dashboardData.worst_parciais, backgroundColor: '#FCA311', borderRadius: 6, barThickness: 16 },
+                    { label: 'Acertos', data: window.dashboardData.worst_acertos, backgroundColor: '#2A9D8F', borderRadius: 6, barThickness: 16 }
                 ]
             },
-            options: {
-                indexAxis: 'y',
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 10 } } },
-                scales: { x: { stacked: true, beginAtZero: true, grid: { color: '#f1f5f9' } }, y: { stacked: true, ticks: { font: {size: 11} } } }
-            }
+            options: criarOpcoesBarraEditorial()
         });
     }
 }
+
+let submissaoModalAtualId = null;
 
 /**
  * Funções de Controle do Modal de Detalhes com Análise do Professor
@@ -269,14 +297,20 @@ function inicializarGraficos() {
 function abrirModalFeedback(id) {
     if (typeof submissoesData === "undefined" || !submissoesData[id]) return;
 
+    submissaoModalAtualId = Number(id);
     const sub = submissoesData[id];
     const modal = document.getElementById("feedbackModal");
 
     document.getElementById("modalTitle").textContent = `Submissão #${sub.id}`;
-    document.getElementById("modalTopicBadge").textContent = sub.tema;
+    document.getElementById("modalTopicBadge").textContent = sub.tema || "Geral";
     document.getElementById("modalQuestion").textContent = sub.pergunta;
     document.getElementById("modalAnswer").textContent = sub.resposta;
     document.getElementById("modalTimestamp").textContent = `Enviado em: ${sub.data_hora}`;
+
+    const studentBadge = document.getElementById("modalStudentBadge");
+    if (studentBadge) {
+        studentBadge.textContent = `${sub.aluno_nome || 'Estudante'}${sub.turma_nome ? ' • ' + sub.turma_nome : ''}`;
+    }
 
     const cefrBadge = document.getElementById("modalCefrBadge");
     if (cefrBadge) {
@@ -314,14 +348,65 @@ function abrirModalFeedback(id) {
 
     const feedbackBox = document.getElementById("modalFeedbackText");
     if (typeof marked !== "undefined" && marked.parse) {
-        feedbackBox.innerHTML = marked.parse(sub.feedback || "");
+        const rawHtml = marked.parse(sub.feedback || "");
+        feedbackBox.innerHTML = String(rawHtml)
+            .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
+            .replace(/<(iframe|object|embed|form|meta|link|style)\b[^>]*>/gi, "")
+            .replace(/\son\w+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, "")
+            .replace(/href\s*=\s*["']?\s*javascript:[^"'\s>]*/gi, 'href="#"');
     } else {
         feedbackBox.textContent = sub.feedback || "";
     }
 
+    ultimoElementoFocado = document.activeElement;
     modal.classList.remove("hidden");
     document.body.style.overflow = "hidden";
+
+    setTimeout(() => {
+        const btnFechar = modal.querySelector(".btn-close-modal");
+        if (btnFechar) btnFechar.focus();
+    }, 50);
+
+    if (typeof anunciarParaLeitorDeTela === "function") {
+        anunciarParaLeitorDeTela(`Detalhes da submissão #${sub.id} abertos. Diagnóstico: ${sub.status}. Pressione Escape para fechar.`);
+    }
 }
+
+function navegarSubmissaoModal(delta) {
+    const ids = Object.keys(submissoesData || {}).map(Number).sort((a, b) => b - a);
+    if (ids.length <= 1 || !submissaoModalAtualId) return;
+    const idx = ids.indexOf(Number(submissaoModalAtualId));
+    if (idx === -1) return;
+    const novoIdx = (idx + delta + ids.length) % ids.length;
+    abrirModalFeedback(ids[novoIdx]);
+}
+window.navegarSubmissaoModal = navegarSubmissaoModal;
+
+function enviarRecadoDaSubmissaoModal() {
+    if (!submissaoModalAtualId || !submissoesData || !submissoesData[submissaoModalAtualId]) return;
+    const sub = submissoesData[submissaoModalAtualId];
+    fecharModal();
+    if (typeof abrirRecadoRapidoAluno === "function") {
+        abrirRecadoRapidoAluno(sub.aluno_id, sub.aluno_nome);
+        const inpAssunto = document.getElementById("msg_assunto");
+        const inpCorpo = document.getElementById("msg_corpo");
+        if (inpAssunto) {
+            inpAssunto.value = `Feedback Pedagógico: ${sub.tema || 'Exercício'} (Submissão #${sub.id})`;
+        }
+        if (inpCorpo) {
+            inpCorpo.value = `Bonjour ${sub.aluno_nome || ''} ! Em relação à sua resposta « ${sub.resposta || ''} » no tópico ${sub.tema || 'de francês'}: `;
+            inpCorpo.focus();
+        }
+    }
+}
+window.enviarRecadoDaSubmissaoModal = enviarRecadoDaSubmissaoModal;
+
+function gerarReforcoDaSubmissaoModal() {
+    if (!submissaoModalAtualId || !submissoesData || !submissoesData[submissaoModalAtualId]) return;
+    const sub = submissoesData[submissaoModalAtualId];
+    gerarReforcoRadar(sub.aluno_id, sub.tema_id || 1);
+}
+window.gerarReforcoDaSubmissaoModal = gerarReforcoDaSubmissaoModal;
 
 let respostaAtualModal = "";
 
@@ -378,6 +463,12 @@ function fecharModal() {
     if (modal) {
         modal.classList.add("hidden");
         document.body.style.overflow = "";
+        if (typeof anunciarParaLeitorDeTela === "function") {
+            anunciarParaLeitorDeTela("Janela de detalhes fechada.");
+        }
+        if (ultimoElementoFocado && typeof ultimoElementoFocado.focus === "function") {
+            try { ultimoElementoFocado.focus(); } catch (e) {}
+        }
     }
 }
 
@@ -409,20 +500,20 @@ let filtroTemaAtivo = "TODOS";
  */
 function getDoughnutStatusColors(filtroAtivo) {
     const statusColors = {
-        "Correto": "#10b981",
-        "Parcialmente Correto": "#f59e0b",
-        "Incorreto": "#ef4444"
+        "Correto": "#2A9D8F",
+        "Parcialmente Correto": "#FCA311",
+        "Incorreto": "#E11D48"
     };
     const statusColorsDimmed = {
-        "Correto": "rgba(16, 185, 129, 0.22)",
-        "Parcialmente Correto": "rgba(245, 158, 11, 0.22)",
-        "Incorreto": "rgba(239, 68, 68, 0.22)"
+        "Correto": "rgba(42, 157, 143, 0.22)",
+        "Parcialmente Correto": "rgba(252, 163, 17, 0.22)",
+        "Incorreto": "rgba(225, 29, 72, 0.22)"
     };
     return (STATUS_LABELS || []).map(label => {
         if (!filtroAtivo || filtroAtivo === "TODOS") {
-            return statusColors[label] || "#6366f1";
+            return statusColors[label] || "#14213D";
         }
-        return label === filtroAtivo ? (statusColors[label] || "#6366f1") : (statusColorsDimmed[label] || "rgba(148, 163, 184, 0.2)");
+        return label === filtroAtivo ? (statusColors[label] || "#14213D") : (statusColorsDimmed[label] || "rgba(148, 163, 184, 0.2)");
     });
 }
 
@@ -431,7 +522,7 @@ function getDoughnutStatusColors(filtroAtivo) {
  */
 function getDoughnutStatusOffsets(filtroAtivo) {
     return (STATUS_LABELS || []).map(label => {
-        return (filtroAtivo && filtroAtivo !== "TODOS" && label === filtroAtivo) ? 14 : 0;
+        return (filtroAtivo && filtroAtivo !== "TODOS" && label === filtroAtivo) ? 10 : 0;
     });
 }
 
@@ -505,13 +596,12 @@ function atualizarEstiloCardsInterativos(status) {
         if (cardTotal) {
             cardTotal.classList.remove("metric-card-selected", "has-filter-active");
             const hintTotal = document.getElementById("hintMetricTotal");
-            if (hintTotal) hintTotal.textContent = "Visão Geral";
+            if (hintTotal) hintTotal.textContent = "▲ 100%";
         }
         cards.forEach(c => {
             if (c.el) {
                 c.el.classList.remove("metric-card-selected", "metric-card-dimmed");
             }
-            if (c.hint) c.hint.textContent = "Filtrar";
         });
     } else {
         if (cardTotal) {
@@ -524,11 +614,9 @@ function atualizarEstiloCardsInterativos(status) {
             if (c.key === status) {
                 c.el.classList.add("metric-card-selected");
                 c.el.classList.remove("metric-card-dimmed");
-                if (c.hint) c.hint.textContent = "✓ Ativo";
             } else {
                 c.el.classList.remove("metric-card-selected");
                 c.el.classList.add("metric-card-dimmed");
-                if (c.hint) c.hint.textContent = "Filtrar";
             }
         });
     }
@@ -553,9 +641,6 @@ function atualizarDoughnutInterativo(status) {
 function atualizarBarChartInterativo(status) {
     if (!chartTemasInstance) return;
 
-    // Dataset 0: Acertos (Corretos)
-    // Dataset 1: Parciais (Desvios leves)
-    // Dataset 2: Erros (Incorretos)
     if (status === "TODOS") {
         chartTemasInstance.setDatasetVisibility(0, true);
         chartTemasInstance.setDatasetVisibility(1, true);
@@ -577,7 +662,7 @@ function atualizarBarChartInterativo(status) {
 }
 
 /**
- * Sincroniza as pílulas de filtro da tabela e oculta/exibe a tabela de risco conforme o status
+ * Sincroniza as pílulas de filtro da tabela e alterna a aba ativa se necessário
  */
 function atualizarTabelasComFiltro(status) {
     const botoes = document.querySelectorAll("[data-filter-status]");
@@ -589,59 +674,114 @@ function atualizarTabelasComFiltro(status) {
         }
     });
 
-    aplicarFiltrosTabela();
-
-    const cardRisco = document.getElementById("cardTabelaRisco");
-    const riskOuter = document.getElementById("riskBoxOuter") || cardRisco;
-    if (cardRisco) {
-        if (status === "Correto" || status === "Parcialmente Correto") {
-            cardRisco.style.display = "none";
-            if (riskOuter) riskOuter.style.display = "none";
-        } else {
-            cardRisco.style.display = "";
-            if (riskOuter) riskOuter.style.display = "";
-            if (status === "Incorreto") {
-                cardRisco.classList.add("risk-highlighted");
-            } else {
-                cardRisco.classList.remove("risk-highlighted");
-            }
-            if (typeof renderizarPaginacaoRisco === "function") {
-                renderizarPaginacaoRisco();
-            }
-        }
+    if (typeof alternarAbaPainelDocente === "function") {
+        alternarAbaPainelDocente("submissoes");
     }
+
+    aplicarFiltrosTabela();
 }
 
 /**
- * Exibe ou oculta o banner informativo de filtro ativo acima dos gráficos
+ * Exibe ou oculta o banner unificado de filtros ativos acima dos gráficos
  */
 function atualizarBannerFiltroAtivo(status) {
     const banner = document.getElementById("bannerFiltroInterativo");
     const texto = document.getElementById("textoFiltroAtivo");
     const badge = document.getElementById("badgeFiltroAtivoCount");
+    const chipsWrap = document.getElementById("chipsFiltrosAtivosContainer");
     if (!banner) return;
 
-    if (!status || status === "TODOS") {
+    const selTurma = document.getElementById("filtroTurma");
+    const selNivel = document.getElementById("filtroNivel");
+    const selAluno = document.getElementById("filtroAluno");
+
+    const turmaVal = selTurma ? selTurma.value : "todas";
+    const nivelVal = selNivel ? selNivel.value : "todos";
+    const alunoVal = selAluno ? selAluno.value : "todos";
+    const statusVal = typeof filtroStatusAtivo !== "undefined" ? filtroStatusAtivo : (status || "TODOS");
+    const temaVal = typeof filtroTemaAtivo !== "undefined" ? filtroTemaAtivo : "TODOS";
+    const cefrTabVal = typeof filtroCefrAtivo !== "undefined" ? filtroCefrAtivo : "TODOS";
+
+    const chips = [];
+
+    if (turmaVal && turmaVal !== "todas" && selTurma) {
+        const nomeTurma = selTurma.options[selTurma.selectedIndex]?.text || "Turma";
+        chips.push({ tipo: "turma", label: `Turma: ${nomeTurma}` });
+    }
+    if (nivelVal && nivelVal !== "todos") {
+        chips.push({ tipo: "nivel", label: `Nível: ${nivelVal}` });
+    }
+    if (alunoVal && alunoVal !== "todos" && selAluno) {
+        const nomeAluno = selAluno.options[selAluno.selectedIndex]?.text || "Estudante";
+        chips.push({ tipo: "aluno", label: `Dossiê: ${nomeAluno}` });
+    }
+    if (temaVal && temaVal !== "TODOS") {
+        chips.push({ tipo: "tema", label: `Tema: ${temaVal}` });
+    }
+    if (statusVal && statusVal !== "TODOS") {
+        const nomes = {
+            "Correto": "Domínio Pleno (Correto)",
+            "Parcialmente Correto": "Parcialmente Correto",
+            "Incorreto": "Respostas Incorretas"
+        };
+        chips.push({ tipo: "status", label: `Status: ${nomes[statusVal] || statusVal}` });
+    }
+    if (cefrTabVal && cefrTabVal !== "TODOS") {
+        chips.push({ tipo: "cefr_tab", label: `Tabela CEFR: ${cefrTabVal}` });
+    }
+
+    if (chips.length === 0) {
         banner.classList.remove("visible");
+        if (chipsWrap) chipsWrap.innerHTML = "";
         return;
     }
 
-    const nomes = {
-        "Correto": "Domínio Pleno (Correto)",
-        "Parcialmente Correto": "Parcialmente Correto",
-        "Incorreto": "Respostas Incorretas"
-    };
+    if (texto) {
+        texto.textContent = chips.map(c => c.label).join(" • ");
+    }
 
-    let count = 0;
-    const elVal = status === "Correto" ? document.getElementById("valMetricCorretas") :
-                  status === "Parcialmente Correto" ? document.getElementById("valMetricParciais") :
-                  document.getElementById("valMetricIncorretas");
-    if (elVal) count = elVal.textContent.trim();
+    if (chipsWrap) {
+        chipsWrap.innerHTML = chips.map(c => `
+            <button type="button" class="docente-chip-btn active" style="width: auto; padding: 4px 12px; font-size: 0.75rem;" onclick="removerFiltroIndividual('${c.tipo}')" title="Clique para remover este filtro">
+                <span>${escapeHtml(c.label)}</span>
+                <span style="margin-left: 4px; opacity: 0.85;">✕</span>
+            </button>
+        `).join("");
+    }
 
-    if (texto) texto.textContent = nomes[status] || status;
-    if (badge) badge.textContent = `${count} exercícios filtrados`;
+    if (badge) {
+        const badgeSub = document.getElementById("badgeSubmissoesCount");
+        badge.textContent = badgeSub ? badgeSub.textContent : "";
+    }
+
     banner.classList.add("visible");
 }
+window.atualizarBannerFiltroAtivo = atualizarBannerFiltroAtivo;
+
+function removerFiltroIndividual(tipo) {
+    if (tipo === "turma") {
+        const s = document.getElementById("filtroTurma");
+        if (s) s.value = "todas";
+        carregarAlunosPorTurma();
+        gerarRelatorioVisual();
+    } else if (tipo === "nivel") {
+        const s = document.getElementById("filtroNivel");
+        if (s) s.value = "todos";
+        gerarRelatorioVisual();
+    } else if (tipo === "aluno") {
+        const s = document.getElementById("filtroAluno");
+        if (s) s.value = "todos";
+        gerarRelatorioVisual();
+    } else if (tipo === "tema") {
+        filtroTemaAtivo = "TODOS";
+        aplicarFiltrosTabela();
+    } else if (tipo === "status") {
+        alternarFiltroInterativoStatus("TODOS", "banner");
+    } else if (tipo === "cefr_tab") {
+        filtrarTabelaCefr("TODOS");
+    }
+}
+window.removerFiltroIndividual = removerFiltroIndividual;
 
 /**
  * Filtro por Nível CEFR na tabela
@@ -695,15 +835,52 @@ function filtrarTabelaPorTopico(topico) {
 window.filtrarTabelaPorTopico = filtrarTabelaPorTopico;
 
 /**
- * Aplica os filtros combinados (CEFR, Status, Tema) sobre as linhas da tabela de submissões
- * e sincroniza com o sistema de paginação dinâmica (resetando para a página 1)
+ * Aplica os filtros combinados (Escopo Inline + CEFR + Status + Tema) sobre as 3 tabelas
+ * e sincroniza com o sistema de paginação dinâmica e o banner de filtros ativos
  */
 function aplicarFiltrosTabela() {
     if (typeof renderizarPaginacaoSubmissoes === "function") {
         renderizarPaginacaoSubmissoes(true);
     }
+    if (typeof renderizarPaginacaoRisco === "function") {
+        riscoPaginationState.paginaAtual = 1;
+        renderizarPaginacaoRisco();
+    }
+    filtrarTabelaDesempenhoAlunosPorEscopo();
+    if (typeof atualizarBannerFiltroAtivo === "function") {
+        atualizarBannerFiltroAtivo(filtroStatusAtivo);
+    }
 }
 window.aplicarFiltrosTabela = aplicarFiltrosTabela;
+
+function filtrarTabelaDesempenhoAlunosPorEscopo() {
+    const selTurma = document.getElementById("filtroTurma")?.value || "todas";
+    const selNivel = (document.getElementById("filtroNivel")?.value || "todos").toUpperCase();
+    const selAluno = document.getElementById("filtroAluno")?.value || "todos";
+
+    const rows = document.querySelectorAll("#tabelaDesempenhoAlunos tbody tr.student-perf-row");
+    let visiveis = 0;
+    rows.forEach(row => {
+        const rTurma = row.getAttribute("data-turma-id") || "";
+        const rCefr = (row.getAttribute("data-cefr") || "A2").toUpperCase();
+        const rAluno = row.getAttribute("data-aluno-id") || "";
+
+        const okTurma = (selTurma === "todas" || rTurma === String(selTurma));
+        const okNivel = (selNivel === "TODOS" || rCefr === selNivel);
+        const okAluno = (selAluno === "todos" || rAluno === String(selAluno));
+
+        if (okTurma && okNivel && okAluno) {
+            row.style.display = "";
+            visiveis++;
+        } else {
+            row.style.display = "none";
+        }
+    });
+
+    const tabCountAlunos = document.getElementById("tabCountAlunos");
+    if (tabCountAlunos) tabCountAlunos.textContent = visiveis;
+}
+window.filtrarTabelaDesempenhoAlunosPorEscopo = filtrarTabelaDesempenhoAlunosPorEscopo;
 
 /**
  * Filtro rápido ativado pelo botão de opções (...) dos cards modernos de métricas
@@ -1193,24 +1370,29 @@ async function gerarReforcoRadar(alunoId, temaId) {
    ===================================================================== */
 
 async function carregarAlunosPorTurma() {
-    const turmaId = document.getElementById("filtroTurma").value;
+    const turmaEl = document.getElementById("filtroTurma");
     const alunoSelect = document.getElementById("filtroAluno");
-    
-    // Reset aluno select
+    if (!turmaEl || !alunoSelect) return;
+
+    const turmaId = turmaEl.value || "todas";
+    const alunoAnterior = alunoSelect.value;
+
     alunoSelect.innerHTML = '<option value="todos">Visão Macro / Todos os Alunos</option>';
-    
-    if (turmaId === "todas") return;
-    
+
     try {
-        const response = await fetch(`/api/alunos_por_turma/${turmaId}`);
+        const response = await fetch(`/api/alunos_por_turma/${encodeURIComponent(turmaId)}`);
         const alunos = await response.json();
-        
-        alunos.forEach(a => {
-            const opt = document.createElement("option");
-            opt.value = a.id;
-            opt.textContent = a.nome;
-            alunoSelect.appendChild(opt);
-        });
+        if (Array.isArray(alunos)) {
+            alunos.forEach(a => {
+                const opt = document.createElement("option");
+                opt.value = a.id;
+                opt.textContent = a.nome;
+                alunoSelect.appendChild(opt);
+            });
+            if (alunoAnterior && alunoAnterior !== "todos" && alunos.some(a => String(a.id) === String(alunoAnterior))) {
+                alunoSelect.value = alunoAnterior;
+            }
+        }
     } catch (e) {
         console.error("Erro ao carregar alunos:", e);
     }
@@ -1259,24 +1441,45 @@ async function gerarRelatorioVisual() {
                 });
             }
 
-            // Atualiza as variáveis que o inicializarGraficos() consome
+            // Atualiza as variáveis e window.dashboardData que o inicializarGraficos() consome
             STATUS_LABELS = window.STATUS_LABELS = data.desempenho_geral.labels || [];
             STATUS_VALORES = window.STATUS_VALORES = data.desempenho_geral.data || [];
+            if (window.dashboardData) {
+                window.dashboardData.status_labels = STATUS_LABELS;
+                window.dashboardData.status_valores = STATUS_VALORES;
+            }
             
             if (data.desempenho_tema) {
                 TEMA_LABELS = window.TEMA_LABELS = data.desempenho_tema.labels || [];
                 TEMA_ACERTOS = window.TEMA_ACERTOS = data.desempenho_tema.acertos || [];
                 TEMA_PARCIAIS = window.TEMA_PARCIAIS = data.desempenho_tema.parciais || [];
                 TEMA_ERROS = window.TEMA_ERROS = data.desempenho_tema.erros || [];
-            } else if (data.dificuldade_tema) {
-                TEMA_LABELS = window.TEMA_LABELS = data.dificuldade_tema.labels || [];
-                TEMA_ERROS = window.TEMA_ERROS = data.dificuldade_tema.data || [];
-                TEMA_ACERTOS = window.TEMA_ACERTOS = [];
-                TEMA_PARCIAIS = window.TEMA_PARCIAIS = [];
+
+                if (window.dashboardData) {
+                    const zipped = TEMA_LABELS.map((lbl, idx) => ({
+                        label: lbl,
+                        acertos: Number(TEMA_ACERTOS[idx] || 0),
+                        erros: Number(TEMA_ERROS[idx] || 0),
+                        parciais: Number(TEMA_PARCIAIS[idx] || 0)
+                    }));
+                    const best = [...zipped].sort((a, b) => b.acertos - a.acertos).slice(0, 10);
+                    const worst = [...zipped].sort((a, b) => b.erros - a.erros).slice(0, 10);
+
+                    window.dashboardData.best_labels = best.map(x => x.label);
+                    window.dashboardData.best_acertos = best.map(x => x.acertos);
+                    window.dashboardData.best_erros = best.map(x => x.erros);
+                    window.dashboardData.best_parciais = best.map(x => x.parciais);
+
+                    window.dashboardData.worst_labels = worst.map(x => x.label);
+                    window.dashboardData.worst_acertos = worst.map(x => x.acertos);
+                    window.dashboardData.worst_erros = worst.map(x => x.erros);
+                    window.dashboardData.worst_parciais = worst.map(x => x.parciais);
+                }
             }
             
-            // Recria graficos (inicializarGraficos ja tem o .destroy() no inicio)
+            // Recria graficos e filtra as 3 tabelas simultaneamente
             inicializarGraficos();
+            aplicarFiltrosTabela();
         } else {
             console.error(data.mensagem);
         }
@@ -1344,8 +1547,34 @@ function renderizarPaginacaoRisco() {
     const tabela = document.getElementById("tabelaAlunosRisco");
     if (!tabela) return;
 
-    const rows = Array.from(tabela.querySelectorAll("tbody tr.risk-row"));
+    const selTurma = document.getElementById("filtroTurma")?.value || "todas";
+    const selNivel = (document.getElementById("filtroNivel")?.value || "todos").toUpperCase();
+    const selAluno = document.getElementById("filtroAluno")?.value || "todos";
+
+    const todasRows = Array.from(tabela.querySelectorAll("tbody tr.risk-row"));
+    const rows = todasRows.filter(row => {
+        const rTurma = row.getAttribute("data-turma-id") || "";
+        const rCefr = (row.getAttribute("data-cefr") || "A2").toUpperCase();
+        const rAluno = row.getAttribute("data-aluno-id") || "";
+        const rTema = (row.getAttribute("data-tema") || "").trim();
+
+        const okTurma = (selTurma === "todas" || rTurma === String(selTurma));
+        const okNivel = (selNivel === "TODOS" || rCefr === selNivel);
+        const okAluno = (selAluno === "todos" || rAluno === String(selAluno));
+        const okTema = (typeof filtroTemaAtivo === "undefined" || filtroTemaAtivo === "TODOS" || rTema === filtroTemaAtivo || rTema.includes(filtroTemaAtivo));
+
+        return okTurma && okNivel && okAluno && okTema;
+    });
+
+    todasRows.forEach(r => {
+        r.style.display = "none";
+        r.classList.remove("risk-row-even", "risk-row-odd");
+    });
+
     const total = rows.length;
+    const tabCountRisco = document.getElementById("tabCountRisco");
+    if (tabCountRisco) tabCountRisco.textContent = total;
+
     const infoEl = document.getElementById("infoPaginacaoRisco");
     const btnPrev = document.getElementById("btnRiscoPrev");
     const btnNext = document.getElementById("btnRiscoNext");
@@ -1456,22 +1685,34 @@ function renderizarPaginacaoSubmissoes(resetPagina = false) {
     const tabela = document.getElementById("tabelaSubmissoes");
     if (!tabela) return;
 
+    const selTurma = document.getElementById("filtroTurma")?.value || "todas";
+    const selNivel = (document.getElementById("filtroNivel")?.value || "todos").toUpperCase();
+    const selAluno = document.getElementById("filtroAluno")?.value || "todos";
+
     const todasLinhas = Array.from(tabela.querySelectorAll("tbody tr.submission-row"));
     
-    // Filtra quais linhas correspondem aos filtros ativos (CEFR, Status, Tema)
+    // Filtra quais linhas correspondem aos filtros ativos (Escopo Inline + CEFR + Status + Tema)
     const linhasFiltradas = todasLinhas.filter(linha => {
+        const linhaTurma = linha.getAttribute("data-turma-id") || "";
+        const linhaAluno = linha.getAttribute("data-aluno-id") || "";
         const linhaCefr = (linha.getAttribute("data-cefr") || "A2").toUpperCase();
         const linhaStatus = linha.getAttribute("data-status") || "";
         const linhaTema = (linha.getAttribute("data-tema") || "").trim();
 
+        const correspondeTurma = (selTurma === "todas" || linhaTurma === String(selTurma));
+        const correspondeNivelInline = (selNivel === "TODOS" || linhaCefr === selNivel);
+        const correspondeAluno = (selAluno === "todos" || linhaAluno === String(selAluno));
         const correspondeCefr = (typeof filtroCefrAtivo === "undefined" || filtroCefrAtivo === "TODOS" || linhaCefr === filtroCefrAtivo);
         const correspondeStatus = (typeof filtroStatusAtivo === "undefined" || filtroStatusAtivo === "TODOS" || linhaStatus === filtroStatusAtivo);
         const correspondeTema = (typeof filtroTemaAtivo === "undefined" || filtroTemaAtivo === "TODOS" || linhaTema === filtroTemaAtivo || linhaTema.includes(filtroTemaAtivo));
 
-        return (correspondeCefr && correspondeStatus && correspondeTema);
+        return (correspondeTurma && correspondeNivelInline && correspondeAluno && correspondeCefr && correspondeStatus && correspondeTema);
     });
 
     const total = linhasFiltradas.length;
+    const tabCountSub = document.getElementById("tabCountSubmissoes");
+    if (tabCountSub) tabCountSub.textContent = total;
+
     const infoEl = document.getElementById("infoPaginacaoSubmissoes");
     const btnPrev = document.getElementById("btnSubmissoesPrev");
     const btnNext = document.getElementById("btnSubmissoesNext");

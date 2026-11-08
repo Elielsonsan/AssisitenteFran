@@ -1,33 +1,321 @@
 {% extends "base.html" %}
 
-{% block title %}Login | Assistente Fran — Mini-LMS de Língua Francesa{% endblock %}
+{% block title %}Login | Assistente Fran — Plataforma de Francês com IA{% endblock %}
+
+{% block extra_head %}
+<style>
+/* ===================================================================
+   Página de Login Clean com Ilustração 3D + Glassmorphism Real
+   Fundo: Bandeira Francesa em Degradê (Bleu, Blanc, Rouge)
+   =================================================================== */
+
+/* 4. Fundo da Bandeira Francesa com Degradê Suave e Faixa Branca Ampliada */
+body:has(.login-page-wrapper),
+[data-theme="light"] body:has(.login-page-wrapper),
+[data-theme="dark"] body:has(.login-page-wrapper) {
+    background: linear-gradient(
+        90deg,
+        #002654 0%,
+        #0055A4 14%,
+        #FFFFFF 34%,
+        #FFFFFF 66%,
+        #EF4135 86%,
+        #B81422 100%
+    ) !important;
+    background-attachment: fixed !important;
+    min-height: 100vh;
+}
+
+.main-content:has(.login-page-wrapper) {
+    background: transparent !important;
+    padding-top: 0.5rem !important;
+    padding-bottom: 1.5rem !important;
+}
+
+/* No topo (sem scroll), garante contraste dos elementos da navbar sobre o azul/vermelho da bandeira */
+body:has(.login-page-wrapper) .app-navbar:not(.scrolled) .nav-title {
+    color: #FFFFFF !important;
+}
+
+body:has(.login-page-wrapper) .app-navbar:not(.scrolled) #btnThemeToggle {
+    color: #FFFFFF !important;
+}
+
+body:has(.login-page-wrapper) .footer {
+    background: rgba(255, 255, 255, 0.78) !important;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-top: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: #14213D !important;
+}
+
+.login-page-wrapper {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 0.15rem 1rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 1. Título Superior Limpo (Apenas "Bem-vindo ao Assistente Fran") */
+.login-welcome-header {
+    text-align: center;
+    margin-bottom: 0.2rem;
+    z-index: 5;
+}
+
+.login-welcome-title {
+    font-size: clamp(1.35rem, 2.3vw, 1.65rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #14213D !important;
+    margin: 0;
+}
+
+/* 2. Composição Unificada Dimensionada para Caber 100% na Tela */
+.login-visual-stage {
+    position: relative;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Painel Glassmorphism Mais Translúcido (vidro fumê leve sem brilho nas bordas) */
+.login-glass-backdrop {
+    position: absolute;
+    top: 55px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    border-radius: 22px;
+    background: rgba(98, 104, 114, 0.18);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    box-shadow: 0 12px 32px rgba(20, 33, 61, 0.08);
+    overflow: hidden;
+    pointer-events: none;
+}
+
+/* Container da imagem 3D flutuando sobre a metade superior do vidro */
+.login-illustration-holder {
+    position: relative;
+    width: 100%;
+    overflow: visible;
+    pointer-events: none;
+    z-index: 2;
+    user-select: none;
+}
+
+.login-illustration-img {
+    display: block;
+    width: 297.84%;
+    max-width: none;
+    height: auto;
+    position: relative;
+    left: 50%;
+    transform: translateX(-49.38%);
+    filter: drop-shadow(0 14px 22px rgba(20, 33, 61, 0.2));
+}
+
+/* Área do Formulário posicionada dentro da base do Painel Glassmorphism */
+.login-glass-card {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    margin-top: -116px;
+    padding: 0.85rem 1.35rem 1.2rem;
+    color: #14213D;
+}
+
+/* 3. Campos do Formulário: Apenas "Login" e "Senha" */
+.login-glass-card .form-group {
+    margin-bottom: 0.68rem;
+    text-align: left;
+}
+
+.login-glass-card .form-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: #14213D !important;
+    margin-bottom: 0.28rem;
+}
+
+.login-glass-card .form-label .label-icon {
+    color: #14213D;
+    display: inline-flex;
+}
+
+.login-glass-card .form-input {
+    width: 100%;
+    padding: 0.56rem 0.85rem;
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.45) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.55) !important;
+    box-shadow: 0 4px 14px rgba(20, 33, 61, 0.04) !important;
+    color: #000000 !important;
+    font-size: 0.88rem;
+    font-weight: 400;
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.login-glass-card .form-input::placeholder {
+    color: rgba(20, 33, 61, 0.55) !important;
+}
+
+.login-glass-card .form-input:focus {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-color: #FCA311 !important;
+    box-shadow: 0 0 0 3px rgba(252, 163, 17, 0.3) !important;
+}
+
+.login-glass-card .password-input-wrap {
+    position: relative;
+}
+
+.login-glass-card .btn-toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: #14213D;
+    cursor: pointer;
+    padding: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+}
+
+.login-glass-card .btn-toggle-password:hover {
+    opacity: 1;
+}
+
+/* Botão Principal de Login */
+.login-submit-btn {
+    width: 100%;
+    margin-top: 0.35rem;
+    padding: 0.66rem 1.25rem;
+    border-radius: 999px;
+    background: #FCA311 !important;
+    color: #000000 !important;
+    border: 1.5px solid #FCA311 !important;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(252, 163, 17, 0.32);
+    transition: all 0.22s ease;
+}
+
+.login-submit-btn:hover {
+    background: #14213D !important;
+    border-color: #14213D !important;
+    color: #FFFFFF !important;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(20, 33, 61, 0.35);
+}
+
+/* Alerta de Erro dentro do Card */
+.login-glass-card .auth-alert.error {
+    background: rgba(220, 38, 38, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    color: #FFFFFF;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.86rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Contas de Demonstração FORA do Card de Login (Abaixo) */
+.demo-outside-container {
+    width: 100%;
+    max-width: 520px;
+    margin: 2.25rem auto 0;
+    padding: 1.25rem 1.4rem;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.82) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1.5px solid rgba(255, 255, 255, 0.85) !important;
+    box-shadow: 0 10px 30px rgba(20, 33, 61, 0.1);
+}
+
+.demo-outside-container .demo-accounts-box {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    border-top: none !important;
+}
+
+.demo-outside-container .demo-accounts-header {
+    color: #14213D !important;
+}
+
+.demo-outside-container .demo-account-pill {
+    background: #FFFFFF !important;
+    border: 1px solid #E5E5E5 !important;
+}
+
+.demo-outside-container .demo-account-pill:hover {
+    border-color: #FCA311 !important;
+    background: rgba(252, 163, 17, 0.08) !important;
+}
+
+@media (max-width: 540px) {
+    .login-visual-stage {
+        max-width: 340px;
+    }
+    .login-glass-backdrop {
+        top: 58px;
+    }
+    .login-glass-card {
+        margin-top: -118px;
+        padding: 1.25rem 1.35rem 1.55rem;
+    }
+}
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="page-container auth-page">
-    <!-- Header Hero Card: Efeito de um card sobre outro (Borda de Vidro externa com Card interno) -->
-    <div class="hero-card-outer card-moldura-outer auth-hero-outer auth-hero-card" id="authHeroCard">
-        <div class="hero-card-inner auth-hero-inner">
-            <span class="hero-tag"><svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>Portail Étudiant • Français FLE</span>
-            <h1 class="hero-title">Bem-vindo ao Assistente Fran</h1>
-            <p class="hero-description">
-                Acesse seu ambiente de aprendizagem com sua <strong>matrícula</strong> e <strong>senha</strong> para praticar francês e receber feedback formativo inteligente em tempo real.
-            </p>
-        </div>
+<div class="login-page-wrapper">
+    <!-- 1. Cabeçalho Simples: Apenas "Bem-vindo ao Assistente Fran" -->
+    <div class="login-welcome-header">
+        <h1 class="login-welcome-title">Bem-vindo ao Assistente Fran</h1>
     </div>
 
-    <!-- Card de Autenticação com Moldura Translúcida (Borda de Vidro Externa) -->
-    <div class="auth-wrapper">
-        <div class="hero-card-outer card-moldura-outer auth-box-outer" id="authBoxOuter">
-            <div class="auth-card auth-box-inner" id="authCard">
-            <div class="auth-card-header">
-                <div class="logo-icon french-flag-border auth-logo" style="background: transparent; border: none; box-shadow: none; padding: 0;">
-                    <img src="/imagens/logo_fran1.png" style="width: 100%; height: 100%; object-fit: contain;" alt="Logo Fran">
-                </div>
-                <h2 class="auth-heading">Connexion</h2>
-                <span class="auth-sub">Acesse seu ambiente de aprendizagem</span>
-            </div>
+    <!-- 2. Ilustração 3D + Painel Glassmorphism Transparente com Borda de Vidro -->
+    <div class="login-visual-stage">
+        <!-- Moldura de Vidro Transparente (Glassmorphism) -->
+        <div class="login-glass-backdrop" aria-hidden="true"></div>
 
-            <!-- Alerta de Erro de Autenticação -->
+        <!-- Ilha 3D sem fundo e com a serra desaparecendo atrás dos prédios -->
+        <div class="login-illustration-holder">
+            <img src="/imagens/login_img.png?v=clean3" alt="Ilustração Assistente Fran" class="login-illustration-img">
+        </div>
+
+        <!-- Formulário Unificado: Somente Login e Senha -->
+        <div class="login-glass-card" id="authCard">
             {% if erro %}
             <div class="auth-alert error">
                 <div class="alert-icon"><svg class="line-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>
@@ -37,55 +325,30 @@
             </div>
             {% endif %}
 
-            <!-- Formulário de Login -->
-            <form action="/login" method="POST" class="auth-form">`n                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                <!-- Seletor de Perfil -->
-                <div class="profile-selector" style="display: flex; gap: 10px; margin-bottom: 20px;">
-                    <label style="flex: 1; padding: 10px; text-align: center; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer;" id="label-aluno" class="profile-active">
-                        <input type="radio" name="tipo_acesso" value="aluno" checked onchange="trocarPerfil()" style="display:none;">
-                        <span style="display: inline-flex; align-items: center; justify-content: center; gap: 6px;"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>Sou Aluno</span>
-                    </label>
-                    <label style="flex: 1; padding: 10px; text-align: center; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer;" id="label-prof">
-                        <input type="radio" name="tipo_acesso" value="professor" onchange="trocarPerfil()" style="display:none;">
-                        <span style="display: inline-flex; align-items: center; justify-content: center; gap: 6px;"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>Sou Professor</span>
-                    </label>
-                </div>
+            <form action="/login" method="POST" class="auth-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
-                <div class="form-group" id="group-matricula">
-                    <label for="matricula" class="form-label">
-                        <span class="label-icon"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg></span>
-                        Matrícula Escolar
+                <div class="form-group">
+                    <label for="login" class="form-label">
+                        <span class="label-icon"><svg class="line-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span>
+                        Login
                     </label>
                     <input 
                         type="text" 
-                        id="matricula" 
-                        name="matricula" 
+                        id="login" 
+                        name="login" 
                         class="form-input" 
-                        placeholder="Digite sua matrícula (ex: 202601)" 
-                        value="{{ request.form.get('matricula', '') }}"
+                        placeholder="Digite sua matrícula ou usuário" 
+                        value="{{ request.form.get('login', '') }}"
+                        required
                         autofocus
-                    >
-                </div>
-
-                <div class="form-group hidden" id="group-usuario">
-                    <label for="usuario" class="form-label">
-                        <span class="label-icon"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span>
-                        Usuário do Professor
-                    </label>
-                    <input 
-                        type="text" 
-                        id="usuario" 
-                        name="usuario" 
-                        class="form-input" 
-                        placeholder="Digite seu usuário de professor" 
-                        value="{{ request.form.get('usuario', '') }}"
                     >
                 </div>
 
                 <div class="form-group">
                     <label for="senha" class="form-label">
-                        <span class="label-icon"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
-                        Senha de Acesso
+                        <span class="label-icon"><svg class="line-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
+                        Senha
                     </label>
                     <div class="password-input-wrap">
                         <input 
@@ -93,7 +356,7 @@
                             id="senha" 
                             name="senha" 
                             class="form-input" 
-                            placeholder="Sua senha de 6 dígitos" 
+                            placeholder="Digite sua senha" 
                             required
                         >
                         <button type="button" class="btn-toggle-password" onclick="toggleVisibilidadeSenha()" title="Mostrar/Ocultar Senha">
@@ -103,86 +366,61 @@
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn-primary auth-submit-btn">
-                        <span>Entrar no Ambiente de Francês</span>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <button type="submit" class="login-submit-btn">
+                        <span>Entrar</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="5" y1="12" x2="19" y2="12"></line>
                             <polyline points="12 5 19 12 12 19"></polyline>
                         </svg>
                     </button>
                 </div>
             </form>
-
-            <!-- Card de Apoio com Credenciais de Demonstração Pré-Cadastradas -->
-            <div class="demo-accounts-box">
-                <div class="demo-accounts-header">
-                    <svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);"><line x1="9" y1="18" x2="15" y2="18"></line><line x1="10" y1="22" x2="14" y2="22"></line><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path></svg>
-                    <strong>Contas de Demonstração (Clique para Preencher):</strong>
-                </div>
-                <div class="demo-accounts-grid">
-                    <button type="button" class="demo-account-pill" onclick="preencherCredenciais('202601', '123456', 'aluno')">
-                        <span class="demo-name">Lucas Silva</span>
-                        <span class="demo-badge">1º Ano A</span>
-                        <span class="demo-cred">Mat: 202601</span>
-                    </button>
-                    <button type="button" class="demo-account-pill" onclick="preencherCredenciais('202602', '123456', 'aluno')">
-                        <span class="demo-name">Camila Rodrigues</span>
-                        <span class="demo-badge">1º Ano A</span>
-                        <span class="demo-cred">Mat: 202602</span>
-                    </button>
-                    <button type="button" class="demo-account-pill" onclick="preencherCredenciais('admin', 'admin', 'professor')" style="border-color: var(--primary-color);">
-                        <span class="demo-name">Prof. Admin</span>
-                        <span class="demo-badge highlight">Professor</span>
-                        <span class="demo-cred">Usuário: admin</span>
-                    </button>
-                </div>
-                <span class="demo-hint">* Senha padrão de teste dos alunos: <code>123456</code> | Professor: <code>admin</code></span>
-            </div>
         </div>
     </div>
-</div>
+
+    <!-- Contas de Demonstração Fora do Login (Abaixo, para remoção futura) -->
+    <div class="demo-outside-container">
+        <div class="demo-accounts-box">
+            <div class="demo-accounts-header">
+                <svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: #FCA311;"><line x1="9" y1="18" x2="15" y2="18"></line><line x1="10" y1="22" x2="14" y2="22"></line><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path></svg>
+                <strong>Contas de Demonstração (Clique para Preencher):</strong>
+            </div>
+            <div class="demo-accounts-grid">
+                <button type="button" class="demo-account-pill" onclick="preencherCredenciais('202601', '123456')">
+                    <span class="demo-name">Lucas Silva</span>
+                    <span class="demo-badge">1º Ano A</span>
+                    <span class="demo-cred">Login: 202601</span>
+                </button>
+                <button type="button" class="demo-account-pill" onclick="preencherCredenciais('202602', '123456')">
+                    <span class="demo-name">Camila Rodrigues</span>
+                    <span class="demo-badge">1º Ano A</span>
+                    <span class="demo-cred">Login: 202602</span>
+                </button>
+                <button type="button" class="demo-account-pill" onclick="preencherCredenciais('admin', 'admin')">
+                    <span class="demo-name">Prof. Admin</span>
+                    <span class="demo-badge highlight">Professor</span>
+                    <span class="demo-cred">Login: admin</span>
+                </button>
+            </div>
+            <span class="demo-hint">* O sistema direciona automaticamente para o painel de Aluno ou Professor conforme o login informado.</span>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-    function preencherCredenciais(loginStr, pass, tipo) {
-        document.querySelector(`input[name="tipo_acesso"][value="${tipo}"]`).checked = true;
-        trocarPerfil();
-        
-        if (tipo === 'aluno') {
-            document.getElementById("matricula").value = loginStr;
-        } else {
-            document.getElementById("usuario").value = loginStr;
-        }
-        
+    function preencherCredenciais(loginStr, pass) {
+        const inputLogin = document.getElementById("login");
         const inputPass = document.getElementById("senha");
+        if (inputLogin) {
+            inputLogin.value = loginStr;
+        }
         if (inputPass) {
             inputPass.value = pass;
             inputPass.focus();
         }
     }
-
-    function trocarPerfil() {
-        const isAluno = document.querySelector('input[name="tipo_acesso"]:checked').value === "aluno";
-        
-        document.getElementById("group-matricula").classList.toggle("hidden", !isAluno);
-        document.getElementById("group-usuario").classList.toggle("hidden", isAluno);
-        
-        document.getElementById("label-aluno").style.background = isAluno ? "var(--primary-color)" : "transparent";
-        document.getElementById("label-prof").style.background = !isAluno ? "var(--primary-color)" : "transparent";
-        
-        if (isAluno) {
-            document.getElementById("matricula").focus();
-        } else {
-            document.getElementById("usuario").focus();
-        }
-    }
-    
-    // Initialize profile UI
-    document.addEventListener("DOMContentLoaded", () => {
-        trocarPerfil();
-    });
 
     function toggleVisibilidadeSenha() {
         const inputPass = document.getElementById("senha");

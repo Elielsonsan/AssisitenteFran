@@ -59,7 +59,11 @@ async function salvarNota() {
 
     const nota = parseFloat(notaInput.value);
     if (isNaN(nota) || nota < 0 || nota > 10) {
-        alert("Por favor, informe uma nota válida entre 0 e 10.");
+        if (typeof showToast === "function") {
+            showToast("Por favor, informe uma nota válida entre 0 e 10.", "aviso");
+        } else {
+            alert("Por favor, informe uma nota válida entre 0 e 10.");
+        }
         notaInput.focus();
         return;
     }
@@ -82,15 +86,19 @@ async function salvarNota() {
 
         const data = await resp.json();
         if (data.status === "sucesso") {
-            alert("Correção salva com sucesso!");
-            window.location.href = "/professor/avaliacoes";
+            if (typeof showToast === "function") {
+                showToast("Correção salva com sucesso!", "sucesso");
+            }
+            setTimeout(() => { window.location.href = "/professor/avaliacoes"; }, 600);
         } else {
-            alert("Erro ao salvar: " + (data.mensagem || "Erro desconhecido"));
+            const msgErro = "Erro ao salvar: " + (data.mensagem || "Erro desconhecido");
+            if (typeof showToast === "function") showToast(msgErro, "erro"); else alert(msgErro);
             btn.disabled = false;
             btn.innerText = "Salvar Correção";
         }
     } catch (e) {
-        alert("Erro de conexão ao salvar nota: " + e);
+        const msgConn = "Erro de conexão ao salvar nota: " + e;
+        if (typeof showToast === "function") showToast(msgConn, "erro"); else alert(msgConn);
         btn.disabled = false;
         btn.innerText = "Salvar Correção";
     }

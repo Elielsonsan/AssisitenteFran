@@ -2,18 +2,908 @@
 
 {% block title %}Minhas Atividades & Avaliações — Assistente Fran{% endblock %}
 
+{% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,500;1,600;1,700&display=swap" rel="stylesheet">
+<style>
+/* ===================================================================
+   Página de Atividades — Feed Editorial Unificado + Mini-KPIs c/ Ondas
+   =================================================================== */
+
+[data-theme="light"] body:has(.atividades-editorial-wrapper) {
+    background-color: #F7F7F8 !important;
+}
+
+.atividades-editorial-wrapper {
+    width: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0.5rem 0 3.5rem;
+    box-sizing: border-box;
+}
+
+/* Remove qualquer faixa tricolor ou moldura antiga */
+.atividades-editorial-wrapper .hero-card-outer,
+.atividades-editorial-wrapper .hero-card-inner,
+.atividades-editorial-wrapper .forum-card,
+.atividades-editorial-wrapper .form-card,
+.atividades-editorial-wrapper .historico-item-card {
+    background-image: none !important;
+}
+
+.atividades-editorial-wrapper .hero-card-outer::before,
+.atividades-editorial-wrapper .hero-card-outer::after,
+.atividades-editorial-wrapper .hero-card-inner::before,
+.atividades-editorial-wrapper .hero-card-inner::after,
+.atividades-editorial-wrapper .forum-card::before,
+.atividades-editorial-wrapper .forum-card::after,
+.atividades-editorial-wrapper .form-card::before,
+.atividades-editorial-wrapper .form-card::after,
+.atividades-editorial-wrapper .historico-item-card::before,
+.atividades-editorial-wrapper .historico-item-card::after {
+    display: none !important;
+    content: none !important;
+}
+
+/* 1. Cabeçalho Editorial Aberto */
+.atividades-editorial-hero {
+    text-align: center;
+    margin-bottom: 1.85rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0.25rem 1rem 0 !important;
+}
+
+.atividades-editorial-title {
+    font-size: clamp(1.95rem, 3.8vw, 2.8rem);
+    font-weight: 700;
+    line-height: 1.14;
+    letter-spacing: -0.03em;
+    color: #14213D;
+    margin: 0 0 0.75rem;
+}
+
+[data-theme="dark"] .atividades-editorial-title {
+    color: #FFFFFF;
+}
+
+.atividades-editorial-title .serif-italic {
+    display: block;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: #14213D;
+    margin-top: 0.1rem;
+}
+
+[data-theme="dark"] .atividades-editorial-title .serif-italic {
+    color: #FCA311;
+}
+
+.atividades-editorial-subtitle {
+    max-width: 640px;
+    margin: 0 auto 1.35rem;
+    font-size: 0.96rem;
+    line-height: 1.6;
+    color: rgba(20, 33, 61, 0.72);
+    font-weight: 400;
+}
+
+[data-theme="dark"] .atividades-editorial-subtitle {
+    color: rgba(248, 250, 252, 0.75);
+}
+
+.atividades-editorial-subtitle strong {
+    color: #14213D;
+    font-weight: 600;
+}
+
+[data-theme="dark"] .atividades-editorial-subtitle strong {
+    color: #FCA311;
+}
+
+/* 2. Barra de Busca Editorial com Autocomplete + Chips Integrados (Mesma largura dos Cards) */
+.atividades-search-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 0 1.45rem 0;
+    z-index: 40;
+    box-sizing: border-box;
+}
+
+.atividades-search-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
+    background: #FFFFFF;
+    border: 1px solid #ECECEC;
+    border-radius: 999px;
+    padding: 0.55rem 0.85rem 0.55rem 1.35rem;
+    box-shadow: 0 10px 28px rgba(20, 33, 61, 0.045);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.atividades-search-box:focus-within {
+    border-color: #18191E;
+    box-shadow: 0 12px 32px rgba(20, 33, 61, 0.09), 0 0 0 3px rgba(24, 25, 30, 0.06);
+}
+
+[data-theme="dark"] .atividades-search-box {
+    background: #181920;
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme="dark"] .atividades-search-box:focus-within {
+    border-color: #FCA311;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 0 0 3px rgba(252, 163, 17, 0.15);
+}
+
+.atividades-search-icon {
+    color: #6B7280;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+}
+
+.atividades-search-box input[type="text"].atividades-search-input,
+#inputBuscaAtividades {
+    flex: 1;
+    border: 0 !important;
+    border-color: transparent !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    outline: none !important;
+    box-shadow: none !important;
+    font-size: 0.94rem;
+    font-weight: 500;
+    color: #111827;
+    padding: 0.3rem 0 !important;
+    margin: 0 !important;
+    width: 100%;
+}
+
+.atividades-search-input::placeholder {
+    color: #9CA3AF;
+    font-weight: 400;
+}
+
+[data-theme="dark"] .atividades-search-box input[type="text"].atividades-search-input,
+[data-theme="dark"] #inputBuscaAtividades {
+    color: #F9FAFB !important;
+}
+
+.atividades-search-clear {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: #F3F4F6;
+    color: #4B5563;
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+
+.atividades-search-clear:hover {
+    background: #E5E7EB;
+    color: #111827;
+}
+
+/* Chips Rápidos de Filtro abaixo da Busca (Mesma largura total dos Cards) */
+.atividades-filter-chips {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    width: 100%;
+    margin-top: 0.85rem;
+}
+
+@media (max-width: 900px) {
+    .atividades-filter-chips {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 520px) {
+    .atividades-filter-chips {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.filter-chip-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    width: 100%;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: #FFFFFF;
+    border: 1px solid #ECECEC;
+    color: #4B5563;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.025);
+    box-sizing: border-box;
+}
+
+.filter-chip-btn:hover {
+    border-color: #18191E;
+    color: #111827;
+    transform: translateY(-1px);
+}
+
+.filter-chip-btn.active {
+    background: #18191E;
+    color: #FFFFFF;
+    border-color: #18191E;
+    box-shadow: 0 4px 12px rgba(24, 25, 30, 0.18);
+}
+
+[data-theme="dark"] .filter-chip-btn {
+    background: #181920;
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #D1D5DB;
+}
+
+[data-theme="dark"] .filter-chip-btn.active {
+    background: #FCA311;
+    color: #000000;
+    border-color: #FCA311;
+}
+
+.filter-chip-count {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.06);
+}
+
+.filter-chip-btn.active .filter-chip-count {
+    background: rgba(255, 255, 255, 0.2);
+    color: #FFFFFF;
+}
+
+/* Dropdown de Autocomplete */
+.atividades-autocomplete-dropdown {
+    position: absolute;
+    top: 52px;
+    left: 0;
+    right: 0;
+    background: #FFFFFF;
+    border: 1px solid #ECECEC;
+    border-radius: 20px;
+    box-shadow: 0 18px 45px rgba(20, 33, 61, 0.12), 0 4px 12px rgba(0, 0, 0, 0.04);
+    padding: 0.5rem;
+    max-height: 340px;
+    overflow-y: auto;
+    display: none;
+    text-align: left;
+    z-index: 100;
+}
+
+.atividades-autocomplete-dropdown.open {
+    display: block;
+    animation: fadeAutocompleteIn 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeAutocompleteIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+[data-theme="dark"] .atividades-autocomplete-dropdown {
+    background: #181920;
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+.autocomplete-section-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #9CA3AF;
+    padding: 0.4rem 0.85rem 0.25rem;
+}
+
+.autocomplete-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 0.65rem 0.85rem;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.autocomplete-item:hover,
+.autocomplete-item.is-active {
+    background: #F7F7F8;
+}
+
+[data-theme="dark"] .autocomplete-item:hover,
+[data-theme="dark"] .autocomplete-item.is-active {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.autocomplete-item-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.autocomplete-item-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: rgba(20, 33, 61, 0.06);
+    color: #14213D;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+[data-theme="dark"] .autocomplete-item-icon {
+    background: rgba(255, 255, 255, 0.08);
+    color: #F9FAFB;
+}
+
+.autocomplete-item-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.autocomplete-item-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #111827;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+[data-theme="dark"] .autocomplete-item-title {
+    color: #F9FAFB;
+}
+
+.autocomplete-item-title mark {
+    background: rgba(252, 163, 17, 0.28);
+    color: inherit;
+    padding: 0 2px;
+    border-radius: 4px;
+}
+
+.autocomplete-item-sub {
+    font-size: 0.75rem;
+    color: #6B7280;
+}
+
+.autocomplete-item-badges {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.autocomplete-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+}
+
+.autocomplete-badge.status-pendente {
+    background: rgba(252, 163, 17, 0.16);
+    color: #b87503;
+}
+
+.autocomplete-badge.status-concluida {
+    background: rgba(22, 163, 74, 0.12);
+    color: #16A34A;
+}
+
+.autocomplete-empty {
+    padding: 1rem;
+    text-align: center;
+    font-size: 0.84rem;
+    color: #6B7280;
+}
+
+/* 3. Grid dos 3 Mini-KPIs no topo (Mesmo design de Ondas e Pill da página Desempenho) */
+.atividades-kpis-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.15rem;
+    margin-bottom: 1.75rem;
+}
+
+@media (max-width: 900px) {
+    .atividades-kpis-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.ativ-kpi-card {
+    background: #FFFFFF;
+    border: 1px solid #ECECEC;
+    border-radius: 26px;
+    padding: 1.35rem 1.4rem 1.25rem;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.02);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.85rem;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+}
+
+.ativ-kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 38px rgba(0, 0, 0, 0.065);
+}
+
+[data-theme="dark"] .ativ-kpi-card {
+    background: #181920;
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
+}
+
+.ativ-kpi-top-row {
+    display: grid;
+    grid-template-columns: 1fr 115px;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ativ-kpi-label {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #6B7280;
+    display: block;
+    margin-bottom: 2px;
+}
+
+[data-theme="dark"] .ativ-kpi-label {
+    color: #9CA3AF;
+}
+
+.ativ-kpi-primary {
+    font-size: 2.1rem;
+    font-weight: 800;
+    color: #111827;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+}
+
+[data-theme="dark"] .ativ-kpi-primary {
+    color: #F9FAFB;
+}
+
+.ativ-kpi-wave-svg {
+    width: 100%;
+    height: 48px;
+    overflow: visible;
+    display: block;
+}
+
+.ativ-kpi-mid-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.ativ-kpi-subval {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #1F2937;
+}
+
+[data-theme="dark"] .ativ-kpi-subval {
+    color: #E5E7EB;
+}
+
+.ativ-kpi-trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #16A34A;
+}
+
+.ativ-kpi-cta-row {
+    display: flex;
+    justify-content: center;
+    padding-top: 0.15rem;
+}
+
+/* Botão Pill Escuro (#18191E) */
+.ativ-pill-btn {
+    background: #18191E !important;
+    color: #FFFFFF !important;
+    border-radius: 9999px !important;
+    padding: 8px 22px !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    text-align: center;
+    text-decoration: none !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    box-shadow: 0 4px 12px rgba(24, 25, 30, 0.18) !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    cursor: pointer;
+}
+
+.ativ-pill-btn:hover {
+    background: #FCA311 !important;
+    color: #000000 !important;
+    border-color: #FCA311 !important;
+    transform: translateY(-1.5px);
+    box-shadow: 0 6px 16px rgba(252, 163, 17, 0.28) !important;
+}
+
+[data-theme="dark"] .ativ-pill-btn {
+    background: #F9FAFB !important;
+    color: #111827 !important;
+}
+
+/* 4. Feed Unificado de Avaliações (Sem o buraco do 50/50 rígido) */
+.atividades-feed-section {
+    background: #FFFFFF;
+    border: 1px solid #ECECEC;
+    border-radius: 26px;
+    padding: 1.55rem 1.65rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 10px 30px rgba(20, 33, 61, 0.035);
+}
+
+[data-theme="dark"] .atividades-feed-section {
+    background: #111827;
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.35);
+}
+
+.feed-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.15rem;
+    padding-bottom: 0.9rem;
+    border-bottom: 1px solid #F1F1F4;
+    cursor: pointer;
+}
+
+[data-theme="dark"] .feed-section-header {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.feed-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.secao-icon-badge {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50% !important;
+    background: #18191E !important;
+    color: #FFFFFF !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(24, 25, 30, 0.16);
+    flex-shrink: 0;
+}
+
+.secao-icon-badge.secao-icon-green {
+    background: #16A34A !important;
+    box-shadow: 0 4px 10px rgba(22, 163, 74, 0.2);
+}
+
+.secao-title {
+    font-size: 1.08rem !important;
+    font-weight: 800 !important;
+    color: #111827 !important;
+    margin: 0 !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+[data-theme="dark"] .secao-title {
+    color: #FFFFFF !important;
+}
+
+.secao-subtitle {
+    font-size: 0.8rem !important;
+    color: #6B7280 !important;
+    margin: 2px 0 0 0 !important;
+}
+
+/* Grid Responsivo de Pendentes (Ocupa a largura toda em cards elegantes) */
+.grid-atividades-pendentes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 1.15rem;
+}
+
+/* Faixa Compacta quando Pendentes = 0 (evita ocupar meia tela vazia) */
+.tudo-em-dia-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 0.9rem 1.25rem;
+    border-radius: 16px;
+    background: #F7F7F8;
+    border: 1px solid #ECECEC;
+}
+
+[data-theme="dark"] .tudo-em-dia-strip {
+    background: rgba(30, 41, 59, 0.45);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Cards de Atividades Individuais */
+.card-atividade-item.forum-card {
+    background: #FFFFFF !important;
+    border: 1px solid #ECECEC !important;
+    border-radius: 22px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03) !important;
+    padding: 1.3rem 1.35rem !important;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease !important;
+}
+
+.card-atividade-item.forum-card:hover {
+    border-color: #D1D5DB !important;
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.06) !important;
+    transform: translateY(-2px) !important;
+}
+
+[data-theme="dark"] .card-atividade-item.forum-card {
+    background: #181920 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.forum-topic-title {
+    font-size: 1.1rem !important;
+    font-weight: 800 !important;
+    color: #111827 !important;
+    letter-spacing: -0.02em;
+    margin: 0.4rem 0 0.45rem 0 !important;
+}
+
+[data-theme="dark"] .forum-topic-title {
+    color: #F9FAFB !important;
+}
+
+.atividade-prazo-info {
+    font-size: 0.8rem !important;
+    color: #6B7280 !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 0.8rem !important;
+}
+
+.atividade-stats-box {
+    background: #F7F7F8 !important;
+    border: 1px solid #ECECEC !important;
+    border-radius: 14px !important;
+    padding: 0.7rem 0.95rem !important;
+    margin-bottom: 0.9rem !important;
+}
+
+[data-theme="dark"] .atividade-stats-box {
+    background: rgba(30, 41, 59, 0.5) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.stat-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.82rem;
+    color: #4B5563;
+}
+
+[data-theme="dark"] .stat-info-row {
+    color: #D1D5DB;
+}
+
+/* Lista de Atividades Concluídas em largura total */
+.grid-atividades-concluidas {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.concluida-interactive-card.forum-card {
+    padding: 0 !important;
+    border-radius: 18px !important;
+}
+
+.concluida-row-view {
+    padding: 0.95rem 1.25rem !important;
+    background: #F7F7F8;
+    border-radius: 18px;
+    transition: background 0.2s ease;
+}
+
+.concluida-row-view:hover {
+    background: #F1F2F4;
+}
+
+[data-theme="dark"] .concluida-row-view {
+    background: #181920;
+}
+
+.concluida-badge-nota {
+    background: rgba(22, 163, 74, 0.1) !important;
+    color: #16A34A !important;
+    border: 1px solid rgba(22, 163, 74, 0.25) !important;
+    border-radius: 999px !important;
+    padding: 3px 10px !important;
+    font-size: 0.76rem !important;
+    font-weight: 700 !important;
+}
+
+/* 5. Histórico de Prática em Linha do Tempo Compacta (Accordion Enxuto) */
+.historico-timeline-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    position: relative;
+}
+
+.historico-item-card.timeline-accordion-item {
+    background: #F7F7F8 !important;
+    border: 1px solid #ECECEC !important;
+    border-radius: 16px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    overflow: hidden;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.historico-item-card.timeline-accordion-item:hover {
+    border-color: #D1D5DB !important;
+    background: #FFFFFF !important;
+}
+
+[data-theme="dark"] .historico-item-card.timeline-accordion-item {
+    background: rgba(30, 41, 59, 0.45) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.timeline-summary-row {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0.85rem 1.15rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.timeline-summary-row::-webkit-details-marker {
+    display: none;
+}
+
+.timeline-summary-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    flex: 1;
+}
+
+.timeline-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.timeline-dot.dot-success { background: #16A34A; box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15); }
+.timeline-dot.dot-warning { background: #FCA311; box-shadow: 0 0 0 3px rgba(252, 163, 17, 0.18); }
+.timeline-dot.dot-dark { background: #18191E; box-shadow: 0 0 0 3px rgba(24, 25, 30, 0.12); }
+
+.timeline-tema-badge {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #111827;
+    white-space: nowrap;
+}
+
+[data-theme="dark"] .timeline-tema-badge {
+    color: #F9FAFB;
+}
+
+.timeline-enunciado-preview {
+    font-size: 0.82rem;
+    color: #6B7280;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.timeline-summary-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.timeline-body-content {
+    padding: 0.85rem 1.15rem 1.05rem;
+    border-top: 1px solid #ECECEC;
+    background: #FFFFFF;
+    font-size: 0.86rem;
+}
+
+[data-theme="dark"] .timeline-body-content {
+    background: #181920;
+    border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+.timeline-chevron {
+    transition: transform 0.2s ease;
+    color: #6B7280;
+}
+
+details[open] .timeline-chevron {
+    transform: rotate(180deg);
+}
+</style>
+{% endblock %}
+
 {% block content %}
 {% set count_pendentes = namespace(value=0) %}
 {% set count_concluidas = namespace(value=0) %}
 {% set count_testes = namespace(value=0) %}
 {% set count_exercicios = namespace(value=0) %}
 {% set count_provas = namespace(value=0) %}
+{% set soma_notas = namespace(value=0.0, qtd=0) %}
 
 {% if avaliacoes %}
     {% for a in avaliacoes %}
         {% set is_conc = (a.questoes_respondidas is not none and a.questoes_respondidas > 0 and a.questoes_respondidas >= a.total_questoes) %}
         {% if is_conc %}
             {% set count_concluidas.value = count_concluidas.value + 1 %}
+            {% if a.media_nota is not none %}
+                {% set soma_notas.value = soma_notas.value + (a.media_nota|float) %}
+                {% set soma_notas.qtd = soma_notas.qtd + 1 %}
+            {% endif %}
         {% else %}
             {% set count_pendentes.value = count_pendentes.value + 1 %}
         {% endif %}
@@ -28,235 +918,377 @@
     {% endfor %}
 {% endif %}
 
-<div class="page-container dashboard-page student-page">
-    <!-- Barra Lateral Flutuante Glassmorphic (Filtros & Navegação do Aluno) -->
-    <aside class="dash-sidebar no-print" id="dashSidebar" aria-label="Menu de Atividades do Aluno">
-        <div class="dash-sidebar-inner">
-            <div class="sidebar-nav-list">
-                <!-- 1. Filtros & Busca (Abre Popover Ancorado ao Ícone) -->
-                <div class="sidebar-item-wrap">
-                    <button type="button" class="sidebar-btn" id="btnToggleFiltrosPopover" onclick="toggleFiltrosAtividades(event)" title="Filtros de Atividades" aria-label="Abrir Filtros">
-                        <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-                        </svg>
-                        <span class="sidebar-text">Filtros</span>
-                        <span class="sidebar-badge-dot" id="filtroAtivoDot" style="display: none;" title="Filtro ativo"></span>
-                    </button>
+{% set media_geral_calc = ((soma_notas.value / soma_notas.qtd)|round(1)) if soma_notas.qtd > 0 else none %}
 
-                    <!-- Popover Modal Ancorado -->
-                    <div class="popover-filtros-modal" id="popoverFiltros" onclick="event.stopPropagation()">
-                        <div class="popover-header">
-                            <div class="popover-title">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-                                </svg>
-                                <span>Filtros de Atividades</span>
+<div class="page-container dashboard-page student-page">
+    <div class="atividades-editorial-wrapper">
+        <!-- Barra Lateral Flutuante Glassmorphic (Filtros & Navegação do Aluno) -->
+        <aside class="dash-sidebar no-print" id="dashSidebar" aria-label="Menu de Atividades do Aluno">
+            <div class="dash-sidebar-inner">
+                <div class="sidebar-nav-list">
+                    <!-- 1. Filtros & Busca (Abre Popover Ancorado ao Ícone) -->
+                    <div class="sidebar-item-wrap">
+                        <button type="button" class="sidebar-btn" id="btnToggleFiltrosPopover" onclick="toggleFiltrosAtividades(event)" title="Filtros de Atividades" aria-label="Abrir Filtros">
+                            <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                            </svg>
+                            <span class="sidebar-text">Filtros</span>
+                            <span class="sidebar-badge-dot" id="filtroAtivoDot" style="display: none;" title="Filtro ativo"></span>
+                        </button>
+
+                        <!-- Popover Modal Ancorado -->
+                        <div class="popover-filtros-modal" id="popoverFiltros" onclick="event.stopPropagation()">
+                            <div class="popover-header">
+                                <div class="popover-title">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                                    </svg>
+                                    <span>Filtros de Atividades</span>
+                                </div>
+                                <button type="button" class="popover-close-btn" onclick="fecharFiltrosAtividades()" aria-label="Fechar Filtros">&times;</button>
                             </div>
-                            <button type="button" class="popover-close-btn" onclick="fecharFiltrosAtividades()" aria-label="Fechar Filtros">&times;</button>
+                            <form id="formFiltrosAtividades" class="popover-form" onsubmit="event.preventDefault(); aplicarFiltrosModal();">
+                                <div class="popover-field">
+                                    <label for="popoverFiltroStatus">Status da Atividade:</label>
+                                    <select id="popoverFiltroStatus" class="form-control glass-input">
+                                        <option value="todos">Todos os Status</option>
+                                        <option value="pendente">Pendentes ({{ count_pendentes.value }})</option>
+                                        <option value="concluida">Concluídas ({{ count_concluidas.value }})</option>
+                                    </select>
+                                </div>
+                                <div class="popover-field">
+                                    <label for="popoverFiltroTipo">Tipo de Avaliação:</label>
+                                    <select id="popoverFiltroTipo" class="form-control glass-input">
+                                        <option value="todos">Todos os Tipos</option>
+                                        <option value="teste">Teste ({{ count_testes.value }})</option>
+                                        <option value="exercicios">Exercícios ({{ count_exercicios.value }})</option>
+                                        <option value="prova">Prova ({{ count_provas.value }})</option>
+                                    </select>
+                                </div>
+                                <div class="popover-field">
+                                    <label for="popoverFiltroBusca">Buscar por Título / Tema:</label>
+                                    <input type="text" id="popoverFiltroBusca" class="form-control glass-input" placeholder="Ex: Passé Composé, Pronoms...">
+                                </div>
+                                <div class="popover-actions">
+                                    <button type="button" class="btn btn-primary btn-apply-filter" onclick="aplicarFiltrosModal()">
+                                        Aplicar Filtros
+                                    </button>
+                                    <button type="button" class="btn-clear-filter" onclick="limparTodosFiltros()" title="Redefinir filtros">
+                                        Limpar
+                                    </button>
+                                </div>
+                            </form>
                         </div>
-                        <form id="formFiltrosAtividades" class="popover-form" onsubmit="event.preventDefault(); aplicarFiltrosModal();">
-                            <div class="popover-field">
-                                <label for="popoverFiltroStatus">Status da Atividade:</label>
-                                <select id="popoverFiltroStatus" class="form-control glass-input">
-                                    <option value="todos">Todos os Status</option>
-                                    <option value="pendente">Pendentes ({{ count_pendentes.value }})</option>
-                                    <option value="concluida">Concluídas ({{ count_concluidas.value }})</option>
-                                </select>
-                            </div>
-                            <div class="popover-field">
-                                <label for="popoverFiltroTipo">Tipo de Avaliação:</label>
-                                <select id="popoverFiltroTipo" class="form-control glass-input">
-                                    <option value="todos">Todos os Tipos</option>
-                                    <option value="teste">Teste ({{ count_testes.value }})</option>
-                                    <option value="exercicios">Exercícios ({{ count_exercicios.value }})</option>
-                                    <option value="prova">Prova ({{ count_provas.value }})</option>
-                                </select>
-                            </div>
-                            <div class="popover-field">
-                                <label for="popoverFiltroBusca">Buscar por Título / Tema:</label>
-                                <input type="text" id="popoverFiltroBusca" class="form-control glass-input" placeholder="Ex: Passé Composé, Pronoms...">
-                            </div>
-                            <div class="popover-actions">
-                                <button type="button" class="btn btn-primary btn-apply-filter" onclick="aplicarFiltrosModal()">
-                                    Aplicar Filtros
-                                </button>
-                                <button type="button" class="btn-clear-filter" onclick="limparTodosFiltros()" title="Redefinir filtros">
-                                    Limpar
-                                </button>
-                            </div>
-                        </form>
+                    </div>
+
+                    <div class="sidebar-divider" style="height: 1px; background: rgba(20, 33, 61, 0.1); margin: 0.25rem 0.4rem;"></div>
+
+                    <!-- 2. Atalho Rápido: Pendentes (1 clique) -->
+                    <div class="sidebar-item-wrap">
+                        <button type="button" class="sidebar-btn" id="btnAtalhoPendentes" onclick="filtrarPorAtalho('status', 'pendente')" title="Mostrar apenas Pendentes ({{ count_pendentes.value }})">
+                            <svg class="sidebar-icon sidebar-icon-amber" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            <span class="sidebar-text">Pendentes</span>
+                            <span class="badge" style="margin-left: auto; font-size: 0.7rem; background: rgba(252, 163, 17, 0.2); color: #d97706; padding: 1px 6px; border-radius: 8px;">{{ count_pendentes.value }}</span>
+                        </button>
+                    </div>
+
+                    <!-- 3. Atalho Rápido: Concluídas (1 clique) -->
+                    <div class="sidebar-item-wrap">
+                        <button type="button" class="sidebar-btn" id="btnAtalhoConcluidas" onclick="filtrarPorAtalho('status', 'concluida')" title="Mostrar apenas Concluídas ({{ count_concluidas.value }})">
+                            <svg class="sidebar-icon sidebar-icon-green" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                            <span class="sidebar-text">Concluídas</span>
+                            <span class="badge" style="margin-left: auto; font-size: 0.7rem; background: rgba(22, 163, 74, 0.18); color: #16A34A; padding: 1px 6px; border-radius: 8px;">{{ count_concluidas.value }}</span>
+                        </button>
+                    </div>
+
+                    <!-- 4. Atalho Rápido: Testes -->
+                    <div class="sidebar-item-wrap">
+                        <button type="button" class="sidebar-btn" id="btnAtalhoTestes" onclick="filtrarPorAtalho('tipo', 'teste')" title="Filtrar por Testes ({{ count_testes.value }})">
+                            <svg class="sidebar-icon sidebar-icon-blue" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 11 12 14 22 4"></polyline>
+                                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                            </svg>
+                            <span class="sidebar-text">Testes</span>
+                            <span class="badge" style="margin-left: auto; font-size: 0.7rem; background: rgba(42, 157, 143, 0.18); color: #2A9D8F; padding: 1px 6px; border-radius: 8px;">{{ count_testes.value }}</span>
+                        </button>
+                    </div>
+
+                    <!-- 5. Atalho Rápido: Exercícios -->
+                    <div class="sidebar-item-wrap">
+                        <button type="button" class="sidebar-btn" id="btnAtalhoExercicios" onclick="filtrarPorAtalho('tipo', 'exercicios')" title="Filtrar por Exercícios ({{ count_exercicios.value }})">
+                            <svg class="sidebar-icon sidebar-icon-purple" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 20h9"></path>
+                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                            </svg>
+                            <span class="sidebar-text">Exercícios</span>
+                            <span class="badge" style="margin-left: auto; font-size: 0.7rem; background: rgba(20, 33, 61, 0.12); color: #14213D; padding: 1px 6px; border-radius: 8px;">{{ count_exercicios.value }}</span>
+                        </button>
+                    </div>
+
+                    <!-- 6. Atalho Rápido: Provas -->
+                    <div class="sidebar-item-wrap">
+                        <button type="button" class="sidebar-btn" id="btnAtalhoProvas" onclick="filtrarPorAtalho('tipo', 'prova')" title="Filtrar por Provas ({{ count_provas.value }})">
+                            <svg class="sidebar-icon sidebar-icon-red" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                            </svg>
+                            <span class="sidebar-text">Provas</span>
+                            <span class="badge" style="margin-left: auto; font-size: 0.7rem; background: rgba(252, 163, 17, 0.2); color: #b87503; padding: 1px 6px; border-radius: 8px;">{{ count_provas.value }}</span>
+                        </button>
+                    </div>
+
+                    <div class="sidebar-divider" style="height: 1px; background: rgba(20, 33, 61, 0.1); margin: 0.25rem 0.4rem;"></div>
+
+                    <!-- 7. Retornar ao Painel do Aluno -->
+                    <div class="sidebar-item-wrap">
+                        <a href="/aluno/dashboard" class="sidebar-btn" title="Meu Desempenho & Evolução">
+                            <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                                <polyline points="17 6 23 6 23 12"></polyline>
+                            </svg>
+                            <span class="sidebar-text">Meu Painel</span>
+                        </a>
+                    </div>
+
+                    <!-- 8. Prática Livre -->
+                    <div class="sidebar-item-wrap">
+                        <a href="/pratica" class="sidebar-btn" title="Prática Livre com a Fran">
+                            <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"></path>
+                            </svg>
+                            <span class="sidebar-text">Prática Livre</span>
+                        </a>
                     </div>
                 </div>
-
-                <div class="sidebar-divider" style="height: 1px; background: rgba(56, 189, 248, 0.15); margin: 0.25rem 0.4rem;"></div>
-
-                <!-- 2. Atalho Rápido: Pendentes (1 clique) -->
-                <div class="sidebar-item-wrap">
-                    <button type="button" class="sidebar-btn" id="btnAtalhoPendentes" onclick="filtrarPorAtalho('status', 'pendente')" title="Mostrar apenas Pendentes ({{ count_pendentes.value }})">
-                        <svg class="sidebar-icon sidebar-icon-amber" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <polyline points="12 6 12 12 16 14"></polyline>
-                        </svg>
-                        <span class="sidebar-text">Pendentes</span>
-                        <span class="badge" style="margin-left: auto; font-size: 0.7rem; background: rgba(245, 158, 11, 0.2); color: #F59E0B; padding: 1px 6px; border-radius: 8px;">{{ count_pendentes.value }}</span>
-                    </button>
-                </div>
-
-                <!-- 3. Atalho Rápido: Concluídas (1 clique) -->
-                <div class="sidebar-item-wrap">
-                    <button type="button" class="sidebar-btn" id="btnAtalhoConcluidas" onclick="filtrarPorAtalho('status', 'concluida')" title="Mostrar apenas Concluídas ({{ count_concluidas.value }})">
-                        <svg class="sidebar-icon sidebar-icon-green" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                        </svg>
-                        <span class="sidebar-text">Concluídas</span>
-                        <span class="badge" style="margin-left: auto; font-size: 0.7rem; background: rgba(16, 185, 129, 0.2); color: #10B981; padding: 1px 6px; border-radius: 8px;">{{ count_concluidas.value }}</span>
-                    </button>
-                </div>
-
-                <!-- 4. Atalho Rápido: Testes -->
-                <div class="sidebar-item-wrap">
-                    <button type="button" class="sidebar-btn" id="btnAtalhoTestes" onclick="filtrarPorAtalho('tipo', 'teste')" title="Filtrar por Testes ({{ count_testes.value }})">
-                        <svg class="sidebar-icon sidebar-icon-blue" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="9 11 12 14 22 4"></polyline>
-                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-                        </svg>
-                        <span class="sidebar-text">Testes</span>
-                        <span class="badge" style="margin-left: auto; font-size: 0.7rem; background: rgba(56, 189, 248, 0.2); color: #38BDF8; padding: 1px 6px; border-radius: 8px;">{{ count_testes.value }}</span>
-                    </button>
-                </div>
-
-                <!-- 5. Atalho Rápido: Exercícios -->
-                <div class="sidebar-item-wrap">
-                    <button type="button" class="sidebar-btn" id="btnAtalhoExercicios" onclick="filtrarPorAtalho('tipo', 'exercicios')" title="Filtrar por Exercícios ({{ count_exercicios.value }})">
-                        <svg class="sidebar-icon sidebar-icon-purple" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 20h9"></path>
-                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-                        </svg>
-                        <span class="sidebar-text">Exercícios</span>
-                        <span class="badge" style="margin-left: auto; font-size: 0.7rem; background: rgba(167, 139, 250, 0.2); color: #A78BFA; padding: 1px 6px; border-radius: 8px;">{{ count_exercicios.value }}</span>
-                    </button>
-                </div>
-
-                <!-- 6. Atalho Rápido: Provas -->
-                <div class="sidebar-item-wrap">
-                    <button type="button" class="sidebar-btn" id="btnAtalhoProvas" onclick="filtrarPorAtalho('tipo', 'prova')" title="Filtrar por Provas ({{ count_provas.value }})">
-                        <svg class="sidebar-icon sidebar-icon-red" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                            <line x1="16" y1="13" x2="8" y2="13"></line>
-                            <line x1="16" y1="17" x2="8" y2="17"></line>
-                        </svg>
-                        <span class="sidebar-text">Provas</span>
-                        <span class="badge" style="margin-left: auto; font-size: 0.7rem; background: rgba(239, 68, 68, 0.2); color: #EF4444; padding: 1px 6px; border-radius: 8px;">{{ count_provas.value }}</span>
-                    </button>
-                </div>
-
-                <div class="sidebar-divider" style="height: 1px; background: rgba(56, 189, 248, 0.15); margin: 0.25rem 0.4rem;"></div>
-
-                <!-- 7. Retornar ao Painel do Aluno -->
-                <div class="sidebar-item-wrap">
-                    <a href="/aluno/dashboard" class="sidebar-btn" title="Meu Desempenho & Evolução">
-                        <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-                            <polyline points="17 6 23 6 23 12"></polyline>
-                        </svg>
-                        <span class="sidebar-text">Meu Painel</span>
-                    </a>
-                </div>
-
-                <!-- 8. Prática Livre -->
-                <div class="sidebar-item-wrap">
-                    <a href="/" class="sidebar-btn" title="Prática Livre com a Fran">
-                        <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"></path>
-                        </svg>
-                        <span class="sidebar-text">Prática Livre</span>
-                    </a>
-                </div>
             </div>
-        </div>
-    </aside>
+        </aside>
 
-    <!-- Header Hero Card: Efeito de um card sobre outro (Borda de Vidro externa com Card interno) -->
-    <div class="dashboard-header hero-card-outer atividades-hero-card" id="atividadesHeroCard">
-        <div class="hero-card-inner">
-            <span class="hero-tag">
-                <svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;">
-                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                </svg>Mes Évaluations & Devoirs
-            </span>
-            <h1 class="hero-title" style="margin-bottom: 0.45rem; font-size: 1.85rem; font-weight: 800; letter-spacing: -0.5px;">Minhas Atividades & Avaliações</h1>
-            <p class="hero-description" style="margin-bottom: 1.25rem; font-size: 0.95rem; color: var(--text-muted); line-height: 1.5; max-width: 780px;">
-                Acompanhe suas tarefas, testes e provas em andamento e consulte o histórico de notas e respostas.
+        <!-- 1. Cabeçalho Editorial -->
+        <header class="atividades-editorial-hero" id="atividadesHeroCard">
+            <h1 class="atividades-editorial-title">
+                Minhas Atividades &
+                <span class="serif-italic">Avaliações Formativas</span>
+            </h1>
+            <p class="atividades-editorial-subtitle" style="margin-bottom: 0;">
+                Acompanhe suas <strong>tarefas, testes e provas</strong> em um feed unificado e consulte sua linha do tempo de prática com a Assistente Fran.
             </p>
+        </header>
 
-            <!-- Barra de Abas dentro do card abaixo do texto -->
-            <div class="atividades-tabs-wrapper hero-tabs-inside" id="atividadesTabsTopWrapper">
-                <div class="atividades-tab-bar" role="tablist" aria-label="Filtro de Status das Atividades">
-                    <button type="button" class="atividades-tab-btn active" id="tabStatusTodas" onclick="selecionarAbaStatus('todos')" role="tab" aria-selected="true" title="Exibir todas as atividades">
-                        <svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                        <span>Todas</span>
-                        <span class="atividades-tab-count">{{ avaliacoes|length if avaliacoes else 0 }}</span>
-                    </button>
-                    <button type="button" class="atividades-tab-btn" id="tabStatusPendentes" onclick="selecionarAbaStatus('pendente')" role="tab" aria-selected="false" title="Filtrar apenas pendentes">
-                        <svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #f59e0b;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                        <span>Pendentes</span>
-                        <span class="atividades-tab-count" style="background: rgba(245, 158, 11, 0.25); color: #f59e0b;">{{ count_pendentes.value }}</span>
-                    </button>
-                    <button type="button" class="atividades-tab-btn" id="tabStatusConcluidas" onclick="selecionarAbaStatus('concluida')" role="tab" aria-selected="false" title="Filtrar apenas concluídas">
-                        <svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #10b981;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                        <span>Concluídas</span>
-                        <span class="atividades-tab-count" style="background: rgba(16, 185, 129, 0.25); color: #10b981;">{{ count_concluidas.value }}</span>
+        <!-- 2. Três Mini-KPIs no Topo (Mesmo Design de Ondas Gradientes + Botão Pill do Painel Desempenho) -->
+        <div class="atividades-kpis-grid">
+            <!-- Mini-KPI 1: Pendentes -->
+            <div class="ativ-kpi-card">
+                <div class="ativ-kpi-top-row">
+                    <div>
+                        <span class="ativ-kpi-label">Pendentes</span>
+                        <div class="ativ-kpi-primary">{{ count_pendentes.value }}</div>
+                    </div>
+                    <div aria-hidden="true">
+                        <svg class="ativ-kpi-wave-svg" viewBox="0 0 130 55" preserveAspectRatio="none">
+                            <defs>
+                                <linearGradient id="ativWavePend" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#4B5563" stop-opacity="0.36" />
+                                    <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.0" />
+                                </linearGradient>
+                            </defs>
+                            <path d="M 0 44 C 18 42, 28 35, 42 33 C 54 31, 62 39, 74 34 C 86 28, 96 18, 110 14 C 118 11, 124 8, 130 5 L 130 55 L 0 55 Z" fill="url(#ativWavePend)" />
+                            <path d="M 0 44 C 18 42, 28 35, 42 33 C 54 31, 62 39, 74 34 C 86 28, 96 18, 110 14 C 118 11, 124 8, 130 5" fill="none" stroke="#4B5563" stroke-width="2.2" stroke-linecap="round" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="ativ-kpi-mid-row">
+                    <div>
+                        <span class="ativ-kpi-label">Status de Entrega</span>
+                        <div class="ativ-kpi-subval">{% if count_pendentes.value == 0 %}Tudo em dia!{% else %}{{ count_pendentes.value }} para responder{% endif %}</div>
+                    </div>
+                    <div class="ativ-kpi-trend">
+                        <span>▲ {% if count_pendentes.value == 0 %}100% em dia{% else %}Prioridade{% endif %}</span>
+                    </div>
+                </div>
+                <div class="ativ-kpi-cta-row">
+                    <button type="button" class="ativ-pill-btn" style="width: 100%;" onclick="filtrarPorAtalho('status', 'pendente')">
+                        Focar Pendentes
                     </button>
                 </div>
             </div>
+
+            <!-- Mini-KPI 2: Concluídas -->
+            <div class="ativ-kpi-card">
+                <div class="ativ-kpi-top-row">
+                    <div>
+                        <span class="ativ-kpi-label">Concluídas</span>
+                        <div class="ativ-kpi-primary">{{ count_concluidas.value }}</div>
+                    </div>
+                    <div aria-hidden="true">
+                        <svg class="ativ-kpi-wave-svg" viewBox="0 0 130 55" preserveAspectRatio="none">
+                            <defs>
+                                <linearGradient id="ativWaveConc" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#4B5563" stop-opacity="0.36" />
+                                    <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.0" />
+                                </linearGradient>
+                            </defs>
+                            <path d="M 0 46 C 15 44, 26 38, 40 34 C 52 30, 60 36, 72 30 C 84 24, 94 19, 108 13 C 116 9, 124 7, 130 4 L 130 55 L 0 55 Z" fill="url(#ativWaveConc)" />
+                            <path d="M 0 46 C 15 44, 26 38, 40 34 C 52 30, 60 36, 72 30 C 84 24, 94 19, 108 13 C 116 9, 124 7, 130 4" fill="none" stroke="#4B5563" stroke-width="2.2" stroke-linecap="round" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="ativ-kpi-mid-row">
+                    <div>
+                        <span class="ativ-kpi-label">Taxa de Conclusão</span>
+                        <div class="ativ-kpi-subval">{{ count_concluidas.value }} de {{ avaliacoes|length if avaliacoes else 0 }} entregues</div>
+                    </div>
+                    <div class="ativ-kpi-trend">
+                        <span>▲ {{ ((count_concluidas.value / (avaliacoes|length)) * 100)|round|int if avaliacoes and avaliacoes|length > 0 else 0 }}%</span>
+                    </div>
+                </div>
+                <div class="ativ-kpi-cta-row">
+                    <button type="button" class="ativ-pill-btn" style="width: 100%;" onclick="filtrarPorAtalho('status', 'concluida')">
+                        Ver Concluídas
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mini-KPI 3: Média Geral -->
+            <div class="ativ-kpi-card">
+                <div class="ativ-kpi-top-row">
+                    <div>
+                        <span class="ativ-kpi-label">Média nas Avaliações</span>
+                        <div class="ativ-kpi-primary">{% if media_geral_calc is not none %}{{ media_geral_calc }}<span style="font-size: 1rem; font-weight: 600; color: #6B7280;">/10</span>{% else %}—{% endif %}</div>
+                    </div>
+                    <div aria-hidden="true">
+                        <svg class="ativ-kpi-wave-svg" viewBox="0 0 130 55" preserveAspectRatio="none">
+                            <defs>
+                                <linearGradient id="ativWaveMedia" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#4B5563" stop-opacity="0.36" />
+                                    <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.0" />
+                                </linearGradient>
+                            </defs>
+                            <path d="M 0 42 C 16 40, 28 32, 42 30 C 54 28, 62 35, 75 29 C 88 23, 98 15, 112 10 C 120 7, 126 6, 130 4 L 130 55 L 0 55 Z" fill="url(#ativWaveMedia)" />
+                            <path d="M 0 42 C 16 40, 28 32, 42 30 C 54 28, 62 35, 75 29 C 88 23, 98 15, 112 10 C 120 7, 126 6, 130 4" fill="none" stroke="#4B5563" stroke-width="2.2" stroke-linecap="round" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="ativ-kpi-mid-row">
+                    <div>
+                        <span class="ativ-kpi-label">Nível Pedagógico</span>
+                        <div class="ativ-kpi-subval">CEFR {{ session.get('nivel_cefr', 'A2') }}</div>
+                    </div>
+                    <div class="ativ-kpi-trend">
+                        <span>▲ {{ historico|length if historico else 0 }} treinos</span>
+                    </div>
+                </div>
+                <div class="ativ-kpi-cta-row">
+                    <a href="/pratica" class="ativ-pill-btn" style="width: 100%;">
+                        Ir para Prática Livre
+                    </a>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <!-- Banner de Feedback de Filtro Ativo -->
-    <div id="bannerFiltroAtivoAtividades" class="glass-card" style="display: none; padding: 0.75rem 1.25rem; border-radius: 12px; margin-bottom: 1.5rem; background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
-        <div style="display: flex; align-items: center; gap: 10px; font-size: 0.9rem;">
-            <span style="font-weight: 700; color: #38BDF8; display: inline-flex; align-items: center; gap: 6px;">
-                <svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-                </svg>Filtro Ativo:
-            </span>
-            <span id="bannerTextoFiltro" style="color: var(--text-light); font-weight: 500;">Exibindo todas</span>
-            <span id="bannerContadorAtividades" style="font-size: 0.8rem; background: rgba(255, 255, 255, 0.1); padding: 2px 8px; border-radius: 10px; color: var(--text-muted);"></span>
+        <!-- 2.5. Barra de Busca com Autocomplete + Chips Integrados (Abaixo dos Cards e na mesma largura) -->
+        <div class="atividades-search-wrapper" id="atividadesSearchWrapper">
+            <div class="atividades-search-box">
+                <span class="atividades-search-icon" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </span>
+                <input type="text"
+                       id="inputBuscaAtividades"
+                       class="atividades-search-input"
+                       placeholder="Buscar atividades, provas, testes ou temas do histórico..."
+                       autocomplete="off"
+                       aria-label="Buscar atividades com autocomplete"
+                       aria-expanded="false"
+                       aria-controls="autocompleteDropdownAtividades">
+                <button type="button"
+                        id="btnLimparBuscaRapida"
+                        class="atividades-search-clear"
+                        onclick="limparBuscaRapida()"
+                        title="Limpar busca"
+                        aria-label="Limpar busca">&times;</button>
+            </div>
+
+            <!-- Dropdown de Sugestões Autocomplete -->
+            <div id="autocompleteDropdownAtividades" class="atividades-autocomplete-dropdown" role="listbox" aria-label="Sugestões de atividades"></div>
+
+            <!-- Chips Integrados de Filtro Rápido -->
+            <div class="atividades-filter-chips" aria-label="Filtros rápidos">
+                <button type="button" class="filter-chip-btn active" id="chipFiltroTodos" onclick="limparTodosFiltros()">
+                    <span>Todas</span>
+                    <span class="filter-chip-count">{{ avaliacoes|length if avaliacoes else 0 }}</span>
+                </button>
+                <button type="button" class="filter-chip-btn" id="chipFiltroPendentes" onclick="filtrarPorAtalho('status', 'pendente')">
+                    <span>⏳ Pendentes</span>
+                    <span class="filter-chip-count">{{ count_pendentes.value }}</span>
+                </button>
+                <button type="button" class="filter-chip-btn" id="chipFiltroConcluidas" onclick="filtrarPorAtalho('status', 'concluida')">
+                    <span>✓ Concluídas</span>
+                    <span class="filter-chip-count">{{ count_concluidas.value }}</span>
+                </button>
+                <button type="button" class="filter-chip-btn" id="chipFiltroExercicios" onclick="filtrarPorAtalho('tipo', 'exercicios')">
+                    <span>Exercícios</span>
+                    <span class="filter-chip-count">{{ count_exercicios.value }}</span>
+                </button>
+                <button type="button" class="filter-chip-btn" id="chipFiltroTestes" onclick="filtrarPorAtalho('tipo', 'teste')">
+                    <span>Testes</span>
+                    <span class="filter-chip-count">{{ count_testes.value }}</span>
+                </button>
+                <button type="button" class="filter-chip-btn" id="chipFiltroProvas" onclick="filtrarPorAtalho('tipo', 'prova')">
+                    <span>Provas</span>
+                    <span class="filter-chip-count">{{ count_provas.value }}</span>
+                </button>
+            </div>
         </div>
-        <button type="button" class="btn btn-sm btn-secondary" onclick="limparTodosFiltros()" style="font-size: 0.82rem; padding: 4px 10px;">
-            &times; Redefinir para Todas
-        </button>
-    </div>
 
-    <!-- Quadro Unificado de Atividades com Efeito Hero Card (Borda de Vidro Externa + Card Branco/Navy Interno com Linha Francesa) -->
-    <div class="atividades-box-outer hero-card-outer" id="atividadesBoxOuter">
-        <div class="atividades-box-inner hero-card-inner">
-            <!-- 2 e 3. Container Dividido em 2 Colunas: Pendentes à Esquerda | Concluídas em Linha à Direita -->
-            <div class="atividades-split-container" id="atividadesSplitContainer">
+        <!-- Banner de Feedback de Filtro Ativo -->
+        <div id="bannerFiltroAtivoAtividades" class="glass-card" style="display: none; padding: 0.85rem 1.35rem; border-radius: 16px; margin-bottom: 1.35rem; background: #FFFFFF; border: 1px solid #ECECEC; box-shadow: 0 8px 24px rgba(0,0,0,0.03); align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 10px; font-size: 0.88rem;">
+                <span style="font-weight: 700; color: #14213D; display: inline-flex; align-items: center; gap: 6px;">
+                    <svg class="line-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                    </svg>Filtro Ativo:
+                </span>
+                <span id="bannerTextoFiltro" style="color: #4B5563; font-weight: 500;">Exibindo todas</span>
+                <span id="bannerContadorAtividades" style="font-size: 0.78rem; background: #F3F4F6; padding: 2px 10px; border-radius: 999px; color: #111827; font-weight: 600;"></span>
+            </div>
+            <button type="button" class="ativ-pill-btn" onclick="limparTodosFiltros()" style="font-size: 0.78rem !important; padding: 5px 14px !important;">
+                &times; Redefinir para Todas
+            </button>
+        </div>
 
-                <!-- ==================== COLUNA ESQUERDA: ATIVIDADES PENDENTES ==================== -->
-                <section class="atividades-secao col-pendentes" id="secaoAtividadesPendentes">
-                    <div class="atividades-secao-header secao-header-menu" id="headerSecaoPendentes" onclick="toggleMenuStatus('pendente')" role="button" tabindex="0" title="Atividades Pendentes: avaliações que você ainda precisa responder e enviar. Clique para focar.">
-                        <div class="secao-header-main">
-                            <div class="secao-icon-badge secao-icon-amber">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <!-- 3. Feed Unificado de Avaliações (Sem divisão meio-a-meio que criava buracos) -->
+        <div id="atividadesBoxOuter">
+            <div id="atividadesSplitContainer" style="display: flex; flex-direction: column; gap: 1.35rem;">
+
+                <!-- BLOCO A: ATIVIDADES PENDENTES (Largura Total em Grid Responsivo) -->
+                <section class="atividades-feed-section" id="secaoAtividadesPendentes">
+                    <div class="feed-section-header" id="headerSecaoPendentes" onclick="toggleMenuStatus('pendente')" role="button" tabindex="0" title="Clique para focar apenas nas atividades pendentes">
+                        <div class="feed-header-left">
+                            <div class="secao-icon-badge">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <circle cx="12" cy="12" r="10"></circle>
                                     <polyline points="12 6 12 12 16 14"></polyline>
                                 </svg>
                             </div>
-                            <h2 class="secao-title">
-                                Atividades Pendentes
-                                <span class="secao-badge-count secao-badge-amber" id="badgeContagemPendentes">{{ count_pendentes.value }}</span>
-                            </h2>
-                            <p class="secao-subtitle">Avaliações que você ainda precisa responder e enviar.</p>
+                            <div>
+                                <h2 class="secao-title">
+                                    Atividades Pendentes
+                                    <span class="secao-badge-count" id="badgeContagemPendentes" style="background: rgba(252, 163, 17, 0.2); color: #b87503; font-size: 0.75rem; padding: 2px 9px; border-radius: 999px;">{{ count_pendentes.value }}</span>
+                                </h2>
+                                <p class="secao-subtitle">Avaliações com prazo aberto aguardando sua resolução.</p>
+                            </div>
                         </div>
-                        <div class="secao-header-menu-indicator">
-                            <span class="menu-indicator-text">Menu</span>
-                            <svg class="menu-indicator-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                        </div>
+                        <span style="font-size: 0.78rem; font-weight: 600; color: #6B7280;">Filtrar seção &rarr;</span>
                     </div>
 
                     {% if avaliacoes_pendentes and avaliacoes_pendentes|length > 0 %}
@@ -269,294 +1301,304 @@
                         <div class="forum-card card-atividade-item" 
                              id="pendente-item-{{ a.id }}"
                              data-tipo="{{ tipo_cat }}" 
+                             data-tipo-label="{{ tipo_label }}"
                              data-status="pendente" 
-                             data-titulo="{{ a.titulo|lower }}">
-                    <div class="forum-card-inner">
-                        <!-- Top Header com Badges -->
-                        <div class="forum-card-header">
-                            <div class="forum-badges-left">
-                                <span class="badge-tipo-avaliacao badge-{{ tipo_cat }}">{{ tipo_label }}</span>
-                                <span class="badge-status-pendente">
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                                    Pendente
-                                </span>
-                            </div>
-                            <span class="badge-questoes-count" title="Total de questões">
-                                {{ a.total_questoes }} questões
-                            </span>
-                        </div>
+                             data-titulo="{{ a.titulo|lower }}"
+                             data-titulo-raw="{{ a.titulo }}"
+                             data-prazo="{{ a.data_limite|data_br }}">
+                            <div class="forum-card-inner">
+                                <div class="forum-card-header" style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+                                    <div class="forum-badges-left" style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                                        <span class="badge-tipo-avaliacao badge-{{ tipo_cat }}" style="background: rgba(20, 33, 61, 0.08); color: #14213D; border-radius: 999px; padding: 3px 10px; font-size: 0.74rem; font-weight: 700;">{{ tipo_label }}</span>
+                                        <span class="badge-status-pendente" style="background: rgba(252, 163, 17, 0.16); color: #b87503; border-radius: 999px; padding: 3px 10px; font-size: 0.74rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+                                            ⏳ Pendente
+                                        </span>
+                                    </div>
+                                    <span style="font-size: 0.78rem; font-weight: 700; color: #16A34A; display: inline-flex; align-items: center; gap: 3px;">
+                                        ▲ {{ a.total_questoes }} questões
+                                    </span>
+                                </div>
 
-                        <!-- Título e Prazo -->
-                        <h3 class="forum-topic-title">{{ a.titulo }}</h3>
-                        
-                        <p class="atividade-prazo-info">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                            <span>Data Limite: <strong class="date-display" title="{{ a.data_limite|data_hora_br }}">{{ a.data_limite|data_br }}</strong></span>
-                        </p>
+                                <h3 class="forum-topic-title">{{ a.titulo }}</h3>
+                                
+                                <p class="atividade-prazo-info">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                    <span>Data Limite: <strong class="date-display" style="color: #111827;" title="{{ a.data_limite|data_hora_br }}">{{ a.data_limite|data_br }}</strong></span>
+                                </p>
 
-                        <!-- Box de Estatísticas de Progresso -->
-                        <div class="atividade-stats-box">
-                            <div class="stat-info-row">
-                                <span>Questões a resolver:</span>
-                                <strong>{{ a.total_questoes }}</strong>
-                            </div>
-                            {% if a.questoes_respondidas and a.questoes_respondidas > 0 %}
-                            <div class="stat-info-row" style="color: #f59e0b;">
-                                <span>Em andamento:</span>
-                                <strong>{{ a.questoes_respondidas }} de {{ a.total_questoes }} respondidas</strong>
-                            </div>
-                            {% endif %}
-                        </div>
+                                <div class="atividade-stats-box">
+                                    <div class="stat-info-row">
+                                        <span>Questões a resolver:</span>
+                                        <strong>{{ a.total_questoes }}</strong>
+                                    </div>
+                                    {% if a.questoes_respondidas and a.questoes_respondidas > 0 %}
+                                    <div class="stat-info-row" style="color: #b87503; margin-top: 4px;">
+                                        <span>Em andamento:</span>
+                                        <strong>{{ a.questoes_respondidas }} de {{ a.total_questoes }} respondidas</strong>
+                                    </div>
+                                    {% endif %}
+                                </div>
 
-                        <!-- Rodapé do Card com Botão de Iniciar -->
-                        <div class="forum-card-footer" style="margin-top: auto; padding-top: 0.75rem;">
-                            <a href="/aluno/prova/{{ a.id }}" class="btn btn-primary" style="width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none;">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                                <span>{% if a.questoes_respondidas and a.questoes_respondidas > 0 %}Continuar {{ tipo_label }}{% else %}Iniciar {{ tipo_label }}{% endif %}</span>
-                            </a>
+                                <div class="forum-card-footer" style="margin-top: auto; padding-top: 0.25rem; display: flex; justify-content: center;">
+                                    <a href="/aluno/prova/{{ a.id }}" class="ativ-pill-btn" style="width: 100%;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                                        <span>{% if a.questoes_respondidas and a.questoes_respondidas > 0 %}Continuar {{ tipo_label }}{% else %}Iniciar {{ tipo_label }}{% endif %}</span>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
+                        {% endfor %}
                     </div>
-                </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <!-- Empty state pendentes -->
-            <div class="forum-card" id="emptyStatePendentes" style="padding: 2.25rem 1.5rem; text-align: center; border: 1px dashed rgba(16, 185, 129, 0.35); background: rgba(16, 185, 129, 0.04);">
-                <div style="margin-bottom: 0.75rem;">
-                    <svg class="line-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="color: #10B981;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                </div>
-                <h4 style="color: var(--text-light); margin-bottom: 0.35rem; font-size: 1.15rem; font-weight: 700;">Tudo em dia!</h4>
-                <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 460px; margin: 0 auto;">
-                    Parabéns! Você não possui nenhuma atividade ou prova pendente no momento.
-                </p>
-            </div>
-            {% endif %}
-        </section>
+                    {% else %}
+                    <!-- Faixa Horizontal Compacta (sem ocupar meia tela vazia) -->
+                    <div class="tudo-em-dia-strip" id="emptyStatePendentes">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="width: 30px; height: 30px; border-radius: 50%; background: rgba(22, 163, 74, 0.14); color: #16A34A; display: inline-flex; align-items: center; justify-content: center; font-weight: 800;">✓</span>
+                            <div>
+                                <strong style="font-size: 0.9rem; color: #111827;">Tudo em dia!</strong>
+                                <span style="font-size: 0.84rem; color: #6B7280; margin-left: 6px;">Você não possui nenhuma avaliação pendente no momento.</span>
+                            </div>
+                        </div>
+                        <a href="/pratica" class="ativ-pill-btn" style="padding: 6px 16px !important; font-size: 0.76rem !important;">Praticar com a Fran</a>
+                    </div>
+                    {% endif %}
+                </section>
 
-        <!-- ==================== COLUNA DIREITA: ATIVIDADES CONCLUÍDAS (FORMATO LINHA -> CARD) ==================== -->
-        <section class="atividades-secao col-concluidas" id="secaoAtividadesConcluidas">
-                    <div class="atividades-secao-header secao-header-menu" id="headerSecaoConcluidas" onclick="toggleMenuStatus('concluida')" role="button" tabindex="0" title="Atividades Concluídas: clique para abrir o card completo com notas e respostas.">
-                        <div class="secao-header-main">
+                <!-- BLOCO B: ATIVIDADES CONCLUÍDAS (Largura Total para leitura confortável) -->
+                <section class="atividades-feed-section" id="secaoAtividadesConcluidas">
+                    <div class="feed-section-header" id="headerSecaoConcluidas" onclick="toggleMenuStatus('concluida')" role="button" tabindex="0" title="Clique para focar apenas nas atividades concluídas">
+                        <div class="feed-header-left">
                             <div class="secao-icon-badge secao-icon-green">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                                     <polyline points="22 4 12 14.01 9 11.01"></polyline>
                                 </svg>
                             </div>
-                            <h2 class="secao-title">
-                                Atividades Concluídas
-                                <span class="secao-badge-count secao-badge-green" id="badgeContagemConcluidas">{{ count_concluidas.value }}</span>
-                            </h2>
-                            <p class="secao-subtitle">Clique em uma linha para abrir o card completo com notas e respostas.</p>
+                            <div>
+                                <h2 class="secao-title">
+                                    Atividades Concluídas
+                                    <span class="secao-badge-count" id="badgeContagemConcluidas" style="background: rgba(22, 163, 74, 0.14); color: #16A34A; font-size: 0.75rem; padding: 2px 9px; border-radius: 999px;">{{ count_concluidas.value }}</span>
+                                </h2>
+                                <p class="secao-subtitle">Clique em qualquer avaliação concluída para expandir a nota e acessar suas respostas.</p>
+                            </div>
                         </div>
-                        <div class="secao-header-menu-indicator">
-                            <span class="menu-indicator-text">Menu</span>
-                            <svg class="menu-indicator-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                        </div>
+                        <span style="font-size: 0.78rem; font-weight: 600; color: #6B7280;">Filtrar seção &rarr;</span>
                     </div>
 
-            {% if avaliacoes_concluidas and avaliacoes_concluidas|length > 0 %}
-            <div id="gridAtividadesConcluidas" class="grid-atividades-concluidas">
-                {% for a in avaliacoes_concluidas %}
-                {% set t_clean = (a.tipo or '')|lower %}
-                {% set tipo_cat = 'teste' if 'teste' in t_clean else ('exercicios' if ('exercício' in t_clean or 'exercicio' in t_clean) else 'prova') %}
-                {% set tipo_label = 'Teste' if tipo_cat == 'teste' else ('Exercícios' if tipo_cat == 'exercicios' else 'Prova') %}
-                
-                <div class="concluida-interactive-card forum-card card-atividade-item" 
-                     id="concluida-item-{{ a.id }}"
-                     data-tipo="{{ tipo_cat }}" 
-                     data-status="concluida" 
-                     data-titulo="{{ a.titulo|lower }}">
-                    
-                    <!-- ================= FORMATO DE LINHA (COMPACTO) ================= -->
-                    <div class="concluida-row-view" onclick="toggleConcluidaCard('concluida-item-{{ a.id }}')" title="Clique para abrir detalhes desta atividade">
-                        <div class="concluida-row-left">
-                            <span class="badge-tipo-avaliacao badge-{{ tipo_cat }}">{{ tipo_label }}</span>
-                            <div class="concluida-row-text">
-                                <strong class="concluida-row-title">{{ a.titulo }}</strong>
-                                <span class="concluida-row-meta">
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                                    {{ a.data_limite|data_br }}
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="concluida-row-right">
-                            {% if a.media_nota is not none %}
-                            <span class="concluida-badge-nota">
-                                Nota: <strong>{{ a.media_nota }}</strong>/10
-                            </span>
-                            {% else %}
-                            <span class="concluida-badge-analise">
-                                Em avaliação
-                            </span>
-                            {% endif %}
-                            <div class="concluida-row-chevron" title="Expandir card">
-                                <span>Ver Card</span>
-                                <svg class="chevron-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ================= FORMATO DE CARD COMPLETO (EXPANDIDO) ================= -->
-                    <div class="concluida-card-view">
-                        <div class="forum-card-inner">
-                            <div class="forum-card-header">
-                                <div class="forum-badges-left">
-                                    <span class="badge-tipo-avaliacao badge-{{ tipo_cat }}">{{ tipo_label }}</span>
-                                    <span class="badge-status-concluida">
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                        Concluída
-                                    </span>
-                                </div>
-                                <button type="button" class="btn-recolher-linha" onclick="event.stopPropagation(); toggleConcluidaCard('concluida-item-{{ a.id }}')" title="Voltar ao formato de linha">
-                                    <span>Modo Linha</span>
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
-                                </button>
-                            </div>
-
-                            <h3 class="forum-topic-title">{{ a.titulo }}</h3>
+                    {% if avaliacoes_concluidas and avaliacoes_concluidas|length > 0 %}
+                    <div id="gridAtividadesConcluidas" class="grid-atividades-concluidas">
+                        {% for a in avaliacoes_concluidas %}
+                        {% set t_clean = (a.tipo or '')|lower %}
+                        {% set tipo_cat = 'teste' if 'teste' in t_clean else ('exercicios' if ('exercício' in t_clean or 'exercicio' in t_clean) else 'prova') %}
+                        {% set tipo_label = 'Teste' if tipo_cat == 'teste' else ('Exercícios' if tipo_cat == 'exercicios' else 'Prova') %}
+                        
+                        <div class="concluida-interactive-card forum-card card-atividade-item" 
+                             id="concluida-item-{{ a.id }}"
+                             data-tipo="{{ tipo_cat }}" 
+                             data-tipo-label="{{ tipo_label }}"
+                             data-status="concluida" 
+                             data-titulo="{{ a.titulo|lower }}"
+                             data-titulo-raw="{{ a.titulo }}"
+                             data-prazo="{{ a.data_limite|data_br }}">
                             
-                            <p class="atividade-prazo-info">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                                <span>Data Limite: <strong class="date-display" title="{{ a.data_limite|data_hora_br }}">{{ a.data_limite|data_br }}</strong></span>
-                            </p>
+                            <!-- FORMATO DE LINHA (COMPACTO EM LARGURA TOTAL) -->
+                            <div class="concluida-row-view" onclick="toggleConcluidaCard('concluida-item-{{ a.id }}')" title="Clique para abrir detalhes desta atividade">
+                                <div class="concluida-row-left">
+                                    <span class="badge-tipo-avaliacao badge-{{ tipo_cat }}" style="background: rgba(20, 33, 61, 0.08); color: #14213D; border-radius: 999px; padding: 3px 10px; font-size: 0.73rem; font-weight: 700;">{{ tipo_label }}</span>
+                                    <div class="concluida-row-text">
+                                        <strong class="concluida-row-title">{{ a.titulo }}</strong>
+                                        <span class="concluida-row-meta" style="color: #6B7280;">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                            Prazo: {{ a.data_limite|data_br }} • {{ a.total_questoes }} questões
+                                        </span>
+                                    </div>
+                                </div>
 
-                            <div class="atividade-stats-box">
-                                <div class="stat-info-row">
-                                    <span>Questões respondidas:</span>
-                                    <strong>{{ a.total_questoes }} de {{ a.total_questoes }}</strong>
+                                <div class="concluida-row-right">
+                                    {% if a.media_nota is not none %}
+                                    <span class="concluida-badge-nota">
+                                        ▲ Nota: <strong>{{ a.media_nota }}</strong>/10
+                                    </span>
+                                    {% else %}
+                                    <span class="concluida-badge-analise" style="font-size: 0.75rem; color: #6B7280; font-weight: 600;">
+                                        Em avaliação
+                                    </span>
+                                    {% endif %}
+                                    <div class="concluida-row-chevron" title="Expandir card" style="color: #14213D; font-weight: 600;">
+                                        <span>Detalhes</span>
+                                        <svg class="chevron-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </div>
                                 </div>
-                                {% if a.media_nota is not none %}
-                                <div class="stat-info-row highlight-nota">
-                                    <span>Nota Média:</span>
-                                    <strong style="color: var(--primary); font-size: 1.05rem;">{{ a.media_nota }} / 10</strong>
-                                </div>
-                                {% else %}
-                                <div class="stat-info-row">
-                                    <span>Correção:</span>
-                                    <em style="color: var(--text-muted);">Em avaliação docente</em>
-                                </div>
-                                {% endif %}
                             </div>
 
-                            <div class="forum-card-footer" style="margin-top: auto; padding-top: 0.75rem;">
-                                <a href="/aluno/prova/{{ a.id }}" class="btn btn-secondary" onclick="event.stopPropagation();" style="width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none;">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                    <span>Ver Respostas Enviadas</span>
-                                </a>
+                            <!-- FORMATO DE CARD COMPLETO (EXPANDIDO) -->
+                            <div class="concluida-card-view" style="padding: 1.35rem 1.4rem;">
+                                <div class="forum-card-inner">
+                                    <div class="forum-card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div class="forum-badges-left" style="display: flex; align-items: center; gap: 6px;">
+                                            <span class="badge-tipo-avaliacao badge-{{ tipo_cat }}" style="background: rgba(20, 33, 61, 0.08); color: #14213D; border-radius: 999px; padding: 3px 10px; font-size: 0.74rem; font-weight: 700;">{{ tipo_label }}</span>
+                                            <span class="badge-status-concluida" style="background: rgba(22, 163, 74, 0.12); color: #16A34A; border-radius: 999px; padding: 3px 10px; font-size: 0.74rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+                                                ✓ Concluída
+                                            </span>
+                                        </div>
+                                        <button type="button" class="btn-recolher-linha" onclick="event.stopPropagation(); toggleConcluidaCard('concluida-item-{{ a.id }}')" title="Voltar ao formato compacto" style="background: #F3F4F6; border: 1px solid #E5E5E5; border-radius: 999px; padding: 4px 12px; font-size: 0.75rem; font-weight: 600; color: #111827; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                                            <span>Recolher</span>
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                                        </button>
+                                    </div>
+
+                                    <h3 class="forum-topic-title">{{ a.titulo }}</h3>
+                                    
+                                    <p class="atividade-prazo-info">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                        <span>Data Limite: <strong class="date-display" style="color: #111827;" title="{{ a.data_limite|data_hora_br }}">{{ a.data_limite|data_br }}</strong></span>
+                                    </p>
+
+                                    <div class="atividade-stats-box">
+                                        <div class="stat-info-row">
+                                            <span>Questões respondidas:</span>
+                                            <strong>{{ a.total_questoes }} de {{ a.total_questoes }}</strong>
+                                        </div>
+                                        {% if a.media_nota is not none %}
+                                        <div class="stat-info-row highlight-nota" style="margin-top: 4px;">
+                                            <span>Nota Média:</span>
+                                            <strong style="color: #16A34A; font-size: 1rem;">▲ {{ a.media_nota }} / 10</strong>
+                                        </div>
+                                        {% else %}
+                                        <div class="stat-info-row" style="margin-top: 4px;">
+                                            <span>Correção:</span>
+                                            <em style="color: #6B7280;">Em avaliação docente</em>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="forum-card-footer" style="margin-top: auto; padding-top: 0.25rem; display: flex; justify-content: center;">
+                                        <a href="/aluno/prova/{{ a.id }}" class="ativ-pill-btn" onclick="event.stopPropagation();" style="width: 100%; max-width: 340px;">
+                                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                            <span>Ver Respostas Enviadas</span>
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="tudo-em-dia-strip" id="emptyStateConcluidas">
+                        <span style="font-size: 0.86rem; color: #6B7280;">Assim que você concluir suas avaliações pendentes, suas notas e revisões aparecerão aqui.</span>
+                    </div>
+                    {% endif %}
+                </section>
+            </div>
+        </div>
+
+        <!-- Empty State quando o filtro de busca/tipo zera os resultados -->
+        <div id="nenhumaAtividadeFiltrada" class="atividades-feed-section" style="display: none; text-align: center; padding: 2.75rem 1.5rem !important;">
+            <div style="margin-bottom: 0.85rem;">
+                <svg class="line-icon" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="color: #14213D;"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+            </div>
+            <h3 style="color: #111827; margin-bottom: 0.45rem; font-weight: 800;">Nenhuma atividade encontrada</h3>
+            <p style="color: #6B7280; max-width: 440px; margin: 0 auto 1.15rem auto; font-size: 0.88rem;">
+                Nenhuma atividade corresponde aos critérios selecionados. Limpe o filtro para voltar ao feed completo.
+            </p>
+            <button type="button" class="ativ-pill-btn" onclick="limparTodosFiltros()">Limpar Filtros</button>
+        </div>
+
+        <!-- 4. Histórico de Prática Recente em Linha do Tempo Compacta (Accordion Enxuto) -->
+        <section class="atividades-feed-section" id="historicoBoxOuter">
+            <div class="feed-section-header" style="cursor: default;">
+                <div class="feed-header-left">
+                    <span class="secao-icon-badge" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                        </svg>
+                    </span>
+                    <div>
+                        <h2 class="secao-title">
+                            Linha do Tempo de Prática Recente
+                            <span style="background: #F3F4F6; color: #374151; font-size: 0.74rem; padding: 2px 9px; border-radius: 999px;">{{ historico|length if historico else 0 }}</span>
+                        </h2>
+                        <p class="secao-subtitle">Clique em um treino para expandir sua resposta e o feedback da Assistente Fran.</p>
                     </div>
                 </div>
-                {% endfor %}
+                {% if historico %}
+                <button type="button" class="filter-chip-btn" id="btnToggleTodosHistorico" onclick="alternarTodosHistorico()">
+                    Expandir todos
+                </button>
+                {% endif %}
             </div>
-            {% else %}
-            <!-- Empty state concluídas -->
-            <div class="forum-card" id="emptyStateConcluidas" style="padding: 2.25rem 1.5rem; text-align: center; border: 1px dashed rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.02);">
-                <div style="margin-bottom: 0.75rem;">
-                    <svg class="line-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                </div>
-                <h4 style="color: var(--text-light); margin-bottom: 0.35rem; font-size: 1.15rem; font-weight: 700;">Nenhuma atividade concluída ainda</h4>
-                <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 460px; margin: 0 auto;">
-                    Assim que você responder suas avaliações pendentes, o histórico e notas aparecerão aqui.
-                </p>
-            </div>
-            {% endif %}
-        </section>
-    </div>
-        </div>
-    </div>
-
-    <!-- Empty State quando o filtro de busca/tipo zera os resultados -->
-    <div id="nenhumaAtividadeFiltrada" class="form-card" style="display: none; text-align: center; padding: 3rem 1.5rem; border-radius: 16px;">
-        <div style="margin-bottom: 1rem;">
-            <svg class="line-icon" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
-        </div>
-        <h3 style="color: var(--text-light); margin-bottom: 0.5rem;">Nenhuma atividade encontrada</h3>
-        <p style="color: var(--text-muted); max-width: 480px; margin: 0 auto 1.5rem auto;">
-            Nenhuma atividade corresponde aos critérios de filtro selecionados. Tente ajustar os parâmetros ou limpar os filtros.
-        </p>
-        <button type="button" class="btn btn-primary" onclick="limparTodosFiltros()">Limpar Filtros</button>
-    </div>
-
-    <!-- Quadro Unificado de Histórico de Prática Recente com Efeito Hero Card -->
-    <div class="historico-box-outer hero-card-outer" id="historicoBoxOuter">
-        <div class="historico-box-inner hero-card-inner">
-            <div class="historico-header-section">
-                <span class="hero-tag">
-                    <svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <line x1="16" y1="13" x2="8" y2="13"></line>
-                        <line x1="16" y1="17" x2="8" y2="17"></line>
-                    </svg>Historique d'Apprentissage
-                </span>
-                <h2 class="hero-title">Histórico de Prática Recente</h2>
-                <p class="hero-description">
-                    Reveja os exercícios respondidos, suas transcrições e as orientações da Assistente Fran.
-                </p>
-            </div>
-
-            <div class="historico-box-divider"></div>
 
             {% if historico %}
-            <div class="historico-lista-container">
+            <div class="historico-timeline-list">
                 {% for h in historico %}
-                <div class="historico-item-card">
-                    <div class="historico-item-header">
-                        <span class="historico-item-tema">
-                            <svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>{{ h.tema }}
-                        </span>
-                        <div class="historico-item-meta">
+                <details class="historico-item-card timeline-accordion-item"
+                         id="historico-item-{{ loop.index }}"
+                         data-tema="{{ (h.tema or '')|lower }}"
+                         data-tema-raw="{{ h.tema }}"
+                         data-enunciado="{{ (h.enunciado or '')|lower }}"
+                         data-enunciado-raw="{{ h.enunciado }}">
+                    <summary class="timeline-summary-row">
+                        <div class="timeline-summary-left">
                             {% if h.status_resposta == 'Correto' %}
-                            <span class="badge-status-correto">
-                                <svg class="line-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>Correto
+                            <span class="timeline-dot dot-success" title="Correto"></span>
+                            {% elif h.status_resposta == 'Parcialmente Correto' %}
+                            <span class="timeline-dot dot-warning" title="Parcial"></span>
+                            {% else %}
+                            <span class="timeline-dot dot-dark" title="Incorreto"></span>
+                            {% endif %}
+                            <span class="timeline-tema-badge">{{ h.tema }}</span>
+                            <span style="color: #D1D5DB;">•</span>
+                            <span class="timeline-enunciado-preview">{{ h.enunciado }}</span>
+                        </div>
+                        <div class="timeline-summary-right">
+                            {% if h.status_resposta == 'Correto' %}
+                            <span style="background: rgba(22, 163, 74, 0.12); color: #16A34A; border-radius: 999px; padding: 2px 9px; font-size: 0.72rem; font-weight: 700;">
+                                ▲ Correto
                             </span>
                             {% elif h.status_resposta == 'Parcialmente Correto' %}
-                            <span class="badge-status-parcial">
-                                <svg class="line-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>Parcial
+                            <span style="background: rgba(252, 163, 17, 0.16); color: #b87503; border-radius: 999px; padding: 2px 9px; font-size: 0.72rem; font-weight: 700;">
+                                ● Parcial
                             </span>
                             {% else %}
-                            <span class="badge-status-incorreto">
-                                <svg class="line-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>Incorreto
+                            <span style="background: rgba(24, 25, 30, 0.08); color: #18191E; border-radius: 999px; padding: 2px 9px; font-size: 0.72rem; font-weight: 700;">
+                                ✗ Revisar
                             </span>
                             {% endif %}
-                            <span class="historico-item-data">{{ h.data_hora }}</span>
+                            <span style="font-size: 0.74rem; color: #9CA3AF;">{{ h.data_hora|data_br }}</span>
+                            <svg class="timeline-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                         </div>
-                    </div>
+                    </summary>
 
-                    <p class="historico-item-enunciado">
-                        <strong>Exercício:</strong> {{ h.enunciado }}
-                    </p>
-
-                    <div class="historico-item-resposta">
-                        <span class="historico-resposta-label">Sua Resposta:</span>
-                        <code>{{ h.resposta_aluno or '(Resposta em áudio)' }}</code>
-                    </div>
-
-                    <details class="historico-item-details">
-                        <summary>
-                            <svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>Ver Dica & Feedback da Fran
-                        </summary>
-                        <div class="historico-feedback-content">
+                    <div class="timeline-body-content">
+                        <p style="margin: 0 0 0.6rem 0; color: #111827;">
+                            <strong>Exercício:</strong> {{ h.enunciado }}
+                        </p>
+                        <div style="background: #F7F7F8; border: 1px solid #ECECEC; border-radius: 10px; padding: 0.55rem 0.85rem; margin-bottom: 0.65rem;">
+                            <span style="font-size: 0.76rem; color: #6B7280; font-weight: 600;">Sua Resposta:</span>
+                            <code style="color: #111827; font-weight: 600; margin-left: 4px;">{{ h.resposta_aluno or '(Resposta em áudio)' }}</code>
+                        </div>
+                        <div style="padding: 0.75rem 0.95rem; background: #F9FAFB; border-left: 3px solid #18191E; border-radius: 8px; color: #374151; line-height: 1.55;">
+                            <strong style="color: #111827; display: block; margin-bottom: 3px; font-size: 0.8rem;">Feedback da Fran:</strong>
                             {{ h.feedback_ia }}
                             {% if h.analise_professor %}
-                            <hr class="historico-feedback-divider">
-                            <span class="historico-analise-label">Análise Pedagógica:</span>
+                            <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 0.55rem 0;">
+                            <span style="font-weight: 700; color: #14213D;">Análise Pedagógica:</span>
                             <em>{{ h.analise_professor }}</em>
                             {% endif %}
                         </div>
-                    </details>
-                </div>
+                    </div>
+                </details>
                 {% endfor %}
             </div>
             {% else %}
-            <div class="historico-empty-state">
-                <p>Você ainda não realizou exercícios. Pratique na tela inicial para ver seu histórico aqui!</p>
+            <div class="historico-empty-state" style="text-align: center; padding: 1.5rem 1rem; color: #6B7280; font-size: 0.88rem;">
+                <p style="margin: 0;">Você ainda não realizou exercícios. Pratique na tela de Prática Livre para ver sua linha do tempo aqui!</p>
             </div>
             {% endif %}
-        </div>
+        </section>
     </div>
 </div>
 {% endblock %}
@@ -569,6 +1611,241 @@
         tipo: 'todos',
         busca: ''
     };
+
+    let autocompleteItemsCache = [];
+    let autocompleteActiveIndex = -1;
+    let historicoExpandido = false;
+
+    function alternarTodosHistorico() {
+        historicoExpandido = !historicoExpandido;
+        document.querySelectorAll('.timeline-accordion-item').forEach(det => {
+            det.open = historicoExpandido;
+        });
+        const btn = document.getElementById('btnToggleTodosHistorico');
+        if (btn) btn.textContent = historicoExpandido ? 'Recolher todos' : 'Expandir todos';
+    }
+
+    function construirIndiceAutocomplete() {
+        const lista = [];
+        // 1. Avaliações (Pendentes e Concluídas)
+        document.querySelectorAll('.card-atividade-item').forEach(card => {
+            const id = card.id;
+            const tituloRaw = card.getAttribute('data-titulo-raw') || card.getAttribute('data-titulo') || '';
+            const tituloLower = (card.getAttribute('data-titulo') || tituloRaw).toLowerCase();
+            const tipo = card.getAttribute('data-tipo') || 'exercicios';
+            const tipoLabel = card.getAttribute('data-tipo-label') || 'Atividade';
+            const status = card.getAttribute('data-status') || 'pendente';
+            const prazo = card.getAttribute('data-prazo') || '';
+
+            lista.push({
+                id: id,
+                categoria: 'avaliacao',
+                titulo: tituloRaw,
+                tituloLower: tituloLower,
+                subtitulo: `${tipoLabel}${prazo ? ' • Prazo: ' + prazo : ''}`,
+                tipo: tipo,
+                tipoLabel: tipoLabel,
+                status: status,
+                statusLabel: status === 'pendente' ? 'Pendente' : 'Concluída'
+            });
+        });
+
+        // 2. Histórico de Prática Recente
+        document.querySelectorAll('.historico-item-card').forEach(hCard => {
+            const id = hCard.id;
+            const temaRaw = hCard.getAttribute('data-tema-raw') || '';
+            const enunciadoRaw = hCard.getAttribute('data-enunciado-raw') || '';
+            const buscaLower = `${hCard.getAttribute('data-tema') || ''} ${hCard.getAttribute('data-enunciado') || ''}`.trim().toLowerCase();
+            if (temaRaw || enunciadoRaw) {
+                lista.push({
+                    id: id,
+                    categoria: 'historico',
+                    titulo: temaRaw || 'Prática Recente',
+                    tituloLower: buscaLower,
+                    subtitulo: enunciadoRaw ? (enunciadoRaw.length > 65 ? enunciadoRaw.substring(0, 65) + '...' : enunciadoRaw) : 'Histórico de Prática',
+                    tipo: 'pratica',
+                    tipoLabel: 'Histórico',
+                    status: 'concluida',
+                    statusLabel: 'Prática'
+                });
+            }
+        });
+
+        autocompleteItemsCache = lista;
+    }
+
+    function destacarTermo(texto, termo) {
+        if (!termo) return texto;
+        const escapado = termo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`(${escapado})`, 'gi');
+        return texto.replace(regex, '<mark>$1</mark>');
+    }
+
+    function renderizarAutocomplete(termo) {
+        const dropdown = document.getElementById('autocompleteDropdownAtividades');
+        const input = document.getElementById('inputBuscaAtividades');
+        if (!dropdown || !input) return;
+
+        if (!autocompleteItemsCache.length) {
+            construirIndiceAutocomplete();
+        }
+
+        const q = (termo || '').trim().toLowerCase();
+        const filtrados = autocompleteItemsCache.filter(item => {
+            if (!q) return true;
+            return item.tituloLower.includes(q) || item.tipoLabel.toLowerCase().includes(q) || item.statusLabel.toLowerCase().includes(q);
+        }).slice(0, 7);
+
+        autocompleteActiveIndex = -1;
+
+        if (filtrados.length === 0) {
+            dropdown.innerHTML = `<div class="autocomplete-empty">Nenhuma sugestão encontrada para "<strong>${termo}</strong>"</div>`;
+            dropdown.classList.add('open');
+            input.setAttribute('aria-expanded', 'true');
+            return;
+        }
+
+        const labelTopo = q ? `Sugestões encontradas (${filtrados.length})` : 'Sugestões Rápidas de Atividades';
+        let html = `<div class="autocomplete-section-label">${labelTopo}</div>`;
+
+        filtrados.forEach((item, idx) => {
+            const tituloDestacado = destacarTermo(item.titulo, q);
+            const badgeClass = item.status === 'pendente' ? 'status-pendente' : 'status-concluida';
+            const iconSvg = item.categoria === 'historico'
+                ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>'
+                : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>';
+
+            html += `
+                <div class="autocomplete-item"
+                     role="option"
+                     data-idx="${idx}"
+                     data-target-id="${item.id}"
+                     data-valor="${item.titulo.replace(/"/g, '&quot;')}"
+                     onclick="selecionarItemAutocomplete(this)">
+                    <div class="autocomplete-item-left">
+                        <span class="autocomplete-item-icon">${iconSvg}</span>
+                        <div class="autocomplete-item-text">
+                            <span class="autocomplete-item-title">${tituloDestacado}</span>
+                            <span class="autocomplete-item-sub">${item.subtitulo}</span>
+                        </div>
+                    </div>
+                    <div class="autocomplete-item-badges">
+                        <span class="autocomplete-badge ${badgeClass}">${item.statusLabel}</span>
+                    </div>
+                </div>
+            `;
+        });
+
+        dropdown.innerHTML = html;
+        dropdown.classList.add('open');
+        input.setAttribute('aria-expanded', 'true');
+    }
+
+    function fecharAutocomplete() {
+        const dropdown = document.getElementById('autocompleteDropdownAtividades');
+        const input = document.getElementById('inputBuscaAtividades');
+        if (dropdown) dropdown.classList.remove('open');
+        if (input) input.setAttribute('aria-expanded', 'false');
+        autocompleteActiveIndex = -1;
+    }
+
+    function selecionarItemAutocomplete(el) {
+        if (!el) return;
+        const valor = el.getAttribute('data-valor') || '';
+        const targetId = el.getAttribute('data-target-id') || '';
+        const input = document.getElementById('inputBuscaAtividades');
+        const popoverInput = document.getElementById('popoverFiltroBusca');
+        const clearBtn = document.getElementById('btnLimparBuscaRapida');
+
+        if (input) input.value = valor;
+        if (popoverInput) popoverInput.value = valor;
+        if (clearBtn) clearBtn.style.display = valor ? 'inline-flex' : 'none';
+
+        filtroEstado.busca = valor.trim().toLowerCase();
+        fecharAutocomplete();
+        executarFiltragem();
+
+        if (targetId) {
+            const targetCard = document.getElementById(targetId);
+            if (targetCard && targetCard.style.display !== 'none') {
+                if (targetCard.classList.contains('concluida-interactive-card') && !targetCard.classList.contains('is-card-expanded')) {
+                    targetCard.classList.add('is-card-expanded');
+                }
+                if (targetCard.tagName && targetCard.tagName.toLowerCase() === 'details') {
+                    targetCard.open = true;
+                }
+                targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    }
+
+    function limparBuscaRapida() {
+        const input = document.getElementById('inputBuscaAtividades');
+        const popoverInput = document.getElementById('popoverFiltroBusca');
+        const clearBtn = document.getElementById('btnLimparBuscaRapida');
+
+        if (input) {
+            input.value = '';
+            input.focus();
+        }
+        if (popoverInput) popoverInput.value = '';
+        if (clearBtn) clearBtn.style.display = 'none';
+
+        filtroEstado.busca = '';
+        fecharAutocomplete();
+        executarFiltragem();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        construirIndiceAutocomplete();
+        const input = document.getElementById('inputBuscaAtividades');
+        const clearBtn = document.getElementById('btnLimparBuscaRapida');
+
+        if (input) {
+            input.addEventListener('focus', () => {
+                renderizarAutocomplete(input.value);
+            });
+
+            input.addEventListener('input', (e) => {
+                const val = e.target.value;
+                if (clearBtn) clearBtn.style.display = val ? 'inline-flex' : 'none';
+                if (document.getElementById('popoverFiltroBusca')) {
+                    document.getElementById('popoverFiltroBusca').value = val;
+                }
+                filtroEstado.busca = val.trim().toLowerCase();
+                renderizarAutocomplete(val);
+                executarFiltragem();
+            });
+
+            input.addEventListener('keydown', (e) => {
+                const dropdown = document.getElementById('autocompleteDropdownAtividades');
+                if (!dropdown || !dropdown.classList.contains('open')) return;
+                const items = dropdown.querySelectorAll('.autocomplete-item');
+                if (!items.length) return;
+
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    autocompleteActiveIndex = (autocompleteActiveIndex + 1) % items.length;
+                    items.forEach((it, i) => it.classList.toggle('is-active', i === autocompleteActiveIndex));
+                    items[autocompleteActiveIndex].scrollIntoView({ block: 'nearest' });
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    autocompleteActiveIndex = (autocompleteActiveIndex - 1 + items.length) % items.length;
+                    items.forEach((it, i) => it.classList.toggle('is-active', i === autocompleteActiveIndex));
+                    items[autocompleteActiveIndex].scrollIntoView({ block: 'nearest' });
+                } else if (e.key === 'Enter') {
+                    if (autocompleteActiveIndex >= 0 && items[autocompleteActiveIndex]) {
+                        e.preventDefault();
+                        selecionarItemAutocomplete(items[autocompleteActiveIndex]);
+                    } else {
+                        fecharAutocomplete();
+                    }
+                } else if (e.key === 'Escape') {
+                    fecharAutocomplete();
+                }
+            });
+        }
+    });
 
     function selecionarAbaStatus(status) {
         filtroEstado.status = status;
@@ -609,18 +1886,30 @@
                 fecharFiltrosAtividades();
             }
         }
+
+        const searchWrap = document.getElementById('atividadesSearchWrapper');
+        if (searchWrap && !searchWrap.contains(e.target)) {
+            fecharAutocomplete();
+        }
     });
 
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             fecharFiltrosAtividades();
+            fecharAutocomplete();
         }
     });
 
     function aplicarFiltrosModal() {
         filtroEstado.status = document.getElementById('popoverFiltroStatus').value;
         filtroEstado.tipo = document.getElementById('popoverFiltroTipo').value;
-        filtroEstado.busca = document.getElementById('popoverFiltroBusca').value.trim().toLowerCase();
+        const valBusca = document.getElementById('popoverFiltroBusca').value;
+        filtroEstado.busca = valBusca.trim().toLowerCase();
+
+        const inputTopo = document.getElementById('inputBuscaAtividades');
+        const clearBtn = document.getElementById('btnLimparBuscaRapida');
+        if (inputTopo) inputTopo.value = valBusca;
+        if (clearBtn) clearBtn.style.display = valBusca ? 'inline-flex' : 'none';
         
         fecharFiltrosAtividades();
         executarFiltragem();
@@ -653,8 +1942,11 @@
         if (document.getElementById('popoverFiltroStatus')) document.getElementById('popoverFiltroStatus').value = 'todos';
         if (document.getElementById('popoverFiltroTipo')) document.getElementById('popoverFiltroTipo').value = 'todos';
         if (document.getElementById('popoverFiltroBusca')) document.getElementById('popoverFiltroBusca').value = '';
+        if (document.getElementById('inputBuscaAtividades')) document.getElementById('inputBuscaAtividades').value = '';
+        if (document.getElementById('btnLimparBuscaRapida')) document.getElementById('btnLimparBuscaRapida').style.display = 'none';
 
         fecharFiltrosAtividades();
+        fecharAutocomplete();
         executarFiltragem();
     }
 
@@ -667,7 +1959,6 @@
     function executarFiltragem() {
         const secaoPendentes = document.getElementById('secaoAtividadesPendentes');
         const secaoConcluidas = document.getElementById('secaoAtividadesConcluidas');
-        const splitContainer = document.getElementById('atividadesSplitContainer');
         const emptyGeral = document.getElementById('nenhumaAtividadeFiltrada');
         
         const cards = document.querySelectorAll('.card-atividade-item');
@@ -697,19 +1988,16 @@
             }
         });
 
-        // Visibilidade das seções e foco no container dividido
-        if (splitContainer) {
-            if (filtroEstado.status === 'pendente') {
-                splitContainer.classList.add('focus-pendentes');
-                splitContainer.classList.remove('focus-concluidas');
-            } else if (filtroEstado.status === 'concluida') {
-                splitContainer.classList.remove('focus-pendentes');
-                splitContainer.classList.add('focus-concluidas');
+        // Filtra também itens da Linha do Tempo de Prática quando há busca por texto
+        document.querySelectorAll('.historico-item-card').forEach(hCard => {
+            const hTema = hCard.getAttribute('data-tema') || '';
+            const hEnunc = hCard.getAttribute('data-enunciado') || '';
+            if (!filtroEstado.busca || hTema.includes(filtroEstado.busca) || hEnunc.includes(filtroEstado.busca)) {
+                hCard.style.display = '';
             } else {
-                splitContainer.classList.remove('focus-pendentes');
-                splitContainer.classList.remove('focus-concluidas');
+                hCard.style.display = 'none';
             }
-        }
+        });
 
         if (secaoPendentes) {
             if (filtroEstado.status === 'concluida') {
@@ -725,7 +2013,9 @@
         }
 
         if (secaoConcluidas) {
-            if (filtroEstado.status === 'pendente') {
+            if (filtroEstado.status === 'concluida') {
+                secaoConcluidas.style.display = 'block';
+            } else if (filtroEstado.status === 'pendente') {
                 secaoConcluidas.style.display = 'none';
             } else {
                 const temCardsConcluidas = secaoConcluidas.querySelectorAll('.card-atividade-item').length > 0;
@@ -749,20 +2039,6 @@
             }
         }
 
-        // Atualiza abas visuais ativas
-        const tabTodas = document.getElementById('tabStatusTodas');
-        const tabPend = document.getElementById('tabStatusPendentes');
-        const tabConc = document.getElementById('tabStatusConcluidas');
-        if (tabTodas) tabTodas.classList.toggle('active', filtroEstado.status === 'todos');
-        if (tabPend) tabPend.classList.toggle('active', filtroEstado.status === 'pendente');
-        if (tabConc) tabConc.classList.toggle('active', filtroEstado.status === 'concluida');
-
-        // Atualiza cabeçalhos com efeito de menu ativo
-        const headerPend = document.getElementById('headerSecaoPendentes');
-        const headerConc = document.getElementById('headerSecaoConcluidas');
-        if (headerPend) headerPend.classList.toggle('active-menu-section', filtroEstado.status === 'pendente');
-        if (headerConc) headerConc.classList.toggle('active-menu-section', filtroEstado.status === 'concluida');
-
         // Atualiza Dot de filtro ativo na sidebar
         const dot = document.getElementById('filtroAtivoDot');
         const banner = document.getElementById('bannerFiltroAtivoAtividades');
@@ -773,7 +2049,6 @@
 
         if (dot) dot.style.display = temFiltroAtivo ? 'block' : 'none';
 
-        // Destaca botões de atalho ativo
         atualizarEstiloAtalhos();
 
         if (banner) {
@@ -797,17 +2072,19 @@
             'btnAtalhoConcluidas': (filtroEstado.status === 'concluida'),
             'btnAtalhoTestes': (filtroEstado.tipo === 'teste'),
             'btnAtalhoExercicios': (filtroEstado.tipo === 'exercicios'),
-            'btnAtalhoProvas': (filtroEstado.tipo === 'prova')
+            'btnAtalhoProvas': (filtroEstado.tipo === 'prova'),
+            'chipFiltroTodos': (filtroEstado.status === 'todos' && filtroEstado.tipo === 'todos' && !filtroEstado.busca),
+            'chipFiltroPendentes': (filtroEstado.status === 'pendente'),
+            'chipFiltroConcluidas': (filtroEstado.status === 'concluida'),
+            'chipFiltroTestes': (filtroEstado.tipo === 'teste'),
+            'chipFiltroExercicios': (filtroEstado.tipo === 'exercicios'),
+            'chipFiltroProvas': (filtroEstado.tipo === 'prova')
         };
 
         for (let id in atalhos) {
             const el = document.getElementById(id);
             if (el) {
-                if (atalhos[id]) {
-                    el.classList.add('active');
-                } else {
-                    el.classList.remove('active');
-                }
+                el.classList.toggle('active', Boolean(atalhos[id]));
             }
         }
     }

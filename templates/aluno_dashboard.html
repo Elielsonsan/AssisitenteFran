@@ -1,9 +1,1051 @@
 {% extends "base.html" %}
 
-{% block title %}Meu Painel do Estudante — Assistente Fran{% endblock %}
+{% block title %}Meu Desempenho — Assistente Fran{% endblock %}
+
+{% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,500;1,600;1,700&display=swap" rel="stylesheet">
+<style>
+/* ===================================================================
+   PALETA EDITORIAL (7 CORES):
+   #FFFFFF — Fundo principal / Respiro
+   #E5E5E5 — Fundo secundário / Divisórias / Bordas
+   #A8DADC — Ciano Claro / Gelo (Destaque suave / Fundos de cards e badges)
+   #2A9D8F — Verde-Petróleo / Teal (Cor de apoio secundária / Ações positivas)
+   #FCA311 — Amarelo-Alaranjado (Cor de destaque principal CTA / Energia)
+   #14213D — Azul Marinho Profundo (Cor dominante de marca / Cabeçalhos / Textos)
+   #000000 — Preto (Contraste máximo / Detalhes pontuais)
+   =================================================================== */
+
+[data-theme="light"] body:has(.desempenho-editorial-page) {
+    background-color: #F7F7F8 !important;
+}
+
+.desempenho-editorial-page {
+    width: 100%;
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 3.5rem;
+    box-sizing: border-box;
+}
+
+/* 1. Header Editorial Superior */
+.desempenho-hero-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.desempenho-hero-content {
+    flex: 1 1 600px;
+}
+
+.desempenho-editorial-title {
+    font-size: 2.25rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: #14213D;
+    line-height: 1.15;
+    margin: 0 0 0.5rem 0;
+}
+
+[data-theme="dark"] .desempenho-editorial-title {
+    color: #FFFFFF;
+}
+
+.desempenho-editorial-title .serif-italic {
+    font-family: Georgia, 'Playfair Display', serif;
+    font-style: italic;
+    font-weight: 400;
+    color: #FCA311;
+}
+
+.desempenho-editorial-subtitle {
+    font-size: 1.02rem;
+    line-height: 1.6;
+    color: rgba(20, 33, 61, 0.75);
+    max-width: 680px;
+    margin: 0;
+}
+
+[data-theme="dark"] .desempenho-editorial-subtitle {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.desempenho-hero-pills {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.hero-pill-item {
+    font-size: 0.82rem;
+    padding: 4px 12px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 600;
+}
+
+.hero-pill-item.pill-level {
+    background: rgba(168, 218, 220, 0.35);
+    color: #14213D;
+    border: 1px solid rgba(168, 218, 220, 0.8);
+    font-weight: 700;
+}
+
+[data-theme="dark"] .hero-pill-item.pill-level {
+    background: rgba(168, 218, 220, 0.15);
+    color: #A8DADC;
+    border-color: rgba(168, 218, 220, 0.3);
+}
+
+.hero-pill-item.pill-precision {
+    background: rgba(42, 157, 143, 0.12);
+    color: #2A9D8F;
+    border: 1px solid rgba(42, 157, 143, 0.35);
+    font-weight: 700;
+}
+
+[data-theme="dark"] .hero-pill-item.pill-precision {
+    background: rgba(42, 157, 143, 0.2);
+    color: #48cae4;
+    border-color: rgba(42, 157, 143, 0.4);
+}
+
+.hero-pill-item.pill-activities {
+    background: #FFFFFF;
+    color: #14213D;
+    border: 1px solid #E5E5E5;
+}
+
+[data-theme="dark"] .hero-pill-item.pill-activities {
+    background: rgba(30, 41, 59, 0.6);
+    color: #f1f5f9;
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.desempenho-hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-self: flex-start;
+    padding-top: 0.5rem;
+}
+
+.btn-desempenho-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #FCA311;
+    color: #000000;
+    font-weight: 600;
+    font-size: 0.88rem;
+    padding: 0.65rem 1.25rem;
+    border-radius: 12px;
+    border: 1px solid #FCA311;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(252, 163, 17, 0.2);
+    transition: all 0.2s ease;
+}
+
+.btn-desempenho-cta:hover {
+    background: #e5920a;
+    border-color: #e5920a;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(252, 163, 17, 0.3);
+    color: #000000;
+}
+
+.btn-desempenho-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #14213D;
+    color: #FFFFFF;
+    font-weight: 600;
+    font-size: 0.88rem;
+    padding: 0.65rem 1.25rem;
+    border-radius: 12px;
+    border: 1px solid #14213D;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.btn-desempenho-secondary:hover {
+    background: #0d1527;
+    border-color: #0d1527;
+    transform: translateY(-1px);
+    color: #FFFFFF;
+}
+
+/* ===================================================================
+   REMOVER BANDEIRA DA FRANÇA NO TOPO DOS CARDS
+   =================================================================== */
+.desempenho-editorial-page .desempenho-editorial-card::before,
+.desempenho-editorial-page .desempenho-kpi-card::before,
+.desempenho-editorial-page .desempenho-chart-card::before,
+.desempenho-editorial-page .desempenho-badge-card::before,
+.desempenho-editorial-page .desempenho-hero-header::before,
+.desempenho-editorial-page .modal-content::before,
+.desempenho-editorial-page .metric-card::before,
+.desempenho-editorial-page .chart-card::before,
+.desempenho-editorial-page .stat-card::before,
+.desempenho-editorial-page .glass-card::before,
+.desempenho-editorial-page .table-card::before,
+.desempenho-editorial-page *::before[style*="france-flag-gradient"],
+.desempenho-kpi-card::before,
+.desempenho-chart-card::before,
+.desempenho-badge-card::before {
+    display: none !important;
+    content: none !important;
+    height: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+}
+
+/* 2. Cartões Editoriais Principais (Métricas & Conquistas) */
+.desempenho-editorial-card {
+    background: #FFFFFF;
+    border: 1px solid #EDEDED;
+    border-radius: 28px;
+    padding: 2rem 2.25rem;
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.035), 0 2px 6px rgba(0, 0, 0, 0.015);
+    margin-bottom: 2rem;
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+}
+
+[data-theme="dark"] .desempenho-editorial-card {
+    background: #0f172a;
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 16px 42px rgba(0, 0, 0, 0.45);
+}
+
+.desempenho-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+.desempenho-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.desempenho-circle-badge {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #14213D;
+    color: #FFFFFF;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(20, 33, 61, 0.18);
+    flex-shrink: 0;
+}
+
+[data-theme="dark"] .desempenho-circle-badge {
+    background: #FCA311;
+    color: #000000;
+}
+
+.desempenho-section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #14213D;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+[data-theme="dark"] .desempenho-section-title {
+    color: #f8fafc;
+}
+
+.desempenho-section-subtitle {
+    font-size: 0.84rem;
+    color: rgba(20, 33, 61, 0.65);
+    margin: 2px 0 0 0;
+}
+
+[data-theme="dark"] .desempenho-section-subtitle {
+    color: rgba(255, 255, 255, 0.65);
+}
+
+/* 3. Grid de KPIs (4 Cards com Efeito Elevado Suave da Referência) */
+.desempenho-kpis-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 16px;
+    margin-bottom: 1.75rem;
+    width: 100%;
+}
+
+.desempenho-kpi-card {
+    background: #FFFFFF !important;
+    border: 1px solid #ECECEC !important;
+    border-radius: 26px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.035), 0 2px 6px rgba(0, 0, 0, 0.015) !important;
+    padding: 1.45rem 1.5rem !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease !important;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+}
+
+.desempenho-kpi-card:hover {
+    border-color: #E0E0E0 !important;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.065), 0 4px 10px rgba(0, 0, 0, 0.02) !important;
+    transform: translateY(-3px) !important;
+}
+
+[data-theme="dark"] .desempenho-kpi-card {
+    background: #111827 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-theme="dark"] .desempenho-kpi-card:hover {
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.55) !important;
+}
+
+.desempenho-kpi-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.desempenho-kpi-title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: rgba(20, 33, 61, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+[data-theme="dark"] .desempenho-kpi-title {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.desempenho-kpi-icon-wrap {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: rgba(168, 218, 220, 0.35);
+    color: #14213D;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.desempenho-kpi-icon-wrap.teal {
+    background: rgba(42, 157, 143, 0.15);
+    color: #2A9D8F;
+}
+
+.desempenho-kpi-icon-wrap.orange {
+    background: rgba(252, 163, 17, 0.15);
+    color: #FCA311;
+}
+
+.desempenho-kpi-value {
+    font-size: 2.1rem;
+    font-weight: 800;
+    color: #14213D;
+    line-height: 1.1;
+    margin: 0.25rem 0 0.5rem 0;
+    letter-spacing: -0.02em;
+}
+
+[data-theme="dark"] .desempenho-kpi-value {
+    color: #FFFFFF;
+}
+
+.desempenho-kpi-value.teal {
+    color: #2A9D8F !important;
+}
+
+.desempenho-kpi-desc {
+    margin: 0;
+    font-size: 0.81rem;
+    color: rgba(20, 33, 61, 0.65);
+    line-height: 1.4;
+}
+
+[data-theme="dark"] .desempenho-kpi-desc {
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.desempenho-kpi-footer {
+    margin-top: 0.85rem;
+    padding-top: 0.65rem;
+    border-top: 1px solid #E5E5E5;
+    font-size: 0.78rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: rgba(20, 33, 61, 0.65);
+}
+
+[data-theme="dark"] .desempenho-kpi-footer {
+    border-top-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.65);
+}
+
+/* Trilha e Barra de XP */
+.progress-bar-container {
+    background: #E5E5E5;
+    border-radius: 999px;
+    height: 8px;
+    overflow: hidden;
+    width: 100%;
+}
+
+[data-theme="dark"] .progress-bar-container {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.progress-bar-fill {
+    background: #2A9D8F;
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Design Específico para Card Nível Atual (Inspirado na Referência) */
+.desempenho-kpi-card.kpi-card-nivel-ref {
+    background: #FFFFFF !important;
+    border: 1px solid #ECECEC !important;
+    border-radius: 26px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.035), 0 2px 6px rgba(0, 0, 0, 0.015) !important;
+    padding: 1.4rem 1.45rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.desempenho-kpi-card.kpi-card-nivel-ref:hover {
+    border-color: #E0E0E0 !important;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.06), 0 4px 10px rgba(0, 0, 0, 0.02) !important;
+    transform: translateY(-3px) !important;
+}
+
+[data-theme="dark"] .desempenho-kpi-card.kpi-card-nivel-ref {
+    background: #111827 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4) !important;
+}
+
+.kpi-design-top-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 0.75rem;
+}
+
+.kpi-design-col-metric {
+    display: flex;
+    flex-direction: column;
+}
+
+.kpi-design-label {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: #6B7280;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+}
+
+[data-theme="dark"] .kpi-design-label {
+    color: #9CA3AF;
+}
+
+.kpi-design-primary {
+    font-size: 2.15rem;
+    font-weight: 800;
+    color: #111827;
+    line-height: 1.05;
+    margin-top: 4px;
+    letter-spacing: -0.02em;
+}
+
+[data-theme="dark"] .kpi-design-primary {
+    color: #F9FAFB;
+}
+
+.kpi-design-col-sparkline {
+    flex: 1 1 auto;
+    max-width: 125px;
+    height: 52px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+}
+
+.kpi-design-wave-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.kpi-design-mid-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 0.95rem;
+}
+
+.kpi-design-col-submetric {
+    display: flex;
+    flex-direction: column;
+}
+
+.kpi-design-sublabel {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #6B7280;
+    line-height: 1.2;
+}
+
+[data-theme="dark"] .kpi-design-sublabel {
+    color: #9CA3AF;
+}
+
+.kpi-design-subvalue {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #111827;
+    line-height: 1.2;
+    margin-top: 3px;
+    letter-spacing: -0.01em;
+}
+
+[data-theme="dark"] .kpi-design-subvalue {
+    color: #F9FAFB;
+}
+
+.kpi-design-trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: #16A34A;
+    font-size: 0.88rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+[data-theme="dark"] .kpi-design-trend {
+    color: #34D399;
+}
+
+.kpi-design-bottom-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: auto;
+}
+
+.kpi-design-btn {
+    background: #18191E;
+    color: #FFFFFF !important;
+    border-radius: 9999px;
+    padding: 7px 22px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-shadow: 0 4px 12px rgba(24, 25, 30, 0.18);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    cursor: pointer;
+    font-family: inherit;
+    line-height: normal;
+}
+
+.kpi-design-btn:hover {
+    background: #27272A;
+    color: #FFFFFF !important;
+    transform: translateY(-1.5px);
+    box-shadow: 0 6px 16px rgba(24, 25, 30, 0.28);
+}
+
+[data-theme="dark"] .kpi-design-btn {
+    background: #F9FAFB;
+    color: #111827 !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .kpi-design-btn:hover {
+    background: #E5E7EB;
+    color: #111827 !important;
+}
+
+[data-theme="dark"] .kpi-wave-line {
+    stroke: #94A3B8 !important;
+}
+
+[data-theme="dark"] .wave-stop-top {
+    stop-color: #94A3B8 !important;
+    stop-opacity: 0.35 !important;
+}
+
+[data-theme="dark"] .wave-stop-bot {
+    stop-color: #111827 !important;
+    stop-opacity: 0 !important;
+}
+
+/* 4. Grid de Gráficos Analíticos (2 Colunas 50%/50%) */
+.desempenho-charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 16px;
+    width: 100%;
+    margin-bottom: 1.25rem;
+}
+
+.desempenho-chart-card {
+    background: #FFFFFF !important;
+    border: 1px solid #ECECEC !important;
+    border-radius: 26px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.035), 0 2px 6px rgba(0, 0, 0, 0.015) !important;
+    padding: 1.5rem 1.6rem !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease !important;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+}
+
+.desempenho-chart-card:hover {
+    border-color: #E0E0E0 !important;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.065), 0 4px 10px rgba(0, 0, 0, 0.02) !important;
+    transform: translateY(-3px) !important;
+}
+
+[data-theme="dark"] .desempenho-chart-card {
+    background: #111827 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-theme="dark"] .desempenho-chart-card:hover {
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.55) !important;
+}
+
+/* Efeito Gauge Circular com Prato Rebaixado e Ilha Central Flutuante (Conforme Imagem de Referência) */
+.gauge-dish-outer {
+    position: relative;
+    width: 216px;
+    height: 216px;
+    margin: 0.35rem auto 0.65rem auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gauge-recessed-dish {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: #F8F9FA;
+    box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.06), inset 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .gauge-recessed-dish {
+    background: #0f172a;
+    box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 3px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+/* Marcadores / Pips circulares sutis */
+.gauge-ticks-ring {
+    position: absolute;
+    inset: 7px;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.gauge-pip {
+    position: absolute;
+    width: 2px;
+    height: 6px;
+    background: rgba(20, 33, 61, 0.16);
+    border-radius: 1px;
+    left: calc(50% - 1px);
+    top: 2px;
+    transform-origin: 50% 99px;
+}
+
+[data-theme="dark"] .gauge-pip {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.gauge-canvas-wrapper {
+    position: relative;
+    width: 174px;
+    height: 174px;
+    z-index: 2;
+}
+
+.gauge-floating-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 104px;
+    height: 104px;
+    border-radius: 50%;
+    background: #FFFFFF;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    pointer-events: none;
+    text-align: center;
+    padding: 6px;
+    box-sizing: border-box;
+}
+
+[data-theme="dark"] .gauge-floating-center {
+    background: #111827;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.gauge-percent-val {
+    font-size: 1.85rem;
+    font-weight: 800;
+    line-height: 1;
+    color: #14213D;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+}
+
+[data-theme="dark"] .gauge-percent-val {
+    color: #FFFFFF;
+}
+
+.gauge-fraction-val {
+    font-size: 0.73rem;
+    font-weight: 600;
+    color: rgba(20, 33, 61, 0.65);
+    margin-top: 3px;
+    white-space: nowrap;
+}
+
+[data-theme="dark"] .gauge-fraction-val {
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.desempenho-chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.desempenho-chart-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #14213D;
+    margin: 0;
+}
+
+[data-theme="dark"] .desempenho-chart-title {
+    color: #FFFFFF;
+}
+
+.desempenho-chart-subtitle {
+    font-size: 0.8rem;
+    color: rgba(20, 33, 61, 0.65);
+    margin: 3px 0 0 0;
+}
+
+[data-theme="dark"] .desempenho-chart-subtitle {
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.desempenho-chart-canvas-wrap {
+    position: relative;
+    width: 100%;
+    height: 220px;
+}
+
+.desempenho-chart-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid #E5E5E5;
+}
+
+[data-theme="dark"] .desempenho-chart-footer {
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.chart-pill-stat {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.chart-pill-stat.correto {
+    background: rgba(22, 163, 74, 0.1);
+    color: #16A34A;
+    border: 1px solid rgba(22, 163, 74, 0.25);
+}
+
+[data-theme="dark"] .chart-pill-stat.correto {
+    background: rgba(52, 211, 153, 0.15);
+    color: #34D399;
+    border-color: rgba(52, 211, 153, 0.3);
+}
+
+.chart-pill-stat.parcial {
+    background: rgba(107, 114, 128, 0.12);
+    color: #4B5563;
+    border: 1px solid rgba(107, 114, 128, 0.25);
+}
+
+[data-theme="dark"] .chart-pill-stat.parcial {
+    background: rgba(156, 163, 175, 0.15);
+    color: #D1D5DB;
+    border-color: rgba(156, 163, 175, 0.3);
+}
+
+.chart-pill-stat.incorreto {
+    background: rgba(24, 25, 30, 0.08);
+    color: #18191E;
+    border: 1px solid rgba(24, 25, 30, 0.18);
+}
+
+[data-theme="dark"] .chart-pill-stat.incorreto {
+    background: rgba(255, 255, 255, 0.1);
+    color: #F9FAFB;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* 5. Banner de Reforço do Tutor */
+.desempenho-tutor-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+    background: rgba(168, 218, 220, 0.25);
+    border: 1px solid rgba(42, 157, 143, 0.35);
+    border-radius: 20px;
+    padding: 1.25rem 1.5rem;
+    margin-top: 1.25rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="dark"] .desempenho-tutor-banner {
+    background: rgba(42, 157, 143, 0.12);
+    border-color: rgba(42, 157, 143, 0.3);
+}
+
+.desempenho-tutor-icon-box {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: #2A9D8F;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* 6. Grid de Conquistas & Insígnias FLE */
+.conquistas-box-divider {
+    height: 1px;
+    width: 100%;
+    margin: 1.25rem 0 1.5rem 0;
+    background: #E5E5E5;
+}
+
+[data-theme="dark"] .conquistas-box-divider {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.desempenho-badges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+    width: 100%;
+}
+
+.desempenho-badge-card {
+    background: #FFFFFF;
+    border: 1px solid #ECECEC;
+    border-radius: 20px;
+    padding: 1.2rem 1.3rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.025);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+}
+
+[data-theme="dark"] .desempenho-badge-card {
+    background: #111827;
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+}
+
+.desempenho-badge-card.unlocked {
+    border-color: rgba(42, 157, 143, 0.4);
+    box-shadow: 0 6px 20px rgba(42, 157, 143, 0.08);
+}
+
+.desempenho-badge-card.unlocked:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(42, 157, 143, 0.16);
+    border-color: #2A9D8F;
+}
+
+.desempenho-badge-card.locked {
+    background: #F8F9FA;
+    border: 1px dashed #E5E5E5;
+    opacity: 0.75;
+}
+
+[data-theme="dark"] .desempenho-badge-card.locked {
+    background: rgba(15, 23, 42, 0.5);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.desempenho-badge-icon-box {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.desempenho-badge-card.unlocked .desempenho-badge-icon-box {
+    background: rgba(42, 157, 143, 0.14);
+    color: #2A9D8F;
+}
+
+.desempenho-badge-card.locked .desempenho-badge-icon-box {
+    background: #E5E5E5;
+    color: rgba(20, 33, 61, 0.4);
+}
+
+[data-theme="dark"] .desempenho-badge-card.locked .desempenho-badge-icon-box {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.badge-status-tag {
+    font-size: 0.68rem;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 700;
+}
+
+.badge-status-tag.unlocked {
+    background: rgba(42, 157, 143, 0.14);
+    color: #2A9D8F;
+    border: 1px solid rgba(42, 157, 143, 0.3);
+}
+
+.badge-status-tag.locked {
+    background: rgba(20, 33, 61, 0.06);
+    color: rgba(20, 33, 61, 0.5);
+}
+
+[data-theme="dark"] .badge-status-tag.locked {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Modal da Missão */
+.desempenho-modal-card {
+    background: #FFFFFF !important;
+    border: 1px solid #E5E5E5 !important;
+    border-radius: 20px !important;
+    box-shadow: 0 20px 60px rgba(20, 33, 61, 0.2) !important;
+}
+
+[data-theme="dark"] .desempenho-modal-card {
+    background: #0f172a !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+@media (max-width: 768px) {
+    .desempenho-editorial-card {
+        padding: 1.4rem 1.15rem 1.6rem !important;
+        border-radius: 20px !important;
+    }
+    .desempenho-hero-header {
+        flex-direction: column;
+    }
+    .desempenho-hero-actions {
+        width: 100%;
+    }
+    .btn-desempenho-cta,
+    .btn-desempenho-secondary {
+        flex: 1;
+        justify-content: center;
+    }
+    .desempenho-charts-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="page-container dashboard-page student-page">
+<div class="desempenho-editorial-page">
     <!-- Barra Lateral Flutuante Glassmorphic (Navegação do Aluno) -->
     <aside class="dash-sidebar no-print" id="dashSidebar" aria-label="Menu do Estudante">
         <div class="dash-sidebar-inner">
@@ -22,7 +1064,7 @@
 
                 <!-- 2. Prática Livre com a Fran -->
                 <div class="sidebar-item-wrap">
-                    <a href="/" class="sidebar-btn" title="Prática Livre com a Fran">
+                    <a href="/pratica" class="sidebar-btn" title="Prática Livre com a Fran">
                         <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                             <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"></path>
                         </svg>
@@ -87,336 +1129,513 @@
         </div>
     </aside>
 
-    <!-- Cabeçalho Principal do Painel com Moldura Hero Card -->
-    <div class="hero-card-outer card-moldura-outer desempenho-hero-outer" id="desempenhoHeroCard">
-        <div class="desempenho-hero-card hero-card-inner">
-            <div>
-                <span class="hero-tag" style="margin-bottom: 0.5rem;">
-                    <svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <path d="m10 15 5-3-5-3v6z"></path>
-                    </svg>Espace Étudiant FLE
+    <!-- 1. Cabeçalho Editorial Superior (Hero) -->
+    <header class="desempenho-hero-header" id="desempenhoHeroCard">
+        <div class="desempenho-hero-content">
+            <h1 class="desempenho-editorial-title">
+                Bonjour, <span class="serif-italic">{{ session.get('aluno_nome', 'Étudiant') }}</span>!
+            </h1>
+            <p class="desempenho-editorial-subtitle">
+                Acompanhe suas métricas de aprendizagem, eficácia nas missões e conquistas na língua francesa com diagnóstico analítico em tempo real.
+            </p>
+        </div>
+        <div class="desempenho-hero-actions">
+            <a href="/aluno/atividades" class="btn-desempenho-cta">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                    <path d="m9 14 2 2 4-4"></path>
+                </svg>
+                Minhas Atividades
+            </a>
+            <a href="/pratica" class="btn-desempenho-secondary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"></path>
+                </svg>
+                Prática Livre
+            </a>
+        </div>
+    </header>
+
+    <!-- 2. Quadro 1: Métricas de Aprendizagem & Gráficos -->
+    <div class="desempenho-editorial-card" id="secaoNivelXP">
+        <div class="desempenho-card-header">
+            <div class="desempenho-header-left">
+                <span class="desempenho-circle-badge" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                    </svg>
                 </span>
-                <h1 class="hero-title" style="margin-bottom: 0.35rem; font-size: 1.85rem;">Bonjour, {{ session.get('aluno_nome', 'Étudiant') }}!</h1>
-                <p class="hero-description" style="margin-bottom: 0.85rem; font-size: 0.95rem; max-width: 620px;">
-                    Acompanhe suas métricas de aprendizagem, eficácia nas missões e conquistas na língua francesa.
-                </p>
-                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                    <span class="badge-level-student lvl-{{ aluno_nivel|lower }}" style="font-size: 0.82rem; padding: 4px 12px; font-weight: 700; border-radius: 9999px;">
-                        Niveau {{ aluno_nivel }}
-                    </span>
-                    <span style="font-size: 0.82rem; background: rgba(56, 189, 248, 0.12); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 9999px; padding: 4px 12px; font-weight: 600;">
-                        🎯 Precisão: {{ ((acertos / total_atividades) * 100)|round|int if total_atividades > 0 else 0 }}%
-                    </span>
-                    <span style="font-size: 0.82rem; background: rgba(16, 185, 129, 0.12); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 9999px; padding: 4px 12px; font-weight: 600;">
-                        📚 {{ total_atividades }} Atividades Concluídas
-                    </span>
+                <div>
+                    <h2 class="desempenho-section-title">Métricas de Aprendizagem & Eficácia</h2>
+                    <p class="desempenho-section-subtitle">Visão consolidada do seu progresso formativo, assertividade e ritmo semanal</p>
                 </div>
             </div>
-            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                <a href="/aluno/atividades" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
-                    <svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                    </svg>Minhas Atividades
-                </a>
-                <a href="/" class="btn btn-secondary" style="display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
-                    <svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"></path>
-                    </svg>Prática Livre
-                </a>
+            <div class="desempenho-header-right" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <span class="hero-pill-item pill-precision" title="Frequência em aulas registradas no Diário de Classe">
+                    📅 Frequência: {{ taxa_frequencia|default(100) }}%
+                </span>
+                <span class="hero-pill-item pill-precision">
+                    🎯 Precisão: {{ ((acertos / total_atividades) * 100)|round|int if total_atividades > 0 else 0 }}%
+                </span>
+                <span class="hero-pill-item pill-activities">
+                    📚 {{ total_atividades }} Atividades Concluídas
+                </span>
             </div>
         </div>
-    </div>
 
-    <!-- Quadro Unificado de Desempenho & Métricas com Efeito Hero Card (Apenas Uma Moldura para Todos os Cards de Métricas) -->
-    <div class="desempenho-box-outer hero-card-outer card-moldura-outer" id="desempenhoMetricasBoxOuter">
-        <div class="desempenho-box-inner hero-card-inner">
-            <!-- 1. Linha de KPIs Principais (4 Colunas) -->
-            <div id="secaoNivelXP" class="desempenho-kpis-grid" style="width: 100%;">
-                <!-- KPI 1: Nível e Progresso de XP -->
-                <div class="desempenho-kpi-card">
-                    <div class="desempenho-kpi-header">
-                        <span class="desempenho-kpi-title">Nível Atual</span>
-                        <span class="badge-level-student lvl-{{ aluno_nivel|lower }}" style="font-size: 0.75rem; padding: 2px 8px;">QECR</span>
+        <!-- 4 Cards de KPIs -->
+        <div class="desempenho-kpis-grid">
+            <!-- KPI 1: Nível Atual (Design Específico com Onda Gradiente, Indicador de Tendência e Botão Pill) -->
+            <div class="desempenho-kpi-card kpi-card-nivel-ref">
+                <!-- Linha 1: Métrica Principal + Sparkline Ondulado -->
+                <div class="kpi-design-top-row">
+                    <div class="kpi-design-col-metric">
+                        <span class="kpi-design-label">Nível Atual</span>
+                        <div class="kpi-design-primary">{{ aluno_nivel }}</div>
                     </div>
-                    <div class="desempenho-kpi-value" style="color: var(--primary);">
-                        {{ aluno_nivel }}
+                    <div class="kpi-design-col-sparkline" aria-hidden="true">
+                        <svg class="kpi-design-wave-svg" viewBox="0 0 130 55" preserveAspectRatio="none">
+                            <defs>
+                                <linearGradient id="kpiWaveGradient" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#4B5563" stop-opacity="0.38" class="wave-stop-top" />
+                                    <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.0" class="wave-stop-bot" />
+                                </linearGradient>
+                            </defs>
+                            <path class="kpi-wave-area" d="M 0 44 C 15 44, 25 38, 38 35 C 46 33, 50 40, 60 38 C 72 35, 78 24, 90 22 C 98 20, 102 27, 112 21 C 120 16, 126 8, 130 5 L 130 55 L 0 55 Z" fill="url(#kpiWaveGradient)" />
+                            <path class="kpi-wave-line" d="M 0 44 C 15 44, 25 38, 38 35 C 46 33, 50 40, 60 38 C 72 35, 78 24, 90 22 C 98 20, 102 27, 112 21 C 120 16, 126 8, 130 5" fill="none" stroke="#4B5563" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Linha 2: Submétrica (Progresso XP) + Badge de Tendência com Triângulo Verde -->
+                <div class="kpi-design-mid-row">
+                    <div class="kpi-design-col-submetric">
+                        <span class="kpi-design-sublabel">Progresso XP</span>
+                        <div class="kpi-design-subvalue">{{ (progresso_xp * 10) if total_atividades > 0 else 0 }} XP</div>
+                    </div>
+                    <div class="kpi-design-trend" title="Progresso rumo ao próximo nível">
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true">
+                            <path d="M5 1.5L9 8.5H1L5 1.5Z"/>
+                        </svg>
+                        <span>{{ progresso_xp }}%</span>
+                    </div>
+                </div>
+
+                <!-- Linha 3: Botão de Ação Estilo Pill Escuro Centralizado -->
+                <div class="kpi-design-bottom-row">
+                    <a href="/aluno/atividades" class="kpi-design-btn" title="Ir para atividades e avançar de nível">
+                        {% if proximo_nivel == 'Fluência (Concluído)' %}
+                            Fluência Completa
+                        {% else %}
+                            Rumo ao {{ proximo_nivel }}
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+
+            <!-- KPI 2: Total de Atividades Realizadas -->
+            <div class="desempenho-kpi-card kpi-card-nivel-ref">
+                <!-- Linha 1: Métrica Principal + Sparkline Ondulado -->
+                <div class="kpi-design-top-row">
+                    <div class="kpi-design-col-metric">
+                        <span class="kpi-design-label">Atividades</span>
+                        <div class="kpi-design-primary">{{ total_atividades }}</div>
+                    </div>
+                    <div class="kpi-design-col-sparkline" aria-hidden="true">
+                        <svg class="kpi-design-wave-svg" viewBox="0 0 130 55" preserveAspectRatio="none">
+                            <defs>
+                                <linearGradient id="kpiWaveGradAtiv" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#4B5563" stop-opacity="0.38" class="wave-stop-top" />
+                                    <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.0" class="wave-stop-bot" />
+                                </linearGradient>
+                            </defs>
+                            <path class="kpi-wave-area" d="M 0 46 C 18 45, 26 36, 40 34 C 50 32, 54 42, 66 36 C 78 30, 84 26, 96 20 C 106 15, 116 18, 130 8 L 130 55 L 0 55 Z" fill="url(#kpiWaveGradAtiv)" />
+                            <path class="kpi-wave-line" d="M 0 46 C 18 45, 26 36, 40 34 C 50 32, 54 42, 66 36 C 78 30, 84 26, 96 20 C 106 15, 116 18, 130 8" fill="none" stroke="#4B5563" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Linha 2: Submétrica + Badge de Tendência -->
+                <div class="kpi-design-mid-row">
+                    <div class="kpi-design-col-submetric">
+                        <span class="kpi-design-sublabel">Assertividade</span>
+                        <div class="kpi-design-subvalue">{{ acertos }} acertos</div>
+                    </div>
+                    <div class="kpi-design-trend" title="Taxa de acertos em atividades">
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true">
+                            <path d="M5 1.5L9 8.5H1L5 1.5Z"/>
+                        </svg>
+                        <span>{{ ((acertos / total_atividades) * 100)|round|int if total_atividades > 0 else 0 }}%</span>
+                    </div>
+                </div>
+
+                <!-- Linha 3: Botão de Ação Estilo Pill Escuro Centralizado -->
+                <div class="kpi-design-bottom-row">
+                    <a href="/aluno/atividades" class="kpi-design-btn" title="Ver todas as tarefas e exercícios">
+                        Ver Atividades &rarr;
+                    </a>
+                </div>
+            </div>
+
+            <!-- KPI 3: Taxa de Precisão e Acertos -->
+            <div class="desempenho-kpi-card kpi-card-nivel-ref">
+                <!-- Linha 1: Métrica Principal + Sparkline Ondulado -->
+                <div class="kpi-design-top-row">
+                    <div class="kpi-design-col-metric">
+                        <span class="kpi-design-label">Precisão Geral</span>
+                        <div class="kpi-design-primary">{{ ((acertos / total_atividades) * 100)|round|int if total_atividades > 0 else 0 }}%</div>
+                    </div>
+                    <div class="kpi-design-col-sparkline" aria-hidden="true">
+                        <svg class="kpi-design-wave-svg" viewBox="0 0 130 55" preserveAspectRatio="none">
+                            <defs>
+                                <linearGradient id="kpiWaveGradPrec" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#4B5563" stop-opacity="0.38" class="wave-stop-top" />
+                                    <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.0" class="wave-stop-bot" />
+                                </linearGradient>
+                            </defs>
+                            <path class="kpi-wave-area" d="M 0 42 C 20 40, 30 32, 45 30 C 56 28, 62 36, 75 32 C 88 28, 98 18, 110 14 C 118 11, 124 10, 130 6 L 130 55 L 0 55 Z" fill="url(#kpiWaveGradPrec)" />
+                            <path class="kpi-wave-line" d="M 0 42 C 20 40, 30 32, 45 30 C 56 28, 62 36, 75 32 C 88 28, 98 18, 110 14 C 118 11, 124 10, 130 6" fill="none" stroke="#4B5563" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Linha 2: Submétrica + Badge de Tendência -->
+                <div class="kpi-design-mid-row">
+                    <div class="kpi-design-col-submetric">
+                        <span class="kpi-design-sublabel">Acertos / Total</span>
+                        <div class="kpi-design-subvalue">{{ acertos }} de {{ total_atividades }}</div>
+                    </div>
+                    <div class="kpi-design-trend" title="Total de acertos positivos">
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true">
+                            <path d="M5 1.5L9 8.5H1L5 1.5Z"/>
+                        </svg>
+                        <span>✓ {{ acertos }}</span>
+                    </div>
+                </div>
+
+                <!-- Linha 3: Botão de Ação Estilo Pill Escuro Centralizado -->
+                <div class="kpi-design-bottom-row">
+                    <a href="/pratica" class="kpi-design-btn" title="Treinar para aumentar a precisão">
+                        Treinar Precisão
+                    </a>
+                </div>
+            </div>
+
+            <!-- KPI 4: Correio do Tutor / Reforço -->
+            <div class="desempenho-kpi-card kpi-card-nivel-ref">
+                <!-- Linha 1: Métrica Principal + Sparkline Ondulado -->
+                <div class="kpi-design-top-row">
+                    <div class="kpi-design-col-metric">
+                        <span class="kpi-design-label">Correio do Tutor</span>
+                        <div class="kpi-design-primary">{% if reforco %}1 Nova{% else %}Em Dia{% endif %}</div>
+                    </div>
+                    <div class="kpi-design-col-sparkline" aria-hidden="true">
+                        <svg class="kpi-design-wave-svg" viewBox="0 0 130 55" preserveAspectRatio="none">
+                            <defs>
+                                <linearGradient id="kpiWaveGradTutor" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#4B5563" stop-opacity="0.38" class="wave-stop-top" />
+                                    <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.0" class="wave-stop-bot" />
+                                </linearGradient>
+                            </defs>
+                            <path class="kpi-wave-area" d="M 0 45 C 16 45, 28 39, 42 36 C 54 34, 60 41, 72 37 C 84 33, 92 23, 104 20 C 114 17, 122 12, 130 7 L 130 55 L 0 55 Z" fill="url(#kpiWaveGradTutor)" />
+                            <path class="kpi-wave-line" d="M 0 45 C 16 45, 28 39, 42 36 C 54 34, 60 41, 72 37 C 84 33, 92 23, 104 20 C 114 17, 122 12, 130 7" fill="none" stroke="#4B5563" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Linha 2: Submétrica + Badge de Tendência -->
+                <div class="kpi-design-mid-row">
+                    <div class="kpi-design-col-submetric">
+                        <span class="kpi-design-sublabel">Status de Apoio</span>
+                        <div class="kpi-design-subvalue">{% if reforco %}Missão Ativa{% else %}Sem Pendências{% endif %}</div>
                     </div>
                     <div>
-                        <div style="display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--text-muted); margin-bottom: 5px;">
-                            <span>XP: {{ progresso_xp }}%</span>
-                            <span>Rumo ao {{ proximo_nivel }}</span>
+                        {% if reforco %}
+                        <span style="color: #FCA311; font-weight: 700; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 4px;">
+                            ● Pendente
+                        </span>
+                        {% else %}
+                        <div class="kpi-design-trend" title="Sem pendências no momento">
+                            <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true">
+                                <path d="M5 1.5L9 8.5H1L5 1.5Z"/>
+                            </svg>
+                            <span>100%</span>
                         </div>
-                        <div class="progress-bar-container" style="background: rgba(255,255,255,0.08); border-radius: 10px; height: 8px; overflow: hidden;">
-                            <div class="progress-bar-fill" style="background: linear-gradient(90deg, #0055a5, #38bdf8); width: {{ progresso_xp }}%; height: 100%; border-radius: 10px; transition: width 1s ease-in-out;"></div>
-                        </div>
-                    </div>
-                    <div class="desempenho-kpi-footer" style="margin-top: 10px;">
-                        <span>Meta CEFR: Nível {{ proximo_nivel }}</span>
+                        {% endif %}
                     </div>
                 </div>
 
-                <!-- KPI 2: Total de Atividades Realizadas -->
-                <div class="desempenho-kpi-card">
-                    <div class="desempenho-kpi-header">
-                        <span class="desempenho-kpi-title">Atividades</span>
-                        <div class="desempenho-kpi-icon-wrap">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                                <path d="m9 14 2 2 4-4"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="desempenho-kpi-value">
-                        {{ total_atividades }}
-                    </div>
-                    <p style="margin: 0; font-size: 0.82rem; color: var(--text-muted); line-height: 1.35;">
-                        Exercícios e avaliações concluídas na plataforma.
-                    </p>
-                    <div class="desempenho-kpi-footer">
-                        <a href="/aluno/atividades" style="color: #38bdf8; text-decoration: none; font-weight: 600; font-size: 0.8rem;">Ver todas as tarefas &rarr;</a>
-                    </div>
-                </div>
-
-                <!-- KPI 3: Taxa de Precisão e Acertos -->
-                <div class="desempenho-kpi-card">
-                    <div class="desempenho-kpi-header">
-                        <span class="desempenho-kpi-title">Precisão Geral</span>
-                        <div class="desempenho-kpi-icon-wrap" style="background: rgba(16, 185, 129, 0.12); color: #10b981;">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <path d="m9 12 2 2 4-4"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="desempenho-kpi-value" style="color: #10b981;">
-                        {{ ((acertos / total_atividades) * 100)|round|int if total_atividades > 0 else 0 }}%
-                    </div>
-                    <p style="margin: 0; font-size: 0.82rem; color: var(--text-muted); line-height: 1.35;">
-                        {{ acertos }} acertos perfeitos de {{ total_atividades }} itens.
-                    </p>
-                    <div class="desempenho-kpi-footer">
-                        <span style="color: #10b981; font-weight: 700;">✓ {{ acertos }}</span>
-                        <span style="color: #f59e0b; font-weight: 600;">⚠ {{ parciais }}</span>
-                        <span style="color: #ef4444; font-weight: 600;">✗ {{ erros }}</span>
-                    </div>
-                </div>
-
-                <!-- KPI 4: Correio do Tutor / Reforço -->
-                <div class="desempenho-kpi-card">
-                    <div class="desempenho-kpi-header">
-                        <span class="desempenho-kpi-title">Correio do Tutor</span>
-                        <div class="desempenho-kpi-icon-wrap" style="background: rgba(99, 102, 241, 0.12); color: #818cf8;">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-                                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
-                            </svg>
-                        </div>
-                    </div>
+                <!-- Linha 3: Botão de Ação Estilo Pill Escuro Centralizado -->
+                <div class="kpi-design-bottom-row">
                     {% if reforco %}
-                    <div>
-                        <span class="status-badge status-pendente" style="font-size: 0.72rem; padding: 2px 8px; animation: pulse 2s infinite;">
-                            Nova Missão Ativa
-                        </span>
-                        <p style="margin: 6px 0 0 0; font-size: 0.82rem; color: var(--text-muted); line-height: 1.35;">
-                            Seu tutor preparou um reforço sob medida.
-                        </p>
-                    </div>
-                    <div class="desempenho-kpi-footer">
-                        <button type="button" class="btn btn-primary btn-sm" style="width: 100%; font-size: 0.78rem; padding: 4px 8px;" onclick="abrirMissaoModal({{ reforco['id'] }})">
-                            Abrir Missão &rarr;
-                        </button>
-                    </div>
+                    <button type="button" class="kpi-design-btn" onclick="abrirMissaoModal({{ reforco['id'] }})" title="Abrir missão de reforço do tutor">
+                        Abrir Missão &rarr;
+                    </button>
                     {% else %}
-                    <div>
-                        <span style="font-size: 0.8rem; color: #10b981; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Tudo em Dia!
-                        </span>
-                        <p style="margin: 6px 0 0 0; font-size: 0.82rem; color: var(--text-muted); line-height: 1.35;">
-                            Nenhuma missão pendente de reforço.
-                        </p>
-                    </div>
-                    <div class="desempenho-kpi-footer">
-                        <a href="/" class="btn btn-secondary btn-sm" style="width: 100%; font-size: 0.78rem; padding: 4px 8px; text-decoration: none; text-align: center;">
-                            Treinar com a Fran
-                        </a>
-                    </div>
+                    <a href="/pratica" class="kpi-design-btn" title="Praticar conversação com a Fran">
+                        Treinar com a Fran
+                    </a>
                     {% endif %}
                 </div>
             </div>
+        </div>
 
-            <!-- 2. Linha de Gráficos Analíticos (2 Colunas 50% / 50%) -->
-            <div class="desempenho-charts-grid" style="width: 100%; margin-bottom: 0;">
-                <!-- Gráfico 1: Eficácia nas Missões (Doughnut) -->
-                <div class="desempenho-chart-card">
-                    <div class="desempenho-chart-header">
-                        <div>
-                            <h3 class="desempenho-chart-title">Eficácia nas Missões</h3>
-                            <p class="desempenho-chart-subtitle">Distribuição entre acertos, parciais e correções</p>
-                        </div>
-                        <span style="font-size: 0.75rem; color: var(--text-muted); background: rgba(255,255,255,0.06); padding: 2px 8px; border-radius: 6px;">Geral</span>
+        <!-- 2 Gráficos Analíticos -->
+        <div class="desempenho-charts-grid">
+            <!-- Gráfico 1: Eficácia nas Missões (Design da Referência + Gauge) -->
+            <div class="desempenho-chart-card kpi-card-nivel-ref">
+                <!-- Linha 1: Métrica Principal + Sparkline Ondulado -->
+                <div class="kpi-design-top-row">
+                    <div class="kpi-design-col-metric">
+                        <span class="kpi-design-label">Eficácia nas Missões</span>
+                        <div class="kpi-design-primary">{{ ((acertos / total_atividades) * 100)|round|int if total_atividades > 0 else 0 }}%</div>
+                        <span style="font-size: 0.76rem; color: #6B7280; margin-top: 3px;">Distribuição entre acertos, parciais e revisões</span>
                     </div>
-                    <div class="desempenho-chart-canvas-wrap">
-                        <canvas id="desempenhoChart"></canvas>
-                    </div>
-                    <div class="desempenho-chart-footer">
-                        <span class="chart-pill-stat correto">
-                            ✓ {{ acertos }} Acertos ({{ ((acertos / total_atividades) * 100)|round|int if total_atividades else 0 }}%)
-                        </span>
-                        <span class="chart-pill-stat parcial">
-                            ⚠ {{ parciais }} Parciais ({{ ((parciais / total_atividades) * 100)|round|int if total_atividades else 0 }}%)
-                        </span>
-                        <span class="chart-pill-stat incorreto">
-                            ✗ {{ erros }} A revisar ({{ ((erros / total_atividades) * 100)|round|int if total_atividades else 0 }}%)
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Gráfico 2: Participação Semanal (Bar) -->
-                <div class="desempenho-chart-card">
-                    <div class="desempenho-chart-header">
-                        <div>
-                            <h3 class="desempenho-chart-title">Participação Semanal</h3>
-                            <p class="desempenho-chart-subtitle">Volume diário de exercícios entregues nos dias úteis</p>
-                        </div>
-                        <span style="font-size: 0.75rem; color: var(--text-muted); background: rgba(255,255,255,0.06); padding: 2px 8px; border-radius: 6px;">Seg - Sex</span>
-                    </div>
-                    <div class="desempenho-chart-canvas-wrap">
-                        <canvas id="participacaoChart"></canvas>
-                    </div>
-                    <div class="desempenho-chart-footer">
-                        <span style="font-size: 0.82rem; color: var(--text-muted);">
-                            Total na semana: <strong style="color: var(--text-primary);">{{ participacao_semanal|sum }} atividades</strong>
-                        </span>
-                        <span style="font-size: 0.82rem; color: #38bdf8; font-weight: 600;">
-                            Média: {{ ((participacao_semanal|sum) / 5)|round(1) }}/dia útil
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 3. Banner da Missão de Foco Pedagógico (se houver reforço pendente) -->
-            {% if reforco %}
-            <div class="desempenho-tutor-banner" style="width: 100%; margin-top: 1.5rem; margin-bottom: 0;">
-                <div style="display: flex; align-items: center; gap: 14px;">
-                    <div style="width: 46px; height: 46px; border-radius: 12px; background: rgba(99, 102, 241, 0.2); color: #818cf8; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    <div class="kpi-design-col-sparkline" aria-hidden="true">
+                        <svg class="kpi-design-wave-svg" viewBox="0 0 130 55" preserveAspectRatio="none">
+                            <defs>
+                                <linearGradient id="kpiWaveGradEfic" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#4B5563" stop-opacity="0.38" class="wave-stop-top" />
+                                    <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.0" class="wave-stop-bot" />
+                                </linearGradient>
+                            </defs>
+                            <path class="kpi-wave-area" d="M 0 43 C 18 42, 28 34, 42 32 C 52 30, 58 38, 70 34 C 82 30, 90 20, 102 16 C 112 13, 120 11, 130 6 L 130 55 L 0 55 Z" fill="url(#kpiWaveGradEfic)" />
+                            <path class="kpi-wave-line" d="M 0 43 C 18 42, 28 34, 42 32 C 52 30, 58 38, 70 34 C 82 30, 90 20, 102 16 C 112 13, 120 11, 130 6" fill="none" stroke="#4B5563" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                     </div>
-                    <div>
-                        <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #818cf8; letter-spacing: 0.5px;">Orientação Individual do Tutor</span>
-                        <h3 style="margin: 2px 0 4px 0; font-size: 1.08rem; color: var(--text-primary);">Missão de Foco Pendente</h3>
-                        <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted); max-width: 650px;">
-                            "{{ reforco['mensagem_tutor'] }}"
-                        </p>
+                </div>
+
+                <!-- Corpo Central: Gauge Circular + Legendas em Pílulas -->
+                <div class="gauge-dish-outer">
+                    <div class="gauge-recessed-dish"></div>
+                    <div class="gauge-ticks-ring" aria-hidden="true">
+                        <span class="gauge-pip" style="transform: rotate(0deg);"></span>
+                        <span class="gauge-pip" style="transform: rotate(30deg);"></span>
+                        <span class="gauge-pip" style="transform: rotate(60deg);"></span>
+                        <span class="gauge-pip" style="transform: rotate(90deg);"></span>
+                        <span class="gauge-pip" style="transform: rotate(120deg);"></span>
+                        <span class="gauge-pip" style="transform: rotate(150deg);"></span>
+                        <span class="gauge-pip" style="transform: rotate(180deg);"></span>
+                        <span class="gauge-pip" style="transform: rotate(210deg);"></span>
+                        <span class="gauge-pip" style="transform: rotate(240deg);"></span>
+                        <span class="gauge-pip" style="transform: rotate(270deg);"></span>
+                        <span class="gauge-pip" style="transform: rotate(300deg);"></span>
+                        <span class="gauge-pip" style="transform: rotate(330deg);"></span>
+                    </div>
+                    <div class="gauge-canvas-wrapper">
+                        <canvas id="desempenhoChart" role="img" aria-label="Gráfico de rosca: Eficácia nas missões ({{ acertos }} acertos, {{ parciais }} parciais e {{ erros }} a revisar)"></canvas>
+                    </div>
+                    <div class="gauge-floating-center">
+                        <span class="gauge-percent-val" style="color: #111827;">{{ ((acertos / total_atividades) * 100)|round|int if total_atividades > 0 else 0 }}%</span>
+                        <span class="gauge-fraction-val">{{ acertos }}/{{ total_atividades }} Acertos</span>
                     </div>
                 </div>
-                <button type="button" class="btn btn-primary" onclick="abrirMissaoModal({{ reforco['id'] }})" style="white-space: nowrap; display: inline-flex; align-items: center; gap: 6px;">
-                    <span>Responder Missão</span> &rarr;
-                </button>
+
+                <div style="display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; margin: 0.4rem 0 0.85rem 0;">
+                    <span class="chart-pill-stat correto">
+                        ✓ {{ acertos }} Acertos ({{ ((acertos / total_atividades) * 100)|round|int if total_atividades else 0 }}%)
+                    </span>
+                    <span class="chart-pill-stat parcial">
+                        ⚠ {{ parciais }} Parciais ({{ ((parciais / total_atividades) * 100)|round|int if total_atividades else 0 }}%)
+                    </span>
+                    <span class="chart-pill-stat incorreto">
+                        ✗ {{ erros }} A revisar ({{ ((erros / total_atividades) * 100)|round|int if total_atividades else 0 }}%)
+                    </span>
+                </div>
+
+                <!-- Linha 2: Submétrica + Badge de Tendência com Triângulo Verde -->
+                <div class="kpi-design-mid-row" style="padding-top: 0.75rem; border-top: 1px solid #ECECEC;">
+                    <div class="kpi-design-col-submetric">
+                        <span class="kpi-design-sublabel">Taxa de Sucesso</span>
+                        <div class="kpi-design-subvalue">{{ acertos }} de {{ total_atividades }} missões</div>
+                    </div>
+                    <div class="kpi-design-trend" title="Índice positivo de eficácia">
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true">
+                            <path d="M5 1.5L9 8.5H1L5 1.5Z"/>
+                        </svg>
+                        <span>{{ ((acertos / total_atividades) * 100)|round|int if total_atividades > 0 else 0 }}%</span>
+                    </div>
+                </div>
+
+                <!-- Linha 3: Botão de Ação Estilo Pill Escuro Centralizado -->
+                <div class="kpi-design-bottom-row">
+                    <a href="/aluno/atividades" class="kpi-design-btn" title="Ir para atividades e revisar missões">
+                        Revisar Missões &rarr;
+                    </a>
+                </div>
             </div>
-            {% endif %}
+
+            <!-- Gráfico 2: Participação Semanal (Design da Referência + Barras) -->
+            <div class="desempenho-chart-card kpi-card-nivel-ref">
+                <!-- Linha 1: Métrica Principal + Sparkline Ondulado -->
+                <div class="kpi-design-top-row">
+                    <div class="kpi-design-col-metric">
+                        <span class="kpi-design-label">Participação Semanal</span>
+                        <div class="kpi-design-primary">{{ participacao_semanal|sum }}</div>
+                        <span style="font-size: 0.76rem; color: #6B7280; margin-top: 3px;">Volume diário de exercícios entregues (Seg - Sex)</span>
+                    </div>
+                    <div class="kpi-design-col-sparkline" aria-hidden="true">
+                        <svg class="kpi-design-wave-svg" viewBox="0 0 130 55" preserveAspectRatio="none">
+                            <defs>
+                                <linearGradient id="kpiWaveGradPart" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#4B5563" stop-opacity="0.38" class="wave-stop-top" />
+                                    <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.0" class="wave-stop-bot" />
+                                </linearGradient>
+                            </defs>
+                            <path class="kpi-wave-area" d="M 0 45 C 16 44, 26 36, 40 34 C 52 32, 58 40, 70 35 C 82 30, 92 22, 104 18 C 114 14, 122 10, 130 6 L 130 55 L 0 55 Z" fill="url(#kpiWaveGradPart)" />
+                            <path class="kpi-wave-line" d="M 0 45 C 16 44, 26 36, 40 34 C 52 32, 58 40, 70 35 C 82 30, 92 22, 104 18 C 114 14, 122 10, 130 6" fill="none" stroke="#4B5563" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Corpo Central: Gráfico de Barras -->
+                <div class="desempenho-chart-canvas-wrap" style="margin: 0.5rem 0 0.85rem 0;">
+                    <canvas id="participacaoChart" role="img" aria-label="Gráfico de barras: Volume de exercícios entregues de segunda a sexta-feira, total de {{ participacao_semanal|sum }} atividades"></canvas>
+                </div>
+
+                <!-- Linha 2: Submétrica + Badge de Tendência com Triângulo Verde -->
+                <div class="kpi-design-mid-row" style="padding-top: 0.75rem; border-top: 1px solid #ECECEC;">
+                    <div class="kpi-design-col-submetric">
+                        <span class="kpi-design-sublabel">Média por Dia Útil</span>
+                        <div class="kpi-design-subvalue">{{ ((participacao_semanal|sum) / 5)|round(1) }} / dia</div>
+                    </div>
+                    <div class="kpi-design-trend" title="Total entregue na semana">
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true">
+                            <path d="M5 1.5L9 8.5H1L5 1.5Z"/>
+                        </svg>
+                        <span>+{{ participacao_semanal|sum }} ativ.</span>
+                    </div>
+                </div>
+
+                <!-- Linha 3: Botão de Ação Estilo Pill Escuro Centralizado -->
+                <div class="kpi-design-bottom-row">
+                    <a href="/pratica" class="kpi-design-btn" title="Iniciar prática livre com a Fran">
+                        Praticar Agora &rarr;
+                    </a>
+                </div>
+            </div>
         </div>
+
+        <!-- Banner de Orientação do Tutor se houver reforço -->
+        {% if reforco %}
+        <div class="desempenho-tutor-banner">
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <div class="desempenho-tutor-icon-box">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                </div>
+                <div>
+                    <span style="font-size: 0.73rem; font-weight: 700; text-transform: uppercase; color: #2A9D8F; letter-spacing: 0.5px;">Orientação Individual do Tutor</span>
+                    <h3 style="margin: 2px 0 4px 0; font-size: 1.05rem; color: #14213D;">Missão de Foco Pedagógico</h3>
+                    <p style="margin: 0; font-size: 0.84rem; color: rgba(20, 33, 61, 0.75); max-width: 650px;">
+                        "{{ reforco['mensagem_tutor'] }}"
+                    </p>
+                </div>
+            </div>
+            <button type="button" class="btn-desempenho-cta" onclick="abrirMissaoModal({{ reforco['id'] }})" style="white-space: nowrap;">
+                <span>Responder Missão</span> &rarr;
+            </button>
+        </div>
+        {% endif %}
     </div>
 
-    <!-- 4. Quadro Unificado de Conquistas & Insígnias FLE (Apenas Uma Moldura para Todos os Cards de Conquistas) -->
-    <div class="conquistas-box-outer hero-card-outer card-moldura-outer" id="desempenhoConquistasBoxOuter">
-        <div class="conquistas-box-inner hero-card-inner">
-            <div id="secaoConquistas" class="conquistas-header-wrap">
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; width: 100%;">
-                    <div>
-                        <span class="hero-tag" style="margin-bottom: 0.35rem;">
-                            <svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;">
-                                <circle cx="12" cy="8" r="7"></circle>
-                                <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
-                            </svg>Récompenses FLE
-                        </span>
-                        <h2 class="hero-title" style="font-size: 1.45rem; margin-bottom: 0.25rem;">Minhas Conquistas & Insígnias FLE</h2>
-                        <p class="hero-description" style="font-size: 0.88rem; margin-bottom: 0;">
-                            Desbloqueie medalhas exclusivas à medida que pratica sua escrita, vocabulário e pronúncia.
-                        </p>
-                    </div>
-                    <div>
-                        <span style="font-size: 0.82rem; font-weight: 700; color: #f59e0b; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 9999px; padding: 4px 14px;">
-                            🏆 {{ (badges|selectattr('desbloqueado', 'equalto', true)|list)|length }} de {{ badges|length }} Desbloqueadas
-                        </span>
-                    </div>
+    <!-- 3. Quadro 2: Conquistas & Insígnias FLE -->
+    <div class="desempenho-editorial-card" id="secaoConquistas">
+        <div class="desempenho-card-header">
+            <div class="desempenho-header-left">
+                <span class="desempenho-circle-badge" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="8" r="7"></circle>
+                        <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                    </svg>
+                </span>
+                <div>
+                    <h2 class="desempenho-section-title">Minhas Conquistas & Insígnias FLE</h2>
+                    <p class="desempenho-section-subtitle">Desbloqueie medalhas exclusivas à medida que pratica sua escrita, vocabulário e pronúncia</p>
                 </div>
             </div>
+            <div>
+                <span style="font-size: 0.82rem; font-weight: 700; color: #14213D; background: rgba(252, 163, 17, 0.16); border: 1px solid #FCA311; border-radius: 999px; padding: 5px 14px; display: inline-flex; align-items: center; gap: 5px;">
+                    🏆 {{ (badges|selectattr('desbloqueado', 'equalto', true)|list)|length }} de {{ badges|length }} Desbloqueadas
+                </span>
+            </div>
+        </div>
 
-            <div class="conquistas-box-divider"></div>
+        <div class="conquistas-box-divider"></div>
 
-            <div class="desempenho-badges-grid" style="width: 100%;">
-                {% for b in badges %}
-                <div class="desempenho-badge-card {% if b.desbloqueado %}unlocked{% else %}locked{% endif %}">
-                    <div class="desempenho-badge-icon-box">
-                        {% if b.id == 'premier_pas' %}
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                        {% elif b.id == 'tir_precis' %}
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="22" y1="12" x2="18" y2="12"></line><line x1="6" y1="12" x2="2" y2="12"></line><line x1="12" y1="6" x2="12" y2="2"></line><line x1="12" y1="22" x2="12" y2="18"></line></svg>
-                        {% elif b.id == 'erudit_fle' %}
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-                        {% elif b.id == 'voix_paris' %}
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
-                        {% elif b.id == 'niveau_avance' %}
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+        <div class="desempenho-badges-grid">
+            {% for b in badges %}
+            <div class="desempenho-badge-card {% if b.desbloqueado %}unlocked{% else %}locked{% endif %}">
+                <div class="desempenho-badge-icon-box">
+                    {% if b.id == 'premier_pas' %}
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                    {% elif b.id == 'tir_precis' %}
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="22" y1="12" x2="18" y2="12"></line><line x1="6" y1="12" x2="2" y2="12"></line><line x1="12" y1="6" x2="12" y2="2"></line><line x1="12" y1="22" x2="12" y2="18"></line></svg>
+                    {% elif b.id == 'erudit_fle' %}
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                    {% elif b.id == 'voix_paris' %}
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                    {% elif b.id == 'niveau_avance' %}
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+                    {% else %}
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    {% endif %}
+                </div>
+                <div style="flex: 1;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; gap: 6px;">
+                        <h4 style="margin: 0; font-size: 0.96rem; font-weight: 700; color: #14213D;">{{ b.nome }}</h4>
+                        {% if b.desbloqueado %}
+                        <span class="badge-status-tag unlocked">CONQUISTADA</span>
                         {% else %}
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        <span class="badge-status-tag locked">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -1px; margin-right: 2px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>BLOQUEADA
+                        </span>
                         {% endif %}
                     </div>
-                    <div style="flex: 1;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; gap: 6px;">
-                            <h4 style="margin: 0; font-size: 0.98rem; font-weight: 700; color: var(--text-primary);">{{ b.nome }}</h4>
-                            {% if b.desbloqueado %}
-                            <span style="font-size: 0.68rem; background: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 1px 7px; border-radius: 9999px; font-weight: 700;">CONQUISTADA</span>
-                            {% else %}
-                            <span style="font-size: 0.68rem; background: rgba(255, 255, 255, 0.08); color: var(--text-muted); padding: 1px 7px; border-radius: 9999px; display: inline-flex; align-items: center; gap: 3px;">
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>BLOQUEADA
-                            </span>
-                            {% endif %}
-                        </div>
-                        <p style="margin: 0; font-size: 0.81rem; color: var(--text-muted); line-height: 1.4;">
-                            {{ b.descricao }}
-                        </p>
-                    </div>
+                    <p style="margin: 0; font-size: 0.8rem; color: rgba(20, 33, 61, 0.7); line-height: 1.4;">
+                        {{ b.descricao }}
+                    </p>
                 </div>
-                {% endfor %}
             </div>
+            {% endfor %}
         </div>
     </div>
 </div>
 {% endblock %}
 
 {% block modals %}
-<!-- Modal da Missão de Foco (Renderizado no Top-Level fora de main-content) -->
+<!-- Modal da Missão de Foco -->
 {% if reforco %}
 <div id="missaoModal" class="modal-overlay" style="display: none;" onclick="if(event.target === this) fecharMissaoModal();">
-    <div class="glass-card modal-content" style="max-width: 600px; width: 90%; margin: auto; position: relative;">
-        <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center;">
+    <div class="desempenho-modal-card modal-content" style="max-width: 580px; width: 92%; margin: auto; position: relative; padding: 2rem;">
+        <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E5E5E5; padding-bottom: 1rem;">
             <div style="display: flex; align-items: center; gap: 8px;">
-                <svg class="line-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                </svg>
-                <h2 style="margin: 0; font-size: 1.25rem;">Missão de Foco (Reforço)</h2>
+                <span class="desempenho-circle-badge" style="width: 32px; height: 32px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                </span>
+                <h2 style="margin: 0; font-size: 1.2rem; color: #14213D; font-weight: 700;">Missão de Foco (Reforço Pedagógico)</h2>
             </div>
-            <button type="button" class="close-modal" onclick="fecharMissaoModal()" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.5rem; line-height: 1;">
+            <button type="button" class="close-modal" onclick="fecharMissaoModal()" style="background: transparent; border: none; color: rgba(20,33,61,0.5); cursor: pointer; font-size: 1.5rem; line-height: 1;" aria-label="Fechar modal">
                 &times;
             </button>
         </div>
-        <div class="modal-body" style="margin-top: 1rem;">
-            <div style="background: rgba(var(--primary-rgb), 0.1); border-left: 4px solid var(--primary); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
-                <strong>Mensagem do Tutor:</strong><br>
-                {{ reforco['mensagem_tutor'] }}
+        <div class="modal-body" style="margin-top: 1.25rem;">
+            <div style="background: rgba(168, 218, 220, 0.2); border-left: 4px solid #2A9D8F; padding: 1rem 1.15rem; border-radius: 10px; margin-bottom: 1.25rem;">
+                <strong style="color: #14213D; font-size: 0.88rem;">Orientação do Tutor:</strong><br>
+                <p style="margin: 4px 0 0 0; color: rgba(20, 33, 61, 0.8); font-size: 0.88rem; line-height: 1.5;">
+                    {{ reforco['mensagem_tutor'] }}
+                </p>
                 
                 {% if reforco['exercicios_lista'] %}
-                <div style="margin-top: 1rem;">
-                    <strong>Exercícios Recomendados:</strong>
-                    <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+                <div style="margin-top: 0.85rem; border-top: 1px dashed rgba(42, 157, 143, 0.25); padding-top: 0.65rem;">
+                    <strong style="color: #14213D; font-size: 0.82rem;">Exercícios Recomendados:</strong>
+                    <ul style="margin: 0.35rem 0 0 0; padding-left: 1.25rem; font-size: 0.84rem; color: rgba(20, 33, 61, 0.85);">
                         {% for ex in reforco['exercicios_lista'] %}
-                        <li style="margin-bottom: 0.5rem;">{{ ex }}</li>
+                        <li style="margin-bottom: 0.35rem;">{{ ex }}</li>
                         {% endfor %}
                     </ul>
                 </div>
@@ -425,15 +1644,25 @@
             
             <form id="formMissao">
                 <input type="hidden" id="reforco_id" value="{{ reforco['id'] }}">
-                <div class="form-group">
-                    <label style="display: block; font-weight: 600; margin-bottom: 6px;">Sua Resposta para a Missão:</label>
-                    <textarea id="respostaMissao" rows="4" class="form-control glass-input" placeholder="Écrivez votre réponse ici en français..." required></textarea>
+                <div class="form-group" style="margin-bottom: 1.1rem;">
+                    <label for="respostaMissao" style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.86rem; color: #14213D;">
+                        Sua Resposta em Francês para o Exercício Recomendado:
+                    </label>
+                    <textarea id="respostaMissao" rows="3" class="form-textarea" style="width: 100%; border: 1px solid #E5E5E5; border-radius: 12px; padding: 0.75rem 1rem; font-size: 0.94rem; box-sizing: border-box; resize: vertical;" placeholder="Écrivez votre réponse ici en français..." required></textarea>
                 </div>
-                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.25rem;">
-                    <button type="button" class="btn btn-secondary" onclick="fecharMissaoModal()">Cancelar</button>
-                    <button type="submit" class="btn btn-primary" id="btnEnviarMissao">
-                        <span>Enviar Resposta</span>
-                    </button>
+                <div id="feedbackMissaoBox" style="display: none; margin-bottom: 1.15rem; padding: 1rem 1.15rem; border-radius: 12px; background: rgba(22, 163, 74, 0.08); border: 1px solid rgba(22, 163, 74, 0.3); font-size: 0.88rem; color: #14213D;"></div>
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <a href="/pratica" class="btn-desempenho-secondary" style="font-size: 0.82rem; padding: 0.55rem 1rem;">
+                        Abrir na Sala de Prática &rarr;
+                    </a>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" class="btn-desempenho-secondary" onclick="fecharMissaoModal()" style="background: transparent; color: #14213D; border-color: #E5E5E5;">
+                            Fechar
+                        </button>
+                        <button type="submit" class="btn-desempenho-cta" id="btnEnviarMissao">
+                            <span>Concluir Missão &amp; Validar com IA</span>
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -452,58 +1681,63 @@
         }
     }
 
-    // Detecção dinâmica de tema para cores dos gráficos
+    // Detecção dinâmica de tema respeitando a Paleta Oficial de 7 Cores
     function getChartThemeColors() {
         const isLight = document.documentElement.getAttribute('data-theme') === 'light';
         return {
-            textColor: isLight ? '#0f172a' : '#cbd5e1',
-            mutedColor: isLight ? '#334155' : '#94a3b8',
-            gridColor: isLight ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.08)',
-            doughnutBorder: isLight ? '#ffffff' : '#162032'
+            textColor: isLight ? '#111827' : '#f8fafc',
+            mutedColor: isLight ? '#6B7280' : '#9CA3AF',
+            gridColor: isLight ? '#ECECEC' : 'rgba(255, 255, 255, 0.08)',
+            doughnutBorder: isLight ? '#FFFFFF' : '#111827'
         };
     }
 
     const themeColors = getChartThemeColors();
 
-    // Gráfico de Desempenho (Doughnut)
+    // Gráfico de Desempenho (Doughnut Gauge) com a Paleta da Referência:
+    // #16A34A (Acertos - Verde) / #6B7280 (Parciais - Grafite) / #18191E (A revisar - Escuro)
     const ctx = document.getElementById('desempenhoChart');
     let chartDesempenho = null;
     if (ctx) {
+        const total = {{ total_atividades }};
+        const acertos = {{ acertos }};
+        const parciais = {{ parciais }};
+        const erros = {{ erros }};
+
+        const chartData = (total === 0) ? [1] : [acertos, parciais, erros];
+        const chartBg = (total === 0) ? ['#E5E7EB'] : ['#16A34A', '#6B7280', '#18191E'];
+
         chartDesempenho = new Chart(ctx, {
             type: 'doughnut',
             data: {
-                labels: ['Correto', 'Parcial', 'Incorreto'],
+                labels: (total === 0) ? ['Sem atividades'] : ['Correto', 'Parcial', 'Incorreto'],
                 datasets: [{
-                    data: [{{ acertos }}, {{ parciais }}, {{ erros }}],
-                    backgroundColor: [
-                        '#10B981', // green
-                        '#F59E0B', // amber
-                        '#EF4444'  // red
-                    ],
-                    borderColor: themeColors.doughnutBorder,
-                    borderWidth: 2,
-                    hoverOffset: 6
+                    data: chartData,
+                    backgroundColor: chartBg,
+                    borderWidth: 0,
+                    borderRadius: (total === 0) ? 0 : 8,
+                    spacing: (total === 0) ? 0 : 3,
+                    hoverOffset: 4
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '72%',
+                cutout: '74%',
                 plugins: {
                     legend: {
-                        position: 'right',
-                        labels: {
-                            color: themeColors.textColor,
-                            font: { family: 'Plus Jakarta Sans', size: 12, weight: '600' },
-                            padding: 14
-                        }
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: (total > 0)
                     }
                 }
             }
         });
     }
 
-    // Gráfico de Participação Semanal (Bar)
+    // Gráfico de Participação Semanal (Bar) com a Paleta da Referência:
+    // #18191E (Escuro) nas barras com hover #16A34A (Verde)
     const ctxBar = document.getElementById('participacaoChart');
     let chartParticipacao = null;
     if (ctxBar) {
@@ -514,10 +1748,11 @@
                 datasets: [{
                     label: 'Atividades',
                     data: {{ participacao_semanal | tojson }},
-                    backgroundColor: 'rgba(56, 189, 248, 0.75)',
-                    borderColor: '#38bdf8',
-                    borderWidth: 1.5,
-                    borderRadius: 6
+                    backgroundColor: '#18191E',
+                    hoverBackgroundColor: '#16A34A',
+                    borderColor: '#18191E',
+                    borderWidth: 1,
+                    borderRadius: 8
                 }]
             },
             options: {
@@ -541,12 +1776,13 @@
         });
     }
 
-    // Observer para atualizar cores dos gráficos quando o usuário alternar o tema claro/escuro
+    // Observer para atualizar cores dos gráficos ao alternar tema claro/escuro
     const themeObserver = new MutationObserver(() => {
         const updatedTheme = getChartThemeColors();
         if (chartDesempenho) {
-            chartDesempenho.options.plugins.legend.labels.color = updatedTheme.textColor;
-            chartDesempenho.data.datasets[0].borderColor = updatedTheme.doughnutBorder;
+            if (chartDesempenho.options.plugins && chartDesempenho.options.plugins.legend && chartDesempenho.options.plugins.legend.labels) {
+                chartDesempenho.options.plugins.legend.labels.color = updatedTheme.textColor;
+            }
             chartDesempenho.update();
         }
         if (chartParticipacao) {
@@ -588,33 +1824,44 @@
             btn.disabled = true;
 
             try {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
                 const res = await fetch('/api/responder_missao', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
                     body: JSON.stringify({ reforco_id: reforcoId, resposta: resposta })
                 });
                 const data = await res.json();
                 
                 if (data.status === 'sucesso') {
-                    fecharMissaoModal();
+                    const fbBox = document.getElementById('feedbackMissaoBox');
+                    if (fbBox && data.feedback_ia) {
+                        fbBox.style.display = 'block';
+                        fbBox.innerHTML = `<strong>🏅 Missão Concluída (${data.status_resposta || 'Avaliado'}):</strong><br><div style="margin-top:6px; line-height:1.5;">${data.feedback_ia}</div>`;
+                    }
                     const toast = document.createElement('div');
                     toast.className = 'glass-card';
-                    toast.style.cssText = 'position:fixed; bottom:20px; right:20px; background:var(--primary); color:white; padding:15px 25px; border-radius:8px; z-index:99999; animation: slideUp 0.3s ease-out;';
-                    toast.innerHTML = '<strong>Félicitations!</strong> Missão cumprida!';
+                    toast.style.cssText = 'position:fixed; bottom:20px; right:20px; background:#2A9D8F; color:white; padding:15px 25px; border-radius:12px; z-index:99999; box-shadow:0 10px 30px rgba(0,0,0,0.15); animation: slideUp 0.3s ease-out; font-weight:600;';
+                    toast.innerHTML = '<strong>Félicitations !</strong> Missão cumprida e Medalha Persévérance desbloqueada!';
                     document.body.appendChild(toast);
                     
+                    btn.innerHTML = '✓ Missão Concluída!';
                     setTimeout(() => {
                         toast.style.opacity = '0';
                         toast.style.transition = 'opacity 0.5s ease';
-                        setTimeout(() => window.location.reload(), 500);
-                    }, 2500);
+                        setTimeout(() => window.location.reload(), 600);
+                    }, 2800);
                 } else {
-                    alert('Erro: ' + (data.mensagem || 'Falha ao enviar missão.'));
+                    if (typeof showToast === 'function') showToast('Erro: ' + (data.mensagem || 'Falha ao enviar missão.'), 'erro');
+                    else alert('Erro: ' + (data.mensagem || 'Falha ao enviar missão.'));
                     btn.innerHTML = originalText;
                     btn.disabled = false;
                 }
             } catch (err) {
-                alert('Erro na conexão com o servidor.');
+                if (typeof showToast === 'function') showToast('Erro na conexão com o servidor.', 'erro');
+                else alert('Erro na conexão com o servidor.');
                 btn.innerHTML = originalText;
                 btn.disabled = false;
             }

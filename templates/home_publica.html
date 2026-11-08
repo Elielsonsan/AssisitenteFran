@@ -4,206 +4,374 @@
 
 {% block extra_head %}
 <style>
-/* Estilos específicos para a Landing Page Pública */
+/* ===================================================================
+   Landing Page Pública (http://127.0.0.1:5000) — Design Clean
+   Paleta Modo Claro: #FFFFFF | #E5E5E5 | #FCA311 | #14213D | #000000
+   =================================================================== */
+
+.landing-wrapper {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 1.5rem 1.5rem 4rem;
+}
+
+/* 1. Hero Section */
 .landing-hero {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    min-height: 55vh;
-    padding: 3rem 1.5rem;
+    padding: 3.5rem 1.5rem 3rem;
     position: relative;
     z-index: 2;
 }
 
-.landing-title {
-    font-size: 3.5rem;
-    font-weight: 800;
-    line-height: 1.15;
-    letter-spacing: -1.5px;
+.landing-badge {
     margin-bottom: 1.5rem;
-    background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    max-width: 900px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    color: #38bdf8;
+    padding: 7px 18px;
+    border-radius: 999px;
+    font-weight: 500;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+}
+
+[data-theme="light"] .landing-badge {
+    background: #FFFFFF;
+    border: 1.5px solid #E5E5E5;
+    color: #14213D;
+    box-shadow: 0 2px 8px rgba(20, 33, 61, 0.04);
+}
+
+[data-theme="light"] .landing-badge svg {
+    color: #FCA311;
+}
+
+.landing-title {
+    font-size: clamp(2.15rem, 4.2vw, 3.2rem);
+    font-weight: 600;
+    line-height: 1.18;
+    letter-spacing: -0.025em;
+    margin-bottom: 1.25rem;
+    color: #ffffff;
+    max-width: 840px;
 }
 
 [data-theme="light"] .landing-title {
-    background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #14213D;
+}
+
+.landing-title-accent {
+    color: #38bdf8;
+    font-weight: 700;
+}
+
+[data-theme="light"] .landing-title-accent {
+    color: #FCA311;
 }
 
 .landing-subtitle {
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     color: var(--text-muted);
-    max-width: 700px;
-    margin: 0 auto 2.5rem;
-    line-height: 1.6;
+    max-width: 670px;
+    margin: 0 auto 2.25rem;
+    line-height: 1.65;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+}
+
+[data-theme="light"] .landing-subtitle {
+    color: rgba(20, 33, 61, 0.76);
 }
 
 .landing-cta-group {
     display: flex;
-    gap: 1.25rem;
+    gap: 1rem;
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
 }
 
 .btn-landing-primary {
-    background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
-    color: #ffffff;
-    padding: 1rem 2.25rem;
+    background: #38bdf8;
+    color: #0f172a;
+    padding: 0.92rem 2rem;
     border-radius: 9999px;
-    font-weight: 700;
-    font-size: 1.1rem;
+    font-weight: 600;
+    font-size: 0.98rem;
+    letter-spacing: 0.01em;
     text-decoration: none;
-    box-shadow: 0 10px 25px rgba(79, 70, 229, 0.4);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.22s ease;
+    border: 1.5px solid transparent;
     display: inline-flex;
     align-items: center;
     gap: 8px;
 }
 
 .btn-landing-primary:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 35px rgba(79, 70, 229, 0.5);
-    color: #ffffff;
+    transform: translateY(-2px);
+    filter: brightness(1.05);
+}
+
+[data-theme="light"] .btn-landing-primary {
+    background: #FCA311;
+    color: #000000;
+    border-color: #FCA311;
+    box-shadow: 0 6px 18px rgba(252, 163, 17, 0.28);
+}
+
+[data-theme="light"] .btn-landing-primary:hover {
+    background: #14213D;
+    border-color: #14213D;
+    color: #FFFFFF;
+    box-shadow: 0 8px 22px rgba(20, 33, 61, 0.22);
+    filter: none;
 }
 
 .btn-landing-secondary {
     background: rgba(15, 23, 42, 0.6);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
     color: var(--text-light);
-    padding: 1rem 2.25rem;
+    padding: 0.92rem 2rem;
     border-radius: 9999px;
-    font-weight: 700;
-    font-size: 1.1rem;
+    font-weight: 500;
+    font-size: 0.98rem;
+    letter-spacing: 0.01em;
     text-decoration: none;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-    transition: all 0.25s ease;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.22s ease;
+    border: 1.5px solid rgba(255, 255, 255, 0.15);
     display: inline-flex;
     align-items: center;
     gap: 8px;
 }
 
-[data-theme="light"] .btn-landing-secondary {
-    background: rgba(255, 255, 255, 0.8);
-    color: #0f172a;
-    border: 1px solid rgba(15, 23, 42, 0.15);
-    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
-}
-
 .btn-landing-secondary:hover {
     background: rgba(255, 255, 255, 0.1);
-    transform: translateY(-3px);
+    transform: translateY(-2px);
+}
+
+[data-theme="light"] .btn-landing-secondary {
+    background: #FFFFFF;
+    color: #14213D;
+    border: 1.5px solid #E5E5E5;
+    box-shadow: none;
 }
 
 [data-theme="light"] .btn-landing-secondary:hover {
-    background: #ffffff;
+    background: #E5E5E5;
+    border-color: #14213D;
+    color: #000000;
 }
 
-/* Features Grid */
+/* 2. Features Grid (4 colunas alinhadas e limpas no Desktop) */
 .features-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    max-width: 1100px;
-    margin: 2rem auto 5rem;
-    padding: 0 1.5rem;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin: 2rem auto 4rem;
+}
+
+@media (max-width: 1024px) {
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .feature-card {
-    background: rgba(11, 19, 43, 0.5);
-    backdrop-filter: blur(24px) saturate(200%);
-    -webkit-backdrop-filter: blur(24px) saturate(200%);
-    border: 1px solid rgba(56, 189, 248, 0.2);
-    border-radius: 20px;
-    padding: 2.25rem 2rem;
+    background: rgba(11, 19, 43, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 1.85rem 1.5rem;
     text-align: left;
-    box-shadow: 0 16px 40px rgba(2, 6, 23, 0.35);
-    transition: transform 0.3s ease;
-    position: relative;
-    overflow: hidden;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    display: flex;
+    flex-direction: column;
 }
 
 .feature-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-4px);
     border-color: rgba(56, 189, 248, 0.4);
 }
 
 [data-theme="light"] .feature-card {
-    background: rgba(255, 255, 255, 0.65);
-    border: 1px solid rgba(255, 255, 255, 0.9);
-    box-shadow: 0 16px 40px rgba(31, 38, 135, 0.08);
+    background: #FFFFFF;
+    border: 1px solid #E5E5E5;
+    box-shadow: 0 4px 16px rgba(20, 33, 61, 0.04);
+}
+
+[data-theme="light"] .feature-card:hover {
+    border-color: #FCA311;
+    box-shadow: 0 10px 28px rgba(20, 33, 61, 0.08);
 }
 
 .feature-icon-wrapper {
-    width: 50px;
-    height: 50px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(59, 130, 246, 0.2));
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    background: rgba(56, 189, 248, 0.14);
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 1.25rem;
     color: #38bdf8;
+    transition: background 0.25s ease, color 0.25s ease;
 }
 
 [data-theme="light"] .feature-icon-wrapper {
-    background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(59, 130, 246, 0.15));
-    color: #0284c7;
+    background: rgba(229, 229, 229, 0.55);
+    color: #14213D;
+}
+
+[data-theme="light"] .feature-card:hover .feature-icon-wrapper {
+    background: #FCA311;
+    color: #000000;
 }
 
 .feature-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.6rem;
     color: var(--text-light);
 }
 
 [data-theme="light"] .feature-title {
-    color: #0f172a;
+    color: #14213D;
 }
 
 .feature-desc {
     color: var(--text-muted);
-    line-height: 1.5;
-    font-size: 0.95rem;
+    line-height: 1.6;
+    font-size: 0.91rem;
+    font-weight: 400;
+    margin: 0;
 }
 
-/* Banner Docente */
-.banner-docente {
-    margin: 4rem auto;
-    max-width: 1000px;
-    position: relative;
+[data-theme="light"] .feature-desc {
+    color: rgba(20, 33, 61, 0.74);
 }
 
+/* 3. Banner Docente Clean */
+.banner-docente-clean {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    padding: 2.75rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+[data-theme="light"] .banner-docente-clean {
+    background: #14213D;
+    border: 1px solid #14213D;
+    box-shadow: 0 12px 32px rgba(20, 33, 61, 0.12);
+}
+
+.banner-docente-content {
+    flex: 1;
+    min-width: 280px;
+    text-align: left;
+}
+
+.banner-docente-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.74rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: #FCA311;
+    margin-bottom: 0.65rem;
+}
+
+.banner-docente-title,
+[data-theme="light"] .banner-docente-title {
+    font-size: 1.55rem;
+    font-weight: 600;
+    margin: 0 0 0.75rem 0;
+    color: #FFFFFF !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+    letter-spacing: -0.02em;
+}
+
+.banner-docente-desc {
+    font-size: 0.96rem;
+    font-weight: 300;
+    color: #E5E5E5;
+    line-height: 1.65;
+    margin: 0;
+    max-width: 680px;
+}
+
+.btn-banner-docente {
+    background: #FCA311;
+    color: #000000;
+    padding: 0.88rem 1.75rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.94rem;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    transition: all 0.22s ease;
+    border: 1.5px solid #FCA311;
+}
+
+.btn-banner-docente:hover {
+    background: #FFFFFF;
+    border-color: #FFFFFF;
+    color: #14213D;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .banner-docente-clean {
+        padding: 2rem 1.5rem;
+    }
+}
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="page-container" style="padding-top: 2rem;">
+<div class="landing-wrapper">
     
     <!-- Hero Section -->
     <div class="landing-hero">
-        <span class="hero-tag" style="margin-bottom: 1.5rem; display: inline-flex; align-items: center; justify-content: center; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); color: #38bdf8; padding: 6px 14px; border-radius: 999px; font-weight: 700; font-size: 0.85rem;">
-            <svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-            Tuteur Pédagogique Virtuel
+        <span class="landing-badge">
+            <svg class="line-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+            Plataforma Inteligente de Francês • FLE & IA
         </span>
-        <h1 class="landing-title">Domine o Francês com a Inteligência do Método Socrático.</h1>
+        <h1 class="landing-title">
+            Acelere sua Fluência no Francês com <span class="landing-title-accent">Tutoria Inteligente.</span>
+        </h1>
         <p class="landing-subtitle">
-            A Assistente Fran é sua tutora pedagógica virtual 24/7. Pratique conversação, receba correções gramaticais instantâneas e acompanhe sua evolução baseada no quadro europeu comum de referência (CEFR).
+            Aprenda francês na prática com orientação personalizada 24h por dia. Exercite escrita e conversação, receba correções detalhadas em segundos e evolua com segurança do nível iniciante ao avançado (CEFR A1–C2).
         </p>
         
         <div class="landing-cta-group">
             <a href="/login" class="btn-landing-primary">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-                Começar a Praticar
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                Começar Agora
             </a>
             <a href="/login" class="btn-landing-secondary">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>
@@ -216,53 +384,53 @@
     <div class="features-grid">
         <div class="feature-card">
             <div class="feature-icon-wrapper">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
             </div>
-            <h3 class="feature-title">Feedback Inteligente</h3>
-            <p class="feature-desc">Receba correções gramaticais e sintáticas em tempo real. A inteligência artificial explica o porquê dos seus erros e oferece dicas formativas.</p>
+            <h3 class="feature-title">Correção Instantânea 24/7</h3>
+            <p class="feature-desc">Pratique a qualquer hora sem esperar. Receba avaliações imediatas de gramática, vocabulário e estrutura com explicações claras para evoluir mais rápido.</p>
         </div>
 
         <div class="feature-card">
-            <div class="feature-icon-wrapper" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(168, 85, 247, 0.2)); color: #c084fc;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            <div class="feature-icon-wrapper">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
             </div>
-            <h3 class="feature-title">Fórum Socrático</h3>
-            <p class="feature-desc">Participe de debates estimulantes com sua turma. Treine a argumentação guiada por questões provocativas da tutora virtual Fran.</p>
+            <h3 class="feature-title">Conversação & Fórum Ativo</h3>
+            <p class="feature-desc">Desenvolva confiança para se comunicar de verdade. Participe de diálogos e debates temáticos guiados que estimulam você a pensar em francês.</p>
         </div>
 
         <div class="feature-card">
-            <div class="feature-icon-wrapper" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(52, 211, 153, 0.2)); color: #34d399;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+            <div class="feature-icon-wrapper">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
             </div>
-            <h3 class="feature-title">Gamificação & Missões</h3>
-            <p class="feature-desc">Ganhe experiência (XP), conquiste distintivos (badges) e complete missões de remediação recomendadas sob medida para cobrir suas lacunas.</p>
+            <h3 class="feature-title">Trilhas Sob Medida & XP</h3>
+            <p class="feature-desc">Mantenha o ritmo com desafios personalizados. Conquiste pontos de experiência, insígnias e exercícios criados especificamente para superar suas dificuldades.</p>
         </div>
 
         <div class="feature-card">
-            <div class="feature-icon-wrapper" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(251, 191, 36, 0.2)); color: #fbbf24;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="m19 9-5 5-4-4-3 3"></path></svg>
+            <div class="feature-icon-wrapper">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="m19 9-5 5-4-4-3 3"></path></svg>
             </div>
-            <h3 class="feature-title">Radar de Desempenho</h3>
-            <p class="feature-desc">Acompanhe sua evolução através de gráficos visuais detalhados. Veja claramente suas competências mais fortes e direcione seus estudos com precisão.</p>
+            <h3 class="feature-title">Evolução Certificada (CEFR)</h3>
+            <p class="feature-desc">Visualize seu progresso com precisão. Acompanhe seu domínio em cada competência linguística alinhado ao padrão internacional europeu (A1 ao C2).</p>
         </div>
     </div>
 
-    <!-- Banner Docente -->
-    <div class="card-moldura-outer banner-docente">
-        <div class="hero-card-inner" style="display: flex; flex-direction: row; align-items: center; text-align: left; padding: 2.5rem; gap: 2rem; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 300px;">
-                <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 1rem 0; color: var(--text-light);">
-                    <svg class="line-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px; vertical-align: text-bottom; color: var(--primary-light);"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-                    Engenharia Pedagógica P.P.P. ao seu alcance
-                </h2>
-                <p style="font-size: 1.05rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.5rem;">
-                    O Painel do Professor permite que você crie turmas, elabore planos de aula no modelo de Apresentação, Prática e Produção (P.P.P) usando IA, e deixe que o assistente virtual avalie provas e relatórios detalhados automaticamente.
-                </p>
-                <a href="/login" class="btn-primary" style="padding: 0.75rem 1.5rem; font-size: 0.95rem; text-decoration: none; display: inline-flex;">
-                    Acessar o Painel Docente
-                </a>
-            </div>
+    <!-- Banner Docente Clean -->
+    <div class="banner-docente-clean">
+        <div class="banner-docente-content">
+            <span class="banner-docente-tag">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                Solução para Professores e Instituições
+            </span>
+            <h2 class="banner-docente-title">Gestão Pedagógica e Produtividade Docente com IA</h2>
+            <p class="banner-docente-desc">
+                Economize horas de planejamento e correção. Crie turmas, gere planos de aula estruturados em segundos, aplique avaliações inteligentes e acompanhe relatórios individuais de desempenho em tempo real.
+            </p>
         </div>
+        <a href="/login" class="btn-banner-docente">
+            Acessar Painel Docente
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+        </a>
     </div>
     
 </div>

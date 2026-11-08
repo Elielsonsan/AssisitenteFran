@@ -3,30 +3,850 @@
 {% block title %}Fórum de Discussão Socrático | Assistente Fran{% endblock %}
 
 {% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,500;1,600;1,700&display=swap" rel="stylesheet">
 <style>
-/* Força aplicação imediata dos estilos de layout */
+/* ===================================================================
+   Fórum de Discussão Socrático — Editorial Clean + Mini-KPIs c/ Ondas
+   =================================================================== */
+
+[data-theme="light"] body:has(.forum-editorial-wrapper) {
+    background-color: #F7F7F8 !important;
+}
+
 .forum-page {
     position: relative;
 }
-.forum-filter-banner {
+
+.forum-editorial-wrapper {
+    width: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0.5rem 0 3.5rem;
+    box-sizing: border-box;
+}
+
+/* Remove qualquer faixa tricolor ou moldura antiga */
+.forum-editorial-wrapper .hero-card-outer,
+.forum-editorial-wrapper .hero-card-inner,
+.forum-editorial-wrapper .card-moldura-outer,
+.forum-editorial-wrapper .forum-card {
+    background-image: none !important;
+}
+
+.forum-editorial-wrapper .hero-card-outer::before,
+.forum-editorial-wrapper .hero-card-outer::after,
+.forum-editorial-wrapper .hero-card-inner::before,
+.forum-editorial-wrapper .hero-card-inner::after,
+.forum-editorial-wrapper .card-moldura-outer::before,
+.forum-editorial-wrapper .card-moldura-outer::after,
+.forum-editorial-wrapper .forum-card::before,
+.forum-editorial-wrapper .forum-card::after {
+    display: none !important;
+    content: none !important;
+}
+
+/* 1. Cabeçalho Editorial Aberto */
+.forum-editorial-hero {
+    text-align: center;
+    margin-bottom: 1.85rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0.25rem 1rem 0 !important;
+}
+
+.forum-editorial-title {
+    font-size: clamp(1.95rem, 3.8vw, 2.8rem);
+    font-weight: 700;
+    line-height: 1.14;
+    letter-spacing: -0.03em;
+    color: #14213D;
+    margin: 0 0 0.75rem;
+}
+
+[data-theme="dark"] .forum-editorial-title {
+    color: #FFFFFF;
+}
+
+.forum-editorial-title .serif-italic {
+    display: block;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: #14213D;
+    margin-top: 0.1rem;
+}
+
+[data-theme="dark"] .forum-editorial-title .serif-italic {
+    color: #FCA311;
+}
+
+.forum-editorial-subtitle {
+    max-width: 660px;
+    margin: 0 auto 0.25rem;
+    font-size: 0.96rem;
+    line-height: 1.6;
+    color: rgba(20, 33, 61, 0.72);
+    font-weight: 400;
+}
+
+[data-theme="dark"] .forum-editorial-subtitle {
+    color: rgba(248, 250, 252, 0.75);
+}
+
+.forum-editorial-subtitle strong {
+    color: #14213D;
+    font-weight: 600;
+}
+
+[data-theme="dark"] .forum-editorial-subtitle strong {
+    color: #FCA311;
+}
+
+/* 2. Grid dos 3 Mini-KPIs no topo (Design de Ondas + Botão Pill #18191E) */
+.forum-kpis-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.15rem;
+    margin-bottom: 1.35rem;
+    width: 100%;
+}
+
+@media (max-width: 900px) {
+    .forum-kpis-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.forum-kpi-card {
+    background: #FFFFFF;
+    border: 1px solid #ECECEC;
+    border-radius: 26px;
+    padding: 1.35rem 1.4rem 1.25rem;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.02);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.85rem;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+}
+
+.forum-kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 38px rgba(0, 0, 0, 0.065);
+}
+
+[data-theme="dark"] .forum-kpi-card {
+    background: #181920;
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
+}
+
+.forum-kpi-top-row {
+    display: grid;
+    grid-template-columns: 1fr 115px;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.forum-kpi-label {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #6B7280;
+    display: block;
+    margin-bottom: 2px;
+}
+
+[data-theme="dark"] .forum-kpi-label {
+    color: #9CA3AF;
+}
+
+.forum-kpi-primary {
+    font-size: 2.1rem;
+    font-weight: 800;
+    color: #111827;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+}
+
+[data-theme="dark"] .forum-kpi-primary {
+    color: #F9FAFB;
+}
+
+.forum-kpi-wave-svg {
+    width: 100%;
+    height: 48px;
+    overflow: visible;
+    display: block;
+}
+
+.forum-kpi-mid-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.forum-kpi-subval {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #1F2937;
+}
+
+[data-theme="dark"] .forum-kpi-subval {
+    color: #E5E7EB;
+}
+
+.forum-kpi-trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #16A34A;
+}
+
+.forum-kpi-cta-row {
+    display: flex;
+    justify-content: center;
+    padding-top: 0.15rem;
+}
+
+/* Botão Pill Escuro (#18191E) */
+.forum-pill-btn {
+    background: #18191E !important;
+    color: #FFFFFF !important;
+    border-radius: 9999px !important;
+    padding: 8px 22px !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    text-align: center;
+    text-decoration: none !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    box-shadow: 0 4px 12px rgba(24, 25, 30, 0.18) !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.forum-pill-btn:hover {
+    background: #2D2F39 !important;
+    color: #FCA311 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(24, 25, 30, 0.26) !important;
+}
+
+/* 3. Barra de Busca com Autocomplete + Chips Integrados (Abaixo dos KPIs, 100% da largura) */
+.forum-search-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 0 1.65rem 0;
+    z-index: 40;
+    box-sizing: border-box;
+}
+
+.forum-search-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
+    background: #FFFFFF;
+    border: 1px solid #ECECEC;
+    border-radius: 999px;
+    padding: 0.55rem 0.85rem 0.55rem 1.35rem;
+    box-shadow: 0 10px 28px rgba(20, 33, 61, 0.045);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.forum-search-box:focus-within {
+    border-color: #18191E;
+    box-shadow: 0 12px 32px rgba(20, 33, 61, 0.09), 0 0 0 3px rgba(24, 25, 30, 0.06);
+}
+
+[data-theme="dark"] .forum-search-box {
+    background: #181920;
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme="dark"] .forum-search-box:focus-within {
+    border-color: #FCA311;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 0 0 3px rgba(252, 163, 17, 0.15);
+}
+
+.forum-search-icon {
+    color: #6B7280;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+}
+
+.forum-search-box input[type="text"].forum-search-input,
+#inputBuscaForum {
+    flex: 1;
+    border: 0 !important;
+    border-color: transparent !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    outline: none !important;
+    box-shadow: none !important;
+    font-size: 0.94rem;
+    font-weight: 500;
+    color: #111827;
+    padding: 0.3rem 0 !important;
+    margin: 0 !important;
+    width: 100%;
+    height: auto !important;
+}
+
+.forum-search-input::placeholder {
+    color: #9CA3AF;
+    font-weight: 400;
+}
+
+[data-theme="dark"] .forum-search-box input[type="text"].forum-search-input,
+[data-theme="dark"] #inputBuscaForum {
+    color: #F9FAFB !important;
+}
+
+.forum-search-clear {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: #F3F4F6;
+    color: #4B5563;
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+
+.forum-search-clear:hover {
+    background: #E5E7EB;
+    color: #111827;
+}
+
+[data-theme="dark"] .forum-search-clear {
+    background: rgba(255, 255, 255, 0.1);
+    color: #D1D5DB;
+}
+
+/* Chips Rápidos de Categoria abaixo da Busca (100% da largura dos Cards) */
+.forum-filter-chips {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    width: 100%;
+    margin-top: 0.85rem;
+}
+
+@media (max-width: 980px) {
+    .forum-filter-chips {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 560px) {
+    .forum-filter-chips {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.forum-chip-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 999px;
+    background: #FFFFFF;
+    border: 1px solid #ECECEC;
+    color: #4B5563;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.025);
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+
+.forum-chip-btn:hover {
+    border-color: #18191E;
+    color: #111827;
+    transform: translateY(-1px);
+}
+
+.forum-chip-btn.active {
+    background: #18191E;
+    color: #FFFFFF;
+    border-color: #18191E;
+    box-shadow: 0 4px 12px rgba(24, 25, 30, 0.18);
+}
+
+[data-theme="dark"] .forum-chip-btn {
+    background: #181920;
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #D1D5DB;
+}
+
+[data-theme="dark"] .forum-chip-btn.active {
+    background: #FCA311;
+    color: #000000;
+    border-color: #FCA311;
+}
+
+/* Dropdown de Autocomplete do Fórum */
+.forum-autocomplete-dropdown {
+    position: absolute;
+    top: 52px;
+    left: 0;
+    right: 0;
+    background: #FFFFFF;
+    border: 1px solid #ECECEC;
+    border-radius: 20px;
+    box-shadow: 0 18px 45px rgba(20, 33, 61, 0.12), 0 4px 12px rgba(0, 0, 0, 0.04);
+    padding: 0.5rem;
+    max-height: 340px;
+    overflow-y: auto;
+    display: none;
+    text-align: left;
+    z-index: 100;
+}
+
+.forum-autocomplete-dropdown.open {
+    display: block;
+    animation: fadeForumAutocompleteIn 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeForumAutocompleteIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+[data-theme="dark"] .forum-autocomplete-dropdown {
+    background: #181920;
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+.forum-ac-section-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #9CA3AF;
+    padding: 0.4rem 0.85rem 0.25rem;
+}
+
+.forum-ac-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 0.65rem 0.85rem;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    text-decoration: none;
+}
+
+.forum-ac-item:hover,
+.forum-ac-item.is-active {
+    background: #F7F7F8;
+}
+
+[data-theme="dark"] .forum-ac-item:hover,
+[data-theme="dark"] .forum-ac-item.is-active {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.forum-ac-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.forum-ac-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: rgba(20, 33, 61, 0.06);
+    color: #14213D;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+[data-theme="dark"] .forum-ac-icon {
+    background: rgba(255, 255, 255, 0.08);
+    color: #F9FAFB;
+}
+
+.forum-ac-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.forum-ac-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #111827;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+[data-theme="dark"] .forum-ac-title {
+    color: #F9FAFB;
+}
+
+.forum-ac-title mark {
+    background: rgba(252, 163, 17, 0.28);
+    color: inherit;
+    padding: 0 2px;
+    border-radius: 4px;
+}
+
+.forum-ac-sub {
+    font-size: 0.75rem;
+    color: #6B7280;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.forum-ac-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: rgba(20, 33, 61, 0.06);
+    color: #14213D;
+    flex-shrink: 0;
+}
+
+[data-theme="dark"] .forum-ac-badge {
+    background: rgba(252, 163, 17, 0.16);
+    color: #FCA311;
+}
+
+/* 4. Barra de Contexto da Seção de Tópicos */
+.forum-section-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
     flex-wrap: wrap;
-    background: rgba(11, 19, 43, 0.55);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(56, 189, 248, 0.22);
-    border-radius: 14px;
-    padding: 0.75rem 1.25rem;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 8px 24px rgba(2, 6, 23, 0.3);
+    margin-bottom: 1.1rem;
+    padding: 0 0.2rem;
 }
-[data-theme="light"] .forum-filter-banner {
-    background: rgba(255, 255, 255, 0.75) !important;
-    border: 1px solid rgba(203, 213, 225, 0.95) !important;
-    box-shadow: 0 8px 24px rgba(31, 38, 135, 0.06) !important;
+
+.forum-section-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+}
+
+.forum-section-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #111827;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+[data-theme="dark"] .forum-section-title {
+    color: #F9FAFB;
+}
+
+.forum-section-count {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: rgba(20, 33, 61, 0.07);
+    color: #14213D;
+}
+
+[data-theme="dark"] .forum-section-count {
+    background: rgba(252, 163, 17, 0.16);
+    color: #FCA311;
+}
+
+/* 5. Grade e Cards de Tópicos (Design Editorial Limpo) */
+.forum-editorial-wrapper #forumBoxOuter {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+.forum-editorial-wrapper #forumBoxOuter > .forum-box-inner {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+.forum-editorial-wrapper #gridTopicosForum {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.15rem;
+    width: 100%;
+}
+
+@media (max-width: 860px) {
+    .forum-editorial-wrapper #gridTopicosForum {
+        grid-template-columns: 1fr;
+    }
+}
+
+.forum-editorial-wrapper .forum-card {
+    background: #FFFFFF !important;
+    border: 1px solid #ECECEC !important;
+    border-radius: 24px !important;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.035), 0 2px 6px rgba(0, 0, 0, 0.02) !important;
+    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease, border-color 0.22s ease !important;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.forum-editorial-wrapper .forum-card:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 18px 38px rgba(20, 33, 61, 0.075) !important;
+    border-color: #D1D5DB !important;
+}
+
+[data-theme="dark"] .forum-editorial-wrapper .forum-card {
+    background: #181920 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-theme="dark"] .forum-editorial-wrapper .forum-card:hover {
+    border-color: rgba(252, 163, 17, 0.35) !important;
+}
+
+.forum-editorial-wrapper .forum-card-inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    padding: 1.4rem 1.5rem !important;
+    text-decoration: none !important;
+    color: inherit !important;
+    background: transparent !important;
+    border: none !important;
+}
+
+.forum-editorial-wrapper .forum-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 0.85rem;
+}
+
+.forum-editorial-wrapper .forum-badges-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.forum-editorial-wrapper .badge-scope {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+}
+
+.forum-editorial-wrapper .badge-geral {
+    background: rgba(20, 33, 61, 0.07) !important;
+    color: #14213D !important;
+    border: 1px solid rgba(20, 33, 61, 0.12) !important;
+}
+
+[data-theme="dark"] .forum-editorial-wrapper .badge-geral {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #E5E7EB !important;
+    border-color: rgba(255, 255, 255, 0.14) !important;
+}
+
+.forum-editorial-wrapper .badge-turma {
+    background: rgba(22, 163, 74, 0.1) !important;
+    color: #15803D !important;
+    border: 1px solid rgba(22, 163, 74, 0.22) !important;
+}
+
+[data-theme="dark"] .forum-editorial-wrapper .badge-turma {
+    background: rgba(22, 163, 74, 0.18) !important;
+    color: #4ADE80 !important;
+}
+
+.forum-editorial-wrapper .badge-cat {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #F3F4F6 !important;
+    color: #4B5563 !important;
+    border: 1px solid #E5E7EB !important;
+}
+
+[data-theme="dark"] .forum-editorial-wrapper .badge-cat {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: #D1D5DB !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.forum-editorial-wrapper .badge-msg-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: #6B7280 !important;
+    background: #F9FAFB !important;
+    border: 1px solid #ECECEC !important;
+    padding: 4px 10px;
+    border-radius: 999px;
+}
+
+[data-theme="dark"] .forum-editorial-wrapper .badge-msg-count {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: #9CA3AF !important;
+}
+
+.forum-editorial-wrapper .forum-topic-title {
+    font-size: 1.14rem !important;
+    font-weight: 800 !important;
+    color: #111827 !important;
+    margin: 0 0 0.5rem 0 !important;
+    line-height: 1.35 !important;
+    letter-spacing: -0.02em;
+}
+
+[data-theme="dark"] .forum-editorial-wrapper .forum-topic-title {
+    color: #F9FAFB !important;
+}
+
+.forum-editorial-wrapper .forum-topic-desc {
+    font-size: 0.88rem !important;
+    line-height: 1.55 !important;
+    color: #4B5563 !important;
+    margin: 0 0 1.2rem 0 !important;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+[data-theme="dark"] .forum-editorial-wrapper .forum-topic-desc {
+    color: #9CA3AF !important;
+}
+
+.forum-editorial-wrapper .forum-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-top: 0.9rem;
+    border-top: 1px solid #F3F4F6 !important;
+    margin-top: auto;
+}
+
+[data-theme="dark"] .forum-editorial-wrapper .forum-card-footer {
+    border-top-color: rgba(255, 255, 255, 0.07) !important;
+}
+
+.forum-editorial-wrapper .forum-author-info {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #6B7280 !important;
+}
+
+.forum-editorial-wrapper .forum-cta-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #18191E !important;
+    color: #FFFFFF !important;
+    font-size: 0.76rem !important;
+    font-weight: 600 !important;
+    padding: 6px 14px !important;
+    border-radius: 999px !important;
+    transition: all 0.2s ease !important;
+}
+
+.forum-editorial-wrapper .forum-card:hover .forum-cta-link {
+    background: #2D2F39 !important;
+    color: #FCA311 !important;
+}
+
+/* Empty State Limpo */
+.forum-editorial-wrapper .forum-empty-state {
+    grid-column: 1 / -1;
+    background: #FFFFFF;
+    border: 1px dashed #D1D5DB;
+    border-radius: 24px;
+    padding: 2.75rem 1.5rem;
+    text-align: center;
+}
+
+[data-theme="dark"] .forum-editorial-wrapper .forum-empty-state {
+    background: #181920;
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Modal Criar Tópico Limpo */
+#modalCriarTopico .card-moldura-outer {
+    background: #FFFFFF !important;
+    border: 1px solid #ECECEC !important;
+    border-radius: 26px !important;
+    padding: 0 !important;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18) !important;
+}
+
+#modalCriarTopico .card-moldura-outer::before,
+#modalCriarTopico .card-moldura-outer::after {
+    display: none !important;
+}
+
+[data-theme="dark"] #modalCriarTopico .card-moldura-outer {
+    background: #181920 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
 }
 </style>
 {% endblock %}
@@ -34,7 +854,7 @@
 {% block content %}
 <div class="page-container dashboard-page forum-page">
     <!-- ============================================================= -->
-    <!-- BARRA LATERAL FLUTUANTE GLASSMORPHIC (MENU DO FÓRUM & FILTROS) -->
+    <!-- BARRA LATERAL FLUTUANTE (MENU DO FÓRUM & FILTROS POR TURMA)   -->
     <!-- ============================================================= -->
     <aside class="dash-sidebar no-print" id="dashSidebar" aria-label="Menu do Fórum & Filtros por Turma">
         <div class="dash-sidebar-inner">
@@ -124,7 +944,7 @@
                         <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
                     </svg>
                     <span class="sidebar-text">🌐 Fórum Geral</span>
-                    <span class="sidebar-cycle-badge" style="background: rgba(139, 92, 246, 0.2); color: #c084fc;">{{ total_geral }}</span>
+                    <span class="sidebar-cycle-badge">{{ total_geral }}</span>
                 </a>
 
                 <div class="sidebar-divider"></div>
@@ -152,7 +972,7 @@
                         <circle cx="9" cy="7" r="4"></circle>
                     </svg>
                     <span class="sidebar-text">Minha Turma</span>
-                    <span class="sidebar-cycle-badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">{{ total_minha_turma }}</span>
+                    <span class="sidebar-cycle-badge">{{ total_minha_turma }}</span>
                 </a>
                 {% endif %}
             </div>
@@ -160,62 +980,189 @@
     </aside>
 
     <!-- ============================================================= -->
-    <!-- ÁREA DE CONTEÚDO PRINCIPAL DO FÓRUM                           -->
+    <!-- ÁREA DE CONTEÚDO PRINCIPAL DO FÓRUM (DESIGN EDITORIAL)        -->
     <!-- ============================================================= -->
     <div class="dashboard-main-content">
-        <!-- Header Hero Card: Efeito de um card sobre outro (Borda de Vidro externa com Card interno e faixa tricolor francesa) -->
-        <div class="dashboard-header hero-card-outer forum-hero-outer forum-hero-card" id="forumHeroCard" style="margin-bottom: 2.5rem !important;">
-            <div class="hero-card-inner forum-hero-inner">
-                <div class="forum-hero-header">
-                    <span class="hero-tag">
-                        <svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                        </svg>FLE - Espace d'Échange Socratique
-                    </span>
-                    <h1 class="hero-title">Fórum de Discussão Socrático</h1>
-                    <p class="hero-description">
-                        Participe das discussões em francês, tire dúvidas e aprimore sua argumentação com o método socrático e a tutoria pedagógica da Assistente Fran!
-                    </p>
+        <div class="forum-editorial-wrapper">
 
-                    <!-- Ações e Badges de Contexto dentro do Hero Card -->
-                    <div class="forum-hero-actions">
-                        <span class="badge-scope badge-geral" style="font-size: 0.8rem; padding: 4px 10px;">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-                            Comunidade Socrática FLE
-                        </span>
-                        {% if not is_prof and aluno_turma_nome %}
-                        <span class="badge-scope badge-turma" style="font-size: 0.8rem; padding: 4px 10px;">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
-                            {{ aluno_turma_nome }}
-                        </span>
-                        {% endif %}
-                        <span class="forum-stat-pill" style="font-size: 0.8rem; padding: 4px 10px; background: rgba(56, 189, 248, 0.12); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 8px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                            {{ topicos|length }} tópicos disponíveis
-                        </span>
+            <!-- 1. Cabeçalho Editorial Aberto -->
+            <header class="forum-editorial-hero" id="forumHeroCard">
+                <h1 class="forum-editorial-title">
+                    Fórum de Discussão &
+                    <span class="serif-italic">Espace d'Échange Socratique</span>
+                </h1>
+                <p class="forum-editorial-subtitle">
+                    Participe das discussões em francês, tire dúvidas e aprimore sua argumentação com o método socrático e a tutoria pedagógica da <strong>Assistente Fran</strong>.
+                </p>
+            </header>
 
+            <!-- 2. Linha de 3 Mini-KPIs com Ondas Crescentes e Botão Pill Escuro (#18191E) -->
+            {% set total_msgs_visiveis = topicos | sum(attribute='total_mensagens') %}
+            <section class="forum-kpis-grid" aria-label="Resumo do Fórum Socrático">
+                <!-- Card 1: Total de Tópicos -->
+                <article class="forum-kpi-card">
+                    <div class="forum-kpi-top-row">
+                        <div>
+                            <span class="forum-kpi-label">Total de Tópicos</span>
+                            <div class="forum-kpi-primary">{{ total_todos }}</div>
+                        </div>
+                        <svg class="forum-kpi-wave-svg" viewBox="0 0 120 48" preserveAspectRatio="none" aria-hidden="true">
+                            <defs>
+                                <linearGradient id="forumWaveGrad1" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#4B5563" stop-opacity="0.28"/>
+                                    <stop offset="100%" stop-color="#4B5563" stop-opacity="0.0"/>
+                                </linearGradient>
+                            </defs>
+                            <path d="M2,40 C22,38 34,26 54,28 C74,30 92,10 118,6 L118,46 L2,46 Z" fill="url(#forumWaveGrad1)"/>
+                            <path d="M2,40 C22,38 34,26 54,28 C74,30 92,10 118,6" fill="none" stroke="#4B5563" stroke-width="2.4" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="forum-kpi-mid-row">
+                        <div>
+                            <span class="forum-kpi-label">Interações no Filtro</span>
+                            <div class="forum-kpi-subval">{{ total_msgs_visiveis }} mensagens</div>
+                        </div>
+                        <span class="forum-kpi-trend">▲ Comunidade FLE</span>
+                    </div>
+                    <div class="forum-kpi-cta-row">
+                        <a href="/forum?turma=todas" class="forum-pill-btn">Ver Todos os Tópicos</a>
+                    </div>
+                </article>
+
+                <!-- Card 2: Fórum Geral -->
+                <article class="forum-kpi-card">
+                    <div class="forum-kpi-top-row">
+                        <div>
+                            <span class="forum-kpi-label">Fórum Geral</span>
+                            <div class="forum-kpi-primary">{{ total_geral }}</div>
+                        </div>
+                        <svg class="forum-kpi-wave-svg" viewBox="0 0 120 48" preserveAspectRatio="none" aria-hidden="true">
+                            <defs>
+                                <linearGradient id="forumWaveGrad2" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#4B5563" stop-opacity="0.28"/>
+                                    <stop offset="100%" stop-color="#4B5563" stop-opacity="0.0"/>
+                                </linearGradient>
+                            </defs>
+                            <path d="M2,42 C26,34 44,32 66,20 C86,10 100,12 118,5 L118,46 L2,46 Z" fill="url(#forumWaveGrad2)"/>
+                            <path d="M2,42 C26,34 44,32 66,20 C86,10 100,12 118,5" fill="none" stroke="#4B5563" stroke-width="2.4" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="forum-kpi-mid-row">
+                        <div>
+                            <span class="forum-kpi-label">Acesso Aberto</span>
+                            <div class="forum-kpi-subval">Todos os Níveis</div>
+                        </div>
+                        <span class="forum-kpi-trend">▲ Tutora IA Ativa</span>
+                    </div>
+                    <div class="forum-kpi-cta-row">
+                        <a href="/forum?turma=geral" class="forum-pill-btn">Explorar Fórum Geral</a>
+                    </div>
+                </article>
+
+                <!-- Card 3: Minha Turma (Aluno) ou Gestão Docente (Professor) -->
+                <article class="forum-kpi-card">
+                    <div class="forum-kpi-top-row">
+                        <div>
+                            {% if is_prof %}
+                            <span class="forum-kpi-label">Turmas Ativas</span>
+                            <div class="forum-kpi-primary">{{ turmas|length }}</div>
+                            {% else %}
+                            <span class="forum-kpi-label">Tópicos da Turma</span>
+                            <div class="forum-kpi-primary">{{ total_minha_turma }}</div>
+                            {% endif %}
+                        </div>
+                        <svg class="forum-kpi-wave-svg" viewBox="0 0 120 48" preserveAspectRatio="none" aria-hidden="true">
+                            <defs>
+                                <linearGradient id="forumWaveGrad3" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#4B5563" stop-opacity="0.28"/>
+                                    <stop offset="100%" stop-color="#4B5563" stop-opacity="0.0"/>
+                                </linearGradient>
+                            </defs>
+                            <path d="M2,39 C24,39 42,24 64,22 C86,20 98,9 118,6 L118,46 L2,46 Z" fill="url(#forumWaveGrad3)"/>
+                            <path d="M2,39 C24,39 42,24 64,22 C86,20 98,9 118,6" fill="none" stroke="#4B5563" stroke-width="2.4" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="forum-kpi-mid-row">
+                        <div>
+                            {% if is_prof %}
+                            <span class="forum-kpi-label">Mediação Docente</span>
+                            <div class="forum-kpi-subval">Debates Socráticos</div>
+                            {% else %}
+                            <span class="forum-kpi-label">Sua Turma</span>
+                            <div class="forum-kpi-subval">{{ aluno_turma_nome or 'Minha Turma' }}</div>
+                            {% endif %}
+                        </div>
+                        <span class="forum-kpi-trend">▲ Participativo</span>
+                    </div>
+                    <div class="forum-kpi-cta-row">
                         {% if is_prof %}
-                        <button type="button" class="btn btn-primary btn-sm" onclick="abrirModalCriarTopico()" style="border-radius: 8px; font-weight: 700; padding: 5px 14px; display: inline-flex; align-items: center; gap: 6px;">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                            <span>Novo Tópico</span>
-                        </button>
+                        <button type="button" onclick="abrirModalCriarTopico()" class="forum-pill-btn">+ Criar Novo Tópico</button>
+                        {% else %}
+                        <a href="/forum?turma=minha" class="forum-pill-btn">Ver Minha Turma</a>
                         {% endif %}
                     </div>
+                </article>
+            </section>
+
+            <!-- 3. Barra de Busca com Autocomplete + Chips Rápidos de Categoria (Mesma largura dos Cards) -->
+            <div class="forum-search-wrapper no-print" id="forumSearchWrapper">
+                <div class="forum-search-box">
+                    <span class="forum-search-icon" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </span>
+                    <input
+                        type="text"
+                        id="inputBuscaForum"
+                        class="forum-search-input"
+                        placeholder="Buscar discussão por tema, gramática, vocabulário ou palavra-chave..."
+                        value="{{ busca }}"
+                        autocomplete="off"
+                        oninput="sincronizarBusca(this.value)"
+                        aria-label="Pesquisar tópicos no fórum"
+                    >
+                    <button type="button" id="btnClearBuscaForum" class="forum-search-clear" onclick="limparBuscaLocal()" title="Limpar busca" aria-label="Limpar busca">&times;</button>
+                </div>
+
+                <!-- Dropdown Flutuante de Autocomplete -->
+                <div id="autocompleteDropdownForum" class="forum-autocomplete-dropdown" role="listbox" aria-label="Sugestões de tópicos do fórum"></div>
+
+                <!-- Chips Rápidos de Categoria (100% da largura dos Cards) -->
+                <div class="forum-filter-chips" id="forumQuickChips" role="group" aria-label="Filtrar por categoria temática">
+                    <button type="button" class="forum-chip-btn active" data-cat="todas" onclick="selecionarChipCategoriaForum('todas')">
+                        Todas
+                    </button>
+                    <button type="button" class="forum-chip-btn" data-cat="cultura" onclick="selecionarChipCategoriaForum('cultura')">
+                        🎬 Cultura
+                    </button>
+                    <button type="button" class="forum-chip-btn" data-cat="gramatica" onclick="selecionarChipCategoriaForum('gramatica')">
+                        📖 Gramática
+                    </button>
+                    <button type="button" class="forum-chip-btn" data-cat="dicas" onclick="selecionarChipCategoriaForum('dicas')">
+                        💡 Fonética
+                    </button>
+                    <button type="button" class="forum-chip-btn" data-cat="duvidas" onclick="selecionarChipCategoriaForum('duvidas')">
+                        ❓ Dúvidas
+                    </button>
+                    <button type="button" class="forum-chip-btn" data-cat="vocabulario" onclick="selecionarChipCategoriaForum('vocabulario')">
+                        📝 Vocabulário
+                    </button>
+                    <button type="button" class="forum-chip-btn" data-cat="debate" onclick="selecionarChipCategoriaForum('debate')">
+                        🗣️ Debate B2
+                    </button>
                 </div>
             </div>
-        </div>
 
-        <!-- Quadro Unificado de Discussões do Fórum (Moldura Glassmorphic com Faixa Francesa no Topo) -->
-        <div class="forum-box-outer hero-card-outer card-moldura-outer" id="forumBoxOuter">
-            <div class="forum-box-inner hero-card-inner">
+            <!-- 4. Quadro de Discussões do Fórum -->
+            <div class="forum-box-outer" id="forumBoxOuter">
+                <div class="forum-box-inner">
 
-                <!-- Banner / Barra de Filtro e Busca integrada no topo do quadro -->
-                <div id="bannerFiltroAtivoForum" class="forum-filter-banner no-print">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
-                        <span style="font-weight: 600; font-size: 0.9rem;">
-                            Exibindo: 
-                            <strong id="textoFiltroAtivoForum" style="color: var(--primary);">
+                    <!-- Cabeçalho de Contexto da Lista -->
+                    <div id="bannerFiltroAtivoForum" class="forum-section-header no-print">
+                        <div class="forum-section-title-group">
+                            <h2 class="forum-section-title" id="textoFiltroAtivoForum">
                                 {% if filtro_ativo == 'geral' %}
                                     🌐 Fórum Geral (Aberto a Todos)
                                 {% elif filtro_ativo == 'minha' %}
@@ -223,121 +1170,126 @@
                                 {% elif filtro_ativo != 'todas' and is_prof %}
                                     {% for t in turmas %}{% if t.id|string == filtro_ativo %}👥 {{ t.nome }}{% endif %}{% endfor %}
                                 {% else %}
-                                    Todos os Tópicos
+                                    Discussões da Comunidade
                                 {% endif %}
-                            </strong>
-                        </span>
-                        <span class="badge-count" id="badgeFiltroAtivoForumCount" style="margin-left: 6px;">{{ topicos|length }} tópicos</span>
-                    </div>
-                    
-                    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                        <div class="search-input-mini-wrapper" style="position: relative;">
-                            <input type="text" id="inputBuscaForum" class="form-control glass-input" placeholder="Pesquisar neste filtro..." value="{{ busca }}" oninput="sincronizarBusca(this.value)" style="height: 32px; padding: 4px 10px 4px 28px; font-size: 0.82rem; width: 220px;">
-                            <svg style="position: absolute; left: 8px; top: 9px; color: var(--text-muted); pointer-events: none;" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            </h2>
+                            <span class="forum-section-count" id="badgeFiltroAtivoForumCount">{{ topicos|length }} tópicos</span>
                         </div>
+
                         {% if filtro_ativo != 'todas' or busca %}
-                        <a href="/forum" class="btn-clear-filter" style="padding: 4px 12px; font-size: 0.82rem; text-decoration: none;">
-                            ✕ Redefinir para Todos
+                        <a href="/forum" class="forum-chip-btn" style="width: auto; padding: 6px 14px; text-decoration: none;">
+                            ✕ Redefinir Filtro
                         </a>
                         {% endif %}
                     </div>
-                </div>
 
-                <!-- Grade de Tópicos do Fórum -->
-                <div id="gridTopicosForum" class="forum-grid">
-                    {% for topico in topicos %}
-                    <div class="forum-card" data-turma="{{ topico.turma_id if topico.turma_id else 'geral' }}" data-titulo="{{ topico.titulo|lower }}" data-desc="{{ topico.descricao|lower }}" data-categoria="{{ topico.categoria|lower if topico.categoria else 'geral' }}">
-                        <a href="/forum/topico/{{ topico.id }}" class="forum-card-inner">
-                            <!-- Cabeçalho do Card: Badges de Escopo, Categoria e Mensagens -->
-                            <div class="forum-card-header">
-                                <div class="forum-badges-left">
-                                    {% if topico.turma_nome %}
-                                    <span class="badge-scope badge-turma" title="Tópico exclusivo desta turma">
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
-                                        {{ topico.turma_nome }}
-                                    </span>
-                                    {% else %}
-                                    <span class="badge-scope badge-geral" title="Tópico aberto para todos os estudantes">
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-                                        Fórum Geral
-                                    </span>
-                                    {% endif %}
+                    <!-- Grade de Tópicos do Fórum -->
+                    <div id="gridTopicosForum" class="forum-grid">
+                        {% for topico in topicos %}
+                        <div class="forum-card"
+                             data-id="{{ topico.id }}"
+                             data-turma="{{ topico.turma_id if topico.turma_id else 'geral' }}"
+                             data-titulo="{{ topico.titulo|lower }}"
+                             data-titulo-raw="{{ topico.titulo }}"
+                             data-desc="{{ topico.descricao|lower }}"
+                             data-categoria="{{ topico.categoria|lower if topico.categoria else 'geral' }}"
+                             data-autor="{{ topico.criador_nome }}"
+                             data-msgs="{{ topico.total_mensagens }}">
+                            <a href="/forum/topico/{{ topico.id }}" class="forum-card-inner">
+                                <div>
+                                    <!-- Cabeçalho do Card: Badges de Escopo, Categoria e Mensagens -->
+                                    <div class="forum-card-header">
+                                        <div class="forum-badges-left">
+                                            {% if topico.turma_nome %}
+                                            <span class="badge-scope badge-turma" title="Tópico exclusivo desta turma">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                                                {{ topico.turma_nome }}
+                                            </span>
+                                            {% else %}
+                                            <span class="badge-scope badge-geral" title="Tópico aberto para todos os estudantes">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                                                Fórum Geral
+                                            </span>
+                                            {% endif %}
 
-                                    {% if topico.categoria == 'cultura' %}
-                                    <span class="badge-cat badge-cat-cultura">🎬 Cultura & Mídia</span>
-                                    {% elif topico.categoria == 'gramatica' %}
-                                    <span class="badge-cat badge-cat-gramatica">📖 Gramática</span>
-                                    {% elif topico.categoria == 'dicas' %}
-                                    <span class="badge-cat badge-cat-dicas">💡 Fonética & Dicas</span>
-                                    {% elif topico.categoria == 'duvidas' %}
-                                    <span class="badge-cat badge-cat-duvidas">❓ Dúvidas Gerais</span>
-                                    {% elif topico.categoria == 'vocabulario' %}
-                                    <span class="badge-cat badge-cat-vocabulario">📝 Vocabulário</span>
-                                    {% elif topico.categoria == 'debate' %}
-                                    <span class="badge-cat badge-cat-debate">🗣️ Debate B2</span>
-                                    {% else %}
-                                    <span class="badge-cat badge-cat-geral">💬 Conversação</span>
-                                    {% endif %}
+                                            {% if topico.categoria == 'cultura' %}
+                                            <span class="badge-cat badge-cat-cultura">🎬 Cultura & Mídia</span>
+                                            {% elif topico.categoria == 'gramatica' %}
+                                            <span class="badge-cat badge-cat-gramatica">📖 Gramática</span>
+                                            {% elif topico.categoria == 'dicas' %}
+                                            <span class="badge-cat badge-cat-dicas">💡 Fonética & Dicas</span>
+                                            {% elif topico.categoria == 'duvidas' %}
+                                            <span class="badge-cat badge-cat-duvidas">❓ Dúvidas Gerais</span>
+                                            {% elif topico.categoria == 'vocabulario' %}
+                                            <span class="badge-cat badge-cat-vocabulario">📝 Vocabulário</span>
+                                            {% elif topico.categoria == 'debate' %}
+                                            <span class="badge-cat badge-cat-debate">🗣️ Debate B2</span>
+                                            {% else %}
+                                            <span class="badge-cat badge-cat-geral">💬 Conversação</span>
+                                            {% endif %}
+                                        </div>
+
+                                        <span class="badge-msg-count" title="Total de mensagens nesta discussão">
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                            {{ topico.total_mensagens }} msgs
+                                        </span>
+                                    </div>
+
+                                    <!-- Título e Descrição do Tópico -->
+                                    <h3 class="forum-topic-title">{{ topico.titulo }}</h3>
+                                    <p class="forum-topic-desc">{{ topico.descricao }}</p>
                                 </div>
 
-                                <span class="badge-msg-count" title="Total de mensagens nesta discussão">
-                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                                    {{ topico.total_mensagens }} msgs
-                                </span>
-                            </div>
-
-                            <!-- Título e Descrição do Tópico -->
-                            <h3 class="forum-topic-title">{{ topico.titulo }}</h3>
-                            <p class="forum-topic-desc">{{ topico.descricao }}</p>
-
-                            <!-- Rodapé do Card -->
-                            <div class="forum-card-footer">
-                                <div class="forum-author-info">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                    <span>{{ topico.criador_nome }}</span>
-                                    <span class="author-dot">•</span>
-                                    <span>{{ topico.data_criacao[:10] }}</span>
+                                <!-- Rodapé do Card -->
+                                <div class="forum-card-footer">
+                                    <div class="forum-author-info">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                        <span>{{ topico.criador_nome }}</span>
+                                        <span class="author-dot">•</span>
+                                        <span>{{ topico.data_criacao[:10] }}</span>
+                                    </div>
+                                    <span class="forum-cta-link">
+                                        Participar
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                    </span>
                                 </div>
-                                <span class="forum-cta-link">
-                                    Participar
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                                </span>
-                            </div>
-                        </a>
-                    </div>
-                    {% else %}
-                    <!-- Empty State se não houver tópicos no filtro -->
-                    <div class="forum-empty-state">
-                        <div class="empty-icon-wrap" style="width: 64px; height: 64px; border-radius: 50%; background: rgba(99, 102, 241, 0.12); color: var(--primary); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem;">
-                            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                            </a>
                         </div>
-                        <h3>Nenhum tópico encontrado</h3>
-                        <p style="color: var(--text-muted); max-width: 460px; margin: 0 auto 1.5rem; font-size: 0.92rem;">
-                            {% if busca %}
-                            Não encontramos tópicos correspondentes a "{{ busca }}".
-                            {% elif is_prof %}
-                            Não há tópicos criados para este filtro. Use o botão "+ Novo Tópico" na barra lateral para iniciar uma discussão!
-                            {% else %}
-                            Ainda não há tópicos publicados nesta seção para sua turma.
+                        {% else %}
+                        <!-- Empty State se não houver tópicos no filtro -->
+                        <div class="forum-empty-state">
+                            <div class="empty-icon-wrap" style="width: 60px; height: 60px; border-radius: 50%; background: rgba(20, 33, 61, 0.06); color: #14213D; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.1rem;">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                            </div>
+                            <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 0.4rem;">Nenhum tópico encontrado</h3>
+                            <p style="color: #6B7280; max-width: 460px; margin: 0 auto 1.35rem; font-size: 0.9rem;">
+                                {% if busca %}
+                                Não encontramos tópicos correspondentes a "{{ busca }}".
+                                {% elif is_prof %}
+                                Não há tópicos criados para este filtro. Use o botão "+ Criar Novo Tópico" para iniciar uma discussão!
+                                {% else %}
+                                Ainda não há tópicos publicados nesta seção para sua turma.
+                                {% endif %}
+                            </p>
+                            {% if busca or filtro_ativo != 'todas' %}
+                            <a href="/forum" class="forum-pill-btn" style="width: auto; display: inline-flex !important;">Ver Todos os Tópicos</a>
                             {% endif %}
-                        </p>
-                        {% if busca or filtro_ativo != 'todas' %}
-                        <a href="/forum" class="btn btn-secondary" style="border-radius: 10px; padding: 0.5rem 1.25rem; font-size: 0.85rem;">Ver Todos os Tópicos</a>
-                        {% endif %}
+                        </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
-                </div>
 
-                <!-- Empty State para busca no cliente -->
-                <div id="emptySearchForum" class="forum-empty-state hidden" style="display: none; margin-top: 1.5rem;">
-                    <div class="empty-icon-wrap" style="width: 60px; height: 60px; border-radius: 50%; background: rgba(56, 189, 248, 0.12); color: #38bdf8; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <!-- Empty State para busca no cliente -->
+                    <div id="emptySearchForum" class="forum-empty-state hidden" style="display: none; margin-top: 1.25rem;">
+                        <div class="empty-icon-wrap" style="width: 56px; height: 56px; border-radius: 50%; background: rgba(20, 33, 61, 0.06); color: #14213D; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        </div>
+                        <h3 style="font-size: 1.12rem; font-weight: 800; margin-bottom: 0.35rem;">Nenhum tópico corresponde à pesquisa</h3>
+                        <p style="color: #6B7280; font-size: 0.88rem; margin-bottom: 1.2rem;">Tente ajustar as palavras-chave ou selecionar outra categoria temática.</p>
+                        <button type="button" class="forum-pill-btn" onclick="limparBuscaLocal()" style="width: auto;">Limpar Pesquisa</button>
                     </div>
-                    <h3 style="font-size: 1.15rem;">Nenhum tópico corresponde à pesquisa</h3>
-                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">Tente ajustar as palavras-chave ou limpar a busca.</p>
-                    <button type="button" class="btn btn-secondary" onclick="limparBuscaLocal()" style="border-radius: 10px; font-size: 0.85rem;">Limpar Pesquisa</button>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
@@ -346,70 +1298,70 @@
 {% block modals %}
 {% if is_prof %}
 <!-- Modal de Criação de Tópico (Docente) -->
-<div id="modalCriarTopico" class="modal hidden">
+<div id="modalCriarTopico" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalCriarTopicoTitulo">
     <div class="modal-dialog modal-md">
-        <div class="card-moldura-outer" style="margin-bottom: 0; width: 100%; padding: 10px;">
-            <div class="modal-content hero-card-inner" style="padding: 0; text-align: left; display: block; border: none; box-shadow: none;">
-                <div class="modal-header" style="border-top-left-radius: inherit; border-top-right-radius: inherit;">
-                <div>
-                    <h3 class="modal-title" style="display: flex; align-items: center; gap: 8px;">
-                        <svg class="line-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                        Novo Tópico de Discussão
-                    </h3>
-                    <p class="modal-subtitle text-muted">Crie um tema no Fórum Geral ou selecione uma turma específica.</p>
-                </div>
-                <button type="button" class="btn-close-modal" onclick="fecharModalCriarTopico()">&times;</button>
-            </div>
-
-            <form id="formCriarTopico" style="padding: 1.5rem;">
-                <div class="form-group" style="margin-bottom: 1.25rem;">
-                    <label class="form-label" for="novoTopicoTitulo" style="font-weight: 600; font-size: 0.88rem;">Título do Tópico: *</label>
-                    <input type="text" id="novoTopicoTitulo" class="form-input" placeholder="Ex: Dicas para uso dos pronomes Y e EN..." required>
+        <div class="card-moldura-outer" style="margin-bottom: 0; width: 100%;">
+            <div class="modal-content hero-card-inner" style="padding: 0; text-align: left; display: block; border: none; box-shadow: none; background: transparent;">
+                <div class="modal-header" style="border-top-left-radius: inherit; border-top-right-radius: inherit; padding: 1.35rem 1.5rem; border-bottom: 1px solid #ECECEC;">
+                    <div>
+                        <h3 id="modalCriarTopicoTitulo" class="modal-title" style="display: flex; align-items: center; gap: 8px; font-weight: 800;">
+                            <svg class="line-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                            Novo Tópico de Discussão
+                        </h3>
+                        <p class="modal-subtitle text-muted" style="margin: 2px 0 0; font-size: 0.84rem;">Crie um tema no Fórum Geral ou selecione uma turma específica.</p>
+                    </div>
+                    <button type="button" class="btn-close-modal" onclick="fecharModalCriarTopico()" aria-label="Fechar janela de novo tópico">&times;</button>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
-                    <div class="form-group">
-                        <label class="form-label" for="novoTopicoTurma" style="font-weight: 600; font-size: 0.88rem;">Destino / Turma Alvo: *</label>
-                        <select id="novoTopicoTurma" class="form-input" required>
-                            <option value="geral" selected>🌐 Fórum Geral (Todos os Alunos)</option>
-                            <optgroup label="Turmas Específicas">
-                                {% for t in turmas %}
-                                <option value="{{ t.id }}">👥 {{ t.nome }}</option>
-                                {% endfor %}
-                            </optgroup>
-                        </select>
-                        <small class="text-muted" style="font-size: 0.74rem; display: block; margin-top: 4px;">
-                            No Fórum Geral, qualquer aluno tem acesso à discussão.
-                        </small>
+                <form id="formCriarTopico" style="padding: 1.5rem;">
+                    <div class="form-group" style="margin-bottom: 1.25rem;">
+                        <label class="form-label" for="novoTopicoTitulo" style="font-weight: 600; font-size: 0.88rem;">Título do Tópico: *</label>
+                        <input type="text" id="novoTopicoTitulo" class="form-input" placeholder="Ex: Dicas para uso dos pronomes Y e EN..." required>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="novoTopicoCategoria" style="font-weight: 600; font-size: 0.88rem;">Categoria Temática:</label>
-                        <select id="novoTopicoCategoria" class="form-input">
-                            <option value="geral">💬 Conversação & Geral</option>
-                            <option value="cultura">🎬 Cultura & Mídia Francesa</option>
-                            <option value="gramatica">📖 Gramática & Estrutura</option>
-                            <option value="vocabulario">📝 Vocabulário & Expressões</option>
-                            <option value="dicas">💡 Fonética & Dicas de Estudo</option>
-                            <option value="duvidas">❓ Dúvidas dos Alunos</option>
-                            <option value="debate">🗣️ Debate & Argumentação B2</option>
-                        </select>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+                        <div class="form-group">
+                            <label class="form-label" for="novoTopicoTurma" style="font-weight: 600; font-size: 0.88rem;">Destino / Turma Alvo: *</label>
+                            <select id="novoTopicoTurma" class="form-input" required>
+                                <option value="geral" selected>🌐 Fórum Geral (Todos os Alunos)</option>
+                                <optgroup label="Turmas Específicas">
+                                    {% for t in turmas %}
+                                    <option value="{{ t.id }}">👥 {{ t.nome }}</option>
+                                    {% endfor %}
+                                </optgroup>
+                            </select>
+                            <small class="text-muted" style="font-size: 0.74rem; display: block; margin-top: 4px;">
+                                No Fórum Geral, qualquer aluno tem acesso à discussão.
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="novoTopicoCategoria" style="font-weight: 600; font-size: 0.88rem;">Categoria Temática:</label>
+                            <select id="novoTopicoCategoria" class="form-input">
+                                <option value="geral">💬 Conversação & Geral</option>
+                                <option value="cultura">🎬 Cultura & Mídia Francesa</option>
+                                <option value="gramatica">📖 Gramática & Estrutura</option>
+                                <option value="vocabulario">📝 Vocabulário & Expressões</option>
+                                <option value="dicas">💡 Fonética & Dicas de Estudo</option>
+                                <option value="duvidas">❓ Dúvidas dos Alunos</option>
+                                <option value="debate">🗣️ Debate & Argumentação B2</option>
+                            </select>
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-group" style="margin-bottom: 1.5rem;">
-                    <label class="form-label" for="novoTopicoDescricao" style="font-weight: 600; font-size: 0.88rem;">Mensagem / Pergunta Disparadora: *</label>
-                    <textarea id="novoTopicoDescricao" class="form-input" rows="4" placeholder="Escreva o contexto da discussão ou uma questão provocativa para incentivar a participação dos estudantes..." required style="resize: vertical;"></textarea>
-                </div>
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label class="form-label" for="novoTopicoDescricao" style="font-weight: 600; font-size: 0.88rem;">Mensagem / Pergunta Disparadora: *</label>
+                        <textarea id="novoTopicoDescricao" class="form-input" rows="4" placeholder="Escreva o contexto da discussão ou uma questão provocativa para incentivar a participação dos estudantes..." required style="resize: vertical;"></textarea>
+                    </div>
 
-                <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 1rem;">
-                    <button type="button" class="btn btn-secondary" onclick="fecharModalCriarTopico()" style="border-radius: 10px;">Cancelar</button>
-                    <button type="submit" class="btn btn-primary" id="btnSalvarTopico" style="border-radius: 10px; display: inline-flex; align-items: center; gap: 6px;">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                        <span>Publicar Tópico</span>
-                    </button>
-                </div>
-            </form>
+                    <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #ECECEC; padding-top: 1rem;">
+                        <button type="button" class="btn btn-secondary" onclick="fecharModalCriarTopico()" style="border-radius: 999px; padding: 8px 18px;">Cancelar</button>
+                        <button type="submit" class="forum-pill-btn" id="btnSalvarTopico" style="width: auto;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                            <span>Publicar Tópico</span>
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -446,26 +1398,58 @@ document.addEventListener('click', (e) => {
             fecharFiltrosPopover();
         }
     }
+
+    const searchWrap = document.getElementById('forumSearchWrapper');
+    if (searchWrap && !searchWrap.contains(e.target)) {
+        fecharAutocompleteForum();
+    }
 });
 
 // ==========================================
-// FILTRAGEM INSTANTÂNEA E CATEGORIAS
+// FILTRAGEM INSTANTÂNEA, CHIPS E AUTOCOMPLETE
 // ==========================================
 let categoriaAtiva = 'todas';
+let indiceAutocompleteForum = -1;
+
+const CATEGORIA_NOMES_FORUM = {
+    'todas': 'Todas',
+    'cultura': '🎬 Cultura & Mídia',
+    'gramatica': '📖 Gramática',
+    'dicas': '💡 Fonética & Dicas',
+    'duvidas': '❓ Dúvidas',
+    'vocabulario': '📝 Vocabulário',
+    'debate': '🗣️ Debate B2',
+    'geral': '💬 Conversação'
+};
 
 function sincronizarBusca(valor) {
     const inputPrincipal = document.getElementById('inputBuscaForum');
     const inputPopover = document.getElementById('popoverInputBusca');
+    const btnClear = document.getElementById('btnClearBuscaForum');
+
     if (inputPrincipal && inputPrincipal !== document.activeElement) inputPrincipal.value = valor;
     if (inputPopover && inputPopover !== document.activeElement) inputPopover.value = valor;
-    
+
+    if (btnClear) {
+        btnClear.style.display = (valor && valor.trim().length > 0) ? 'inline-flex' : 'none';
+    }
+
     filtrarCardsLocalmente();
+    atualizarAutocompleteForum(valor);
 }
 
-function filtrarPorCategoria(btn, cat) {
-    document.querySelectorAll('#tabCategorias .btn-tab').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+function selecionarChipCategoriaForum(cat) {
     categoriaAtiva = cat;
+
+    // Sincroniza chips rápidos
+    document.querySelectorAll('#forumQuickChips .forum-chip-btn').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-cat') === cat);
+    });
+
+    // Sincroniza botões do popover da barra lateral
+    document.querySelectorAll('#tabCategorias .btn-tab').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-cat') === cat);
+    });
 
     const dot = document.getElementById('filtroAtivoDot');
     if (dot) {
@@ -475,17 +1459,121 @@ function filtrarPorCategoria(btn, cat) {
     filtrarCardsLocalmente();
 }
 
+function filtrarPorCategoria(btn, cat) {
+    selecionarChipCategoriaForum(cat);
+}
+
 function limparFiltrosForumPopover() {
     const inputPopover = document.getElementById('popoverInputBusca');
     if (inputPopover) inputPopover.value = '';
     const inputPrincipal = document.getElementById('inputBuscaForum');
     if (inputPrincipal) inputPrincipal.value = '';
+    const btnClear = document.getElementById('btnClearBuscaForum');
+    if (btnClear) btnClear.style.display = 'none';
 
-    const btnTodas = document.querySelector('#tabCategorias .btn-tab[data-cat="todas"]');
-    if (btnTodas) filtrarPorCategoria(btnTodas, 'todas');
-
+    selecionarChipCategoriaForum('todas');
     fecharFiltrosPopover();
+    fecharAutocompleteForum();
 }
+
+function escapeRegExpForum(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function destacarTermoForum(texto, termo) {
+    if (!termo) return texto;
+    const regex = new RegExp(`(${escapeRegExpForum(termo)})`, 'gi');
+    return texto.replace(regex, '<mark>$1</mark>');
+}
+
+function atualizarAutocompleteForum(valor) {
+    const dropdown = document.getElementById('autocompleteDropdownForum');
+    if (!dropdown) return;
+
+    const termo = (valor || '').trim().toLowerCase();
+    if (!termo) {
+        fecharAutocompleteForum();
+        return;
+    }
+
+    const cards = Array.from(document.querySelectorAll('.forum-card'));
+    const sugestoes = [];
+
+    cards.forEach(card => {
+        const id = card.getAttribute('data-id');
+        const tituloRaw = card.getAttribute('data-titulo-raw') || '';
+        const titulo = card.getAttribute('data-titulo') || '';
+        const desc = card.getAttribute('data-desc') || '';
+        const cat = card.getAttribute('data-categoria') || 'geral';
+        const autor = card.getAttribute('data-autor') || 'Docente';
+        const msgs = card.getAttribute('data-msgs') || '0';
+
+        if (titulo.includes(termo) || desc.includes(termo) || cat.includes(termo)) {
+            sugestoes.push({ id, tituloRaw, cat, autor, msgs });
+        }
+    });
+
+    if (sugestoes.length === 0) {
+        dropdown.innerHTML = `<div style="padding: 0.9rem; text-align: center; font-size: 0.84rem; color: #6B7280;">Nenhuma discussão encontrada para "<strong>${valor}</strong>"</div>`;
+        dropdown.classList.add('open');
+        indiceAutocompleteForum = -1;
+        return;
+    }
+
+    let html = `<div class="forum-ac-section-label">Discussões Encontradas (${sugestoes.length})</div>`;
+    sugestoes.slice(0, 6).forEach((item, idx) => {
+        const catLabel = CATEGORIA_NOMES_FORUM[item.cat] || '💬 Conversação';
+        html += `
+            <a href="/forum/topico/${item.id}" class="forum-ac-item" data-index="${idx}">
+                <div class="forum-ac-left">
+                    <span class="forum-ac-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    </span>
+                    <div class="forum-ac-text">
+                        <span class="forum-ac-title">${destacarTermoForum(item.tituloRaw, valor.trim())}</span>
+                        <span class="forum-ac-sub">${catLabel} • Por ${item.autor}</span>
+                    </div>
+                </div>
+                <span class="forum-ac-badge">${item.msgs} msgs</span>
+            </a>
+        `;
+    });
+
+    dropdown.innerHTML = html;
+    dropdown.classList.add('open');
+    indiceAutocompleteForum = -1;
+}
+
+function fecharAutocompleteForum() {
+    const dropdown = document.getElementById('autocompleteDropdownForum');
+    if (dropdown) {
+        dropdown.classList.remove('open');
+        indiceAutocompleteForum = -1;
+    }
+}
+
+document.getElementById('inputBuscaForum')?.addEventListener('keydown', (e) => {
+    const dropdown = document.getElementById('autocompleteDropdownForum');
+    if (!dropdown || !dropdown.classList.contains('open')) return;
+
+    const itens = dropdown.querySelectorAll('.forum-ac-item');
+    if (!itens.length) return;
+
+    if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        indiceAutocompleteForum = (indiceAutocompleteForum + 1) % itens.length;
+        itens.forEach((el, i) => el.classList.toggle('is-active', i === indiceAutocompleteForum));
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        indiceAutocompleteForum = (indiceAutocompleteForum - 1 + itens.length) % itens.length;
+        itens.forEach((el, i) => el.classList.toggle('is-active', i === indiceAutocompleteForum));
+    } else if (e.key === 'Enter' && indiceAutocompleteForum >= 0) {
+        e.preventDefault();
+        itens[indiceAutocompleteForum].click();
+    } else if (e.key === 'Escape') {
+        fecharAutocompleteForum();
+    }
+});
 
 function filtrarCardsLocalmente() {
     const termo = (document.getElementById('inputBuscaForum')?.value || document.getElementById('popoverInputBusca')?.value || '').toLowerCase().trim();
@@ -522,13 +1610,17 @@ function limparBuscaLocal() {
     if (inputPrincipal) inputPrincipal.value = '';
     const inputPopover = document.getElementById('popoverInputBusca');
     if (inputPopover) inputPopover.value = '';
+    const btnClear = document.getElementById('btnClearBuscaForum');
+    if (btnClear) btnClear.style.display = 'none';
+
+    fecharAutocompleteForum();
 
     const url = new URL(window.location.href);
     if (url.searchParams.has('busca')) {
         url.searchParams.delete('busca');
         window.location.href = url.toString();
     } else {
-        filtrarCardsLocalmente();
+        selecionarChipCategoriaForum('todas');
     }
 }
 
@@ -556,6 +1648,7 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         fecharModalCriarTopico();
         fecharFiltrosPopover();
+        fecharAutocompleteForum();
     }
 });
 

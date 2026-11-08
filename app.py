@@ -1,6 +1,6 @@
 import os
-from flask import Flask, send_from_directory
-from flask_wtf.csrf import CSRFProtect
+from flask import Flask, send_from_directory, jsonify, request
+from flask_wtf.csrf import CSRFProtect, CSRFError
 from flask_compress import Compress
 from dotenv import load_dotenv
 
@@ -11,22 +11,39 @@ app = Flask(__name__)
 csrf = CSRFProtect(app)
 compress = Compress(app)
 
+@app.errorhandler(CSRFError)
+def handle_csrf_error(e):
+    if request.path.startswith('/api/') or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return jsonify({"status": "erro", "mensagem": "Sessão expirada ou token de segurança ausente. Recarregue a página e tente novamente."}), 400
+    return e.description, 400
+
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'assistente_fran_dev_key_2026')
-app.config['TEMPLATES_AUTO_RELOAD'] = True
-app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000 # Cache de 1 ano para arquivos estáticos (Performance)
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Limite máximo de upload: 16 MB
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['SESSION_COOKIE_SECURE'] = os.getenv('SESSION_COOKIE_SECURE', 'False').lower() in ('true', '1')
+
+is_debug = os.getenv('FLASK_DEBUG', 'False').lower() in ('true', '1')
+app.config['TEMPLATES_AUTO_RELOAD'] = is_debug
+app.jinja_env.auto_reload = is_debug
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 if is_debug else 31536000
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Auto-inicialização dos Planos de Aula
+from blueprints.extensions import close_db_connections, init_schema_migrations
+app.teardown_appcontext(close_db_connections)
+
+# Auto-inicialização dos Planos de Aula e Migrações de Schema
 try:
     from seed_planos_aula import init_planos_aula
     import sqlite3
     DB_PATH = os.path.join(BASE_DIR, "educacao_ia.db")
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=15.0)
     init_planos_aula(conn)
+    init_schema_migrations(conn)
     conn.close()
 except Exception as _e:
-    print(f"[!] Aviso ao inicializar planos de aula: {_e}")
+    print(f"[!] Aviso ao inicializar planos de aula / migrações: {_e}")
 
 @app.route("/imagens/<path:filename>")
 def servir_imagens(filename):
@@ -87,4 +104,5 @@ app.register_blueprint(aluno_bp)
 app.register_blueprint(professor_bp)
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    port = int(os.getenv("PORT", 5000))
+    app.run(debug=is_debug, port=port)

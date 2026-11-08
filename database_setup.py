@@ -237,10 +237,27 @@ def init_db():
             tema_id INTEGER NOT NULL,
             mensagem_tutor TEXT NOT NULL,
             exercicios_json TEXT NOT NULL,
-            status TEXT DEFAULT 'pendente',
+            status TEXT DEFAULT 'Pendente',
             data_criacao TEXT DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (aluno_id) REFERENCES alunos(id) ON DELETE CASCADE,
             FOREIGN KEY (tema_id) REFERENCES temas(id) ON DELETE CASCADE
+        );
+    """)
+
+    # Tabela: presencas_aula (Diário de Classe / Frequência)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS presencas_aula (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            plano_id INTEGER NOT NULL,
+            turma_id INTEGER NOT NULL,
+            aluno_id INTEGER NOT NULL,
+            status TEXT NOT NULL DEFAULT 'Presente',
+            observacao TEXT,
+            data_registro TEXT DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(plano_id, aluno_id),
+            FOREIGN KEY (plano_id) REFERENCES planos_aula(id) ON DELETE CASCADE,
+            FOREIGN KEY (turma_id) REFERENCES turmas(id) ON DELETE CASCADE,
+            FOREIGN KEY (aluno_id) REFERENCES alunos(id) ON DELETE CASCADE
         );
     """)
 
@@ -352,7 +369,9 @@ def init_db():
         "CREATE INDEX IF NOT EXISTS idx_planos_aula_nivel ON planos_aula(nivel);",
         "CREATE INDEX IF NOT EXISTS idx_prova_questoes_avaliacao_id ON prova_questoes(avaliacao_id);",
         "CREATE INDEX IF NOT EXISTS idx_mensagens_destinatario ON mensagens_inbox(destinatario_id);",
-        "CREATE INDEX IF NOT EXISTS idx_forum_mensagens_topico ON forum_mensagens(topico_id);"
+        "CREATE INDEX IF NOT EXISTS idx_forum_mensagens_topico ON forum_mensagens(topico_id);",
+        "CREATE INDEX IF NOT EXISTS idx_presencas_plano_id ON presencas_aula(plano_id);",
+        "CREATE INDEX IF NOT EXISTS idx_presencas_aluno_id ON presencas_aula(aluno_id);"
     ]
     for idx in indexes:
         cursor.execute(idx)

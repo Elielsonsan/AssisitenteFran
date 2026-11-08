@@ -1,0 +1,1645 @@
+{% extends "base.html" %}
+
+{% block title %}Perfil Docente & Gestão de Alunos | Assistente Fran — Portal FLE{% endblock %}
+
+{% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,500;1,600;1,700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================================
+   PERFIL DOCENTE & GESTÃO DE ALUNOS — DESIGN EDITORIAL CLEAN
+   ============================================================================ */
+
+[data-theme="light"] body:has(.prof-perfil-editorial-wrapper) {
+    background-color: #F7F7F8 !important;
+}
+
+.page-container.dashboard-page.prof-perfil-page {
+    padding: 0 !important;
+    max-width: 100% !important;
+}
+
+.prof-perfil-editorial-wrapper {
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0.75rem 1.5rem 4.5rem;
+    box-sizing: border-box;
+}
+
+/* 1. Cabeçalho Editorial Aberto */
+.prof-perfil-hero {
+    text-align: center;
+    margin-bottom: 1.85rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.35rem 1rem 0;
+}
+
+.prof-perfil-title {
+    font-size: clamp(1.95rem, 3.8vw, 2.75rem);
+    font-weight: 800;
+    line-height: 1.14;
+    letter-spacing: -0.03em;
+    color: #14213D;
+    margin: 0 0 0.7rem;
+}
+
+[data-theme="dark"] .prof-perfil-title {
+    color: #FFFFFF;
+}
+
+.prof-perfil-title .serif-italic {
+    display: block;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: #14213D;
+    margin-top: 0.1rem;
+}
+
+[data-theme="dark"] .prof-perfil-title .serif-italic {
+    color: #FCA311;
+}
+
+.prof-perfil-subtitle {
+    max-width: 720px;
+    margin: 0 auto;
+    font-size: 0.96rem;
+    line-height: 1.6;
+    color: rgba(20, 33, 61, 0.72);
+    font-weight: 400;
+}
+
+[data-theme="dark"] .prof-perfil-subtitle {
+    color: rgba(248, 250, 252, 0.76);
+}
+
+.prof-perfil-subtitle strong {
+    color: #14213D;
+    font-weight: 700;
+}
+
+[data-theme="dark"] .prof-perfil-subtitle strong {
+    color: #FCA311;
+}
+
+/* 2. Grid dos 4 Mini-KPIs com Ondas Coloridas */
+.prof-perfil-kpis-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.1rem;
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+@media (max-width: 1040px) {
+    .prof-perfil-kpis-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .prof-perfil-kpis-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.prof-kpi-card {
+    background: #FFFFFF;
+    border: 1px solid #ECECEC;
+    border-radius: 26px;
+    padding: 1.3rem 1.35rem 1.2rem;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.02);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.8rem;
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.prof-kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 38px rgba(0, 0, 0, 0.065);
+}
+
+[data-theme="dark"] .prof-kpi-card {
+    background: #181920;
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
+}
+
+.prof-kpi-top-row {
+    display: grid;
+    grid-template-columns: 1fr 105px;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.prof-kpi-label {
+    font-size: 0.77rem;
+    font-weight: 600;
+    color: #6B7280;
+    display: block;
+    margin-bottom: 2px;
+}
+
+[data-theme="dark"] .prof-kpi-label {
+    color: #9CA3AF;
+}
+
+.prof-kpi-primary {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #111827;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+}
+
+[data-theme="dark"] .prof-kpi-primary {
+    color: #F9FAFB;
+}
+
+.prof-kpi-wave-svg {
+    width: 100%;
+    height: 46px;
+    overflow: visible;
+    display: block;
+}
+
+.prof-kpi-mid-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.prof-kpi-subval {
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: #1F2937;
+}
+
+[data-theme="dark"] .prof-kpi-subval {
+    color: #E5E7EB;
+}
+
+.prof-kpi-trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.77rem;
+    font-weight: 700;
+    color: #16A34A;
+}
+
+.prof-pill-btn {
+    background: #18191E !important;
+    color: #FFFFFF !important;
+    border-radius: 9999px !important;
+    padding: 8px 18px !important;
+    font-size: 0.79rem !important;
+    font-weight: 600 !important;
+    text-align: center;
+    text-decoration: none !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-shadow: 0 4px 12px rgba(24, 25, 30, 0.18) !important;
+    transition: all 0.2s ease !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.prof-pill-btn:hover {
+    background: #2D2F39 !important;
+    color: #FCA311 !important;
+    transform: translateY(-1px);
+}
+
+/* 3. Layout Split Editorial: Coluna Perfil Docente (390px) + Coluna Gestão de Alunos (1fr) */
+.prof-perfil-split-grid {
+    display: grid;
+    grid-template-columns: 390px 1fr;
+    gap: 1.35rem;
+    align-items: start;
+    width: 100%;
+}
+
+@media (max-width: 980px) {
+    .prof-perfil-split-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.prof-editorial-card {
+    background: #FFFFFF;
+    border: 1px solid #ECECEC;
+    border-radius: 26px;
+    padding: 1.65rem 1.7rem;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.02);
+    box-sizing: border-box;
+}
+
+[data-theme="dark"] .prof-editorial-card {
+    background: #181920;
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
+}
+
+/* Avatar do Professor + Upload */
+.prof-avatar-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-bottom: 1.2rem;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid #F1F5F9;
+}
+
+[data-theme="dark"] .prof-avatar-header {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.prof-avatar-wrap {
+    position: relative;
+    width: 76px;
+    height: 76px;
+    flex-shrink: 0;
+}
+
+.prof-avatar-circle {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    background: #18191E;
+    color: #FCA311;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    font-weight: 800;
+    overflow: hidden;
+    border: 2px solid #ECECEC;
+    box-shadow: 0 6px 16px rgba(24, 25, 30, 0.16);
+}
+
+.prof-avatar-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.prof-avatar-cam-btn {
+    position: absolute;
+    right: -2px;
+    bottom: -2px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #FCA311;
+    color: #14213D;
+    border: 2px solid #FFFFFF;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.15s ease;
+}
+
+.prof-avatar-cam-btn:hover {
+    transform: scale(1.08);
+}
+
+/* Inputs do Formulário Docente */
+.prof-form-group {
+    margin-bottom: 0.9rem;
+}
+
+.prof-form-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #64748B;
+    margin-bottom: 0.35rem;
+}
+
+[data-theme="dark"] .prof-form-label {
+    color: #94A3B8;
+}
+
+.prof-form-input,
+.prof-form-select,
+.prof-form-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.62rem 0.85rem;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: #111827;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    outline: none;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    font-family: inherit;
+}
+
+.prof-form-input:focus,
+.prof-form-select:focus,
+.prof-form-textarea:focus {
+    background: #FFFFFF;
+    border-color: #18191E;
+    box-shadow: 0 0 0 3px rgba(24, 25, 30, 0.07);
+}
+
+[data-theme="dark"] .prof-form-input,
+[data-theme="dark"] .prof-form-select,
+[data-theme="dark"] .prof-form-textarea {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #F8FAFC;
+}
+
+[data-theme="dark"] .prof-form-input:focus,
+[data-theme="dark"] .prof-form-select:focus,
+[data-theme="dark"] .prof-form-textarea:focus {
+    border-color: #FCA311;
+    box-shadow: 0 0 0 3px rgba(252, 163, 17, 0.15);
+}
+
+.prof-form-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+@media (max-width: 520px) {
+    .prof-form-row-2 {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Barra de Busca + Chips na Central de Alunos */
+.alunos-search-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 0.85rem;
+    position: relative;
+}
+
+.alunos-search-box {
+    flex: 1;
+    min-width: 220px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 999px;
+    padding: 0.48rem 0.95rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.alunos-search-box:focus-within {
+    background: #FFFFFF;
+    border-color: #18191E;
+    box-shadow: 0 0 0 3px rgba(24, 25, 30, 0.06);
+}
+
+[data-theme="dark"] .alunos-search-box {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.alunos-search-box input {
+    flex: 1;
+    border: none !important;
+    background: transparent !important;
+    outline: none !important;
+    box-shadow: none !important;
+    font-size: 0.88rem;
+    color: #111827;
+    padding: 0.15rem 0;
+}
+
+[data-theme="dark"] .alunos-search-box input {
+    color: #F9FAFB;
+}
+
+/* Chips Rápidos de Nível CEFR */
+.alunos-cefr-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-bottom: 1.15rem;
+}
+
+.cefr-chip-btn {
+    padding: 6px 13px;
+    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.16s ease;
+}
+
+.cefr-chip-btn:hover {
+    border-color: #18191E;
+    color: #111827;
+}
+
+.cefr-chip-btn.active {
+    background: #18191E;
+    color: #FFFFFF;
+    border-color: #18191E;
+}
+
+[data-theme="dark"] .cefr-chip-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #CBD5E1;
+}
+
+[data-theme="dark"] .cefr-chip-btn.active {
+    background: #FCA311;
+    color: #14213D;
+    border-color: #FCA311;
+}
+
+/* Lista Editorial de Alunos */
+.alunos-editorial-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.aluno-editorial-item {
+    display: grid;
+    grid-template-columns: minmax(210px, 1.5fr) minmax(130px, 0.9fr) minmax(130px, 0.85fr) auto;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.95rem 1.1rem;
+    border-radius: 18px;
+    background: #F8FAFC;
+    border: 1px solid #ECECEC;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.aluno-editorial-item:hover {
+    background: #FFFFFF;
+    border-color: #CBD5E1;
+    box-shadow: 0 8px 22px rgba(20, 33, 61, 0.05);
+}
+
+[data-theme="dark"] .aluno-editorial-item {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .aluno-editorial-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(252, 163, 17, 0.3);
+}
+
+@media (max-width: 780px) {
+    .aluno-editorial-item {
+        grid-template-columns: 1fr;
+        gap: 0.65rem;
+    }
+}
+
+.aluno-item-ident {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+.aluno-mini-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #14213D;
+    color: #FCA311;
+    font-size: 0.88rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+    border: 1px solid rgba(20, 33, 61, 0.12);
+}
+
+.aluno-mini-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.aluno-item-nome {
+    font-size: 0.93rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+[data-theme="dark"] .aluno-item-nome {
+    color: #F8FAFC;
+}
+
+.aluno-item-meta {
+    font-size: 0.76rem;
+    color: #64748B;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.aluno-item-meta code {
+    background: rgba(20, 33, 61, 0.07);
+    color: #14213D;
+    padding: 1px 6px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.73rem;
+}
+
+[data-theme="dark"] .aluno-item-meta code {
+    background: rgba(252, 163, 17, 0.15);
+    color: #FCA311;
+}
+
+/* Seletor Inline de Nível CEFR */
+.select-nivel-inline {
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 800;
+    border: 1px solid #CBD5E1;
+    background: #FFFFFF;
+    color: #14213D;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.15s ease;
+}
+
+.select-nivel-inline:hover,
+.select-nivel-inline:focus {
+    border-color: #18191E;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="dark"] .select-nivel-inline {
+    background: #181920;
+    border-color: rgba(255, 255, 255, 0.16);
+    color: #FCA311;
+}
+
+/* Botões de Ação de Cada Aluno */
+.aluno-item-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    justify-content: flex-end;
+}
+
+.btn-aluno-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 11px;
+    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    border: 1px solid #E2E8F0;
+    background: #FFFFFF;
+    color: #1E293B;
+    cursor: pointer;
+    transition: all 0.16s ease;
+}
+
+.btn-aluno-action:hover {
+    background: #18191E;
+    color: #FFFFFF;
+    border-color: #18191E;
+}
+
+.btn-aluno-action.danger:hover {
+    background: #DC2626;
+    color: #FFFFFF;
+    border-color: #DC2626;
+}
+
+[data-theme="dark"] .btn-aluno-action {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #E2E8F0;
+}
+
+/* Modais Editoriais */
+.prof-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.58);
+    backdrop-filter: blur(5px);
+    z-index: 2200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+}
+
+.prof-modal-backdrop.open {
+    display: flex;
+}
+
+.prof-modal-dialog {
+    width: 100%;
+    max-width: 560px;
+    background: #FFFFFF;
+    border: 1px solid #ECECEC;
+    border-radius: 26px;
+    padding: 1.75rem 1.85rem;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+[data-theme="dark"] .prof-modal-dialog {
+    background: #181920;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Toast Feedback */
+.prof-toast-feedback {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 3000;
+    background: #18191E;
+    color: #FFFFFF;
+    padding: 0.85rem 1.35rem;
+    border-radius: 999px;
+    font-size: 0.86rem;
+    font-weight: 600;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.25);
+    display: none;
+    align-items: center;
+    gap: 8px;
+}
+
+.prof-toast-feedback.show {
+    display: inline-flex;
+    animation: fadePerfilAutocompleteIn 0.2s ease;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container dashboard-page prof-perfil-page">
+    <div class="prof-perfil-editorial-wrapper">
+
+        <!-- 1. CABEÇALHO EDITORIAL ABERTO -->
+        <header class="prof-perfil-hero">
+            <h1 class="prof-perfil-title">
+                Perfil Docente &amp;
+                <span class="serif-italic">Gestion Académique FLE</span>
+            </h1>
+            <p class="prof-perfil-subtitle">
+                Gerencie suas <strong>credenciais acadêmicas, foto de perfil e sala virtual</strong>, e administre diretamente o quadro de alunos: <strong>matrícula, ajuste rápido de nível CEFR, transferência de turma e exclusão</strong>.
+            </p>
+        </header>
+
+        <!-- 2. 4 MINI-KPIS COM ONDAS COLORIDAS -->
+        <section class="prof-perfil-kpis-grid" aria-label="Indicadores Docentes e de Alunos">
+            <!-- KPI 1: Alunos Matriculados -->
+            <article class="prof-kpi-card">
+                <div class="prof-kpi-top-row">
+                    <div>
+                        <span class="prof-kpi-label">Alunos Matriculados</span>
+                        <div class="prof-kpi-primary" id="kpiTotalAlunos">{{ total_alunos }}</div>
+                    </div>
+                    <svg class="prof-kpi-wave-svg" viewBox="0 0 120 46" fill="none" aria-hidden="true">
+                        <defs>
+                            <linearGradient id="profWaveDark" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#18191E" stop-opacity="0.24"/>
+                                <stop offset="100%" stop-color="#18191E" stop-opacity="0.0"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M2 36 C24 30, 42 18, 66 20 C88 22, 102 10, 118 6 L118 44 L2 44 Z" fill="url(#profWaveDark)"/>
+                        <path d="M2 36 C24 30, 42 18, 66 20 C88 22, 102 10, 118 6" stroke="#18191E" stroke-width="2.6" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="prof-kpi-mid-row">
+                    <span class="prof-kpi-subval">Quadro Discente Ativo</span>
+                    <span class="prof-kpi-trend">▲ A1 ao C2</span>
+                </div>
+                <div>
+                    <button type="button" class="prof-pill-btn" onclick="abrirModalMatricularAluno()">
+                        <span>➕ Matricular Novo Aluno</span>
+                    </button>
+                </div>
+            </article>
+
+            <!-- KPI 2: Turmas Ativas -->
+            <article class="prof-kpi-card">
+                <div class="prof-kpi-top-row">
+                    <div>
+                        <span class="prof-kpi-label">Turmas FLE Ativas</span>
+                        <div class="prof-kpi-primary" id="kpiTotalTurmas">{{ total_turmas }}</div>
+                    </div>
+                    <svg class="prof-kpi-wave-svg" viewBox="0 0 120 46" fill="none" aria-hidden="true">
+                        <defs>
+                            <linearGradient id="profWaveGreen" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#10B981" stop-opacity="0.26"/>
+                                <stop offset="100%" stop-color="#10B981" stop-opacity="0.0"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M2 34 C28 24, 52 28, 76 16 C94 8, 108 12, 118 5 L118 44 L2 44 Z" fill="url(#profWaveGreen)"/>
+                        <path d="M2 34 C28 24, 52 28, 76 16 C94 8, 108 12, 118 5" stroke="#10B981" stroke-width="2.6" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="prof-kpi-mid-row">
+                    <span class="prof-kpi-subval">Organização por Ciclo</span>
+                    <span class="prof-kpi-trend">▲ {{ total_turmas }} turmas</span>
+                </div>
+                <div>
+                    <button type="button" class="prof-pill-btn" onclick="abrirModalGerenciarTurmas()">
+                        <span>🏫 Gerenciar Turmas</span>
+                    </button>
+                </div>
+            </article>
+
+            <!-- KPI 3: Aproveitamento Geral -->
+            <article class="prof-kpi-card">
+                <div class="prof-kpi-top-row">
+                    <div>
+                        <span class="prof-kpi-label">Aproveitamento Médio</span>
+                        <div class="prof-kpi-primary">{{ media_acerto_geral }}%</div>
+                    </div>
+                    <svg class="prof-kpi-wave-svg" viewBox="0 0 120 46" fill="none" aria-hidden="true">
+                        <defs>
+                            <linearGradient id="profWaveAmber" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.26"/>
+                                <stop offset="100%" stop-color="#F59E0B" stop-opacity="0.0"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M2 35 C24 32, 48 16, 72 19 C92 21, 106 9, 118 7 L118 44 L2 44 Z" fill="url(#profWaveAmber)"/>
+                        <path d="M2 35 C24 32, 48 16, 72 19 C92 21, 106 9, 118 7" stroke="#F59E0B" stroke-width="2.6" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="prof-kpi-mid-row">
+                    <span class="prof-kpi-subval">{{ total_submissoes_geral }} submissões</span>
+                    <span class="prof-kpi-trend" style="color:#D97706;">▲ Relatório FLE</span>
+                </div>
+                <div>
+                    <a href="/api/relatorio/exportar_csv" class="prof-pill-btn">
+                        <span>📊 Exportar Boletim CSV</span>
+                    </a>
+                </div>
+            </article>
+
+            <!-- KPI 4: Credencial Docente -->
+            <article class="prof-kpi-card">
+                <div class="prof-kpi-top-row">
+                    <div>
+                        <span class="prof-kpi-label">Credencial Docente</span>
+                        <div class="prof-kpi-primary" style="font-size:1.55rem;">{{ professor.status_acesso or 'Ativo' }}</div>
+                    </div>
+                    <svg class="prof-kpi-wave-svg" viewBox="0 0 120 46" fill="none" aria-hidden="true">
+                        <defs>
+                            <linearGradient id="profWaveBlue" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.26"/>
+                                <stop offset="100%" stop-color="#3B82F6" stop-opacity="0.0"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M2 36 C25 26, 48 22, 74 14 C94 8, 108 10, 118 6 L118 44 L2 44 Z" fill="url(#profWaveBlue)"/>
+                        <path d="M2 36 C25 26, 48 22, 74 14 C94 8, 108 10, 118 6" stroke="#3B82F6" stroke-width="2.6" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="prof-kpi-mid-row">
+                    <span class="prof-kpi-subval" id="kpiProfUsuario">@{{ professor.usuario }}</span>
+                    <span class="prof-kpi-trend" style="color:#2563EB;">▲ Titular FLE</span>
+                </div>
+                <div>
+                    <button type="button" class="prof-pill-btn" onclick="focarFormularioProfessor()">
+                        <span>✏️ Editar Meu Perfil</span>
+                    </button>
+                </div>
+            </article>
+        </section>
+
+        <!-- 3. SPLIT GRID: MEU PERFIL DOCENTE (ESQUERDA) + GESTÃO DE ALUNOS (DIREITA) -->
+        <div class="prof-perfil-split-grid">
+
+            <!-- COLUNA ESQUERDA: MEU PERFIL DOCENTE -->
+            <section class="prof-editorial-card" id="cardPerfilProfessor" aria-labelledby="tituloMeuPerfilDocente">
+                <div class="prof-avatar-header">
+                    <div class="prof-avatar-wrap">
+                        <div class="prof-avatar-circle" id="profAvatarPreviewWrap">
+                            {% if professor.foto_perfil %}
+                                <img src="{{ professor.foto_perfil }}" alt="{{ professor.nome_completo }}" id="profAvatarImg">
+                            {% else %}
+                                <span id="profAvatarInitials">{{ professor.nome_completo | iniciais }}</span>
+                            {% endif %}
+                        </div>
+                        <label for="inputFotoProfessor" class="prof-avatar-cam-btn" title="Alterar foto de perfil">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+                                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                                <circle cx="12" cy="13" r="4"/>
+                            </svg>
+                        </label>
+                    </div>
+                    <div style="min-width:0; flex:1;">
+                        <span style="display:inline-block; font-size:0.7rem; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:#D97706; background:rgba(252,163,17,0.14); padding:2px 9px; border-radius:999px; margin-bottom:4px;">
+                            Professor Titular FLE
+                        </span>
+                        <h2 id="tituloMeuPerfilDocente" style="font-size:1.18rem; font-weight:800; color:#14213D; margin:0 0 2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                            {{ professor.nome_completo }}
+                        </h2>
+                        <div style="font-size:0.78rem; color:#64748B;">
+                            Login: <code id="badgeProfLogin">{{ professor.usuario }}</code>
+                        </div>
+                        {% if professor.foto_perfil %}
+                        <button type="button" id="btnRemoverFotoProf" onclick="marcarRemoverFotoProfessor()" style="margin-top:6px; background:none; border:none; color:#DC2626; font-size:0.74rem; font-weight:700; cursor:pointer; padding:0;">
+                            🗑️ Remover foto atual
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <form id="formPerfilProfessor" onsubmit="salvarPerfilProfessor(event)" enctype="multipart/form-data">
+                    <input type="file" id="inputFotoProfessor" name="foto_perfil" accept=".png,.jpg,.jpeg,.webp,.gif" style="display:none;" onchange="previsualizarFotoProfessor(this)">
+                    <input type="hidden" id="inputRemoverFotoProf" name="remover_foto" value="0">
+
+                    <div class="prof-form-group">
+                        <label class="prof-form-label" for="profNomeCompleto">Nome Completo *</label>
+                        <input type="text" id="profNomeCompleto" name="nome_completo" class="prof-form-input" value="{{ professor.nome_completo or '' }}" required placeholder="Ex: Prof. Jean-Luc Moreau">
+                    </div>
+
+                    <div class="prof-form-row-2">
+                        <div class="prof-form-group">
+                            <label class="prof-form-label" for="profUsuario">Usuário (Login) *</label>
+                            <input type="text" id="profUsuario" name="usuario" class="prof-form-input" value="{{ professor.usuario or '' }}" required placeholder="Ex: admin">
+                        </div>
+                        <div class="prof-form-group">
+                            <label class="prof-form-label" for="profTelefone">Telefone / WhatsApp</label>
+                            <input type="text" id="profTelefone" name="telefone" class="prof-form-input" value="{{ professor.telefone or '' }}" placeholder="(11) 99999-0000">
+                        </div>
+                    </div>
+
+                    <div class="prof-form-group">
+                        <label class="prof-form-label" for="profEmail">E-mail Institucional</label>
+                        <input type="email" id="profEmail" name="email" class="prof-form-input" value="{{ professor.email or professor.email_acesso or '' }}" placeholder="professor@escola.com">
+                    </div>
+
+                    <div class="prof-form-group">
+                        <label class="prof-form-label" for="profFormacao">Formação Acadêmica &amp; Titulação</label>
+                        <input type="text" id="profFormacao" name="formacao_academica" class="prof-form-input" value="{{ professor.formacao_academica or '' }}" placeholder="Ex: Licenciatura em Letras Francês / Master FLE">
+                    </div>
+
+                    <div class="prof-form-group">
+                        <label class="prof-form-label" for="profEspecializacao">Especialização CEFR / DELF-DALF</label>
+                        <input type="text" id="profEspecializacao" name="especializacao" class="prof-form-input" value="{{ professor.especializacao or '' }}" placeholder="Ex: Examinador DELF-DALF & Didática FLE">
+                    </div>
+
+                    <div class="prof-form-group">
+                        <label class="prof-form-label" for="profSalaVirtual">Link da Sala Virtual (Meet / Zoom)</label>
+                        <input type="url" id="profSalaVirtual" name="link_sala_virtual" class="prof-form-input" value="{{ professor.link_sala_virtual or '' }}" placeholder="https://meet.google.com/...">
+                    </div>
+
+                    <div class="prof-form-group">
+                        <label class="prof-form-label" for="profMiniCurriculo">Mini-Currículo / Bio Pedagógica</label>
+                        <textarea id="profMiniCurriculo" name="mini_curriculo" rows="3" class="prof-form-textarea" placeholder="Resumo da experiência docente no ensino de Francês Língua Estrangeira...">{{ professor.mini_curriculo or '' }}</textarea>
+                    </div>
+
+                    <div class="prof-form-group">
+                        <label class="prof-form-label" for="profNovaSenha">Nova Senha de Acesso (Opcional)</label>
+                        <input type="password" id="profNovaSenha" name="nova_senha" class="prof-form-input" placeholder="Deixe em branco para manter a senha atual">
+                    </div>
+
+                    <button type="submit" class="prof-pill-btn" id="btnSalvarPerfilProfessor" style="padding:11px 22px !important; font-size:0.86rem !important; margin-top:0.35rem;">
+                        <span>💾 Salvar Alterações do Meu Perfil</span>
+                    </button>
+                </form>
+            </section>
+
+            <!-- COLUNA DIREITA: CENTRAL DE GESTÃO DE ALUNOS (MATRÍCULA, NÍVEL CEFR, EDIÇÃO, EXCLUSÃO) -->
+            <section class="prof-editorial-card" id="cardGestaoAlunos" aria-labelledby="tituloGestaoAlunos">
+                <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:0.75rem; margin-bottom:1.1rem; padding-bottom:0.95rem; border-bottom:1px solid #F1F5F9;">
+                    <div>
+                        <span style="font-size:0.72rem; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:#10B981;">
+                            Administração Discente &amp; Nivelamento QECR
+                        </span>
+                        <h2 id="tituloGestaoAlunos" style="font-size:1.25rem; font-weight:800; color:#14213D; margin:2px 0 0;">
+                            Quadro de Alunos (<span id="contadorAlunosVisiveis">{{ total_alunos }}</span>)
+                        </h2>
+                    </div>
+                    <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
+                        <button type="button" class="btn-aluno-action" onclick="abrirModalGerenciarTurmas()" style="padding:7px 14px;">
+                            🏫 Turmas ({{ total_turmas }})
+                        </button>
+                        <button type="button" class="prof-pill-btn" onclick="abrirModalMatricularAluno()" style="width:auto; padding:8px 16px !important;">
+                            ➕ Matricular Aluno
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Barra de Busca + Filtro de Turma -->
+                <div class="alunos-search-toolbar">
+                    <div class="alunos-search-box">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2.2">
+                            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        </svg>
+                        <input type="text" id="inputBuscaAlunosPerfil" placeholder="Buscar aluno por nome, matrícula ou turma..." oninput="filtrarAlunosPerfil()">
+                        <button type="button" id="btnLimparBuscaAlunos" onclick="limparBuscaAlunosPerfil()" style="display:none; border:none; background:#E2E8F0; color:#334155; border-radius:50%; width:22px; height:22px; font-size:0.8rem; cursor:pointer;">×</button>
+                    </div>
+
+                    <select id="filtroTurmaAlunos" class="prof-form-select" style="width:auto; min-width:190px; border-radius:999px; padding:0.5rem 1rem;" onchange="filtrarAlunosPerfil()">
+                        <option value="todas">Todas as Turmas ({{ total_turmas }})</option>
+                        {% for t in turmas %}
+                        <option value="{{ t.id }}">{{ t.nome }} ({{ t.total_alunos }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Chips Rápidos de Nível CEFR -->
+                <div class="alunos-cefr-chips" role="tablist" aria-label="Filtrar alunos por nível CEFR">
+                    <button type="button" class="cefr-chip-btn active" data-nivel="TODOS" onclick="selecionarChipNivelAluno('TODOS', this)">Todos os Níveis</button>
+                    <button type="button" class="cefr-chip-btn" data-nivel="A1" onclick="selecionarChipNivelAluno('A1', this)">🌱 A1 Iniciante</button>
+                    <button type="button" class="cefr-chip-btn" data-nivel="A2" onclick="selecionarChipNivelAluno('A2', this)">🌿 A2 Elementar</button>
+                    <button type="button" class="cefr-chip-btn" data-nivel="B1" onclick="selecionarChipNivelAluno('B1', this)">📘 B1 Intermediário</button>
+                    <button type="button" class="cefr-chip-btn" data-nivel="B2" onclick="selecionarChipNivelAluno('B2', this)">📙 B2 Independente</button>
+                    <button type="button" class="cefr-chip-btn" data-nivel="C1" onclick="selecionarChipNivelAluno('C1', this)">🎓 C1–C2 Avançado</button>
+                </div>
+
+                <!-- Lista de Alunos -->
+                <div class="alunos-editorial-list" id="listaAlunosContainer">
+                    {% for a in alunos %}
+                    <article class="aluno-editorial-item"
+                             id="alunoRow-{{ a.id }}"
+                             data-aluno-id="{{ a.id }}"
+                             data-nome="{{ a.nome_completo }}"
+                             data-matricula="{{ a.matricula }}"
+                             data-turma-id="{{ a.turma_id }}"
+                             data-turma-nome="{{ a.turma_nome }}"
+                             data-nivel="{{ a.nivel_cefr }}"
+                             data-email="{{ a.email or '' }}"
+                             data-telefone="{{ a.telefone or '' }}"
+                             data-turno="{{ a.turno or 'Matutino' }}">
+                        <!-- 1. Identificação do Aluno -->
+                        <div class="aluno-item-ident">
+                            <div class="aluno-mini-avatar">
+                                {% if a.foto_url %}
+                                    <img src="{{ a.foto_url }}" alt="{{ a.nome_completo }}">
+                                {% else %}
+                                    <span>{{ a.nome_completo | iniciais }}</span>
+                                {% endif %}
+                            </div>
+                            <div style="min-width:0;">
+                                <h3 class="aluno-item-nome" id="alunoNome-{{ a.id }}">{{ a.nome_completo }}</h3>
+                                <div class="aluno-item-meta">
+                                    <code id="alunoMat-{{ a.id }}">{{ a.matricula }}</code>
+                                    <span>•</span>
+                                    <span id="alunoTurmaBadge-{{ a.id }}">{{ a.turma_nome }}</span>
+                                    <span>•</span>
+                                    <span id="alunoTurnoBadge-{{ a.id }}">{{ a.turno or 'Matutino' }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. Ajuste Rápido de Nível CEFR -->
+                        <div>
+                            <label class="sr-only" for="selectNivel-{{ a.id }}">Nível CEFR de {{ a.nome_completo }}</label>
+                            <div style="font-size:0.68rem; font-weight:700; color:#64748B; text-transform:uppercase; margin-bottom:3px;">Nível CEFR</div>
+                            <select id="selectNivel-{{ a.id }}" class="select-nivel-inline" onchange="ajustarNivelAlunoRapido({{ a.id }}, this.value)" title="Ajustar nível CEFR instantaneamente">
+                                {% for nv in ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] %}
+                                <option value="{{ nv }}" {% if a.nivel_cefr == nv %}selected{% endif %}>Nível {{ nv }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- 3. Desempenho Resumido -->
+                        <div>
+                            <div style="display:flex; justify-content:space-between; font-size:0.74rem; font-weight:700; color:#334155; margin-bottom:4px;">
+                                <span>{{ a.taxa_acerto }}% acerto</span>
+                                <span style="color:#64748B;">{{ a.total_atividades }} atv.</span>
+                            </div>
+                            <div style="width:100%; height:6px; background:#E2E8F0; border-radius:999px; overflow:hidden;">
+                                <div style="height:100%; width:{{ a.taxa_acerto }}%; background:{% if a.taxa_acerto >= 70 %}#10B981{% elif a.taxa_acerto >= 50 %}#F59E0B{% else %}#64748B{% endif %}; border-radius:999px;"></div>
+                            </div>
+                        </div>
+
+                        <!-- 4. Ações: Editar / Remover -->
+                        <div class="aluno-item-actions">
+                            <button type="button" class="btn-aluno-action" onclick="abrirModalEditarAluno({{ a.id }})" title="Editar cadastro, turma, nível ou redefinir senha">
+                                ✏️ Editar
+                            </button>
+                            <button type="button" class="btn-aluno-action danger" onclick="confirmarExclusaoAluno({{ a.id }}, {{ a.nome_completo | tojson }})" title="Remover aluno">
+                                🗑️ Remover
+                            </button>
+                        </div>
+                    </article>
+                    {% endfor %}
+                </div>
+
+                <!-- Estado Vazio de Filtro -->
+                <div id="estadoVazioAlunosPerfil" style="display:{% if alunos %}none{% else %}block{% endif %}; text-align:center; padding:2.5rem 1rem; color:#64748B;">
+                    <div style="font-size:2rem; margin-bottom:0.5rem;">🎓</div>
+                    <p style="font-size:0.95rem; font-weight:700; color:#1E293B; margin:0 0 0.35rem;">Nenhum aluno encontrado para este filtro.</p>
+                    <p style="font-size:0.83rem; margin:0 0 1rem;">Ajuste os termos de busca ou matricule um novo aluno na plataforma.</p>
+                    <button type="button" class="prof-pill-btn" onclick="abrirModalMatricularAluno()" style="width:auto;">➕ Matricular Novo Aluno</button>
+                </div>
+            </section>
+
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================================================
+     MODAL 1: MATRICULAR NOVO ALUNO
+     ========================================================================== -->
+<div class="prof-modal-backdrop" id="modalMatricularAluno" role="dialog" aria-modal="true" aria-labelledby="tituloModalMatricular">
+    <div class="prof-modal-dialog">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.1rem;">
+            <div>
+                <span style="font-size:0.72rem; font-weight:800; text-transform:uppercase; color:#10B981;">Nova Matrícula FLE</span>
+                <h3 id="tituloModalMatricular" style="font-size:1.25rem; font-weight:800; color:#14213D; margin:2px 0 0;">Matricular Novo Aluno</h3>
+            </div>
+            <button type="button" onclick="fecharModalMatricularAluno()" style="border:none; background:#F1F5F9; border-radius:50%; width:32px; height:32px; font-size:1.1rem; cursor:pointer;">×</button>
+        </div>
+
+        <form id="formMatricularAluno" onsubmit="submeterMatriculaAluno(event)">
+            <div class="prof-form-group">
+                <label class="prof-form-label" for="novoAlunoNome">Nome Completo do Aluno *</label>
+                <input type="text" id="novoAlunoNome" class="prof-form-input" required placeholder="Ex: Camille Laurent">
+            </div>
+
+            <div class="prof-form-row-2">
+                <div class="prof-form-group">
+                    <label class="prof-form-label" for="novoAlunoMatricula">Matrícula (Login) *</label>
+                    <div style="display:flex; gap:6px;">
+                        <input type="text" id="novoAlunoMatricula" class="prof-form-input" required placeholder="Ex: 2026105">
+                        <button type="button" class="btn-aluno-action" onclick="gerarMatriculaAutomatica()" title="Gerar número de matrícula automático" style="white-space:nowrap;">⚡ Gerar</button>
+                    </div>
+                </div>
+                <div class="prof-form-group">
+                    <label class="prof-form-label" for="novoAlunoSenha">Senha Inicial *</label>
+                    <input type="text" id="novoAlunoSenha" class="prof-form-input" required value="123456" placeholder="Senha inicial">
+                </div>
+            </div>
+
+            <div class="prof-form-row-2">
+                <div class="prof-form-group">
+                    <label class="prof-form-label" for="novoAlunoTurma">Turma Vinculada *</label>
+                    <select id="novoAlunoTurma" class="prof-form-select" required>
+                        {% for t in turmas %}
+                        <option value="{{ t.id }}">{{ t.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="prof-form-group">
+                    <label class="prof-form-label" for="novoAlunoNivel">Nível CEFR Inicial *</label>
+                    <select id="novoAlunoNivel" class="prof-form-select" required>
+                        <option value="A1">A1 — Iniciante (Découverte)</option>
+                        <option value="A2" selected>A2 — Elementar (Survie)</option>
+                        <option value="B1">B1 — Intermediário (Seuil)</option>
+                        <option value="B2">B2 — Independente (Avancé)</option>
+                        <option value="C1">C1 — Autônomo</option>
+                        <option value="C2">C2 — Maestria</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="prof-form-row-2">
+                <div class="prof-form-group">
+                    <label class="prof-form-label" for="novoAlunoTurno">Turno</label>
+                    <select id="novoAlunoTurno" class="prof-form-select">
+                        <option value="Matutino">Matutino</option>
+                        <option value="Vespertino">Vespertino</option>
+                        <option value="Noturno">Noturno</option>
+                        <option value="Integral">Integral</option>
+                    </select>
+                </div>
+                <div class="prof-form-group">
+                    <label class="prof-form-label" for="novoAlunoTelefone">Telefone / WhatsApp</label>
+                    <input type="text" id="novoAlunoTelefone" class="prof-form-input" placeholder="(11) 98888-0000">
+                </div>
+            </div>
+
+            <div class="prof-form-group">
+                <label class="prof-form-label" for="novoAlunoEmail">E-mail do Aluno</label>
+                <input type="email" id="novoAlunoEmail" class="prof-form-input" placeholder="aluno@email.com">
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:0.65rem; margin-top:1.25rem;">
+                <button type="button" class="btn-aluno-action" onclick="fecharModalMatricularAluno()" style="padding:9px 18px;">Cancelar</button>
+                <button type="submit" class="prof-pill-btn" style="width:auto; padding:9px 22px !important;">✅ Confirmar Matrícula</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ==========================================================================
+     MODAL 2: EDITAR ALUNO (DADOS, TURMA, NÍVEL CEFR, SENHA)
+     ========================================================================== -->
+<div class="prof-modal-backdrop" id="modalEditarAluno" role="dialog" aria-modal="true" aria-labelledby="tituloModalEditarAluno">
+    <div class="prof-modal-dialog">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.1rem;">
+            <div>
+                <span style="font-size:0.72rem; font-weight:800; text-transform:uppercase; color:#F59E0B;">Ficha Cadastral &amp; Nivelamento</span>
+                <h3 id="tituloModalEditarAluno" style="font-size:1.25rem; font-weight:800; color:#14213D; margin:2px 0 0;">Editar Aluno</h3>
+            </div>
+            <button type="button" onclick="fecharModalEditarAluno()" style="border:none; background:#F1F5F9; border-radius:50%; width:32px; height:32px; font-size:1.1rem; cursor:pointer;">×</button>
+        </div>
+
+        <form id="formEditarAluno" onsubmit="submeterEdicaoAluno(event)">
+            <input type="hidden" id="editAlunoId">
+
+            <div class="prof-form-group">
+                <label class="prof-form-label" for="editAlunoNome">Nome Completo *</label>
+                <input type="text" id="editAlunoNome" class="prof-form-input" required>
+            </div>
+
+            <div class="prof-form-row-2">
+                <div class="prof-form-group">
+                    <label class="prof-form-label" for="editAlunoMatricula">Matrícula (Login) *</label>
+                    <input type="text" id="editAlunoMatricula" class="prof-form-input" required>
+                </div>
+                <div class="prof-form-group">
+                    <label class="prof-form-label" for="editAlunoTurno">Turno</label>
+                    <select id="editAlunoTurno" class="prof-form-select">
+                        <option value="Matutino">Matutino</option>
+                        <option value="Vespertino">Vespertino</option>
+                        <option value="Noturno">Noturno</option>
+                        <option value="Integral">Integral</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="prof-form-row-2">
+                <div class="prof-form-group">
+                    <label class="prof-form-label" for="editAlunoTurma">Turma *</label>
+                    <select id="editAlunoTurma" class="prof-form-select" required>
+                        {% for t in turmas %}
+                        <option value="{{ t.id }}">{{ t.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="prof-form-group">
+                    <label class="prof-form-label" for="editAlunoNivel">Nível CEFR *</label>
+                    <select id="editAlunoNivel" class="prof-form-select" required>
+                        <option value="A1">A1 — Iniciante</option>
+                        <option value="A2">A2 — Elementar</option>
+                        <option value="B1">B1 — Intermediário</option>
+                        <option value="B2">B2 — Independente</option>
+                        <option value="C1">C1 — Autônomo</option>
+                        <option value="C2">C2 — Maestria</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="prof-form-row-2">
+                <div class="prof-form-group">
+                    <label class="prof-form-label" for="editAlunoEmail">E-mail</label>
+                    <input type="email" id="editAlunoEmail" class="prof-form-input" placeholder="aluno@email.com">
+                </div>
+                <div class="prof-form-group">
+                    <label class="prof-form-label" for="editAlunoTelefone">Telefone</label>
+                    <input type="text" id="editAlunoTelefone" class="prof-form-input" placeholder="(11) 98888-0000">
+                </div>
+            </div>
+
+            <div class="prof-form-group">
+                <label class="prof-form-label" for="editAlunoSenha">Redefinir Senha do Aluno (Opcional)</label>
+                <input type="password" id="editAlunoSenha" class="prof-form-input" placeholder="Deixe em branco para manter a senha atual">
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:0.65rem; margin-top:1.25rem;">
+                <button type="button" class="btn-aluno-action" onclick="fecharModalEditarAluno()" style="padding:9px 18px;">Cancelar</button>
+                <button type="submit" class="prof-pill-btn" style="width:auto; padding:9px 22px !important;">💾 Salvar Alterações</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ==========================================================================
+     MODAL 3: GERENCIAR TURMAS (CRIAR, RENOMEAR, EXCLUIR)
+     ========================================================================== -->
+<div class="prof-modal-backdrop" id="modalGerenciarTurmas" role="dialog" aria-modal="true" aria-labelledby="tituloModalTurmas">
+    <div class="prof-modal-dialog">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.1rem;">
+            <div>
+                <span style="font-size:0.72rem; font-weight:800; text-transform:uppercase; color:#3B82F6;">Organização Pedagógica</span>
+                <h3 id="tituloModalTurmas" style="font-size:1.25rem; font-weight:800; color:#14213D; margin:2px 0 0;">Gerenciar Turmas FLE</h3>
+            </div>
+            <button type="button" onclick="fecharModalGerenciarTurmas()" style="border:none; background:#F1F5F9; border-radius:50%; width:32px; height:32px; font-size:1.1rem; cursor:pointer;">×</button>
+        </div>
+
+        <form onsubmit="criarNovaTurmaPerfil(event)" style="display:flex; gap:0.5rem; margin-bottom:1.2rem;">
+            <input type="text" id="inputNomeNovaTurma" class="prof-form-input" required placeholder="Nome da nova turma (ex: Francês B2 - Conversação)">
+            <button type="submit" class="prof-pill-btn" style="width:auto; white-space:nowrap; padding:9px 18px !important;">➕ Criar Turma</button>
+        </form>
+
+        <div id="listaTurmasModal" style="display:flex; flex-direction:column; gap:0.55rem;">
+            {% for t in turmas %}
+            <div class="aluno-editorial-item" style="grid-template-columns: 1fr auto; padding:0.75rem 1rem;" id="turmaItemModal-{{ t.id }}">
+                <div>
+                    <strong style="font-size:0.9rem; color:#14213D;" id="turmaNomeTexto-{{ t.id }}">{{ t.nome }}</strong>
+                    <span style="font-size:0.76rem; color:#64748B; margin-left:6px;">({{ t.total_alunos }} alunos)</span>
+                </div>
+                <div style="display:flex; gap:0.4rem;">
+                    <button type="button" class="btn-aluno-action" onclick="renomearTurmaPerfil({{ t.id }}, {{ t.nome | tojson }})">✏️ Renomear</button>
+                    <button type="button" class="btn-aluno-action danger" onclick="excluirTurmaPerfil({{ t.id }}, {{ t.nome | tojson }})">🗑️ Excluir</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Toast Global da Página -->
+<div id="profToastFeedback" class="prof-toast-feedback" role="status" aria-live="polite"></div>
+
+<script>
+let filtroNivelAtual = 'TODOS';
+
+function mostrarToastProf(mensagem, isErro = false) {
+    const t = document.getElementById('profToastFeedback');
+    if (!t) return;
+    t.textContent = (isErro ? '⚠️ ' : '✅ ') + mensagem;
+    t.style.background = isErro ? '#DC2626' : '#18191E';
+    t.classList.add('show');
+    clearTimeout(window._profToastTimer);
+    window._profToastTimer = setTimeout(() => t.classList.remove('show'), 3600);
+}
+
+function focarFormularioProfessor() {
+    const input = document.getElementById('profNomeCompleto');
+    if (input) {
+        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => input.focus(), 300);
+    }
+}
+
+function previsualizarFotoProfessor(input) {
+    if (!input.files || !input.files[0]) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const wrap = document.getElementById('profAvatarPreviewWrap');
+        if (wrap) {
+            wrap.innerHTML = `<img src="${e.target.result}" alt="Prévia da foto" id="profAvatarImg">`;
+        }
+        document.getElementById('inputRemoverFotoProf').value = '0';
+    };
+    reader.readAsDataURL(input.files[0]);
+}
+
+function marcarRemoverFotoProfessor() {
+    document.getElementById('inputRemoverFotoProf').value = '1';
+    const fileInput = document.getElementById('inputFotoProfessor');
+    if (fileInput) fileInput.value = '';
+    const nome = (document.getElementById('profNomeCompleto').value || 'PA').trim();
+    const partes = nome.split(/\s+/).filter(Boolean);
+    const ini = partes.length >= 2 ? (partes[0][0] + partes[partes.length - 1][0]).toUpperCase() : nome.slice(0, 2).toUpperCase();
+    document.getElementById('profAvatarPreviewWrap').innerHTML = `<span id="profAvatarInitials">${ini}</span>`;
+    mostrarToastProf('Foto marcada para remoção. Clique em Salvar Alterações para confirmar.');
+}
+
+async function salvarPerfilProfessor(ev) {
+    ev.preventDefault();
+    const form = document.getElementById('formPerfilProfessor');
+    const btn = document.getElementById('btnSalvarPerfilProfessor');
+    const formData = new FormData(form);
+
+    if (btn) btn.disabled = true;
+    try {
+        const resp = await fetch('/api/professor/atualizar_perfil', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await resp.json();
+        if (data.status === 'sucesso') {
+            mostrarToastProf(data.mensagem || 'Perfil atualizado com sucesso!');
+            if (data.professor) {
+                document.getElementById('tituloMeuPerfilDocente').textContent = data.professor.nome_completo;
+                document.getElementById('badgeProfLogin').textContent = data.professor.usuario;
+                document.getElementById('kpiProfUsuario').textContent = '@' + data.professor.usuario;
+                const navName = document.querySelector('.nav-user-name');
+                if (navName) navName.textContent = data.professor.nome_completo;
+                document.getElementById('profNovaSenha').value = '';
+            }
+        } else {
+            mostrarToastProf(data.mensagem || 'Não foi possível salvar o perfil.', true);
+        }
+    } catch (err) {
+        mostrarToastProf('Erro de conexão ao salvar o perfil.', true);
+    } finally {
+        if (btn) btn.disabled = false;
+    }
+}
+
+/* ================= FILTROS E BUSCA DE ALUNOS ================= */
+function selecionarChipNivelAluno(nivel, btnEl) {
+    filtroNivelAtual = nivel;
+    document.querySelectorAll('.cefr-chip-btn').forEach(b => b.classList.remove('active'));
+    if (btnEl) btnEl.classList.add('active');
+    filtrarAlunosPerfil();
+}
+
+function limparBuscaAlunosPerfil() {
+    const inp = document.getElementById('inputBuscaAlunosPerfil');
+    if (inp) inp.value = '';
+    filtrarAlunosPerfil();
+}
+
+function filtrarAlunosPerfil() {
+    const termo = (document.getElementById('inputBuscaAlunosPerfil').value || '').trim().toLowerCase();
+    const turmaId = document.getElementById('filtroTurmaAlunos').value;
+    const btnClear = document.getElementById('btnLimparBuscaAlunos');
+    if (btnClear) btnClear.style.display = termo ? 'inline-block' : 'none';
+
+    let visiveis = 0;
+    document.querySelectorAll('.aluno-editorial-item[data-aluno-id]').forEach(row => {
+        const nome = (row.dataset.nome || '').toLowerCase();
+        const mat = (row.dataset.matricula || '').toLowerCase();
+        const tNome = (row.dataset.turmaNome || '').toLowerCase();
+        const rTurma = row.dataset.turmaId || '';
+        const rNivel = (row.dataset.nivel || 'A2').toUpperCase();
+
+        const matchTexto = !termo || nome.includes(termo) || mat.includes(termo) || tNome.includes(termo);
+        const matchTurma = (turmaId === 'todas') || (String(rTurma) === String(turmaId));
+        let matchNivel = true;
+        if (filtroNivelAtual === 'C1') {
+            matchNivel = (rNivel === 'C1' || rNivel === 'C2');
+        } else if (filtroNivelAtual !== 'TODOS') {
+            matchNivel = (rNivel === filtroNivelAtual);
+        }
+
+        if (matchTexto && matchTurma && matchNivel) {
+            row.style.display = '';
+            visiveis++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    const cont = document.getElementById('contadorAlunosVisiveis');
+    if (cont) cont.textContent = visiveis;
+    const vazio = document.getElementById('estadoVazioAlunosPerfil');
+    if (vazio) vazio.style.display = visiveis === 0 ? 'block' : 'none';
+}
+
+/* ================= AJUSTE RÁPIDO DE NÍVEL CEFR ================= */
+async function ajustarNivelAlunoRapido(alunoId, novoNivel) {
+    try {
+        const resp = await fetch(`/api/alunos/${alunoId}/nivel`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nivel_cefr: novoNivel })
+        });
+        const data = await resp.json();
+        if (data.status === 'sucesso') {
+            const row = document.getElementById(`alunoRow-${alunoId}`);
+            if (row) row.dataset.nivel = novoNivel;
+            mostrarToastProf(data.mensagem || `Nível atualizado para ${novoNivel}!`);
+        } else {
+            mostrarToastProf(data.mensagem || 'Erro ao atualizar nível.', true);
+        }
+    } catch (e) {
+        mostrarToastProf('Falha ao atualizar nível do aluno.', true);
+    }
+}
+
+/* ================= MATRICULAR NOVO ALUNO ================= */
+function abrirModalMatricularAluno() {
+    document.getElementById('formMatricularAluno').reset();
+    gerarMatriculaAutomatica();
+    document.getElementById('modalMatricularAluno').classList.add('open');
+}
+
+function fecharModalMatricularAluno() {
+    document.getElementById('modalMatricularAluno').classList.remove('open');
+}
+
+function gerarMatriculaAutomatica() {
+    const ano = new Date().getFullYear();
+    const aleatorio = Math.floor(1000 + Math.random() * 9000);
+    const inp = document.getElementById('novoAlunoMatricula');
+    if (inp) inp.value = `${ano}${aleatorio}`;
+}
+
+async function submeterMatriculaAluno(ev) {
+    ev.preventDefault();
+    const payload = {
+        nome: document.getElementById('novoAlunoNome').value.trim(),
+        matricula: document.getElementById('novoAlunoMatricula').value.trim(),
+        senha: document.getElementById('novoAlunoSenha').value.trim(),
+        turma_id: document.getElementById('novoAlunoTurma').value,
+        nivel_cefr: document.getElementById('novoAlunoNivel').value,
+        turno: document.getElementById('novoAlunoTurno').value,
+        telefone: document.getElementById('novoAlunoTelefone').value.trim(),
+        email: document.getElementById('novoAlunoEmail').value.trim()
+    };
+
+    try {
+        const resp = await fetch('/api/alunos/cadastrar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const data = await resp.json();
+        if (data.status === 'sucesso') {
+            fecharModalMatricularAluno();
+            mostrarToastProf(data.mensagem || 'Aluno matriculado com sucesso!');
+            setTimeout(() => window.location.reload(), 600);
+        } else {
+            mostrarToastProf(data.mensagem || 'Erro ao matricular aluno.', true);
+        }
+    } catch (e) {
+        mostrarToastProf('Erro de conexão ao matricular aluno.', true);
+    }
+}
+
+/* ================= EDITAR ALUNO ================= */
+function abrirModalEditarAluno(alunoId) {
+    const row = document.getElementById(`alunoRow-${alunoId}`);
+    if (!row) return;
+    document.getElementById('editAlunoId').value = alunoId;
+    document.getElementById('editAlunoNome').value = row.dataset.nome || '';
+    document.getElementById('editAlunoMatricula').value = row.dataset.matricula || '';
+    document.getElementById('editAlunoTurma').value = row.dataset.turmaId || '';
+    document.getElementById('editAlunoNivel').value = row.dataset.nivel || 'A2';
+    document.getElementById('editAlunoTurno').value = row.dataset.turno || 'Matutino';
+    document.getElementById('editAlunoEmail').value = row.dataset.email || '';
+    document.getElementById('editAlunoTelefone').value = row.dataset.telefone || '';
+    document.getElementById('editAlunoSenha').value = '';
+    document.getElementById('modalEditarAluno').classList.add('open');
+}
+
+function fecharModalEditarAluno() {
+    document.getElementById('modalEditarAluno').classList.remove('open');
+}
+
+async function submeterEdicaoAluno(ev) {
+    ev.preventDefault();
+    const alunoId = document.getElementById('editAlunoId').value;
+    const payload = {
+        nome: document.getElementById('editAlunoNome').value.trim(),
+        matricula: document.getElementById('editAlunoMatricula').value.trim(),
+        turma_id: document.getElementById('editAlunoTurma').value,
+        nivel_cefr: document.getElementById('editAlunoNivel').value,
+        turno: document.getElementById('editAlunoTurno').value,
+        email: document.getElementById('editAlunoEmail').value.trim(),
+        telefone: document.getElementById('editAlunoTelefone').value.trim(),
+        senha: document.getElementById('editAlunoSenha').value.trim()
+    };
+
+    try {
+        const resp = await fetch(`/api/alunos/${alunoId}/editar`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const data = await resp.json();
+        if (data.status === 'sucesso') {
+            const row = document.getElementById(`alunoRow-${alunoId}`);
+            if (row && data.aluno) {
+                row.dataset.nome = data.aluno.nome;
+                row.dataset.matricula = data.aluno.matricula;
+                row.dataset.turmaId = data.aluno.turma_id;
+                row.dataset.turmaNome = data.aluno.turma_nome;
+                row.dataset.nivel = data.aluno.nivel_cefr;
+                row.dataset.turno = data.aluno.turno;
+                row.dataset.email = data.aluno.email;
+                row.dataset.telefone = data.aluno.telefone;
+
+                document.getElementById(`alunoNome-${alunoId}`).textContent = data.aluno.nome;
+                document.getElementById(`alunoMat-${alunoId}`).textContent = data.aluno.matricula;
+                document.getElementById(`alunoTurmaBadge-${alunoId}`).textContent = data.aluno.turma_nome;
+                document.getElementById(`alunoTurnoBadge-${alunoId}`).textContent = data.aluno.turno;
+                const selNivel = document.getElementById(`selectNivel-${alunoId}`);
+                if (selNivel) selNivel.value = data.aluno.nivel_cefr;
+            }
+            fecharModalEditarAluno();
+            mostrarToastProf(data.mensagem || 'Dados do aluno atualizados!');
+        } else {
+            mostrarToastProf(data.mensagem || 'Erro ao atualizar aluno.', true);
+        }
+    } catch (e) {
+        mostrarToastProf('Erro de conexão ao salvar alterações do aluno.', true);
+    }
+}
+
+/* ================= REMOVER ALUNO ================= */
+async function confirmarExclusaoAluno(alunoId, nomeAluno) {
+    if (!confirm(`Tem certeza que deseja remover o(a) aluno(a) "${nomeAluno}"?\nEsta ação também removerá o histórico de atividades vinculado.`)) {
+        return;
+    }
+    try {
+        const resp = await fetch(`/api/alunos/${alunoId}/excluir`, { method: 'POST' });
+        const data = await resp.json();
+        if (data.status === 'sucesso') {
+            const row = document.getElementById(`alunoRow-${alunoId}`);
+            if (row) row.remove();
+            filtrarAlunosPerfil();
+            const kpi = document.getElementById('kpiTotalAlunos');
+            if (kpi) kpi.textContent = Math.max(0, parseInt(kpi.textContent || '1', 10) - 1);
+            mostrarToastProf(data.mensagem || 'Aluno removido com sucesso!');
+        } else {
+            mostrarToastProf(data.mensagem || 'Não foi possível remover o aluno.', true);
+        }
+    } catch (e) {
+        mostrarToastProf('Erro de conexão ao remover aluno.', true);
+    }
+}
+
+/* ================= GERENCIAR TURMAS ================= */
+function abrirModalGerenciarTurmas() {
+    document.getElementById('modalGerenciarTurmas').classList.add('open');
+}
+
+function fecharModalGerenciarTurmas() {
+    document.getElementById('modalGerenciarTurmas').classList.remove('open');
+}
+
+async function criarNovaTurmaPerfil(ev) {
+    ev.preventDefault();
+    const inp = document.getElementById('inputNomeNovaTurma');
+    const nome = (inp.value || '').trim();
+    if (!nome) return;
+    try {
+        const resp = await fetch('/api/turmas/cadastrar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nome })
+        });
+        const data = await resp.json();
+        if (data.status === 'sucesso') {
+            mostrarToastProf(data.mensagem || 'Turma criada!');
+            setTimeout(() => window.location.reload(), 500);
+        } else {
+            mostrarToastProf(data.mensagem || 'Erro ao criar turma.', true);
+        }
+    } catch (e) {
+        mostrarToastProf('Erro de conexão ao criar turma.', true);
+    }
+}
+
+async function renomearTurmaPerfil(turmaId, nomeAtual) {
+    const novoNome = prompt('Novo nome para a turma:', nomeAtual);
+    if (!novoNome || novoNome.trim() === nomeAtual) return;
+    try {
+        const resp = await fetch(`/api/turmas/${turmaId}/editar`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nome: novoNome.trim() })
+        });
+        const data = await resp.json();
+        if (data.status === 'sucesso') {
+            mostrarToastProf(data.mensagem || 'Turma renomeada!');
+            setTimeout(() => window.location.reload(), 500);
+        } else {
+            mostrarToastProf(data.mensagem || 'Erro ao renomear turma.', true);
+        }
+    } catch (e) {
+        mostrarToastProf('Erro ao renomear turma.', true);
+    }
+}
+
+async function excluirTurmaPerfil(turmaId, nomeTurma) {
+    if (!confirm(`Deseja excluir a turma "${nomeTurma}"? (Apenas turmas sem alunos vinculados podem ser excluídas)`)) return;
+    try {
+        const resp = await fetch(`/api/turmas/${turmaId}/excluir`, { method: 'POST' });
+        const data = await resp.json();
+        if (data.status === 'sucesso') {
+            mostrarToastProf(data.mensagem || 'Turma excluída!');
+            setTimeout(() => window.location.reload(), 500);
+        } else {
+            mostrarToastProf(data.mensagem || 'Não foi possível excluir a turma.', true);
+        }
+    } catch (e) {
+        mostrarToastProf('Erro ao excluir turma.', true);
+    }
+}
+</script>
+{% endblock %}

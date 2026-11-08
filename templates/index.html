@@ -2,49 +2,915 @@
 
 {% block title %}Prática de Francês | Assistente Fran — Feedback Inteligente{% endblock %}
 
+{% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,500;1,600;1,700&display=swap" rel="stylesheet">
+<style>
+/* ===================================================================
+   Página de Prática — Design Editorial Clean (Inspirado na Referência)
+   Paleta Modo Claro: #FFFFFF | #E5E5E5 | #FCA311 | #14213D | #000000
+   =================================================================== */
+
+[data-theme="light"] body:has(.pratica-editorial-page) {
+    background-color: #F7F7F8 !important;
+}
+
+.pratica-editorial-page {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 1.25rem 1rem 4rem;
+}
+
+/* 1. Cabeçalho Editorial Aberto (Sem caixa externa, inspirado na 1ª imagem) */
+.pratica-hero-header {
+    text-align: center;
+    margin-bottom: 2.4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.pratica-pill-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.38rem 0.95rem;
+    border-radius: 999px;
+    background: rgba(20, 33, 61, 0.06);
+    color: #14213D;
+    font-size: 0.76rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    margin-bottom: 1.15rem;
+}
+
+[data-theme="dark"] .pratica-pill-badge {
+    background: rgba(255, 255, 255, 0.08);
+    color: #f8fafc;
+}
+
+.pratica-editorial-title {
+    font-size: clamp(2rem, 4.2vw, 3.1rem);
+    font-weight: 700;
+    line-height: 1.14;
+    letter-spacing: -0.03em;
+    color: #14213D;
+    margin: 0 0 1rem;
+}
+
+[data-theme="dark"] .pratica-editorial-title {
+    color: #FFFFFF;
+}
+
+.pratica-editorial-title .serif-italic {
+    display: block;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-top: 0.1rem;
+}
+
+.pratica-editorial-subtitle {
+    max-width: 630px;
+    margin: 0 auto;
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: rgba(20, 33, 61, 0.72);
+    font-weight: 400;
+}
+
+[data-theme="dark"] .pratica-editorial-subtitle {
+    color: rgba(248, 250, 252, 0.75);
+}
+
+.pratica-editorial-subtitle strong {
+    color: #14213D;
+    font-weight: 600;
+}
+
+[data-theme="dark"] .pratica-editorial-subtitle strong {
+    color: #FCA311;
+}
+
+/* 2. Card Principal Clean (Sem faixa tricolor superior e sem borda dupla) */
+.pratica-main-card.form-card {
+    position: relative;
+    background: #FFFFFF !important;
+    border-radius: 28px !important;
+    padding: 2.2rem 2.2rem 2.4rem !important;
+    border: 1px solid rgba(229, 229, 229, 0.75) !important;
+    box-shadow: 0 18px 50px rgba(20, 33, 61, 0.05) !important;
+    overflow: visible !important;
+}
+
+.pratica-main-card.form-card::before {
+    display: none !important;
+    content: none !important;
+}
+
+[data-theme="dark"] .pratica-main-card.form-card {
+    background: rgba(15, 23, 42, 0.85) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* Topo do Card: Meta à esquerda + Botão Escuro Flutuante à direita (Estilo "Get in touch" da 1ª imagem) */
+.pratica-card-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.pratica-top-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    text-align: left;
+}
+
+.pratica-meta-label {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: rgba(20, 33, 61, 0.52);
+}
+
+[data-theme="dark"] .pratica-meta-label {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.pratica-meta-value {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #14213D;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-color: rgba(20, 33, 61, 0.3);
+}
+
+[data-theme="dark"] .pratica-meta-value {
+    color: #FFFFFF;
+    text-decoration-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Botão Escuro com Sombra Suave (Inspirado no "Get in touch" da 1ª imagem) */
+.btn-dark-touch {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.78rem 1.35rem;
+    border-radius: 14px;
+    background: #14213D !important;
+    color: #FFFFFF !important;
+    border: 1px solid #14213D !important;
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 12px 24px rgba(20, 33, 61, 0.22) !important;
+    transition: all 0.22s ease;
+}
+
+.btn-dark-touch:hover {
+    background: #FCA311 !important;
+    border-color: #FCA311 !important;
+    color: #000000 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px rgba(252, 163, 17, 0.3) !important;
+}
+
+/* 3. Blocos Internos Suaves (Inspirados nas faixas cinza-claro da 1ª imagem) */
+.pratica-soft-row {
+    background: #F7F7F8;
+    border-radius: 16px;
+    padding: 1.1rem 1.35rem;
+    margin-bottom: 0.95rem;
+    border: 1px solid transparent;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.pratica-soft-row:focus-within {
+    border-color: #E5E5E5;
+    background: #F3F4F6;
+}
+
+[data-theme="dark"] .pratica-soft-row {
+    background: rgba(30, 41, 59, 0.55);
+}
+
+.pratica-row-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.45rem;
+}
+
+.pratica-row-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: #14213D !important;
+    margin: 0 !important;
+}
+
+[data-theme="dark"] .pratica-row-label {
+    color: #f1f5f9 !important;
+}
+
+/* Ícone Circular Escuro à Direita (Inspirado nos botões "+" circulares da 1ª imagem) */
+.pratica-circle-badge {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #14213D;
+    color: #FFFFFF;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(20, 33, 61, 0.18);
+    flex-shrink: 0;
+}
+
+.pratica-audio-circle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.38rem 0.85rem;
+    border-radius: 999px;
+    background: #14213D !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    font-size: 0.76rem;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(20, 33, 61, 0.18);
+    transition: all 0.2s ease;
+}
+
+.pratica-audio-circle-btn:hover {
+    background: #FCA311 !important;
+    color: #000000 !important;
+}
+
+/* Inputs Clean dentro dos blocos suaves */
+.pratica-soft-row .form-input,
+.pratica-soft-row .form-textarea {
+    width: 100%;
+    background: #FFFFFF !important;
+    border: 1px solid #E5E5E5 !important;
+    border-radius: 12px !important;
+    padding: 0.75rem 1rem !important;
+    color: #14213D !important;
+    font-size: 0.94rem !important;
+    box-shadow: none !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+[data-theme="dark"] .pratica-soft-row .form-input,
+[data-theme="dark"] .pratica-soft-row .form-textarea {
+    background: rgba(15, 23, 42, 0.75) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    color: #f8fafc !important;
+}
+
+.pratica-soft-row .form-input:focus,
+.pratica-soft-row .form-textarea:focus {
+    border-color: #FCA311 !important;
+    box-shadow: 0 0 0 3px rgba(252, 163, 17, 0.18) !important;
+}
+
+/* Barra de Acentos Franceses Minimalista com Espaçamento Adequado */
+.pratica-soft-row .french-chars-toolbar {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin-top: 1.25rem !important;
+    margin-bottom: 0.35rem !important;
+    box-shadow: none !important;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.french-chars-helper-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.15rem;
+}
+
+.french-chars-helper-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.77rem;
+    font-weight: 500;
+    color: rgba(20, 33, 61, 0.7);
+    line-height: 1.35;
+}
+
+[data-theme="dark"] .french-chars-helper-label {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.pratica-soft-row .french-chars-toolbar .toolbar-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.pratica-soft-row .french-char-btn {
+    background: #FFFFFF !important;
+    border: 1px solid #E5E5E5 !important;
+    color: #14213D !important;
+    border-radius: 8px !important;
+    font-weight: 500;
+    font-size: 0.88rem !important;
+    padding: 0.35rem 0.65rem !important;
+    min-width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+    transition: all 0.15s ease;
+}
+
+.pratica-soft-row .french-char-btn:hover {
+    border-color: #FCA311 !important;
+    background: #FCA311 !important;
+    color: #000000 !important;
+}
+
+[data-theme="dark"] .pratica-soft-row .french-char-btn {
+    background: rgba(30, 41, 59, 0.7) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    color: #f8fafc !important;
+}
+
+[data-theme="dark"] .pratica-soft-row .french-char-btn:hover {
+    border-color: #FCA311 !important;
+    background: #FCA311 !important;
+    color: #000000 !important;
+}
+
+/* Botão Principal de Submissão */
+.pratica-submit-wrap {
+    margin-top: 1.35rem;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.pratica-submit-btn {
+    width: 100%;
+    padding: 0.95rem 1.6rem !important;
+    border-radius: 14px !important;
+    background: #14213D !important;
+    color: #FFFFFF !important;
+    border: 1px solid #14213D !important;
+    font-size: 0.96rem !important;
+    font-weight: 600 !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    box-shadow: 0 12px 26px rgba(20, 33, 61, 0.18) !important;
+    transition: all 0.22s ease;
+}
+
+.pratica-submit-btn:hover {
+    background: #FCA311 !important;
+    border-color: #FCA311 !important;
+    color: #000000 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px rgba(252, 163, 17, 0.28) !important;
+}
+
+/* Autocomplete + Lista de Opções para Tema da Atividade */
+.tema-autocomplete-wrap {
+    position: relative;
+    width: 100%;
+}
+
+.tema-input-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.tema-search-icon {
+    position: absolute;
+    left: 13px;
+    color: rgba(20, 33, 61, 0.45);
+    pointer-events: none;
+    display: inline-flex;
+}
+
+[data-theme="dark"] .tema-search-icon {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.pratica-soft-row .form-input.tema-search-input {
+    padding-left: 2.35rem !important;
+    padding-right: 4.2rem !important;
+    cursor: pointer;
+}
+
+.tema-input-actions {
+    position: absolute;
+    right: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.btn-clear-tema,
+.btn-toggle-tema-list {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: rgba(20, 33, 61, 0.55);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.btn-clear-tema:hover,
+.btn-toggle-tema-list:hover {
+    background: rgba(20, 33, 61, 0.08);
+    color: #14213D;
+}
+
+[data-theme="dark"] .btn-clear-tema,
+[data-theme="dark"] .btn-toggle-tema-list {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.tema-dropdown-panel {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    z-index: 60;
+    background: #FFFFFF;
+    border: 1px solid #E5E5E5;
+    border-radius: 14px;
+    box-shadow: 0 16px 40px rgba(20, 33, 61, 0.12);
+    max-height: 250px;
+    overflow-y: auto;
+    padding: 0.4rem;
+    display: none;
+}
+
+.tema-dropdown-panel.open {
+    display: block;
+}
+
+[data-theme="dark"] .tema-dropdown-panel {
+    background: #0f172a;
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+}
+
+.tema-options-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.tema-option-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.62rem 0.85rem;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: #14213D;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+[data-theme="dark"] .tema-option-item {
+    color: #f1f5f9;
+}
+
+.tema-option-item:hover,
+.tema-option-item.highlighted {
+    background: #F7F7F8;
+    color: #000000;
+}
+
+[data-theme="dark"] .tema-option-item:hover,
+[data-theme="dark"] .tema-option-item.highlighted {
+    background: rgba(255, 255, 255, 0.08);
+    color: #FFFFFF;
+}
+
+.tema-option-item.selected {
+    background: rgba(252, 163, 17, 0.14);
+    color: #14213D;
+    font-weight: 600;
+}
+
+[data-theme="dark"] .tema-option-item.selected {
+    background: rgba(252, 163, 17, 0.2);
+    color: #FCA311;
+}
+
+.tema-option-badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(20, 33, 61, 0.06);
+    color: #14213D;
+    flex-shrink: 0;
+}
+
+[data-theme="dark"] .tema-option-badge {
+    background: rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+}
+
+.tema-empty-msg {
+    padding: 0.85rem;
+    text-align: center;
+    font-size: 0.84rem;
+    color: rgba(20, 33, 61, 0.55);
+    display: none;
+}
+
+/* 3. Bloco Unificado: Tema + Formato da Atividade */
+.pratica-config-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+}
+
+.pratica-formato-row {
+    margin-top: 0.15rem;
+}
+
+.modalidades-pills-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.modalidade-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.46rem 0.9rem;
+    border-radius: 999px;
+    background: #FFFFFF;
+    border: 1px solid #E5E5E5;
+    color: #14213D;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.modalidade-pill:hover {
+    border-color: #FCA311;
+    background: rgba(252, 163, 17, 0.08);
+}
+
+.modalidade-pill.active {
+    background: #14213D !important;
+    color: #FFFFFF !important;
+    border-color: #14213D !important;
+    box-shadow: 0 4px 12px rgba(20, 33, 61, 0.2);
+}
+
+[data-theme="dark"] .modalidade-pill {
+    background: rgba(15, 23, 42, 0.8);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #e2e8f0;
+}
+
+[data-theme="dark"] .modalidade-pill.active {
+    background: #FCA311 !important;
+    color: #000000 !important;
+    border-color: #FCA311 !important;
+}
+
+/* Botão Proeminente: Gerar Desafio de IA posicionado logo após Tema e Atividade */
+.pratica-gerar-btn-wrapper {
+    margin-top: 0.25rem;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.btn-gerar-desafio-prominente {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 0.72rem 1.45rem;
+    background: #14213D;
+    color: #FFFFFF;
+    border: 1px solid #14213D;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(20, 33, 61, 0.16);
+    transition: all 0.22s ease;
+}
+
+.btn-gerar-desafio-prominente:hover {
+    background: #FCA311;
+    border-color: #FCA311;
+    color: #000000;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(252, 163, 17, 0.28);
+}
+
+[data-theme="dark"] .btn-gerar-desafio-prominente {
+    background: #FCA311;
+    border-color: #FCA311;
+    color: #000000;
+    box-shadow: 0 4px 14px rgba(252, 163, 17, 0.25);
+}
+
+/* 4. Resposta Dinâmica Adaptada por Modalidade */
+.resposta-dinamica-bloco {
+    width: 100%;
+}
+
+.resposta-opcao-instrucao {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: rgba(20, 33, 61, 0.7);
+    margin-bottom: 0.65rem;
+}
+
+[data-theme="dark"] .resposta-opcao-instrucao {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+/* Modalidade 1: Verdadeiro ou Falso (Cards clicáveis) */
+.vf-options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 12px;
+    margin-bottom: 0.65rem;
+}
+
+.vf-card-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0.9rem 1.15rem;
+    background: #FFFFFF;
+    border: 2px solid #E5E5E5;
+    border-radius: 14px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+}
+
+.vf-card-option:hover {
+    border-color: #FCA311;
+    background: rgba(252, 163, 17, 0.05);
+}
+
+.vf-card-option.active {
+    border-color: #14213D !important;
+    background: rgba(20, 33, 61, 0.06) !important;
+    box-shadow: 0 4px 14px rgba(20, 33, 61, 0.12);
+}
+
+[data-theme="dark"] .vf-card-option {
+    background: rgba(15, 23, 42, 0.85);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+[data-theme="dark"] .vf-card-option.active {
+    border-color: #FCA311 !important;
+    background: rgba(252, 163, 17, 0.14) !important;
+}
+
+.vf-icon-wrap {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.vf-icon-wrap.check {
+    background: rgba(16, 185, 129, 0.15);
+    color: #059669;
+}
+
+.vf-icon-wrap.cross {
+    background: rgba(239, 68, 68, 0.15);
+    color: #dc2626;
+}
+
+.vf-text-wrap {
+    display: flex;
+    flex-direction: column;
+}
+
+.vf-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #14213D;
+}
+
+[data-theme="dark"] .vf-title {
+    color: #FFFFFF;
+}
+
+.vf-desc {
+    font-size: 0.76rem;
+    color: rgba(20, 33, 61, 0.55);
+}
+
+[data-theme="dark"] .vf-desc {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.vf-correcao-box {
+    margin-top: 0.85rem;
+}
+
+.vf-correcao-label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: rgba(20, 33, 61, 0.65);
+    margin-bottom: 0.35rem;
+}
+
+[data-theme="dark"] .vf-correcao-label {
+    color: rgba(255, 255, 255, 0.65);
+}
+
+/* Modalidade 2: Múltipla Escolha (Cards de opções A, B, C, D) */
+.mc-options-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    margin-bottom: 0.65rem;
+}
+
+.mc-card-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0.78rem 1.05rem;
+    background: #FFFFFF;
+    border: 2px solid #E5E5E5;
+    border-radius: 12px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+}
+
+.mc-card-option:hover {
+    border-color: #FCA311;
+    background: rgba(252, 163, 17, 0.05);
+}
+
+.mc-card-option.active {
+    border-color: #14213D !important;
+    background: rgba(20, 33, 61, 0.06) !important;
+    box-shadow: 0 4px 14px rgba(20, 33, 61, 0.1);
+}
+
+[data-theme="dark"] .mc-card-option {
+    background: rgba(15, 23, 42, 0.85);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+[data-theme="dark"] .mc-card-option.active {
+    border-color: #FCA311 !important;
+    background: rgba(252, 163, 17, 0.14) !important;
+}
+
+.mc-letter-badge {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: #14213D;
+    color: #FFFFFF;
+    font-size: 0.82rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.mc-card-option.active .mc-letter-badge {
+    background: #FCA311;
+    color: #000000;
+}
+
+.mc-text-val {
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: #14213D;
+}
+
+[data-theme="dark"] .mc-text-val {
+    color: #FFFFFF;
+}
+
+/* Modalidade 3: Completar Sentença (Lacuna individual expansível como a pergunta) */
+.lacuna-input-highlight {
+    font-size: 0.98rem !important;
+    font-weight: 500 !important;
+    line-height: 1.55 !important;
+    padding: 0.85rem 1.1rem !important;
+    border: 2px solid #14213D !important;
+    border-radius: 12px !important;
+    background: #FFFFFF !important;
+    color: #14213D !important;
+    margin-bottom: 0.35rem !important;
+    resize: vertical !important;
+    min-height: 68px;
+    width: 100% !important;
+    box-sizing: border-box;
+    font-family: inherit !important;
+}
+
+[data-theme="dark"] .lacuna-input-highlight {
+    background: rgba(15, 23, 42, 0.9) !important;
+    border-color: #FCA311 !important;
+    color: #FFFFFF !important;
+}
+
+@media (max-width: 640px) {
+    .pratica-main-card.form-card {
+        padding: 1.4rem 1.15rem 1.6rem !important;
+        border-radius: 22px !important;
+    }
+    .pratica-card-top-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .btn-gerar-desafio-prominente {
+        width: 100%;
+    }
+    .vf-options-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="page-container">
-    <!-- Header Hero Card: Efeito de um card sobre outro (Borda de Vidro externa com Card interno) -->
-    <div class="hero-card-outer home-hero-card" id="homeHeroCard">
-        <div class="hero-card-inner">
-            <span class="hero-tag"><svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>Tuteur Pédagogique Virtuel • Français</span>
-            <h1 class="hero-title">Pratique seu Francês com Feedback Inteligente</h1>
-            <p class="hero-description">
-                Envie sua frase ou exercício em francês. O <strong>Assistente Fran</strong> diagnostica erros gramaticais e sintáticos, oferece dicas formativas e encoraja você a construir seu próprio aprendizado!
-            </p>
+<div class="pratica-editorial-page">
+    <!-- 1. Cabeçalho Editorial Profissional (Sem a pílula superior) -->
+    <header class="pratica-hero-header" id="homeHeroCard">
+        <h1 class="pratica-editorial-title">
+            Pratique seu Francês com
+            <span class="serif-italic">Feedback Inteligente</span>
+        </h1>
+        <p class="pratica-editorial-subtitle">
+            Submeta suas frases ou exercícios em língua francesa. O <strong>Assistente Fran</strong> realiza diagnósticos gramaticais e sintáticos de alta precisão, oferecendo orientações formativas personalizadas para acelerar sua autonomia e fluência no idioma.
+        </p>
+    </header>
 
-        </div>
-    </div>
-
-    <!-- Formulário Principal do Aluno com Moldura Hero Card (Primeira Imagem) -->
+    <!-- 2. Card Principal Clean -->
     <div class="form-wrapper">
-        <div class="hero-card-outer form-box-outer" id="formBoxOuter">
-            <div class="form-card form-box-inner" id="formCard">
-                <!-- Identificação do Aluno Conectado (Quadro de Bonjour) -->
-                <div class="student-profile-bar">
-                    <div class="profile-avatar"><svg class="line-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg></div>
-                    <div class="profile-details">
-                        <span class="profile-greeting">Bonjour, <strong>{{ session.get('aluno_nome', 'Estudante') }}</strong> !</span>
-                        <span class="profile-sub">
-                            Turma: <span class="badge-class">{{ session.get('turma_nome', 'Geral') }}</span> 
-                            • Matrícula: <code>{{ session.get('matricula', '') }}</code>
-                            • Nível Pedagógico: <span class="badge-level-student lvl-{{ session.get('nivel_cefr', 'A2')|lower }}" id="studentAssignedLevelBadge">{{ session.get('nivel_cefr', 'A2') }}</span>
-                        </span>
-                    </div>
-                    <a href="/logout" class="profile-logout-btn" title="Trocar de Aluno / Sair">
-                        Sair <svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 3px; vertical-align: text-bottom;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                    </a>
+        <div class="form-card pratica-main-card" id="formCard">
+            <!-- Topo do Card: Informação à esquerda -->
+            <div class="pratica-card-top-bar" id="examplesContainer">
+                <div class="pratica-top-meta">
+                    <span class="pratica-meta-label">Ambiente de Prática Assistida por IA</span>
+                    <span class="pratica-meta-value">Nível Pedagógico Ativo: CEFR <span id="btnGerarNivel">{{ session.get('nivel_cefr', 'A2') }}</span></span>
                 </div>
-
-                <!-- Pílulas de Exemplos Rápidos / Desafio IA (Segunda Imagem) Abaixo do Quadro de Bonjour -->
-                <div class="examples-container form-examples-bar" id="examplesContainer">
-                    <span class="examples-label"><svg class="line-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;"><line x1="9" y1="18" x2="15" y2="18"></line><line x1="10" y1="22" x2="14" y2="22"></line><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path></svg>Desafios & Prática de Francês:</span>
-                    <div class="examples-pills">
-                        <button type="button" id="btnGerarDesafio" class="pill-btn pill-btn-generator" onclick="gerarNovoDesafioIA()" title="Gera um desafio inédito de francês adequado ao nível selecionado via IA">
-                            <svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>Gerar Desafio com IA (<span id="btnGerarNivel">{{ session.get('nivel_cefr', 'A2') }}</span>)
-                        </button>
-                    </div>
-                </div>
+            </div>
 
             {% if reforco %}
             <div id="reforco-banner" class="active-dica-banner" style="margin-bottom: 20px; border-color: var(--primary-color);">
@@ -65,55 +931,150 @@
             </div>
             {% endif %}
 
-            <form id="submissionForm" action="/avaliar" method="POST" class="submission-form">`n                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                <!-- Nível CEFR gerenciado pelo professor -->
+            <form id="submissionForm" action="/avaliar" method="POST" class="submission-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <input type="hidden" id="nivel_cefr" name="nivel_cefr" value="{{ session.get('nivel_cefr', 'A2') }}">
                 <input type="hidden" id="exercicio_id" name="exercicio_id" value="{{ exercicio_inicial.id if exercicio_inicial else '' }}">
-                <div class="form-group">
-                    <label for="tema_aula" class="form-label">
-                        <span class="label-icon"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg></span>
-                        Tema da Atividade
-                    </label>
-                    <input 
-                        type="text" 
-                        id="tema_aula" 
-                        name="tema_aula" 
-                        class="form-input readonly-field" 
-                        value="{{ exercicio_inicial.nome_tema if exercicio_inicial else '' }}"
-                        placeholder="Selecione um exemplo acima ou clique em 'Gerar Desafio com IA'..." 
-                        readonly
-                        required
-                    >
+
+                <!-- BLOCO 1: O Tema e a Atividade Juntos + Botão de Gerar Desafio de IA Logo Após -->
+                <div class="pratica-config-section">
+                    <!-- Tema da Atividade (Com Busca + Autocomplete + Dropdown) -->
+                    <div class="pratica-soft-row">
+                        <div class="pratica-row-header">
+                            <label for="tema_aula" class="pratica-row-label">
+                                Tema da Atividade
+                            </label>
+                            <button type="button" class="pratica-circle-badge" onclick="alternarListaTemas(event)" title="Ver lista de temas disponíveis" aria-label="Abrir lista de temas" style="border: none; cursor: pointer;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                            </button>
+                        </div>
+
+                        <div class="tema-autocomplete-wrap" id="temaAutocompleteWrap">
+                            <div class="tema-input-box">
+                                <span class="tema-search-icon" aria-hidden="true">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                </span>
+                                <input 
+                                    type="text" 
+                                    id="tema_aula" 
+                                    name="tema_aula" 
+                                    class="form-input tema-search-input" 
+                                    value="{{ exercicio_inicial.nome_tema if exercicio_inicial else '' }}"
+                                    placeholder="Pesquise ou escolha um tema na lista (ex: Passé Composé, Pronoms, Subjonctif)..." 
+                                    autocomplete="off"
+                                    onfocus="abrirListaTemas()"
+                                    oninput="filtrarTemasAutocomplete()"
+                                    onkeydown="navegarListaTemasKey(event)"
+                                    required
+                                >
+                                <div class="tema-input-actions">
+                                    <button type="button" class="btn-clear-tema" id="btnLimparTema" onclick="limparBuscaTema(event)" title="Limpar filtro e ver todos os temas">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                    </button>
+                                    <button type="button" class="btn-toggle-tema-list" onclick="alternarListaTemas(event)" title="Mostrar/Ocultar lista de temas">
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="tema-dropdown-panel" id="temaDropdownPanel" role="listbox" aria-label="Opções de Temas da Atividade">
+                                <ul class="tema-options-list" id="temaOptionsList">
+                                    {% for t in lista_temas|default([]) %}
+                                    <li class="tema-option-item {% if exercicio_inicial and exercicio_inicial.nome_tema == t.nome_tema %}selected{% endif %}"
+                                        role="option"
+                                        data-tema="{{ t.nome_tema }}"
+                                        onclick="selecionarTemaLista(this.getAttribute('data-tema'))">
+                                        <span class="tema-option-text">{{ t.nome_tema }}</span>
+                                        <span class="tema-option-badge">Praticar →</span>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                                <div class="tema-empty-msg" id="temaEmptyMsg">
+                                    Nenhum tema encontrado. Pressione <strong>Enter</strong> ou clique em <strong>Gerar Desafio com IA</strong> para criar um exercício sobre este tema.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formato da Atividade (Junto com o Tema da Atividade!) -->
+                    <div class="pratica-soft-row pratica-formato-row">
+                        <div class="pratica-row-header">
+                            <label class="pratica-row-label">
+                                Formato da Atividade
+                            </label>
+                        </div>
+                        <input type="hidden" id="tipo_atividade" name="tipo_atividade" value="lacunas">
+                        <div class="modalidades-pills-bar" id="modalidadesPillsBar" role="tablist" aria-label="Formato do Exercício">
+                            <button type="button" class="modalidade-pill active" data-tipo="lacunas" onclick="selecionarModalidadeFormato('lacunas')" title="Preencha os espaços em branco com a forma correta">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                                <span>Completar Sentença</span>
+                            </button>
+                            <button type="button" class="modalidade-pill" data-tipo="vf" onclick="selecionarModalidadeFormato('vf')" title="Julgue se a frase está gramaticalmente correta ou incorreta">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>Verdadeiro ou Falso</span>
+                            </button>
+                            <button type="button" class="modalidade-pill" data-tipo="multipla_escolha" onclick="selecionarModalidadeFormato('multipla_escolha')" title="Escolha a alternativa correta entre as opções">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                                <span>Múltipla Escolha</span>
+                            </button>
+                            <button type="button" class="modalidade-pill" data-tipo="ditado" onclick="selecionarModalidadeFormato('ditado')" title="Ouça o áudio em francês nativo e transcreva exatamente o que ouviu">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+                                <span>Compreensão Auditiva (Dictée)</span>
+                            </button>
+                            <button type="button" class="modalidade-pill" data-tipo="expressao_oral" onclick="selecionarModalidadeFormato('expressao_oral')" title="Pratique pronúncia falando em francês pelo microfone">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                                <span>Expressão Oral</span>
+                            </button>
+                            <button type="button" class="modalidade-pill" data-tipo="producao_escrita" onclick="selecionarModalidadeFormato('producao_escrita')" title="Traduza ou elabore frases completas em francês">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                                <span>Produção Escrita</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Botão de Gerar Desafio de IA (Logo após tema e atividade) -->
+                    <div class="pratica-gerar-btn-wrapper">
+                        <button type="button" id="btnGerarDesafio" class="btn-gerar-desafio-prominente" onclick="gerarNovoDesafioIA()" title="Gera um desafio inédito de francês adequado ao tema e formato selecionados">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                            <span>Gerar Desafio com IA</span>
+                        </button>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <div class="label-with-hint">
-                        <label for="pergunta" class="form-label">
-                            <span class="label-icon"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></span>
+                <!-- BLOCO 2: A Pergunta (Exercício Proposto) -->
+                <div class="pratica-soft-row" id="exercicioRow" style="margin-top: 1.35rem;">
+                    <div class="pratica-row-header">
+                        <label for="pergunta" class="pratica-row-label">
                             Exercício Proposto
                         </label>
-                        <button type="button" id="btnAudioPergunta" class="btn-audio-pill" onclick="ouvirEnunciado()" title="Ouvir enunciado e frases em francês com sotaque nativo">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+                        <button type="button" id="btnAudioPergunta" class="pratica-audio-circle-btn" onclick="ouvirEnunciado()" title="Ouvir enunciado em francês com sotaque nativo" aria-label="Ouvir enunciado em francês">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
                             <span>Ouvir</span>
                         </button>
                     </div>
+
                     <textarea 
                         id="pergunta" 
                         name="pergunta" 
                         class="form-textarea readonly-field" 
                         rows="3" 
+                        lang="fr"
+                        aria-label="Enunciado do exercício em francês"
                         placeholder="O enunciado do exercício aparecerá aqui automaticamente..." 
                         readonly
                         required
                     >{{ exercicio_inicial.enunciado if exercicio_inicial else '' }}</textarea>
                 </div>
 
-                <div class="form-group">
-                    <div class="label-with-hint">
-                        <label for="resposta_aluno" class="form-label">
-                            <span class="label-icon"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></span>
-                            Sua Resposta em Francês
+                <!-- BLOCO 3: A Resposta (Com opções adaptadas à modalidade) -->
+                <div class="pratica-soft-row" id="respostaSectionRow" style="margin-top: 1.25rem;">
+                    <div class="pratica-row-header">
+                        <label for="resposta_aluno" class="pratica-row-label">
+                            Sua Resposta
                         </label>
+                        <span class="pratica-circle-badge" aria-hidden="true">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                        </span>
                     </div>
 
                     <!-- Banner de Ciclo Formativo de Aprendizagem (Tentativa Ativa com Dica) -->
@@ -125,56 +1086,124 @@
                             </div>
                             <button type="button" class="btn-cancel-retry" onclick="cancelarTentativa()" title="Descartar e começar novo exercício">&times; Cancelar</button>
                         </div>
-                        <div id="activeDicaText" class="dica-banner-body markdown-body"></div>
+                        <div id="activeDicaText" class="dica-banner-body markdown-body" lang="fr"></div>
                     </div>
 
-                    <!-- Barra de Caracteres Especiais Franceses -->
-                    <div class="french-chars-toolbar">
-                        <div class="toolbar-header">
-                            <span class="toolbar-title">
-                                <svg class="line-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><line x1="6" y1="8" x2="6" y2="8"></line><line x1="10" y1="8" x2="10" y2="8"></line><line x1="14" y1="8" x2="14" y2="8"></line><line x1="18" y1="8" x2="18" y2="8"></line><line x1="6" y1="12" x2="6" y2="12"></line><line x1="10" y1="12" x2="10" y2="12"></line><line x1="14" y1="12" x2="14" y2="12"></line><line x1="18" y1="12" x2="18" y2="12"></line><line x1="7" y1="16" x2="17" y2="16"></line></svg>Acentos & Caracteres Franceses:
+                    <!-- Opção A: Verdadeiro ou Falso (Cards clicáveis para resposta imediata) -->
+                    <div id="respostaVFContainer" class="resposta-dinamica-bloco" style="display: none;">
+                        <span class="resposta-opcao-instrucao">Selecione seu julgamento gramatical:</span>
+                        <div class="vf-options-grid">
+                            <button type="button" class="vf-card-option" id="btnVrai" onclick="selecionarOpcaoVF('Vrai')">
+                                <span class="vf-icon-wrap check">✓</span>
+                                <div class="vf-text-wrap">
+                                    <strong class="vf-title">Vrai</strong>
+                                    <span class="vf-desc">A frase está gramaticalmente correta</span>
+                                </div>
+                            </button>
+                            <button type="button" class="vf-card-option" id="btnFaux" onclick="selecionarOpcaoVF('Faux')">
+                                <span class="vf-icon-wrap cross">✗</span>
+                                <div class="vf-text-wrap">
+                                    <strong class="vf-title">Faux</strong>
+                                    <span class="vf-desc">A frase contém incorreção</span>
+                                </div>
+                            </button>
+                        </div>
+                        <div id="vfCorrecaoWrap" class="vf-correcao-box" style="display: none;">
+                            <label class="vf-correcao-label" for="vfCorrecaoInput">Opcional: reescreva a frase de forma correta em francês:</label>
+                            <input type="text" id="vfCorrecaoInput" class="form-input" placeholder="Ex: Hier soir, Marie et Sophie sont arrivées..." oninput="atualizarRespostaVFPeloInput()">
+                        </div>
+                    </div>
+
+                    <!-- Opção B: Múltipla Escolha (Cards clicáveis das alternativas A, B, C, D) -->
+                    <div id="respostaMCContainer" class="resposta-dinamica-bloco" style="display: none;">
+                        <span class="resposta-opcao-instrucao">Selecione a alternativa correta:</span>
+                        <div class="mc-options-grid" id="mcOptionsGrid"></div>
+                    </div>
+
+                    <!-- Opção C: Completar Sentença (Lacuna individual expansível) -->
+                    <div id="respostaLacunaContainer" class="resposta-dinamica-bloco">
+                        <span class="resposta-opcao-instrucao">Preencha o espaço com o termo correto em francês:</span>
+                        <textarea 
+                            id="respostaLacunaInput" 
+                            class="form-textarea lacuna-input-highlight" 
+                            rows="2"
+                            lang="fr"
+                            spellcheck="true"
+                            aria-label="Preencha o espaço com o termo correto em francês"
+                            placeholder="Digite a palavra ou expressão que completa a frase..."
+                            autocomplete="off"
+                            oninput="sincronizarRespostaLacuna()"
+                        ></textarea>
+                    </div>
+
+                    <!-- Opção D: As demais (Ditado, Expressão Oral, Produção Escrita) -->
+                    <div id="respostaTextoContainer" class="resposta-dinamica-bloco" style="display: none;">
+                        <textarea 
+                            id="resposta_aluno" 
+                            name="resposta_aluno" 
+                            class="form-textarea french-text-input" 
+                            rows="3" 
+                            lang="fr"
+                            spellcheck="true"
+                            aria-label="Campo para digitar sua resposta em francês"
+                            placeholder="Digite ou dite sua resposta em francês..." 
+                            required
+                        ></textarea>
+                    </div>
+
+                    <!-- Barra de Caracteres Especiais Franceses & Ações de Voz -->
+                    <div class="french-chars-toolbar" id="frenchCharsToolbar" role="toolbar" aria-label="Caracteres acentuados franceses">
+                        <div class="french-chars-helper-row">
+                            <span class="french-chars-helper-label">
+                                <svg class="line-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
+                                    <line x1="6" y1="8" x2="6.01" y2="8"></line>
+                                    <line x1="10" y1="8" x2="10.01" y2="8"></line>
+                                    <line x1="14" y1="8" x2="14.01" y2="8"></line>
+                                    <line x1="18" y1="8" x2="18.01" y2="8"></line>
+                                    <line x1="8" y1="12" x2="8.01" y2="12"></line>
+                                    <line x1="12" y1="12" x2="12.01" y2="12"></line>
+                                    <line x1="16" y1="12" x2="16.01" y2="12"></line>
+                                    <line x1="7" y1="16" x2="17" y2="16"></line>
+                                </svg>
+                                Teclas auxiliares de acentuação (utilize caso seu teclado não possua estes caracteres):
                             </span>
-                            <span class="toolbar-hint">Clique para inserir na resposta</span>
                         </div>
                         <div class="toolbar-buttons">
-                            <button type="button" class="french-char-btn" data-char="é" data-char-maj="É" onclick="inserirCharBotao(this)">é</button>
-                            <button type="button" class="french-char-btn" data-char="è" data-char-maj="È" onclick="inserirCharBotao(this)">è</button>
-                            <button type="button" class="french-char-btn" data-char="ê" data-char-maj="Ê" onclick="inserirCharBotao(this)">ê</button>
-                            <button type="button" class="french-char-btn" data-char="ë" data-char-maj="Ë" onclick="inserirCharBotao(this)">ë</button>
-                            <button type="button" class="french-char-btn" data-char="à" data-char-maj="À" onclick="inserirCharBotao(this)">à</button>
-                            <button type="button" class="french-char-btn" data-char="â" data-char-maj="Â" onclick="inserirCharBotao(this)">â</button>
-                            <button type="button" class="french-char-btn" data-char="ç" data-char-maj="Ç" onclick="inserirCharBotao(this)">ç</button>
-                            <button type="button" class="french-char-btn" data-char="ù" data-char-maj="Ù" onclick="inserirCharBotao(this)">ù</button>
-                            <button type="button" class="french-char-btn" data-char="û" data-char-maj="Û" onclick="inserirCharBotao(this)">û</button>
-                            <button type="button" class="french-char-btn" data-char="î" data-char-maj="Î" onclick="inserirCharBotao(this)">î</button>
-                            <button type="button" class="french-char-btn" data-char="ï" data-char-maj="Ï" onclick="inserirCharBotao(this)">ï</button>
-                            <button type="button" class="french-char-btn" data-char="ô" data-char-maj="Ô" onclick="inserirCharBotao(this)">ô</button>
-                            <button type="button" class="french-char-btn" data-char="œ" data-char-maj="Œ" onclick="inserirCharBotao(this)">œ</button>
-                            <button type="button" class="french-char-btn" data-char="« »" data-char-maj="« »" onclick="inserirCharBotao(this)">« »</button>
-                            <button type="button" id="btnToggleMaj" class="french-char-btn btn-maj" onclick="toggleMaj()" title="Alternar Maiúsculas / Minúsculas">a/A</button>
-                            <button type="button" id="btnAudioInput" class="french-char-btn btn-audio" onclick="ouvirTextoDigitado()" title="Ouvir pronúncia do texto digitado em francês (fr-FR)">
+                            <button type="button" class="french-char-btn" data-char="é" data-char-maj="É" onclick="inserirCharBotao(this)" lang="fr" aria-label="Inserir letra é">é</button>
+                            <button type="button" class="french-char-btn" data-char="è" data-char-maj="È" onclick="inserirCharBotao(this)" lang="fr" aria-label="Inserir letra è">è</button>
+                            <button type="button" class="french-char-btn" data-char="ê" data-char-maj="Ê" onclick="inserirCharBotao(this)" lang="fr" aria-label="Inserir letra ê">ê</button>
+                            <button type="button" class="french-char-btn" data-char="ë" data-char-maj="Ë" onclick="inserirCharBotao(this)" lang="fr" aria-label="Inserir letra ë">ë</button>
+                            <button type="button" class="french-char-btn" data-char="à" data-char-maj="À" onclick="inserirCharBotao(this)" lang="fr" aria-label="Inserir letra à">à</button>
+                            <button type="button" class="french-char-btn" data-char="â" data-char-maj="Â" onclick="inserirCharBotao(this)" lang="fr" aria-label="Inserir letra â">â</button>
+                            <button type="button" class="french-char-btn" data-char="ç" data-char-maj="Ç" onclick="inserirCharBotao(this)" lang="fr" aria-label="Inserir letra ç">ç</button>
+                            <button type="button" class="french-char-btn" data-char="ù" data-char-maj="Ù" onclick="inserirCharBotao(this)" lang="fr" aria-label="Inserir letra ù">ù</button>
+                            <button type="button" class="french-char-btn" data-char="û" data-char-maj="Û" onclick="inserirCharBotao(this)" lang="fr" aria-label="Inserir letra û">û</button>
+                            <button type="button" class="french-char-btn" data-char="î" data-char-maj="Î" onclick="inserirCharBotao(this)" lang="fr" aria-label="Inserir letra î">î</button>
+                            <button type="button" class="french-char-btn" data-char="ï" data-char-maj="Ï" onclick="inserirCharBotao(this)" lang="fr" aria-label="Inserir letra ï">ï</button>
+                            <button type="button" class="french-char-btn" data-char="ô" data-char-maj="Ô" onclick="inserirCharBotao(this)" lang="fr" aria-label="Inserir letra ô">ô</button>
+                            <button type="button" class="french-char-btn" data-char="œ" data-char-maj="Œ" onclick="inserirCharBotao(this)" lang="fr" aria-label="Inserir ligatura œ">œ</button>
+                            <button type="button" class="french-char-btn" data-char="« »" data-char-maj="« »" onclick="inserirCharBotao(this)" lang="fr" aria-label="Inserir aspas francesas">« »</button>
+                            <button type="button" id="btnToggleMaj" class="french-char-btn btn-maj" onclick="toggleMaj()" title="Alternar Maiúsculas / Minúsculas" aria-label="Alternar maiúsculas e minúsculas">a/A</button>
+                            <button type="button" id="btnAudioInput" class="french-char-btn btn-audio" onclick="ouvirTextoDigitado()" title="Ouvir pronúncia do texto digitado em francês (fr-FR)" aria-label="Ouvir texto digitado">
                                 <svg class="line-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 3px; vertical-align: text-bottom;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>Ouvir
                             </button>
-                            <button type="button" id="btnDictation" class="french-char-btn btn-mic" onclick="alternarDitadoVoz()" title="Falar em Francês (Ditado por Microfone - fr-FR)">
+                            <button type="button" id="btnDictation" class="french-char-btn btn-mic" onclick="alternarDitadoVoz()" title="Falar em Francês (Ditado por Microfone - fr-FR)" aria-label="Ditar resposta por voz em francês">
                                 <svg class="line-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 3px; vertical-align: text-bottom;"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>Falar
                             </button>
                         </div>
                     </div>
-
-                    <textarea 
-                        id="resposta_aluno" 
-                        name="resposta_aluno" 
-                        class="form-textarea french-text-input" 
-                        rows="5" 
-                        placeholder="Escreva sua frase ou texto em francês aqui (ex: Hier, nous avons allé au cinéma ensemble)..." 
-                        required
-                    ></textarea>
+                    <div id="resposta-hint" class="textarea-hint-bar" style="display: flex; justify-content: flex-end; align-items: center; margin-top: 6px; font-size: 0.76rem; opacity: 0.65;">
+                        <span class="keyboard-shortcut-hint">
+                            Atalho: Pressione <kbd style="background: rgba(20,33,61,0.06); border: 1px solid rgba(20,33,61,0.15); border-radius: 4px; padding: 1px 5px; font-family: inherit;">Ctrl + Enter</kbd> para enviar
+                        </span>
+                    </div>
                 </div>
 
-                <div class="form-actions">
-                    <button type="submit" id="btnSubmit" class="btn-primary">
+                <div class="pratica-submit-wrap">
+                    <button type="submit" id="btnSubmit" class="pratica-submit-btn">
                         <span id="btnText" class="btn-text">Analisar com o Assistente Fran</span>
-                        <svg id="btnIcon" class="btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg id="btnIcon" class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="22" y1="2" x2="11" y2="13"></line>
                             <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
                         </svg>
@@ -183,7 +1212,7 @@
             </form>
 
             <!-- Indicador Visual de Carregamento -->
-            <div id="loadingIndicator" class="loading-state hidden">
+            <div id="loadingIndicator" class="loading-state hidden" role="status" aria-live="polite" aria-label="Análise pedagógica em andamento">
                 <div class="loading-pulse-ring">
                     <div class="spinner"></div>
                 </div>
@@ -197,7 +1226,10 @@
             </div>
 
             <!-- Card de Retorno do Feedback da IA -->
-            <div id="resultContainer" class="result-container hidden" style="display: flex; gap: 15px; margin-top: 25px;">`n                  <div class="fran-chat-avatar" style="flex-shrink: 0; margin-top: 5px;">`n                      <img src="{{ url_for('static', filename='../imagens/logo_fran1.png') }}" alt="Fran" style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">`n                  </div>
+            <div id="resultContainer" class="result-container hidden" style="display: flex; gap: 15px; margin-top: 25px;" role="region" aria-live="polite" aria-label="Resultado da Avaliação da Assistente Fran">
+                <div class="fran-chat-avatar" style="flex-shrink: 0; margin-top: 5px;">
+                    <img src="{{ url_for('static', filename='../imagens/logo_fran1.png') }}" alt="Fran" style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+                </div>
                 <div class="result-card">
                     <div class="result-header">
                         <div class="status-wrapper">
@@ -206,9 +1238,13 @@
                             <span id="cefrBadge" class="cefr-level-badge">Niveau A2</span>
                         </div>
                         <div class="result-header-actions">
-                            <button type="button" id="btnOuvirResposta" class="btn-audio-pill" onclick="ouvirRespostaSubmetida()" title="Ouvir pronúncia da sua frase em francês nativo">
+                            <button type="button" id="btnOuvirResposta" class="btn-audio-pill" onclick="ouvirRespostaSubmetida()" title="Ouvir pronúncia da sua frase em francês nativo" aria-label="Ouvir sua frase em francês">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
-                                <span>Ouvir</span>
+                                <span>Sua Frase</span>
+                            </button>
+                            <button type="button" id="btnOuvirFeedback" class="btn-audio-pill" onclick="ouvirFeedbackFran()" title="Ouvir correção e comentários da Fran com voz nativa" aria-label="Ouvir explicação da Fran em voz alta">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+                                <span>Ouvir Fran</span>
                             </button>
                             <span id="resultTimestamp" class="result-time">Agora</span>
                         </div>
@@ -260,10 +1296,453 @@
         </div>
     </div>
 </div>
-</div>
 {% endblock %}
 
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}?v=20261016_expand1"></script>
+<script>
+    let indiceTemaDestacado = -1;
+
+    function normalizarTextoBusca(str) {
+        return (str || "")
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase()
+            .trim();
+    }
+
+    function abrirListaTemas(mostrarTodos = true) {
+        const panel = document.getElementById("temaDropdownPanel");
+        if (!panel) return;
+        panel.classList.add("open");
+        if (mostrarTodos) {
+            const itens = document.querySelectorAll("#temaOptionsList .tema-option-item");
+            itens.forEach(li => {
+                li.style.display = "flex";
+                li.classList.remove("highlighted");
+            });
+            const emptyMsg = document.getElementById("temaEmptyMsg");
+            if (emptyMsg) emptyMsg.style.display = "none";
+            indiceTemaDestacado = -1;
+        }
+    }
+
+    function fecharListaTemas() {
+        const panel = document.getElementById("temaDropdownPanel");
+        if (panel) panel.classList.remove("open");
+        indiceTemaDestacado = -1;
+    }
+
+    function alternarListaTemas(event) {
+        if (event) event.stopPropagation();
+        const panel = document.getElementById("temaDropdownPanel");
+        const input = document.getElementById("tema_aula");
+        if (!panel) return;
+        if (panel.classList.contains("open")) {
+            fecharListaTemas();
+        } else {
+            abrirListaTemas(true);
+            if (input) input.focus();
+        }
+    }
+
+    function limparBuscaTema(event) {
+        if (event) event.stopPropagation();
+        const input = document.getElementById("tema_aula");
+        if (input) {
+            input.value = "";
+            input.focus();
+        }
+        abrirListaTemas(true);
+    }
+
+    function filtrarTemasAutocomplete() {
+        const input = document.getElementById("tema_aula");
+        const panel = document.getElementById("temaDropdownPanel");
+        const emptyMsg = document.getElementById("temaEmptyMsg");
+        if (!input || !panel) return;
+
+        panel.classList.add("open");
+        const termo = normalizarTextoBusca(input.value);
+        const itens = Array.from(document.querySelectorAll("#temaOptionsList .tema-option-item"));
+        let visiveis = 0;
+
+        itens.forEach(li => {
+            const nomeTema = li.getAttribute("data-tema") || "";
+            const match = !termo || normalizarTextoBusca(nomeTema).includes(termo);
+            li.style.display = match ? "flex" : "none";
+            li.classList.remove("highlighted");
+            if (match) visiveis++;
+        });
+
+        indiceTemaDestacado = -1;
+        if (emptyMsg) {
+            emptyMsg.style.display = visiveis === 0 ? "block" : "none";
+        }
+    }
+
+    function selecionarTemaLista(nomeTema) {
+        if (!nomeTema) return;
+        const input = document.getElementById("tema_aula");
+        if (input) {
+            input.value = nomeTema;
+        }
+
+        document.querySelectorAll("#temaOptionsList .tema-option-item").forEach(li => {
+            li.classList.toggle("selected", li.getAttribute("data-tema") === nomeTema);
+        });
+
+        fecharListaTemas();
+
+        if (typeof gerarNovoDesafioIA === "function") {
+            gerarNovoDesafioIA(nomeTema);
+        }
+    }
+
+    function navegarListaTemasKey(event) {
+        const panel = document.getElementById("temaDropdownPanel");
+        const itensVisiveis = Array.from(document.querySelectorAll("#temaOptionsList .tema-option-item"))
+            .filter(li => li.style.display !== "none");
+
+        if (event.key === "ArrowDown") {
+            event.preventDefault();
+            if (panel && !panel.classList.contains("open")) {
+                abrirListaTemas(true);
+                return;
+            }
+            if (itensVisiveis.length === 0) return;
+            indiceTemaDestacado = (indiceTemaDestacado + 1) % itensVisiveis.length;
+            atualizarDestaqueTeclado(itensVisiveis);
+        } else if (event.key === "ArrowUp") {
+            event.preventDefault();
+            if (itensVisiveis.length === 0) return;
+            indiceTemaDestacado = (indiceTemaDestacado - 1 + itensVisiveis.length) % itensVisiveis.length;
+            atualizarDestaqueTeclado(itensVisiveis);
+        } else if (event.key === "Enter") {
+            if (panel && panel.classList.contains("open")) {
+                event.preventDefault();
+                if (indiceTemaDestacado >= 0 && indiceTemaDestacado < itensVisiveis.length) {
+                    const temaEscolhido = itensVisiveis[indiceTemaDestacado].getAttribute("data-tema");
+                    selecionarTemaLista(temaEscolhido);
+                } else if (itensVisiveis.length === 1) {
+                    const temaEscolhido = itensVisiveis[0].getAttribute("data-tema");
+                    selecionarTemaLista(temaEscolhido);
+                } else {
+                    const input = document.getElementById("tema_aula");
+                    if (input && input.value.trim()) {
+                        selecionarTemaLista(input.value.trim());
+                    }
+                }
+            }
+        } else if (event.key === "Escape") {
+            fecharListaTemas();
+        }
+    }
+
+    function atualizarDestaqueTeclado(itensVisiveis) {
+        itensVisiveis.forEach((li, idx) => {
+            if (idx === indiceTemaDestacado) {
+                li.classList.add("highlighted");
+                li.scrollIntoView({ block: "nearest" });
+            } else {
+                li.classList.remove("highlighted");
+            }
+        });
+    }
+
+    // Gerenciamento Unificado de Formato da Atividade e Resposta Dinâmica
+    function selecionarModalidadeFormato(tipo) {
+        if (!tipo) return;
+        const tipoInput = document.getElementById("tipo_atividade");
+        if (tipoInput) {
+            tipoInput.value = tipo;
+        }
+
+        document.querySelectorAll("#modalidadesPillsBar .modalidade-pill").forEach(btn => {
+            btn.classList.toggle("active", btn.getAttribute("data-tipo") === tipo);
+        });
+
+        const perguntaEl = document.getElementById("pergunta");
+        const textoAtual = perguntaEl ? perguntaEl.value : "";
+        aplicarAjustesModalidadeUI(tipo, textoAtual);
+    }
+
+    function trocarModalidadeAtividade(tipo) {
+        selecionarModalidadeFormato(tipo);
+        const temaInput = document.getElementById("tema_aula");
+        const temaAtual = temaInput ? temaInput.value.trim() : null;
+        if (typeof gerarNovoDesafioIA === "function") {
+            gerarNovoDesafioIA(temaAtual, tipo);
+        }
+    }
+
+    // Modalidade 1: Verdadeiro ou Falso
+    function selecionarOpcaoVF(valor) {
+        const btnVrai = document.getElementById("btnVrai");
+        const btnFaux = document.getElementById("btnFaux");
+        const correcaoWrap = document.getElementById("vfCorrecaoWrap");
+        const inputCorrecao = document.getElementById("vfCorrecaoInput");
+        const respostaReal = document.getElementById("resposta_aluno");
+
+        if (btnVrai) btnVrai.classList.toggle("active", valor === "Vrai");
+        if (btnFaux) btnFaux.classList.toggle("active", valor === "Faux");
+
+        if (correcaoWrap) {
+            correcaoWrap.style.display = valor === "Faux" ? "block" : "none";
+            if (valor === "Faux" && inputCorrecao) {
+                inputCorrecao.focus();
+            }
+        }
+
+        if (respostaReal) {
+            if (valor === "Faux" && inputCorrecao && inputCorrecao.value.trim()) {
+                respostaReal.value = "Faux — " + inputCorrecao.value.trim();
+            } else {
+                respostaReal.value = valor;
+            }
+        }
+
+        if (typeof showToast === "function") {
+            showToast(`Opção selecionada: ${valor}`, "info");
+        }
+    }
+
+    function atualizarRespostaVFPeloInput() {
+        const btnFaux = document.getElementById("btnFaux");
+        const inputCorrecao = document.getElementById("vfCorrecaoInput");
+        const respostaReal = document.getElementById("resposta_aluno");
+        if (!respostaReal) return;
+
+        if (btnFaux && btnFaux.classList.contains("active")) {
+            const correcao = inputCorrecao ? inputCorrecao.value.trim() : "";
+            respostaReal.value = correcao ? `Faux — ${correcao}` : "Faux";
+        }
+    }
+
+    // Modalidade 2: Múltipla Escolha
+    function selecionarOpcaoMC(letra, textoCompleto) {
+        const cards = document.querySelectorAll("#mcOptionsGrid .mc-card-option");
+        cards.forEach(card => {
+            const ehEste = card.getAttribute("data-letra") === letra;
+            card.classList.toggle("active", ehEste);
+        });
+
+        const respostaReal = document.getElementById("resposta_aluno");
+        if (respostaReal) {
+            respostaReal.value = textoCompleto || letra;
+        }
+
+        if (typeof showToast === "function") {
+            showToast(`Alternativa (${letra}) selecionada`, "info");
+        }
+    }
+
+    // Extrai a frase do exercício e formata o texto com o espaço para completar
+    function extrairFraseComLacuna(texto) {
+        if (!texto) return { textoFormatado: "", posicaoCursor: 0 };
+
+        let frase = "";
+        // 1. Aspas francesas « ... »
+        const matchGuillemets = texto.match(/«([^»]*_{2,}[^»]*)»/);
+        if (matchGuillemets && matchGuillemets[1]) {
+            frase = matchGuillemets[1].trim();
+        } else {
+            // 2. Aspas duplas " ... "
+            const matchDouble = texto.match(/"([^"\n]*_{2,}[^"\n]*)"/);
+            if (matchDouble && matchDouble[1]) {
+                frase = matchDouble[1].trim();
+            } else {
+                // 3. Aspas simples sem confundir com apóstrofos franceses (j', l', c', etc)
+                const matchSingle = texto.match(/(?:^|[\s:\(])'([^'\n]*_{2,}[^'\n]*)'(?:$|[\s\)\.\?!])/);
+                if (matchSingle && matchSingle[1]) {
+                    frase = matchSingle[1].trim();
+                } else {
+                    // 4. Linha contendo ___
+                    const linhas = texto.split("\n");
+                    for (const l of linhas) {
+                        if (/_{2,}/.test(l)) {
+                            const partes = l.split(":");
+                            frase = (partes.length > 1 && /_{2,}/.test(partes[1])) ? partes.slice(1).join(":").trim() : l.trim();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!frase) frase = texto.trim();
+        frase = frase.replace(/^[«"'\s]+|[»"'\s]+$/g, "");
+
+        // 5. Localiza a primeira ocorrência de ___ (com eventual dica entre parênteses)
+        const regexLacuna = /_{2,}\s*(?:\([^)]*\))?/;
+        const matchLacuna = frase.match(regexLacuna);
+
+        if (matchLacuna) {
+            const index = matchLacuna.index;
+            const prefixo = frase.substring(0, index);
+            const sufixo = frase.substring(index + matchLacuna[0].length);
+
+            let prefixoFormatado = prefixo;
+            if (prefixoFormatado.endsWith("'") || prefixoFormatado.endsWith("’")) {
+                // Mantém apóstrofo sem espaço extra (ex: j')
+            } else {
+                prefixoFormatado = prefixoFormatado.replace(/\s+$/, "") + " ";
+            }
+
+            let sufixoFormatado = sufixo.replace(/^\s+/, "");
+            if (sufixoFormatado && !/^[,\.;:\?!]/.test(sufixoFormatado)) {
+                sufixoFormatado = " " + sufixoFormatado;
+            }
+
+            const textoFinal = prefixoFormatado + sufixoFormatado;
+            const posCursor = prefixoFormatado.length;
+
+            return { textoFormatado: textoFinal, posicaoCursor: posCursor };
+        }
+
+        return { textoFormatado: frase, posicaoCursor: frase.length };
+    }
+
+    function autoAjustarAlturaTextarea(el) {
+        if (!el) return;
+        el.style.height = "auto";
+        el.style.height = Math.max(68, el.scrollHeight) + "px";
+    }
+
+    // Modalidade 3: Completar Sentença (Lacuna)
+    function sincronizarRespostaLacuna() {
+        const lacunaInput = document.getElementById("respostaLacunaInput");
+        const respostaReal = document.getElementById("resposta_aluno");
+        if (lacunaInput) {
+            autoAjustarAlturaTextarea(lacunaInput);
+            if (respostaReal) {
+                respostaReal.value = lacunaInput.value;
+            }
+        }
+    }
+
+    // Adaptador Visual da Seção de Resposta conforme a Modalidade Selecionada
+    function aplicarAjustesModalidadeUI(tipo, textoExercicio, opcoes = null) {
+        const vfContainer = document.getElementById("respostaVFContainer");
+        const mcContainer = document.getElementById("respostaMCContainer");
+        const lacunaContainer = document.getElementById("respostaLacunaContainer");
+        const textoContainer = document.getElementById("respostaTextoContainer");
+        const toolbar = document.getElementById("frenchCharsToolbar");
+        const respostaReal = document.getElementById("resposta_aluno");
+        const lacunaInput = document.getElementById("respostaLacunaInput");
+
+        // Oculta todos inicialmente
+        if (vfContainer) vfContainer.style.display = "none";
+        if (mcContainer) mcContainer.style.display = "none";
+        if (lacunaContainer) lacunaContainer.style.display = "none";
+        if (textoContainer) textoContainer.style.display = "none";
+
+        if (tipo === "vf") {
+            if (vfContainer) vfContainer.style.display = "block";
+            const btnVrai = document.getElementById("btnVrai");
+            const btnFaux = document.getElementById("btnFaux");
+            const vfWrap = document.getElementById("vfCorrecaoWrap");
+            const vfInput = document.getElementById("vfCorrecaoInput");
+            if (btnVrai) btnVrai.classList.remove("active");
+            if (btnFaux) btnFaux.classList.remove("active");
+            if (vfWrap) vfWrap.style.display = "none";
+            if (vfInput) vfInput.value = "";
+            if (respostaReal) respostaReal.value = "";
+            if (toolbar) toolbar.style.display = "flex";
+
+        } else if (tipo === "multipla_escolha") {
+            if (mcContainer) mcContainer.style.display = "block";
+            const grid = document.getElementById("mcOptionsGrid");
+            if (grid) {
+                grid.innerHTML = "";
+                let listaOpcoes = (opcoes && opcoes.length > 0) ? opcoes : [];
+
+                if (listaOpcoes.length === 0 && textoExercicio) {
+                    const linhas = textoExercicio.split("\n");
+                    linhas.forEach(linha => {
+                        const m = linha.trim().match(/^([A-D])[\)\.\-]\s*(.+)$/i);
+                        if (m) {
+                            listaOpcoes.push(`${m[1].toUpperCase()}) ${m[2].trim()}`);
+                        }
+                    });
+                }
+
+                if (listaOpcoes.length === 0) {
+                    listaOpcoes = ["A) Opção A", "B) Opção B", "C) Opção C", "D) Opção D"];
+                }
+
+                listaOpcoes.forEach(opStr => {
+                    const match = opStr.match(/^([A-D])[\)\.\-]\s*(.*)$/i);
+                    const letra = match ? match[1].toUpperCase() : "•";
+                    const textoLimpo = match ? match[2] : opStr;
+
+                    const btn = document.createElement("button");
+                    btn.type = "button";
+                    btn.className = "mc-card-option";
+                    btn.setAttribute("data-letra", letra);
+                    btn.setAttribute("role", "radio");
+                    btn.setAttribute("aria-checked", "false");
+                    btn.onclick = () => selecionarOpcaoMC(letra, opStr);
+
+                    btn.innerHTML = `
+                        <span class="mc-letter-badge">${letra}</span>
+                        <span class="mc-text-val">${textoLimpo}</span>
+                    `;
+                    grid.appendChild(btn);
+                });
+            }
+            if (respostaReal) respostaReal.value = "";
+            if (toolbar) toolbar.style.display = "none";
+
+        } else if (tipo === "lacunas") {
+            if (lacunaContainer) lacunaContainer.style.display = "block";
+            if (lacunaInput) {
+                const info = extrairFraseComLacuna(textoExercicio);
+                lacunaInput.value = info.textoFormatado;
+                autoAjustarAlturaTextarea(lacunaInput);
+                if (respostaReal) respostaReal.value = info.textoFormatado;
+                setTimeout(() => {
+                    lacunaInput.focus();
+                    try {
+                        lacunaInput.setSelectionRange(info.posicaoCursor, info.posicaoCursor);
+                    } catch (e) {}
+                }, 60);
+            }
+            if (toolbar) toolbar.style.display = "flex";
+
+        } else {
+            // As demais: Ditado, Expressão Oral, Produção Escrita
+            if (textoContainer) textoContainer.style.display = "block";
+            if (respostaReal) {
+                respostaReal.value = "";
+                if (tipo === "ditado") {
+                    respostaReal.placeholder = "Ouça o áudio e transcreva o texto em francês aqui...";
+                } else if (tipo === "expressao_oral") {
+                    respostaReal.placeholder = "Clique no botão 'Falar' (microfone) abaixo e pronuncie a frase em francês...";
+                } else {
+                    respostaReal.placeholder = "Escreva sua resposta ou produção textual em francês aqui...";
+                }
+                respostaReal.focus();
+            }
+            if (toolbar) toolbar.style.display = "flex";
+        }
+    }
+
+    // Inicialização da interface na carga da página
+    document.addEventListener("DOMContentLoaded", () => {
+        const tipoInput = document.getElementById("tipo_atividade");
+        const tipoInicial = tipoInput ? tipoInput.value : "lacunas";
+        const perguntaEl = document.getElementById("pergunta");
+        const textoInicial = perguntaEl ? perguntaEl.value : "";
+        aplicarAjustesModalidadeUI(tipoInicial, textoInicial);
+    });
+
+    document.addEventListener("click", (e) => {
+        const wrap = document.getElementById("temaAutocompleteWrap");
+        if (wrap && !wrap.contains(e.target)) {
+            fecharListaTemas();
+        }
+    });
+</script>
 {% endblock %}

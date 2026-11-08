@@ -2,192 +2,231 @@
 
 {% block title %}Guia Gramatical FLE | Mémento Pedagógico de Francês | Assistente Fran{% endblock %}
 
+{% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,500;1,600;1,700&display=swap" rel="stylesheet">
+{% endblock %}
+
 {% block content %}
-<!-- Barra Lateral Flutuante Glassmorphic com os 10 Temas Gramaticais -->
-<aside class="dash-sidebar no-print" id="guiaSidebar" aria-label="Navegação por Temas do Guia FLE">
-    <div class="dash-sidebar-inner">
-        <div class="sidebar-nav-list">
-            <!-- 1. Maison d'Être -->
-            <div class="sidebar-item-wrap">
-                <button type="button" class="sidebar-btn active" onclick="navegarParaTema('maison-etre')" title="1. La Maison d'Être (14 Verbos)">
-                    <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                    </svg>
-                    <span class="sidebar-text">Maison d'Être</span>
-                </button>
-            </div>
+<!-- Conteúdo Principal da Página (Design Editorial Clean — Sem Sidebar Flutuante Sobreposta) -->
+<div class="page-container dashboard-page guia-page">
+    <div class="guia-editorial-wrapper">
 
-            <!-- 2. Conjugação de Verbos -->
-            <div class="sidebar-item-wrap">
-                <button type="button" class="sidebar-btn" onclick="navegarParaTema('conjugacao-verbos')" title="2. Conjugação & Verbos Essenciais">
-                    <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <polyline points="12 6 12 12 16 14"></polyline>
-                    </svg>
-                    <span class="sidebar-text">Conjugação</span>
-                </button>
-            </div>
-
-            <!-- 3. Articles Partitifs -->
-            <div class="sidebar-item-wrap">
-                <button type="button" class="sidebar-btn" onclick="navegarParaTema('articles-partitifs')" title="3. Articles Partitifs (du, de la, de l', des)">
-                    <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
-                        <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
-                        <line x1="6" y1="1" x2="6" y2="4"></line>
-                        <line x1="10" y1="1" x2="10" y2="4"></line>
-                        <line x1="14" y1="1" x2="14" y2="4"></line>
-                    </svg>
-                    <span class="sidebar-text">Partitivos</span>
-                </button>
-            </div>
-
-            <!-- 4. Faux Amis -->
-            <div class="sidebar-item-wrap">
-                <button type="button" class="sidebar-btn" onclick="navegarParaTema('faux-amis')" title="4. Faux Amis (Falsos Cognatos)">
-                    <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
-                        <line x1="12" y1="9" x2="12" y2="13"></line>
-                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                    </svg>
-                    <span class="sidebar-text">Falsos Cognatos</span>
-                </button>
-            </div>
-
-            <!-- 5. Pronoms Y & EN -->
-            <div class="sidebar-item-wrap">
-                <button type="button" class="sidebar-btn" onclick="navegarParaTema('pronoms-y-en')" title="5. Pronomes Adverbiais Y & EN">
-                    <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="18" cy="18" r="3"></circle>
-                        <circle cx="6" cy="6" r="3"></circle>
-                        <path d="M6 21V9a9 9 0 0 0 9 9"></path>
-                    </svg>
-                    <span class="sidebar-text">Pronomes Y & EN</span>
-                </button>
-            </div>
-
-            <!-- 6. COD & COI -->
-            <div class="sidebar-item-wrap">
-                <button type="button" class="sidebar-btn" onclick="navegarParaTema('pronoms-cod-coi')" title="6. Pronomes COD & COI">
-                    <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <circle cx="12" cy="12" r="6"></circle>
-                        <circle cx="12" cy="12" r="2"></circle>
-                    </svg>
-                    <span class="sidebar-text">COD & COI</span>
-                </button>
-            </div>
-
-            <!-- 7. Négation Complexe -->
-            <div class="sidebar-item-wrap">
-                <button type="button" class="sidebar-btn" onclick="navegarParaTema('negation-complexe')" title="7. Negação Simples & Complexa">
-                    <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
-                    </svg>
-                    <span class="sidebar-text">Negação</span>
-                </button>
-            </div>
-
-            <!-- 8. Prépositions de Lieu -->
-            <div class="sidebar-item-wrap">
-                <button type="button" class="sidebar-btn" onclick="navegarParaTema('prepositions-lieu')" title="8. Prépositions de Lieu & Pays">
-                    <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
-                        <circle cx="12" cy="10" r="3"></circle>
-                    </svg>
-                    <span class="sidebar-text">Preposições</span>
-                </button>
-            </div>
-
-            <!-- 9. Fórmulas de Cortesia -->
-            <div class="sidebar-item-wrap">
-                <button type="button" class="sidebar-btn" onclick="navegarParaTema('courtoisie-quotidien')" title="9. Fórmulas de Cortesia & Situações">
-                    <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                    </svg>
-                    <span class="sidebar-text">Cortesia</span>
-                </button>
-            </div>
-
-            <!-- 10. Subjonctif -->
-            <div class="sidebar-item-wrap">
-                <button type="button" class="sidebar-btn" onclick="navegarParaTema('subjonctif-indicatif')" title="10. Le Subjonctif Présent">
-                    <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"></path>
-                    </svg>
-                    <span class="sidebar-text">Subjonctif</span>
-                </button>
-            </div>
-
-            <div class="sidebar-divider" style="height: 1px; background: rgba(56, 189, 248, 0.15); margin: 0.35rem 0.4rem;"></div>
-
-            <!-- Imprimir / Modo Estudo -->
-            <div class="sidebar-item-wrap">
-                <button type="button" class="sidebar-btn sidebar-btn-pdf" onclick="window.print()" title="Imprimir ou Salvar Guia em PDF">
-                    <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
-                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-                        <rect x="6" y="14" width="12" height="8"></rect>
-                    </svg>
-                    <span class="sidebar-text">Imprimir / PDF</span>
-                </button>
-            </div>
-        </div>
-    </div>
-</aside>
-
-<!-- Conteúdo Principal da Página -->
-<div class="page-container dashboard-page guia-fle-container">
-    
-    <!-- ============================================================= -->
-    <!-- HEADER HERO CARD (EFEITO DE UM CARD SOBRE OUTRO COM LISTRA)   -->
-    <!-- ============================================================= -->
-    <div class="dashboard-header hero-card-outer guia-hero-outer guia-hero-card" id="guiaHeroCard">
-        <div class="hero-card-inner guia-hero-inner">
-            <div class="hero-badge-wrap">
-                <span class="hero-tag">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon" style="margin-right: 4px;">
-                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-                    </svg>
-                    Référence Pédagogique FLE • Grammaire, Conjugaison & Exemples
-                </span>
-            </div>
-            <h1 class="hero-title guia-main-title">Guia Gramatical & Mémento FLE</h1>
-            <p class="hero-description guia-main-subtitle">
-                Seu manual de consulta rápida e aprofundamento. Clique em qualquer <strong>verbo</strong> para abrir a <strong>conjugação completa com áudio nativo</strong>, explore regras explicadas com clareza, evite falsos cognatos e pratique com dezenas de exemplos autênticos do cotidiano francófono.
+        <!-- 1. Cabeçalho Editorial Aberto -->
+        <header class="guia-editorial-hero" id="guiaHeroCard">
+            <h1 class="guia-editorial-title">
+                Guia Gramatical &amp;
+                <span class="serif-italic">Mémento Pédagogique FLE</span>
+            </h1>
+            <p class="guia-editorial-subtitle">
+                Seu manual de consulta rápida e aprofundamento. Clique em qualquer <strong>verbo</strong> para abrir a <strong>conjugação completa com áudio nativo</strong>, explore os 10 módulos essenciais e pratique com exemplos autênticos.
             </p>
+        </header>
 
-            <!-- Barra de Busca Rápida no Guia -->
-            <div class="guia-search-box">
-                <div class="search-input-wrap">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        <!-- 2. Linha de 4 Mini-KPIs com Ondas Coloridas e Botão Pill Escuro (#18191E) -->
+        <section class="guia-kpis-grid no-print" aria-label="Resumo do Guia Gramatical FLE">
+            <!-- Card 1: Conjugador Interativo -->
+            <article class="guia-kpi-card" onclick="navegarParaTema('conjugacao-verbos')">
+                <div class="guia-kpi-top-row">
+                    <div>
+                        <span class="guia-kpi-label">Verbos Interativos</span>
+                        <div class="guia-kpi-primary">{{ verbos|length }}</div>
+                    </div>
+                    <svg class="guia-kpi-wave-svg" viewBox="0 0 120 46" fill="none" aria-hidden="true">
+                        <defs>
+                            <linearGradient id="guiaWaveAmber" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#FCA311" stop-opacity="0.34"/>
+                                <stop offset="100%" stop-color="#FCA311" stop-opacity="0.0"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M2 36 C 24 32, 38 14, 62 18 C 84 22, 98 8, 118 10 L 118 44 L 2 44 Z" fill="url(#guiaWaveAmber)"/>
+                        <path d="M2 36 C 24 32, 38 14, 62 18 C 84 22, 98 8, 118 10" stroke="#FCA311" stroke-width="2.4" stroke-linecap="round"/>
+                        <circle cx="98" cy="11" r="3.5" fill="#FFFFFF" stroke="#FCA311" stroke-width="2.2"/>
                     </svg>
-                    <input type="text" id="guiaSearchInput" class="guia-search-input" placeholder="Pesquisar verbo, tempo verbal, falso cognato ou regra (ex: aller, partitivo, attendre, ne... jamais)..." oninput="filtrarGuiaFLE(this.value)">
-                    <button type="button" class="search-clear-btn" id="btnLimparBusca" onclick="limparBuscaGuia()" style="display: none;" title="Limpar busca">&times;</button>
                 </div>
-                <div class="search-quick-tags">
-                    <span class="quick-tag-label">Atalhos:</span>
-                    <button type="button" class="quick-tag-pill" onclick="definirBusca('aller')">Aller</button>
-                    <button type="button" class="quick-tag-pill" onclick="definirBusca('être')">Être</button>
-                    <button type="button" class="quick-tag-pill" onclick="definirBusca('partitivo')">Partitivos</button>
-                    <button type="button" class="quick-tag-pill" onclick="definirBusca('faux amis')">Falsos Cognatos</button>
-                    <button type="button" class="quick-tag-pill" onclick="definirBusca('y e en')">Pronomes Y/EN</button>
-                    <button type="button" class="quick-tag-pill" onclick="definirBusca('subjonctif')">Subjonctif</button>
+                <div class="guia-kpi-mid-row">
+                    <span class="guia-kpi-subval">6 Tempos Verbais</span>
+                    <span class="guia-kpi-trend">Áudio Nativo ↗</span>
+                </div>
+                <div class="guia-kpi-cta-row">
+                    <button type="button" onclick="event.stopPropagation(); navegarParaTema('conjugacao-verbos')" class="guia-pill-btn">
+                        <span>Explorar Conjugador</span>
+                        <span>→</span>
+                    </button>
+                </div>
+            </article>
+
+            <!-- Card 2: Módulos Gramaticais -->
+            <article class="guia-kpi-card" onclick="navegarParaTema('maison-etre')">
+                <div class="guia-kpi-top-row">
+                    <div>
+                        <span class="guia-kpi-label">Módulos do Mémento</span>
+                        <div class="guia-kpi-primary">{{ temas|length }}</div>
+                    </div>
+                    <svg class="guia-kpi-wave-svg" viewBox="0 0 120 46" fill="none" aria-hidden="true">
+                        <defs>
+                            <linearGradient id="guiaWaveTeal" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#10B981" stop-opacity="0.30"/>
+                                <stop offset="100%" stop-color="#10B981" stop-opacity="0.0"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M2 34 C 24 22, 46 28, 70 14 C 90 6, 104 16, 118 8 L 118 44 L 2 44 Z" fill="url(#guiaWaveTeal)"/>
+                        <path d="M2 34 C 24 22, 46 28, 70 14 C 90 6, 104 16, 118 8" stroke="#10B981" stroke-width="2.4" stroke-linecap="round"/>
+                        <circle cx="70" cy="14" r="3.5" fill="#FFFFFF" stroke="#10B981" stroke-width="2.2"/>
+                    </svg>
+                </div>
+                <div class="guia-kpi-mid-row">
+                    <span class="guia-kpi-subval">Do Nível A1 ao B2</span>
+                    <span class="guia-kpi-trend" style="color: #059669;">14 Verbos Être ✓</span>
+                </div>
+                <div class="guia-kpi-cta-row">
+                    <button type="button" onclick="event.stopPropagation(); navegarParaTema('maison-etre')" class="guia-pill-btn">
+                        <span>Ver Maison d'Être</span>
+                        <span>→</span>
+                    </button>
+                </div>
+            </article>
+
+            <!-- Card 3: Falsos Cognatos & Armadilhas -->
+            <article class="guia-kpi-card" onclick="navegarParaTema('faux-amis')">
+                <div class="guia-kpi-top-row">
+                    <div>
+                        <span class="guia-kpi-label">Faux Amis &amp; Alertas</span>
+                        <div class="guia-kpi-primary">{{ temas[3].itens|length if temas|length > 3 else 12 }}</div>
+                    </div>
+                    <svg class="guia-kpi-wave-svg" viewBox="0 0 120 46" fill="none" aria-hidden="true">
+                        <defs>
+                            <linearGradient id="guiaWaveBlue" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#2563EB" stop-opacity="0.28"/>
+                                <stop offset="100%" stop-color="#2563EB" stop-opacity="0.0"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M2 35 C 26 26, 46 30, 68 18 C 88 8, 104 14, 118 9 L 118 44 L 2 44 Z" fill="url(#guiaWaveBlue)"/>
+                        <path d="M2 35 C 26 26, 46 30, 68 18 C 88 8, 104 14, 118 9" stroke="#2563EB" stroke-width="2.4" stroke-linecap="round"/>
+                        <circle cx="88" cy="11" r="3.5" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.2"/>
+                    </svg>
+                </div>
+                <div class="guia-kpi-mid-row">
+                    <span class="guia-kpi-subval">Exames DELF / TCF</span>
+                    <span class="guia-kpi-trend" style="color: #2563EB;">Contraste FR/PT ↗</span>
+                </div>
+                <div class="guia-kpi-cta-row">
+                    <button type="button" onclick="event.stopPropagation(); navegarParaTema('faux-amis')" class="guia-pill-btn">
+                        <span>Revisar Faux Amis</span>
+                        <span>→</span>
+                    </button>
+                </div>
+            </article>
+
+            <!-- Card 4: Pronomes, Sintaxe & Subjonctif -->
+            <article class="guia-kpi-card" onclick="navegarParaTema('pronoms-y-en')">
+                <div class="guia-kpi-top-row">
+                    <div>
+                        <span class="guia-kpi-label">Sintaxe &amp; Fluência</span>
+                        <div class="guia-kpi-primary">6</div>
+                    </div>
+                    <svg class="guia-kpi-wave-svg" viewBox="0 0 120 46" fill="none" aria-hidden="true">
+                        <defs>
+                            <linearGradient id="guiaWavePurple" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#7C3AED" stop-opacity="0.28"/>
+                                <stop offset="100%" stop-color="#7C3AED" stop-opacity="0.0"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M2 34 C 22 30, 44 16, 66 20 C 88 24, 102 10, 118 8 L 118 44 L 2 44 Z" fill="url(#guiaWavePurple)"/>
+                        <path d="M2 34 C 22 30, 44 16, 66 20 C 88 24, 102 10, 118 8" stroke="#7C3AED" stroke-width="2.4" stroke-linecap="round"/>
+                        <circle cx="102" cy="10" r="3.5" fill="#FFFFFF" stroke="#7C3AED" stroke-width="2.2"/>
+                    </svg>
+                </div>
+                <div class="guia-kpi-mid-row">
+                    <span class="guia-kpi-subval">Y, EN, COD/COI &amp; Subj.</span>
+                    <span class="guia-kpi-trend" style="color: #7C3AED;">Autonomia B1–C1 ↗</span>
+                </div>
+                <div class="guia-kpi-cta-row">
+                    <button type="button" onclick="event.stopPropagation(); navegarParaTema('pronoms-y-en')" class="guia-pill-btn">
+                        <span>Dominar Pronomes</span>
+                        <span>→</span>
+                    </button>
+                </div>
+            </article>
+        </section>
+
+        <!-- 3. Card Editorial de Busca com Autocomplete + Navegação Completa dos 10 Temas -->
+        <section class="guia-command-card no-print" id="guiaSearchWrapper" aria-label="Pesquisa e Navegação Rápida por Temas">
+            <div class="guia-command-top">
+                <div class="guia-search-box">
+                    <span class="guia-search-icon" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </span>
+                    <input
+                        type="text"
+                        id="guiaSearchInput"
+                        class="guia-search-input"
+                        placeholder="Pesquisar verbo, tempo verbal, falso cognato ou regra (ex: aller, partitivo, attendre, ne... jamais)..."
+                        autocomplete="off"
+                        oninput="filtrarGuiaFLE(this.value)"
+                        aria-label="Pesquisar no Guia Gramatical FLE"
+                    >
+                    <button type="button" class="search-clear-btn" id="btnLimparBusca" onclick="limparBuscaGuia()" style="display: none;" title="Limpar busca" aria-label="Limpar busca">&times;</button>
+                </div>
+
+                <div class="guia-command-actions">
+                    <button type="button" class="guia-action-chip" onclick="abrirConjugadorVerbo('aller')" title="Abrir Conjugador Interativo com Áudio">
+                        ⏱️ Abrir Conjugador
+                    </button>
+                    <button type="button" class="guia-action-chip" onclick="window.print()" title="Imprimir ou Salvar Guia em PDF">
+                        🖨️ Imprimir / PDF
+                    </button>
                 </div>
             </div>
-        </div>
-    </div>
+
+            <!-- Dropdown de Autocomplete do Guia FLE -->
+            <div id="autocompleteDropdownGuia" class="guia-autocomplete-dropdown" role="listbox" aria-label="Sugestões de verbos e tópicos gramaticais"></div>
+
+            <!-- Índice Rápido com Todos os 10 Módulos do Guia FLE (Substitui a antiga sidebar sobreposta) -->
+            <div class="guia-filter-chips" id="guiaQuickChips" role="group" aria-label="Atalhos rápidos dos 10 módulos do Guia FLE">
+                <button type="button" class="quick-tag-pill active" data-chip="todos" onclick="selecionarChipGuia(this, '', '')">
+                    Todos os 10 Módulos
+                </button>
+                <button type="button" class="quick-tag-pill" data-chip="maison-etre" onclick="selecionarChipGuia(this, '', 'maison-etre')">
+                    1. 🏠 Maison d'Être
+                </button>
+                <button type="button" class="quick-tag-pill" data-chip="conjugacao-verbos" onclick="selecionarChipGuia(this, '', 'conjugacao-verbos')">
+                    2. ⏱️ Conjugação
+                </button>
+                <button type="button" class="quick-tag-pill" data-chip="articles-partitifs" onclick="selecionarChipGuia(this, '', 'articles-partitifs')">
+                    3. 🥖 Partitivos
+                </button>
+                <button type="button" class="quick-tag-pill" data-chip="faux-amis" onclick="selecionarChipGuia(this, '', 'faux-amis')">
+                    4. ⚠️ Faux Amis
+                </button>
+                <button type="button" class="quick-tag-pill" data-chip="pronoms-y-en" onclick="selecionarChipGuia(this, '', 'pronoms-y-en')">
+                    5. 🔄 Pronomes Y/EN
+                </button>
+                <button type="button" class="quick-tag-pill" data-chip="pronoms-cod-coi" onclick="selecionarChipGuia(this, '', 'pronoms-cod-coi')">
+                    6. 🎯 COD &amp; COI
+                </button>
+                <button type="button" class="quick-tag-pill" data-chip="negation-complexe" onclick="selecionarChipGuia(this, '', 'negation-complexe')">
+                    7. 🚫 Negação
+                </button>
+                <button type="button" class="quick-tag-pill" data-chip="prepositions-lieu" onclick="selecionarChipGuia(this, '', 'prepositions-lieu')">
+                    8. 📍 Preposições
+                </button>
+                <button type="button" class="quick-tag-pill" data-chip="courtoisie-quotidien" onclick="selecionarChipGuia(this, '', 'courtoisie-quotidien')">
+                    9. 💬 Cortesia
+                </button>
+                <button type="button" class="quick-tag-pill" data-chip="subjonctif-indicatif" onclick="selecionarChipGuia(this, '', 'subjonctif-indicatif')">
+                    10. ✨ Subjonctif
+                </button>
+            </div>
+        </section>
 
     <!-- ============================================================= -->
-    <!-- QUADRO UNIFICADO DOS TEMAS COM MOLDURA GLASSMORPHIC           -->
+    <!-- QUADRO UNIFICADO DOS TEMAS (DESIGN EDITORIAL LIMPO)           -->
     <!-- ============================================================= -->
-    <div class="guia-box-outer hero-card-outer card-moldura-outer" id="guiaBoxOuter">
-        <div class="guia-box-inner hero-card-inner">
+    <div class="guia-box-outer" id="guiaBoxOuter">
+        <div class="guia-box-inner">
             <!-- ÁREA PRINCIPAL DOS TEMAS -->
             <div class="guia-sections-wrap">
 
@@ -850,6 +889,7 @@
             </div>
         </div>
     </div>
+    </div>
 </div>
 
 <!-- ========================================================================= -->
@@ -973,15 +1013,15 @@
     };
 
     /**
-     * Rola suavemente até o tema selecionado na barra lateral
+     * Rola suavemente até o tema selecionado e destaca o chip correspondente
      */
     function navegarParaTema(temaId) {
         const secao = document.getElementById(`tema-${temaId}`);
         if (secao) {
-            // Atualiza botões da sidebar
-            document.querySelectorAll("#guiaSidebar .sidebar-btn").forEach(btn => btn.classList.remove("active"));
-            const btn = document.querySelector(`#guiaSidebar button[onclick*="${temaId}"]`);
-            if (btn) btn.classList.add("active");
+            secao.style.display = "";
+            document.querySelectorAll("#guiaQuickChips .quick-tag-pill").forEach(btn => {
+                btn.classList.toggle("active", btn.getAttribute("data-chip") === temaId);
+            });
 
             // Rola com offset para não esconder sob a navbar superior
             const offset = 90;
@@ -1089,8 +1129,8 @@
                     row.className = "conjugation-row-card";
                     row.innerHTML = `
                         <div class="row-pronoun"><span class="badge-imperatif">Impératif</span></div>
-                        <div class="row-conjugated"><strong>${forma}</strong></div>
-                        <button type="button" class="btn-ouvir-exemplo small" title="Ouvir forma">
+                        <div class="row-conjugated" lang="fr"><strong>${forma}</strong></div>
+                        <button type="button" class="btn-ouvir-exemplo small" title="Ouvir forma" aria-label="Ouvir conjugação: ${forma}">
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                                 <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
@@ -1125,8 +1165,8 @@
                 const textoCompleto = `${pronomeFormatado} ${forma}`.replace("j' ", "j'");
                 row.innerHTML = `
                     <div class="row-pronoun">${pronomeFormatado}</div>
-                    <div class="row-conjugated"><strong>${forma}</strong></div>
-                    <button type="button" class="btn-ouvir-exemplo small" title="Ouvir pronúncia">
+                    <div class="row-conjugated" lang="fr"><strong>${forma}</strong></div>
+                    <button type="button" class="btn-ouvir-exemplo small" title="Ouvir pronúncia" aria-label="Ouvir conjugação: ${textoCompleto}">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                             <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
@@ -1156,8 +1196,8 @@
             card.className = "verb-example-box";
             card.innerHTML = `
                 <div class="ex-top">
-                    <p class="ex-fr">« ${ex.fr} »</p>
-                    <button type="button" class="btn-ouvir-exemplo" title="Ouvir frase em francês">
+                    <p class="ex-fr" lang="fr">« ${ex.fr} »</p>
+                    <button type="button" class="btn-ouvir-exemplo" title="Ouvir frase em francês" aria-label="Ouvir exemplo em francês: ${ex.fr}">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                             <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
@@ -1175,10 +1215,22 @@
     }
 
     /**
-     * Filtro em tempo real no Guia FLE
+     * Filtro em tempo real + Autocomplete Inteligente no Guia FLE
      */
+    let indiceAutocompleteGuia = -1;
+
+    function escapeRegExpGuia(str) {
+        return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    function destacarTermoGuia(texto, termo) {
+        if (!termo) return texto;
+        const regex = new RegExp(`(${escapeRegExpGuia(termo)})`, 'gi');
+        return texto.replace(regex, '<mark>$1</mark>');
+    }
+
     function filtrarGuiaFLE(termo) {
-        const busca = termo.trim().toLowerCase();
+        const busca = (termo || "").trim().toLowerCase();
         const btnLimpar = document.getElementById("btnLimparBusca");
         if (btnLimpar) btnLimpar.style.display = busca ? "inline-flex" : "none";
 
@@ -1190,6 +1242,7 @@
             cardsVerbos.forEach(c => c.style.display = "");
             cardsFauxAmis.forEach(c => c.style.display = "");
             secoes.forEach(s => s.style.display = "");
+            fecharAutocompleteGuia();
             return;
         }
 
@@ -1210,37 +1263,270 @@
             const txt = s.innerText.toLowerCase();
             s.style.display = txt.includes(busca) ? "" : "none";
         });
+
+        atualizarAutocompleteGuia(termo);
+    }
+
+    function atualizarAutocompleteGuia(valor) {
+        const dropdown = document.getElementById("autocompleteDropdownGuia");
+        if (!dropdown) return;
+
+        const termo = (valor || "").trim().toLowerCase();
+        if (!termo) {
+            fecharAutocompleteGuia();
+            return;
+        }
+
+        const sugestoesVerbos = [];
+        const vistosVerbos = new Set();
+        Object.keys(BANCO_VERBOS).forEach(vid => {
+            const v = BANCO_VERBOS[vid];
+            if (!v || vistosVerbos.has(vid)) return;
+            const matchStr = `${v.verbo} ${v.traducao} ${v.participe_passe}`.toLowerCase();
+            if (matchStr.includes(termo)) {
+                vistosVerbos.add(vid);
+                sugestoesVerbos.push({ vid, verbo: v.verbo, traducao: v.traducao, aux: v.auxiliaire, part: v.participe_passe });
+            }
+        });
+
+        const sugestoesTemas = [];
+        document.querySelectorAll(".guia-card-section").forEach(sec => {
+            const temaId = sec.getAttribute("data-tema");
+            const tituloEl = sec.querySelector(".section-title");
+            const tagEl = sec.querySelector(".section-tag");
+            const titulo = tituloEl ? tituloEl.textContent.trim() : temaId;
+            const tag = tagEl ? tagEl.textContent.trim() : "Módulo FLE";
+            if (sec.innerText.toLowerCase().includes(termo)) {
+                sugestoesTemas.push({ temaId, titulo, tag });
+            }
+        });
+
+        if (sugestoesVerbos.length === 0 && sugestoesTemas.length === 0) {
+            dropdown.innerHTML = `<div style="padding: 0.9rem; text-align: center; font-size: 0.84rem; color: #6B7280;">Nenhum verbo ou regra encontrado para "<strong>${valor}</strong>"</div>`;
+            dropdown.classList.add("open");
+            indiceAutocompleteGuia = -1;
+            return;
+        }
+
+        let html = "";
+        if (sugestoesVerbos.length > 0) {
+            html += `<div class="guia-ac-section-label">Verbos Interativos (${sugestoesVerbos.length})</div>`;
+            sugestoesVerbos.slice(0, 5).forEach(item => {
+                html += `
+                    <div class="guia-ac-item" onclick="selecionarVerboAutocompleteGuia('${item.vid}')">
+                        <div class="guia-ac-left">
+                            <span class="guia-ac-icon">⏱️</span>
+                            <div class="guia-ac-text">
+                                <span class="guia-ac-title">${destacarTermoGuia(item.verbo, valor.trim())} <span style="font-weight:500;color:#6B7280;">(${destacarTermoGuia(item.traducao, valor.trim())})</span></span>
+                                <span class="guia-ac-sub">Particípio: ${item.part} • Abrir conjugador completo</span>
+                            </div>
+                        </div>
+                        <span class="guia-ac-badge">${item.aux}</span>
+                    </div>
+                `;
+            });
+        }
+
+        if (sugestoesTemas.length > 0) {
+            html += `<div class="guia-ac-section-label">Módulos Gramaticais (${sugestoesTemas.length})</div>`;
+            sugestoesTemas.slice(0, 4).forEach(item => {
+                html += `
+                    <div class="guia-ac-item" onclick="selecionarTemaAutocompleteGuia('${item.temaId}')">
+                        <div class="guia-ac-left">
+                            <span class="guia-ac-icon">📖</span>
+                            <div class="guia-ac-text">
+                                <span class="guia-ac-title">${destacarTermoGuia(item.titulo, valor.trim())}</span>
+                                <span class="guia-ac-sub">${item.tag}</span>
+                            </div>
+                        </div>
+                        <span class="guia-ac-badge">Ir ao tema</span>
+                    </div>
+                `;
+            });
+        }
+
+        dropdown.innerHTML = html;
+        dropdown.classList.add("open");
+        indiceAutocompleteGuia = -1;
+    }
+
+    function selecionarVerboAutocompleteGuia(vid) {
+        fecharAutocompleteGuia();
+        abrirConjugadorVerbo(vid);
+    }
+
+    function selecionarTemaAutocompleteGuia(temaId) {
+        fecharAutocompleteGuia();
+        const inp = document.getElementById("guiaSearchInput");
+        if (inp) inp.value = "";
+        filtrarGuiaFLE("");
+        navegarParaTema(temaId);
+    }
+
+    function fecharAutocompleteGuia() {
+        const dropdown = document.getElementById("autocompleteDropdownGuia");
+        if (dropdown) {
+            dropdown.classList.remove("open");
+            indiceAutocompleteGuia = -1;
+        }
+    }
+
+    document.addEventListener("click", (e) => {
+        const wrap = document.getElementById("guiaSearchWrapper");
+        if (wrap && !wrap.contains(e.target)) {
+            fecharAutocompleteGuia();
+        }
+    });
+
+    document.getElementById("guiaSearchInput")?.addEventListener("keydown", (e) => {
+        const dropdown = document.getElementById("autocompleteDropdownGuia");
+        if (!dropdown || !dropdown.classList.contains("open")) return;
+
+        const itens = dropdown.querySelectorAll(".guia-ac-item");
+        if (!itens.length) return;
+
+        if (e.key === "ArrowDown") {
+            e.preventDefault();
+            indiceAutocompleteGuia = (indiceAutocompleteGuia + 1) % itens.length;
+            itens.forEach((el, i) => el.classList.toggle("is-active", i === indiceAutocompleteGuia));
+        } else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            indiceAutocompleteGuia = (indiceAutocompleteGuia - 1 + itens.length) % itens.length;
+            itens.forEach((el, i) => el.classList.toggle("is-active", i === indiceAutocompleteGuia));
+        } else if (e.key === "Enter" && indiceAutocompleteGuia >= 0) {
+            e.preventDefault();
+            itens[indiceAutocompleteGuia].click();
+        } else if (e.key === "Escape") {
+            fecharAutocompleteGuia();
+        }
+    });
+
+    function selecionarChipGuia(btn, termo, temaId) {
+        document.querySelectorAll("#guiaQuickChips .quick-tag-pill").forEach(b => b.classList.remove("active"));
+        if (btn) btn.classList.add("active");
+
+        const inp = document.getElementById("guiaSearchInput");
+        if (inp) inp.value = termo || "";
+        filtrarGuiaFLE(termo || "");
+        fecharAutocompleteGuia();
+
+        if (temaId) {
+            setTimeout(() => navegarParaTema(temaId), 60);
+        }
     }
 
     function definirBusca(termo) {
         const inp = document.getElementById("guiaSearchInput");
         inp.value = termo;
         filtrarGuiaFLE(termo);
+        fecharAutocompleteGuia();
         inp.focus();
     }
 
     function limparBuscaGuia() {
         const inp = document.getElementById("guiaSearchInput");
-        inp.value = "";
+        if (inp) inp.value = "";
+        document.querySelectorAll("#guiaQuickChips .quick-tag-pill").forEach(b => {
+            b.classList.toggle("active", b.getAttribute("data-chip") === "todos");
+        });
         filtrarGuiaFLE("");
+        fecharAutocompleteGuia();
     }
 
-    // Pronúncia de áudio nativa em francês
-    function falarTextoFrances(texto) {
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(texto.replace(/[*_#`~>«»]/g, "").trim());
-            utterance.lang = 'fr-FR';
-            utterance.rate = 0.88;
-            const vozes = window.speechSynthesis.getVoices();
-            const voz = vozes.find(v => v.lang === 'fr-FR' || v.lang.startsWith('fr'));
-            if (voz) utterance.voice = voz;
-            window.speechSynthesis.speak(utterance);
+    // Pronúncia de áudio nativa em francês com suporte a toggle/stop e acessibilidade
+    function falarTextoFrances(texto, btnElement = null) {
+        if (!('speechSynthesis' in window)) {
+            alert("Seu navegador não possui suporte à síntese de voz nativa.");
+            return;
         }
+
+        // Se clicou no botão que já está falando, para a reprodução
+        if (btnElement && btnElement.classList.contains("speaking")) {
+            window.speechSynthesis.cancel();
+            btnElement.classList.remove("speaking");
+            btnElement.setAttribute("aria-pressed", "false");
+            if (btnElement._originalHtmlSalvo) {
+                btnElement.innerHTML = btnElement._originalHtmlSalvo;
+            }
+            return;
+        }
+
+        if (!texto || !texto.trim()) return;
+
+        window.speechSynthesis.cancel();
+        document.querySelectorAll(".btn-ouvir-exemplo.speaking, .btn-audio-pill.speaking").forEach(b => {
+            b.classList.remove("speaking");
+            b.setAttribute("aria-pressed", "false");
+            if (b._originalHtmlSalvo) {
+                b.innerHTML = b._originalHtmlSalvo;
+            }
+        });
+
+        const textoLimpo = texto.replace(/[*_#`~>«»\\]/g, " ").replace(/\s+/g, " ").trim();
+        const utterance = new SpeechSynthesisUtterance(textoLimpo);
+        utterance.lang = 'fr-FR';
+        utterance.rate = 0.88;
+
+        const vozes = window.speechSynthesis.getVoices();
+        const voz = vozes.find(v => v.lang === 'fr-FR' || v.lang.startsWith('fr') || v.lang.includes('fr'));
+        if (voz) utterance.voice = voz;
+
+        if (btnElement) {
+            if (!btnElement._originalHtmlSalvo) {
+                btnElement._originalHtmlSalvo = btnElement.innerHTML;
+            }
+            btnElement.classList.add("speaking");
+            btnElement.setAttribute("aria-pressed", "true");
+            btnElement.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 3px; vertical-align: text-bottom;"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg> <span>Parar</span>`;
+
+            const resetarBtn = () => {
+                btnElement.classList.remove("speaking");
+                btnElement.setAttribute("aria-pressed", "false");
+                if (btnElement._originalHtmlSalvo) {
+                    btnElement.innerHTML = btnElement._originalHtmlSalvo;
+                }
+            };
+            utterance.onend = resetarBtn;
+            utterance.onerror = resetarBtn;
+        }
+
+        setTimeout(() => {
+            try {
+                if (window.speechSynthesis.paused) {
+                    window.speechSynthesis.resume();
+                }
+                window.speechSynthesis.speak(utterance);
+            } catch (e) {
+                console.error("Erro ao falar texto:", e);
+            }
+        }, 40);
     }
 
-    // Atualização automática de destaque na barra lateral conforme o aluno rola os capítulos
+    // Inicialização e Acessibilidade (a11y) FLE
     window.addEventListener("DOMContentLoaded", () => {
+        const seletoresFrances = [
+            '.verb-infinitive',
+            '.verb-participle strong',
+            '.fr-text',
+            '.fr-ex',
+            '.ex-fr',
+            '.line-q',
+            '.line-r',
+            '.p-name',
+            '.contrast-chips em',
+            '#modalVerboNome',
+            '.row-conjugated'
+        ];
+        document.querySelectorAll(seletoresFrances.join(', ')).forEach(el => {
+            el.setAttribute('lang', 'fr');
+        });
+
+        document.querySelectorAll('.btn-ouvir-exemplo').forEach(btn => {
+            if (!btn.getAttribute('aria-label')) {
+                btn.setAttribute('aria-label', 'Ouvir frase em francês nativo');
+            }
+        });
+
         if ("IntersectionObserver" in window) {
             const secoes = document.querySelectorAll(".guia-card-section");
             const observer = new IntersectionObserver((entries) => {
@@ -1248,9 +1534,12 @@
                     if (entry.isIntersecting) {
                         const temaId = entry.target.getAttribute("data-tema");
                         if (temaId) {
-                            document.querySelectorAll("#guiaSidebar .sidebar-btn").forEach(b => b.classList.remove("active"));
-                            const activeBtn = document.querySelector(`#guiaSidebar button[onclick*="${temaId}"]`);
-                            if (activeBtn) activeBtn.classList.add("active");
+                            const inp = document.getElementById("guiaSearchInput");
+                            if (!inp || !inp.value.trim()) {
+                                document.querySelectorAll("#guiaQuickChips .quick-tag-pill").forEach(b => {
+                                    b.classList.toggle("active", b.getAttribute("data-chip") === temaId);
+                                });
+                            }
                         }
                     }
                 });
@@ -1263,390 +1552,750 @@
 
 <style>
 /* ==========================================================================
-   ESTILOS DEDICADOS DA PÁGINA GUIA FLE
-   Totalmente integrados ao Design System Glassmorphic & Temas Claro/Escuro
+   GUIA GRAMATICAL FLE — DESIGN EDITORIAL LIMPO + 4 MINI-KPIS COM ONDAS
    ========================================================================== */
 
-.guia-fle-container {
-    max-width: 1240px;
+[data-theme="light"] body:has(.guia-editorial-wrapper) {
+    background-color: #F7F7F8 !important;
+    background-image: none !important;
+}
+
+[data-theme="dark"] body:has(.guia-editorial-wrapper) {
+    background-color: #0E0F14 !important;
+    background-image: none !important;
+}
+
+.page-container.dashboard-page.guia-page {
+    padding: 0 !important;
+    max-width: 100% !important;
+    background: transparent !important;
+}
+
+.guia-editorial-wrapper {
+    width: 100%;
+    max-width: 1180px !important;
     margin: 0 auto !important;
-    padding: 1.5rem 2rem 5rem 2rem;
+    padding: 0.75rem 1.5rem 4.5rem !important;
     position: relative;
-}
-
-@media (max-width: 1024px) {
-    .guia-fle-container {
-        margin: 0 auto !important;
-        padding-left: 1.25rem;
-        padding-right: 1.25rem;
-    }
-}
-
-/* Hero Card Guia FLE */
-.guia-hero-outer {
-    margin-bottom: 2.25rem !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-}
-
-.guia-hero-inner {
-    padding: 2.25rem 2.5rem 2rem 2.5rem !important;
-    text-align: center !important;
-    align-items: center !important;
-}
-
-.hero-badge-wrap {
-    margin-bottom: 0.85rem;
-    display: flex;
-    justify-content: center;
-}
-
-.hero-badge-wrap .hero-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    padding: 0.4rem 0.95rem;
-    font-size: 0.82rem;
-    font-weight: 600;
-    margin-bottom: 0;
-    border-radius: 20px;
-    letter-spacing: 0.2px;
-}
-
-[data-theme="light"] .hero-badge-wrap .hero-tag {
-    background: rgba(2, 132, 199, 0.08);
-    border: 1px solid rgba(2, 132, 199, 0.22);
-    color: #0284c7;
-}
-
-.guia-main-title {
-    font-size: 2.25rem;
-    font-weight: 800;
-    margin: 0 0 0.85rem 0;
-    line-height: 1.25;
-    background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: -0.02em;
-    text-align: center;
-}
-
-[data-theme="light"] .guia-main-title {
-    background: linear-gradient(135deg, #0284c7 0%, #4f46e5 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.guia-main-subtitle {
-    font-size: 1.02rem;
-    line-height: 1.68;
-    color: #cbd5e1;
-    max-width: 1050px;
-    margin: 0 auto 1.85rem auto;
-    text-align: center;
-}
-
-[data-theme="light"] .guia-main-subtitle {
-    color: #334155 !important;
-    font-weight: 500;
-}
-
-/* Search Bar */
-.guia-search-box {
-    margin-top: 0;
-    width: 100%;
-    max-width: 960px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.search-input-wrap {
-    position: relative;
-    display: flex;
-    align-items: center;
-    width: 100%;
-    max-width: 100%;
-}
-
-.search-icon {
-    position: absolute;
-    left: 1.25rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #38bdf8;
-    pointer-events: none;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-}
-
-[data-theme="light"] .search-icon {
-    color: #0284c7;
-}
-
-.guia-search-input,
-input.guia-search-input {
-    width: 100%;
-    padding: 1.05rem 3.2rem 1.05rem 3.5rem !important;
-    background: rgba(2, 6, 23, 0.65) !important;
-    border: 1.5px solid rgba(56, 189, 248, 0.3) !important;
-    border-radius: 14px !important;
-    color: #f8fafc !important;
-    font-size: 0.98rem !important;
-    line-height: 1.5 !important;
-    outline: none !important;
-    transition: all 0.25s ease;
     box-sizing: border-box;
 }
 
-.guia-search-input::placeholder {
-    color: #64748b;
+/* Remove qualquer faixa tricolor ou moldura antiga */
+.guia-editorial-wrapper .hero-card-outer,
+.guia-editorial-wrapper .hero-card-inner,
+.guia-editorial-wrapper .card-moldura-outer,
+.guia-editorial-wrapper .guia-card-section,
+.guia-editorial-wrapper .guia-kpi-card,
+.guia-editorial-wrapper .guia-command-card {
+    background-image: none !important;
 }
 
-[data-theme="light"] .guia-search-input,
-[data-theme="light"] input.guia-search-input {
-    background: #ffffff !important;
-    border-color: rgba(203, 213, 225, 0.9) !important;
-    color: #0f172a !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+.guia-editorial-wrapper .hero-card-outer::before,
+.guia-editorial-wrapper .hero-card-outer::after,
+.guia-editorial-wrapper .hero-card-inner::before,
+.guia-editorial-wrapper .hero-card-inner::after,
+.guia-editorial-wrapper .card-moldura-outer::before,
+.guia-editorial-wrapper .card-moldura-outer::after,
+.guia-editorial-wrapper .guia-card-section::before,
+.guia-editorial-wrapper .guia-card-section::after,
+.guia-editorial-wrapper .guia-kpi-card::before,
+.guia-editorial-wrapper .guia-kpi-card::after {
+    display: none !important;
+    content: none !important;
 }
 
-[data-theme="light"] .guia-search-input::placeholder {
-    color: #94a3b8;
+/* 1. Cabeçalho Editorial Aberto */
+.guia-editorial-hero {
+    text-align: center;
+    margin-bottom: 2.1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0.25rem 1rem 0 !important;
 }
 
-.guia-search-input:focus,
-input.guia-search-input:focus {
-    border-color: #38bdf8 !important;
-    box-shadow: 0 0 0 3.5px rgba(56, 189, 248, 0.25) !important;
+.guia-editorial-title {
+    font-size: clamp(1.95rem, 3.8vw, 2.8rem);
+    font-weight: 700;
+    line-height: 1.14;
+    letter-spacing: -0.03em;
+    color: #14213D;
+    margin: 0 0 0.75rem;
 }
 
-[data-theme="light"] .guia-search-input:focus,
-[data-theme="light"] input.guia-search-input:focus {
-    border-color: #0284c7 !important;
-    box-shadow: 0 0 0 3.5px rgba(2, 132, 199, 0.2) !important;
+[data-theme="dark"] .guia-editorial-title {
+    color: #FFFFFF;
 }
 
-.search-clear-btn {
-    position: absolute;
-    right: 1.15rem;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(148, 163, 184, 0.12);
-    border: none;
-    color: #94a3b8;
-    font-size: 1.25rem;
+.guia-editorial-title .serif-italic {
+    display: block;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: #14213D;
+    margin-top: 0.1rem;
+}
+
+[data-theme="dark"] .guia-editorial-title .serif-italic {
+    color: #FCA311;
+}
+
+.guia-editorial-subtitle {
+    max-width: 680px;
+    margin: 0 auto 0.25rem;
+    font-size: 0.96rem;
+    line-height: 1.6;
+    color: rgba(20, 33, 61, 0.72);
+    font-weight: 400;
+}
+
+[data-theme="dark"] .guia-editorial-subtitle {
+    color: rgba(248, 250, 252, 0.75);
+}
+
+.guia-editorial-subtitle strong {
+    color: #14213D;
+    font-weight: 600;
+}
+
+[data-theme="dark"] .guia-editorial-subtitle strong {
+    color: #FCA311;
+}
+
+/* 2. Grid dos 4 Mini-KPIs no topo (Ondas Coloridas + Botão Pill #18191E) */
+.guia-kpis-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.1rem;
+    margin-bottom: 1.35rem;
+    width: 100%;
+}
+
+@media (max-width: 1080px) {
+    .guia-kpis-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .guia-kpis-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.guia-kpi-card {
+    background: #FFFFFF !important;
+    border: 1px solid #ECECEC !important;
+    border-radius: 26px !important;
+    padding: 1.3rem 1.35rem 1.2rem !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.02) !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.8rem;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
     cursor: pointer;
-    z-index: 2;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
+}
+
+.guia-kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 38px rgba(0, 0, 0, 0.065) !important;
+}
+
+[data-theme="dark"] .guia-kpi-card {
+    background: #181920 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45) !important;
+}
+
+.guia-kpi-top-row {
+    display: grid;
+    grid-template-columns: 1fr 104px;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.guia-kpi-label {
+    font-size: 0.77rem;
+    font-weight: 600;
+    color: #6B7280;
+    display: block;
+    margin-bottom: 2px;
+}
+
+[data-theme="dark"] .guia-kpi-label {
+    color: #9CA3AF;
+}
+
+.guia-kpi-primary {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #111827;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+}
+
+[data-theme="dark"] .guia-kpi-primary {
+    color: #F9FAFB;
+}
+
+.guia-kpi-wave-svg {
+    width: 100%;
+    height: 46px;
+    overflow: visible;
+    display: block;
+}
+
+.guia-kpi-mid-row {
     display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 0.45rem;
+}
+
+.guia-kpi-subval {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #1F2937;
+}
+
+[data-theme="dark"] .guia-kpi-subval {
+    color: #E5E7EB;
+}
+
+.guia-kpi-trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 0.77rem;
+    font-weight: 700;
+    color: #16A34A;
+    white-space: nowrap;
+}
+
+.guia-kpi-cta-row {
+    display: flex;
+    justify-content: center;
+    padding-top: 0.1rem;
+}
+
+.guia-pill-btn {
+    background: #18191E !important;
+    color: #FFFFFF !important;
+    border-radius: 9999px !important;
+    padding: 0.62rem 1rem !important;
+    font-size: 0.78rem !important;
+    font-weight: 600 !important;
+    text-align: center;
+    text-decoration: none !important;
+    display: inline-flex !important;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
-    padding: 0;
-    line-height: 1;
+    gap: 6px;
+    box-shadow: 0 4px 12px rgba(24, 25, 30, 0.14) !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    border: 1px solid #18191E !important;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-.search-clear-btn:hover {
-    background: rgba(148, 163, 184, 0.25);
-    color: #f8fafc;
+.guia-pill-btn:hover {
+    background: #2D2F39 !important;
+    border-color: #2D2F39 !important;
+    color: #FCA311 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(24, 25, 30, 0.22) !important;
 }
 
-[data-theme="light"] .search-clear-btn:hover {
-    color: #0f172a;
+[data-theme="dark"] .guia-pill-btn {
+    background: #262833 !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    color: #FFFFFF !important;
 }
 
-.search-quick-tags {
+[data-theme="dark"] .guia-pill-btn:hover {
+    background: #FCA311 !important;
+    color: #000000 !important;
+    border-color: #FCA311 !important;
+}
+
+/* 3. Card Editorial de Busca, Autocomplete e Índice dos 10 Módulos */
+.guia-command-card {
+    position: relative;
+    width: 100%;
+    background: #FFFFFF !important;
+    border: 1px solid #ECECEC !important;
+    border-radius: 26px !important;
+    padding: 1.35rem 1.6rem !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.02) !important;
+    margin: 0 0 1.75rem 0;
+    z-index: 40;
+    box-sizing: border-box;
+}
+
+[data-theme="dark"] .guia-command-card {
+    background: #181920 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45) !important;
+}
+
+.guia-command-top {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 0.6rem;
-    margin-top: 1.15rem;
+    justify-content: space-between;
+    gap: 0.85rem;
     flex-wrap: wrap;
 }
 
-.quick-tag-label {
-    font-size: 0.84rem;
-    font-weight: 600;
-    color: #64748b;
-    margin-right: 0.25rem;
+.guia-command-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
 }
 
-[data-theme="light"] .quick-tag-label {
-    color: #475569;
-}
-
-.quick-tag-pill {
-    background: rgba(56, 189, 248, 0.1);
-    border: 1px solid rgba(56, 189, 248, 0.22);
-    border-radius: 20px;
-    padding: 0.35rem 0.85rem;
-    font-size: 0.82rem;
-    font-weight: 500;
-    color: #38bdf8;
+.guia-action-chip {
+    padding: 0.65rem 1.05rem !important;
+    border-radius: 999px !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
     cursor: pointer;
     transition: all 0.2s ease;
-    display: inline-flex;
+    background: #F7F7F8 !important;
+    color: #18191E !important;
+    border: 1px solid #E5E7EB !important;
+    white-space: nowrap;
+}
+
+.guia-action-chip:hover {
+    background: #18191E !important;
+    color: #FCA311 !important;
+    border-color: #18191E !important;
+}
+
+[data-theme="dark"] .guia-action-chip {
+    background: #121318 !important;
+    color: #F3F4F6 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.guia-search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 260px;
+    box-sizing: border-box;
+    background: #F7F7F8;
+    border: 1px solid #E5E7EB;
+    border-radius: 999px;
+    padding: 0.45rem 0.85rem 0.45rem 1.15rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.guia-search-box:focus-within {
+    background: #FFFFFF;
+    border-color: #18191E;
+    box-shadow: 0 0 0 3px rgba(24, 25, 30, 0.06);
+}
+
+[data-theme="dark"] .guia-search-box {
+    background: #121318;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .guia-search-box:focus-within {
+    border-color: #FCA311;
+    box-shadow: 0 0 0 3px rgba(252, 163, 17, 0.15);
+}
+
+.guia-search-icon {
+    color: #6B7280;
+    flex-shrink: 0;
+    display: flex;
     align-items: center;
 }
 
-[data-theme="light"] .quick-tag-pill {
-    background: rgba(2, 132, 199, 0.08);
-    border-color: rgba(2, 132, 199, 0.2);
-    color: #0284c7;
+.guia-search-box input[type="text"].guia-search-input,
+#guiaSearchInput {
+    flex: 1;
+    border: 0 !important;
+    border-color: transparent !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    outline: none !important;
+    box-shadow: none !important;
+    font-size: 0.88rem !important;
+    font-weight: 500;
+    color: #111827 !important;
+    padding: 0.28rem 0 !important;
+    margin: 0 !important;
+    width: 100%;
+}
+
+.guia-search-input::placeholder {
+    color: #9CA3AF !important;
+    font-weight: 400;
+}
+
+[data-theme="dark"] .guia-search-box input[type="text"].guia-search-input,
+[data-theme="dark"] #guiaSearchInput {
+    color: #F9FAFB !important;
+}
+
+.search-clear-btn {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: none;
+    background: #E5E7EB;
+    color: #4B5563;
+    font-size: 0.9rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+    padding: 0;
+}
+
+.search-clear-btn:hover {
+    background: #D1D5DB;
+    color: #111827;
+}
+
+/* Chips Rápidos de Filtro com todos os 10 Módulos abaixo da Busca */
+.guia-filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    width: 100%;
+    margin-top: 0.95rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid #F0F0F2;
+}
+
+[data-theme="dark"] .guia-filter-chips {
+    border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+.quick-tag-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 0.42rem 0.88rem;
+    border-radius: 999px;
+    background: #F7F7F8;
+    border: 1px solid #E5E7EB;
+    color: #4B5563;
+    font-size: 0.76rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    box-sizing: border-box;
+    white-space: nowrap;
 }
 
 .quick-tag-pill:hover {
-    background: rgba(56, 189, 248, 0.22);
-    border-color: rgba(56, 189, 248, 0.4);
-    transform: translateY(-1px);
+    background: #ECECEE;
+    border-color: #D1D5DB;
+    color: #18191E;
 }
 
-[data-theme="light"] .quick-tag-pill:hover {
-    background: rgba(2, 132, 199, 0.16);
-    border-color: rgba(2, 132, 199, 0.35);
+.quick-tag-pill.active {
+    background: #18191E !important;
+    color: #FFFFFF !important;
+    border-color: #18191E !important;
+    font-weight: 700;
 }
 
-@media (max-width: 768px) {
-    .guia-hero-header {
-        padding: 1.6rem 1.25rem 1.4rem 1.25rem;
-        border-radius: 16px;
-    }
-
-    .guia-main-title {
-        font-size: 1.7rem;
-    }
-
-    .guia-main-subtitle {
-        font-size: 0.95rem;
-        margin-bottom: 1.4rem;
-    }
-
-    .guia-search-input,
-    input.guia-search-input {
-        padding: 0.9rem 2.8rem 0.9rem 3.2rem !important;
-        font-size: 0.92rem !important;
-    }
-
-    .search-quick-tags {
-        margin-top: 0.9rem;
-        gap: 0.45rem;
-    }
+[data-theme="dark"] .quick-tag-pill {
+    background: #121318;
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #9CA3AF;
 }
 
-/* Seções de Conteúdo */
+[data-theme="dark"] .quick-tag-pill.active {
+    background: #FCA311 !important;
+    color: #18191E !important;
+    border-color: #FCA311 !important;
+}
+
+/* Dropdown de Autocomplete do Guia */
+.guia-autocomplete-dropdown {
+    position: absolute;
+    top: 66px;
+    left: 1.6rem;
+    right: 1.6rem;
+    background: #FFFFFF;
+    border: 1px solid #ECECEC;
+    border-radius: 20px;
+    box-shadow: 0 18px 45px rgba(20, 33, 61, 0.12), 0 4px 12px rgba(0, 0, 0, 0.04);
+    padding: 0.5rem;
+    max-height: 360px;
+    overflow-y: auto;
+    display: none;
+    text-align: left;
+    z-index: 100;
+}
+
+.guia-autocomplete-dropdown.open {
+    display: block;
+    animation: fadeGuiaAutocompleteIn 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeGuiaAutocompleteIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+[data-theme="dark"] .guia-autocomplete-dropdown {
+    background: #181920;
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+.guia-ac-section-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #9CA3AF;
+    padding: 0.4rem 0.85rem 0.25rem;
+}
+
+.guia-ac-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 0.65rem 0.85rem;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.guia-ac-item:hover,
+.guia-ac-item.is-active {
+    background: #F7F7F8;
+}
+
+[data-theme="dark"] .guia-ac-item:hover,
+[data-theme="dark"] .guia-ac-item.is-active {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.guia-ac-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.guia-ac-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: rgba(20, 33, 61, 0.06);
+    color: #14213D;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.95rem;
+}
+
+[data-theme="dark"] .guia-ac-icon {
+    background: rgba(255, 255, 255, 0.08);
+    color: #F9FAFB;
+}
+
+.guia-ac-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.guia-ac-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #111827;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+[data-theme="dark"] .guia-ac-title {
+    color: #F9FAFB;
+}
+
+.guia-ac-title mark {
+    background: rgba(252, 163, 17, 0.28);
+    color: inherit;
+    padding: 0 2px;
+    border-radius: 4px;
+}
+
+.guia-ac-sub {
+    font-size: 0.75rem;
+    color: #6B7280;
+}
+
+.guia-ac-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: rgba(20, 33, 61, 0.06);
+    color: #14213D;
+    flex-shrink: 0;
+}
+
+[data-theme="dark"] .guia-ac-badge {
+    background: rgba(252, 163, 17, 0.16);
+    color: #FCA311;
+}
+
+/* 4. Quadro de Seções e Cards dos 10 Temas (Design Editorial Limpo) */
+#guiaBoxOuter,
+#guiaBoxOuter > .guia-box-inner {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
 .guia-sections-wrap {
     display: flex;
     flex-direction: column;
-    gap: 2.25rem;
+    gap: 1.75rem;
     width: 100%;
 }
 
 .guia-card-section {
-    background: rgba(15, 23, 42, 0.65);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.10);
-    border-radius: 18px;
-    padding: 2.2rem;
-    box-shadow: 0 10px 28px rgba(2, 6, 23, 0.25);
+    background: #FFFFFF !important;
+    border: 1px solid #ECECEC !important;
+    border-radius: 26px !important;
+    padding: 2rem 2.15rem !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.02) !important;
     scroll-margin-top: 100px;
-    transition: border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
-[data-theme="light"] .guia-card-section {
-    background: #ffffff !important;
-    border: 1.5px solid #e2e8f0 !important;
-    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04) !important;
+[data-theme="dark"] .guia-card-section {
+    background: #181920 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45) !important;
 }
 
 .section-header {
     display: flex;
-    gap: 1.25rem;
-    margin-bottom: 1.75rem;
+    gap: 1.15rem;
+    margin-bottom: 1.65rem;
     align-items: flex-start;
 }
 
 .section-icon-badge {
-    width: 48px;
-    height: 48px;
+    width: 46px;
+    height: 46px;
     border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    background: rgba(20, 33, 61, 0.06) !important;
+    color: #14213D !important;
+}
+
+[data-theme="dark"] .section-icon-badge {
+    background: rgba(252, 163, 17, 0.14) !important;
+    color: #FCA311 !important;
 }
 
 .section-tag {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: #38bdf8;
+    color: #6B7280;
     margin-bottom: 0.25rem;
     display: block;
 }
 
-.section-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #f1f5f9;
-    margin: 0 0 0.5rem 0;
+[data-theme="dark"] .section-tag {
+    color: #FCA311;
 }
 
-[data-theme="light"] .section-title {
-    color: #0f172a;
+.section-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #14213D;
+    margin: 0 0 0.45rem 0;
+    letter-spacing: -0.02em;
+}
+
+[data-theme="dark"] .section-title {
+    color: #F9FAFB;
 }
 
 .section-desc {
-    color: #cbd5e1;
-    font-size: 0.96rem;
+    color: #4B5563;
+    font-size: 0.94rem;
     line-height: 1.65;
     margin: 0;
 }
 
-[data-theme="light"] .section-desc {
-    color: #334155 !important;
-    font-weight: 500;
+[data-theme="dark"] .section-desc {
+    color: #D1D5DB;
 }
 
 /* Regra de Ouro Banner */
 .golden-rule-banner {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    background: rgba(56, 189, 248, 0.12);
-    border: 1.5px solid rgba(56, 189, 248, 0.35);
-    border-radius: 14px;
+    gap: 0.9rem;
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-left: 4px solid #14213D;
+    border-radius: 16px;
     padding: 1rem 1.25rem;
-    margin-bottom: 1.8rem;
+    margin-bottom: 1.65rem;
+}
+
+[data-theme="dark"] .golden-rule-banner {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.1);
+    border-left-color: #FCA311;
 }
 
 .golden-rule-banner .rule-icon {
-    color: #38bdf8;
+    color: #14213D;
     flex-shrink: 0;
 }
 
+[data-theme="dark"] .golden-rule-banner .rule-icon {
+    color: #FCA311;
+}
+
 .golden-rule-banner .rule-text {
-    font-size: 0.94rem;
-    color: #f0f9ff;
+    font-size: 0.9rem;
+    color: #1F2937;
     line-height: 1.55;
     font-weight: 500;
 }
 
-[data-theme="light"] .golden-rule-banner {
-    background: rgba(2, 132, 199, 0.08) !important;
-    border-color: rgba(2, 132, 199, 0.3) !important;
-}
-
-[data-theme="light"] .golden-rule-banner .rule-text {
-    color: #0369a1 !important;
-    font-weight: 600 !important;
+[data-theme="dark"] .golden-rule-banner .rule-text {
+    color: #F3F4F6;
 }
 
 /* Verb Heading */
@@ -1656,246 +2305,253 @@ input.guia-search-input:focus {
     align-items: center;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1.15rem;
 }
 
 .verb-grid-heading h3 {
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: #f8fafc;
+    font-size: 1.08rem;
+    font-weight: 800;
+    color: #111827;
     margin: 0;
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
-[data-theme="light"] .verb-grid-heading h3 {
-    color: #0f172a;
+[data-theme="dark"] .verb-grid-heading h3 {
+    color: #F9FAFB;
 }
 
 .badge-count {
-    background: rgba(56, 189, 248, 0.2);
-    color: #38bdf8;
+    background: rgba(20, 33, 61, 0.07);
+    color: #14213D;
     font-size: 0.72rem;
-    padding: 0.2rem 0.5rem;
-    border-radius: 12px;
-    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-weight: 700;
+}
+
+[data-theme="dark"] .badge-count {
+    background: rgba(252, 163, 17, 0.16);
+    color: #FCA311;
 }
 
 .click-hint {
-    font-size: 0.82rem;
-    color: #cbd5e1;
-    font-weight: 500;
-}
-
-[data-theme="light"] .click-hint {
-    color: #475569 !important;
+    font-size: 0.8rem;
+    color: #6B7280;
     font-weight: 500;
 }
 
 /* Grid de Verbos Interativos */
 .verbs-interactive-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
     gap: 1rem;
 }
 
 .verb-card {
-    background: rgba(30, 41, 59, 0.65);
-    border: 1px solid rgba(56, 189, 248, 0.20);
-    border-radius: 14px;
-    padding: 1.15rem;
+    background: #FFFFFF !important;
+    border: 1px solid #ECECEC !important;
+    border-radius: 20px !important;
+    padding: 1.15rem 1.25rem !important;
     cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.025) !important;
 }
 
-[data-theme="light"] .verb-card {
-    background: #ffffff !important;
-    border: 1.5px solid #e2e8f0 !important;
-    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04) !important;
+[data-theme="dark"] .verb-card {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 .verb-card:hover {
-    transform: translateY(-4px);
-    border-color: #38bdf8;
-    box-shadow: 0 10px 24px rgba(56, 189, 248, 0.20);
+    transform: translateY(-3px);
+    border-color: #18191E !important;
+    box-shadow: 0 14px 28px rgba(20, 33, 61, 0.075) !important;
 }
 
-[data-theme="light"] .verb-card:hover {
-    border-color: #0284c7 !important;
-    box-shadow: 0 8px 24px rgba(2, 132, 199, 0.14) !important;
+[data-theme="dark"] .verb-card:hover {
+    border-color: #FCA311 !important;
 }
 
 .verb-card-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.35rem;
 }
 
 .verb-infinitive {
-    font-size: 1.2rem;
+    font-size: 1.18rem;
     font-weight: 800;
-    color: #f8fafc;
+    color: #14213D;
 }
 
-[data-theme="light"] .verb-infinitive {
-    color: #0f172a;
+[data-theme="dark"] .verb-infinitive {
+    color: #F9FAFB;
 }
 
 .badge-auxiliary {
     font-size: 0.68rem;
     font-weight: 700;
-    padding: 0.2rem 0.5rem;
-    border-radius: 8px;
-    letter-spacing: 0.04em;
+    padding: 2px 8px;
+    border-radius: 999px;
+    letter-spacing: 0.03em;
 }
 
 .aux-etre {
-    background: rgba(56, 189, 248, 0.2);
+    background: rgba(20, 33, 61, 0.08);
+    color: #14213D;
+}
+
+[data-theme="dark"] .aux-etre {
+    background: rgba(56, 189, 248, 0.16);
     color: #38bdf8;
-    border: 1px solid rgba(56, 189, 248, 0.3);
 }
 
 .aux-avoir {
-    background: rgba(168, 85, 247, 0.2);
-    color: #c084fc;
-    border: 1px solid rgba(168, 85, 247, 0.3);
+    background: rgba(22, 163, 74, 0.1);
+    color: #15803D;
+}
+
+[data-theme="dark"] .aux-avoir {
+    background: rgba(22, 163, 74, 0.18);
+    color: #4ADE80;
 }
 
 .verb-translation {
-    font-size: 0.88rem;
-    color: #cbd5e1;
+    font-size: 0.86rem;
+    color: #6B7280;
     margin-bottom: 0.6rem;
     font-weight: 600;
 }
 
-[data-theme="light"] .verb-translation {
-    color: #334155 !important;
-    font-weight: 600;
-}
-
 .verb-participle {
-    font-size: 0.82rem;
-    color: #f1f5f9;
-    background: rgba(15, 23, 42, 0.7);
-    padding: 0.4rem 0.6rem;
-    border-radius: 8px;
+    font-size: 0.8rem;
+    color: #1F2937;
+    background: #F9FAFB !important;
+    padding: 0.4rem 0.65rem;
+    border-radius: 10px;
     margin-bottom: 0.75rem;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid #ECECEC !important;
     font-weight: 500;
 }
 
-[data-theme="light"] .verb-participle {
-    background: #f8fafc !important;
-    color: #0f172a !important;
-    border: 1px solid #e2e8f0 !important;
-    font-weight: 600;
+[data-theme="dark"] .verb-participle {
+    background: rgba(255, 255, 255, 0.04) !important;
+    color: #E5E7EB !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 .verb-card-bottom {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
-    padding-top: 0.6rem;
-    margin-top: 0.25rem;
+    border-top: 1px solid #F3F4F6;
+    padding-top: 0.65rem;
+    margin-top: 0.2rem;
+}
+
+[data-theme="dark"] .verb-card-bottom {
+    border-top-color: rgba(255, 255, 255, 0.07);
 }
 
 .action-link {
     font-size: 0.78rem;
-    font-weight: 600;
-    color: #38bdf8;
+    font-weight: 700;
+    color: #14213D;
     display: inline-flex;
     align-items: center;
     gap: 2px;
 }
 
-.btn-mini-speaker {
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    color: #94a3b8;
-    width: 28px;
-    height: 28px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 0.75rem;
-    gap: 4px;
-    padding: 0 6px;
+[data-theme="dark"] .action-link {
+    color: #FCA311;
 }
 
-.btn-mini-speaker:hover {
-    background: rgba(56, 189, 248, 0.2);
-    color: #38bdf8;
-    border-color: #38bdf8;
-}
-
-/* Pairs Grid */
+/* Sub-tópicos e Cards Internos */
 .sub-topic-wrap {
-    margin-top: 2rem;
+    margin-top: 1.85rem;
 }
 
 .sub-topic-title {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #f1f5f9;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #14213D;
     margin-bottom: 1rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
-[data-theme="light"] .sub-topic-title {
-    color: #0f172a;
+[data-theme="dark"] .sub-topic-title {
+    color: #F9FAFB;
 }
 
-.pairs-grid {
+.pairs-grid,
+.traps-grid,
+.examples-detailed-list,
+.prepositions-cards-grid,
+.scenarios-grid,
+.subjonctif-triggers-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 0.9rem;
+    gap: 1rem;
 }
 
-.pair-card {
-    background: rgba(30, 41, 59, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 12px;
-    padding: 0.9rem 1rem;
+.pair-card,
+.example-box-card,
+.trap-card,
+.prep-category-card,
+.scenario-card,
+.trigger-card,
+.contrast-row {
+    background: #F9FAFB !important;
+    border: 1px solid #ECECEC !important;
+    border-radius: 18px !important;
+    padding: 1.1rem 1.25rem !important;
 }
 
-[data-theme="light"] .pair-card {
-    background: #f8fafc;
-    border-color: #e2e8f0;
+[data-theme="dark"] .pair-card,
+[data-theme="dark"] .example-box-card,
+[data-theme="dark"] .trap-card,
+[data-theme="dark"] .prep-category-card,
+[data-theme="dark"] .scenario-card,
+[data-theme="dark"] .trigger-card,
+[data-theme="dark"] .contrast-row {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 .pair-names {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-weight: 700;
-    font-size: 0.88rem;
-    margin-bottom: 0.4rem;
+    font-weight: 800;
+    font-size: 0.9rem;
+    margin-bottom: 0.45rem;
 }
 
-.pair-names .p1 { color: #38bdf8; }
-.pair-names .p2 { color: #a855f7; }
+.pair-names .p1 { color: #14213D; }
+.pair-names .p2 { color: #4B5563; }
+
+[data-theme="dark"] .pair-names .p1 { color: #FCA311; }
+[data-theme="dark"] .pair-names .p2 { color: #E5E7EB; }
 
 .pair-example {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.85rem;
-    color: #cbd5e1;
+    gap: 8px;
+    font-size: 0.86rem;
+    color: #374151;
 }
 
-[data-theme="light"] .pair-example {
-    color: #475569;
+[data-theme="dark"] .pair-example {
+    color: #D1D5DB;
 }
 
 /* Callout Alerts */
@@ -1903,124 +2559,134 @@ input.guia-search-input:focus {
     display: flex;
     gap: 1rem;
     padding: 1.25rem;
-    border-radius: 14px;
+    border-radius: 18px;
+    background: #FFFDF7;
+    border: 1px solid rgba(252, 163, 17, 0.35);
 }
 
-.warning-card {
-    background: rgba(245, 158, 11, 0.1);
-    border: 1px solid rgba(245, 158, 11, 0.3);
-}
-
-.info-card {
-    background: rgba(56, 189, 248, 0.1);
-    border: 1px solid rgba(56, 189, 248, 0.3);
+[data-theme="dark"] .callout-alert-card {
+    background: rgba(252, 163, 17, 0.06);
+    border-color: rgba(252, 163, 17, 0.25);
 }
 
 .callout-icon {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
 }
 
 .callout-content h5 {
-    margin: 0 0 0.4rem 0;
-    font-size: 0.98rem;
-    font-weight: 700;
-    color: #f8fafc;
+    margin: 0 0 0.35rem 0;
+    font-size: 0.96rem;
+    font-weight: 800;
+    color: #14213D;
 }
 
-[data-theme="light"] .callout-content h5 {
-    color: #0f172a;
+[data-theme="dark"] .callout-content h5 {
+    color: #F9FAFB;
 }
 
 .contrast-chips {
     display: flex;
-    gap: 0.75rem;
-    margin-top: 0.6rem;
+    gap: 0.65rem;
+    margin-top: 0.65rem;
     flex-wrap: wrap;
 }
 
 .chip-good, .chip-diff {
-    font-size: 0.82rem;
-    padding: 0.35rem 0.65rem;
-    border-radius: 8px;
+    font-size: 0.8rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    font-weight: 600;
 }
 
 .chip-good {
-    background: rgba(34, 197, 94, 0.15);
-    color: #4ade80;
-    border: 1px solid rgba(34, 197, 94, 0.3);
+    background: rgba(22, 163, 74, 0.12);
+    color: #15803D;
 }
 
 .chip-diff {
-    background: rgba(245, 158, 11, 0.15);
-    color: #fbbf24;
-    border: 1px solid rgba(245, 158, 11, 0.3);
+    background: rgba(252, 163, 17, 0.16);
+    color: #B45309;
 }
 
 /* Tabelas Customizadas */
 .partitifs-table-wrap {
     overflow-x: auto;
+    border: 1px solid #ECECEC;
+    border-radius: 18px;
+}
+
+[data-theme="dark"] .partitifs-table-wrap {
+    border-color: rgba(255, 255, 255, 0.08);
 }
 
 .guia-custom-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.92rem;
+    font-size: 0.9rem;
 }
 
 .guia-custom-table th, .guia-custom-table td {
-    padding: 0.85rem 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.9rem 1.1rem;
+    border-bottom: 1px solid #ECECEC;
     text-align: left;
 }
 
-[data-theme="light"] .guia-custom-table th, [data-theme="light"] .guia-custom-table td {
-    border-bottom-color: #e2e8f0;
+[data-theme="dark"] .guia-custom-table th,
+[data-theme="dark"] .guia-custom-table td {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
 }
 
 .guia-custom-table th {
-    color: #94a3b8;
-    font-weight: 600;
-    font-size: 0.82rem;
+    background: #F9FAFB;
+    color: #6B7280;
+    font-weight: 700;
+    font-size: 0.76rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
 
+[data-theme="dark"] .guia-custom-table th {
+    background: rgba(255, 255, 255, 0.03);
+    color: #9CA3AF;
+}
+
 .partitif-badge {
-    background: rgba(234, 179, 8, 0.2);
-    color: #facc15;
-    padding: 0.25rem 0.65rem;
-    border-radius: 8px;
-    font-weight: 800;
-    font-size: 0.95rem;
+    background: #18191E;
+    color: #FFFFFF;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.86rem;
 }
 
 .audio-inline-wrap {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: space-between;
+    gap: 0.65rem;
 }
 
 /* Faux Amis Grid */
 .faux-amis-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-    gap: 1.25rem;
+    gap: 1.1rem;
 }
 
 .faux-ami-card {
-    background: rgba(30, 41, 59, 0.6);
-    border: 1px solid rgba(239, 68, 68, 0.2);
-    border-radius: 16px;
-    padding: 1.25rem;
+    background: #FFFFFF !important;
+    border: 1px solid #ECECEC !important;
+    border-radius: 20px !important;
+    padding: 1.25rem !important;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.025) !important;
 }
 
-[data-theme="light"] .faux-ami-card {
-    background: #ffffff;
-    border-color: #fecaca;
-    box-shadow: 0 4px 14px rgba(239, 68, 68, 0.06);
+[data-theme="dark"] .faux-ami-card {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 .faux-ami-header {
@@ -2031,135 +2697,131 @@ input.guia-search-input:focus {
 }
 
 .faux-ami-term {
-    font-size: 1.3rem;
+    font-size: 1.22rem;
     font-weight: 800;
-    color: #f87171;
+    color: #14213D;
+}
+
+[data-theme="dark"] .faux-ami-term {
+    color: #FCA311;
 }
 
 .danger-line, .meaning-line {
-    margin-bottom: 0.4rem;
-    font-size: 0.88rem;
+    margin-bottom: 0.35rem;
+    font-size: 0.86rem;
 }
 
-.danger-label { color: #cbd5e1; font-size: 0.8rem; font-weight: 500; }
-.danger-val { color: #fca5a5; font-weight: 700; text-decoration: line-through; margin-left: 4px; }
-.meaning-label { color: #cbd5e1; font-size: 0.8rem; font-weight: 500; }
-.meaning-val { color: #4ade80; font-weight: 700; margin-left: 4px; }
-
-[data-theme="light"] .danger-label,
-[data-theme="light"] .meaning-label {
-    color: #475569 !important;
-    font-weight: 600 !important;
-}
+.danger-label { color: #6B7280; font-size: 0.78rem; font-weight: 600; }
+.danger-val { color: #DC2626; font-weight: 700; text-decoration: line-through; margin-left: 4px; }
+.meaning-label { color: #6B7280; font-size: 0.78rem; font-weight: 600; }
+.meaning-val { color: #16A34A; font-weight: 700; margin-left: 4px; }
 
 .how-to-line {
-    font-size: 0.8rem;
-    color: #cbd5e1;
+    font-size: 0.78rem;
+    color: #6B7280;
     margin-top: 0.4rem;
     font-weight: 500;
 }
 
-[data-theme="light"] .how-to-line {
-    color: #475569 !important;
-    font-weight: 500 !important;
-}
-
 .faux-ami-example {
-    background: rgba(2, 6, 23, 0.4);
-    border-radius: 10px;
-    padding: 0.65rem 0.85rem;
+    background: #F9FAFB;
+    border: 1px solid #ECECEC;
+    border-radius: 12px;
+    padding: 0.7rem 0.9rem;
     margin-top: 0.85rem;
 }
 
-[data-theme="light"] .faux-ami-example {
-    background: #f8fafc;
+[data-theme="dark"] .faux-ami-example {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
 }
 
 .fr-ex {
     font-style: italic;
-    font-size: 0.85rem;
-    color: #e2e8f0;
+    font-size: 0.86rem;
+    color: #111827;
+    font-weight: 600;
     margin: 0 0 0.25rem 0;
 }
 
-[data-theme="light"] .fr-ex { color: #1e293b; font-weight: 600; }
+[data-theme="dark"] .fr-ex {
+    color: #F3F4F6;
+}
 
 .pt-ex {
-    font-size: 0.82rem;
-    color: #cbd5e1;
+    font-size: 0.8rem;
+    color: #6B7280;
     margin: 0;
 }
 
-[data-theme="light"] .pt-ex {
-    color: #334155 !important;
-    font-weight: 500;
-}
-
-/* Pronoms Y & EN Dual Grid */
-.y-en-dual-grid {
+/* Pronoms Y & EN Dual Grid + COD/COI + Negation */
+.y-en-dual-grid,
+.cod-coi-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
+    gap: 1.25rem;
 }
 
 @media (max-width: 850px) {
-    .y-en-dual-grid {
+    .y-en-dual-grid,
+    .cod-coi-grid {
         grid-template-columns: 1fr;
     }
 }
 
-.y-en-col {
-    background: rgba(30, 41, 59, 0.45);
-    border-radius: 16px;
-    padding: 1.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+.y-en-col,
+.cod-coi-card {
+    background: #F9FAFB !important;
+    border-radius: 20px !important;
+    padding: 1.4rem !important;
+    border: 1px solid #ECECEC !important;
 }
 
-[data-theme="light"] .y-en-col {
-    background: #ffffff;
-    border-color: #e2e8f0;
-}
-
-.col-y { border-top: 4px solid #38bdf8; }
-.col-en { border-top: 4px solid #a855f7; }
-
-.y-en-header {
-    margin-bottom: 1rem;
+[data-theme="dark"] .y-en-col,
+[data-theme="dark"] .cod-coi-card {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 .pronom-letter {
-    font-size: 2rem;
+    font-size: 1.85rem;
     font-weight: 800;
     margin-right: 0.5rem;
+    color: #14213D;
 }
 
-.col-y .pronom-letter { color: #38bdf8; }
-.col-en .pronom-letter { color: #a855f7; }
+[data-theme="dark"] .pronom-letter {
+    color: #FCA311;
+}
 
 .pronom-subtitle {
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     font-weight: 600;
-    color: #94a3b8;
+    color: #6B7280;
 }
 
 .rule-bullets {
     padding-left: 1.2rem;
     font-size: 0.88rem;
-    line-height: 1.5;
-    color: #cbd5e1;
-    margin-bottom: 1.5rem;
+    line-height: 1.55;
+    color: #374151;
+    margin-bottom: 1.25rem;
 }
 
-[data-theme="light"] .rule-bullets { color: #334155; }
+[data-theme="dark"] .rule-bullets {
+    color: #D1D5DB;
+}
 
 .dialogue-sub-title {
-    font-size: 0.95rem;
-    font-weight: 700;
-    margin-bottom: 0.8rem;
-    color: #f1f5f9;
+    font-size: 0.92rem;
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+    color: #14213D;
 }
 
-[data-theme="light"] .dialogue-sub-title { color: #0f172a; }
+[data-theme="dark"] .dialogue-sub-title {
+    color: #F9FAFB;
+}
 
 .dialogues-list {
     display: flex;
@@ -2168,69 +2830,58 @@ input.guia-search-input:focus {
 }
 
 .dialogue-card {
-    background: rgba(2, 6, 23, 0.4);
-    border-radius: 12px;
+    background: #FFFFFF;
+    border: 1px solid #ECECEC;
+    border-left: 3px solid #14213D;
+    border-radius: 14px;
     padding: 0.85rem 1rem;
-    border-left: 3px solid #38bdf8;
 }
 
-[data-theme="light"] .dialogue-card {
-    background: #f8fafc;
+[data-theme="dark"] .dialogue-card {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+    border-left-color: #FCA311;
 }
 
 .line-q {
     font-weight: 600;
-    font-size: 0.88rem;
-    color: #e2e8f0;
+    font-size: 0.86rem;
+    color: #374151;
     margin: 0 0 0.2rem 0;
+}
+
+[data-theme="dark"] .line-q {
+    color: #E5E7EB;
 }
 
 .line-r {
     font-weight: 700;
-    font-size: 0.9rem;
-    color: #38bdf8;
+    font-size: 0.88rem;
+    color: #14213D;
     margin: 0 0 0.4rem 0;
+}
+
+[data-theme="dark"] .line-r {
+    color: #FCA311;
 }
 
 .dialogue-actions {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: 1px dashed rgba(255, 255, 255, 0.08);
-    padding-top: 0.35rem;
+    border-top: 1px dashed #E5E7EB;
+    padding-top: 0.4rem;
+}
+
+[data-theme="dark"] .dialogue-actions {
+    border-top-color: rgba(255, 255, 255, 0.08);
 }
 
 .dialogue-pt {
     font-size: 0.78rem;
-    color: #94a3b8;
+    color: #6B7280;
 }
 
-/* COD & COI */
-.cod-coi-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-}
-
-@media (max-width: 768px) {
-    .cod-coi-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-.cod-coi-card {
-    background: rgba(30, 41, 59, 0.5);
-    border-radius: 16px;
-    padding: 1.5rem;
-    border: 1px solid rgba(16, 185, 129, 0.2);
-}
-
-[data-theme="light"] .cod-coi-card {
-    background: #ffffff;
-    border-color: #a7f3d0;
-}
-
-/* Negação Grid */
 .negation-pairs-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -2238,25 +2889,57 @@ input.guia-search-input:focus {
 }
 
 .negation-card {
-    background: rgba(30, 41, 59, 0.5);
-    border-radius: 14px;
-    padding: 1rem;
-    border: 1px solid rgba(244, 63, 94, 0.2);
+    background: #F9FAFB !important;
+    border-radius: 18px !important;
+    padding: 1.15rem !important;
+    border: 1px solid #ECECEC !important;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
 }
 
-[data-theme="light"] .negation-card {
-    background: #ffffff;
-    border-color: #fecdd3;
+[data-theme="dark"] .negation-card {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 .neg-highlight {
-    color: #fb7185;
+    color: #DC2626;
 }
 
-/* Modal de Conjugação Avançado */
+/* Botão Ouvir Pill Escuro (#18191E) */
+.btn-ouvir-exemplo,
+.btn-audio-pill {
+    background: #18191E !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 999px !important;
+    color: #FFFFFF !important;
+    padding: 0.36rem 0.85rem !important;
+    font-size: 0.78rem !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.4rem !important;
+    transition: all 0.2s ease !important;
+    white-space: nowrap !important;
+    line-height: 1 !important;
+    flex-shrink: 0 !important;
+}
+
+.btn-ouvir-exemplo:hover,
+.btn-audio-pill:hover {
+    background: #2D2F39 !important;
+    color: #FCA311 !important;
+    transform: translateY(-1px) !important;
+}
+
+.btn-ouvir-exemplo.small {
+    padding: 0.28rem 0.7rem !important;
+    font-size: 0.74rem !important;
+}
+
+/* Modal de Conjugação Editorial */
 #modalConjugador.modal {
     padding: 1.5rem !important;
     padding-top: calc(68px + 1rem) !important;
@@ -2280,37 +2963,35 @@ input.guia-search-input:focus {
 }
 
 .glass-card-modal {
-    background: rgba(15, 23, 42, 0.96) !important;
-    backdrop-filter: blur(30px) !important;
-    -webkit-backdrop-filter: blur(30px) !important;
-    border: 1px solid rgba(56, 189, 248, 0.3) !important;
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7) !important;
-    border-radius: 20px !important;
-    color: #f8fafc !important;
+    background: #FFFFFF !important;
+    border: 1px solid #ECECEC !important;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18) !important;
+    border-radius: 26px !important;
+    color: #111827 !important;
     display: flex !important;
     flex-direction: column !important;
     max-height: calc(100vh - 90px) !important;
     overflow: hidden !important;
 }
 
-[data-theme="light"] .glass-card-modal {
-    background: #ffffff !important;
-    border-color: rgba(2, 132, 199, 0.3) !important;
-    box-shadow: 0 20px 50px rgba(31, 38, 135, 0.15) !important;
-    color: #0f172a !important;
+[data-theme="dark"] .glass-card-modal {
+    background: #181920 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #F9FAFB !important;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7) !important;
 }
 
 .modal-header-conjugador {
     padding: 1.35rem 1.75rem 1.15rem 1.75rem !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-bottom: 1px solid #ECECEC !important;
     display: flex !important;
     justify-content: space-between !important;
     align-items: flex-start !important;
     flex-shrink: 0 !important;
 }
 
-[data-theme="light"] .modal-header-conjugador {
-    border-bottom-color: #e2e8f0 !important;
+[data-theme="dark"] .modal-header-conjugador {
+    border-bottom-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 .verb-title-main {
@@ -2321,56 +3002,20 @@ input.guia-search-input:focus {
 }
 
 .modal-verb-title {
-    font-size: 2rem;
+    font-size: 1.85rem;
     font-weight: 800;
     margin: 0;
-    color: #38bdf8;
+    color: #14213D;
 }
 
-[data-theme="light"] .modal-verb-title {
-    color: #0284c7;
+[data-theme="dark"] .modal-verb-title {
+    color: #FCA311;
 }
 
 .modal-verb-trans {
-    font-size: 1.15rem;
-    color: #94a3b8;
+    font-size: 1.05rem;
+    color: #6B7280;
     font-weight: 500;
-}
-
-[data-theme="light"] .modal-verb-trans {
-    color: #64748b;
-}
-
-.btn-audio-circle {
-    background: rgba(56, 189, 248, 0.15) !important;
-    border: 1.5px solid rgba(56, 189, 248, 0.35) !important;
-    border-radius: 50% !important;
-    width: 38px !important;
-    height: 38px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    color: #38bdf8 !important;
-    cursor: pointer !important;
-    transition: all 0.2s ease !important;
-    flex-shrink: 0 !important;
-}
-
-[data-theme="light"] .btn-audio-circle {
-    background: rgba(2, 132, 199, 0.1) !important;
-    border-color: rgba(2, 132, 199, 0.3) !important;
-    color: #0284c7 !important;
-}
-
-.btn-audio-circle:hover {
-    background: #38bdf8 !important;
-    color: #0f172a !important;
-    transform: scale(1.08) !important;
-}
-
-[data-theme="light"] .btn-audio-circle:hover {
-    background: #0284c7 !important;
-    color: #ffffff !important;
 }
 
 .verb-metadata-chips {
@@ -2380,49 +3025,48 @@ input.guia-search-input:focus {
 }
 
 .meta-chip {
-    font-size: 0.78rem;
-    padding: 0.25rem 0.65rem;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.06);
+    font-size: 0.76rem;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: #F3F4F6;
+    color: #374151;
 }
 
-[data-theme="light"] .meta-chip {
-    background: #f1f5f9;
-    color: #334155;
+[data-theme="dark"] .meta-chip {
+    background: rgba(255, 255, 255, 0.07);
+    color: #E5E7EB;
 }
 
 .modal-body-conjugador {
-    padding: 1.5rem 1.75rem 2.5rem 1.75rem !important;
+    padding: 1.5rem 1.75rem 2rem 1.75rem !important;
     overflow-y: auto !important;
     flex: 1 1 auto !important;
     min-height: 0 !important;
-    max-height: none !important;
     display: flex !important;
     flex-direction: column !important;
     gap: 1.25rem !important;
 }
 
-/* NENHUM ELEMENTO DENTRO DO MODAL-BODY ENCOLHE POR FLEXBOX */
 .modal-body-conjugador > * {
     flex-shrink: 0 !important;
 }
 
 .verb-tip-box {
-    background: rgba(56, 189, 248, 0.08);
-    border: 1px solid rgba(56, 189, 248, 0.2);
-    border-radius: 12px;
+    background: #F9FAFB;
+    border: 1px solid #ECECEC;
+    border-radius: 14px;
     padding: 0.85rem 1.15rem;
     display: flex;
     gap: 0.75rem;
     align-items: center;
-    font-size: 0.9rem;
-    color: #e0f2fe;
+    font-size: 0.88rem;
+    color: #1F2937;
 }
 
-[data-theme="light"] .verb-tip-box {
-    background: #f0f9ff;
-    border-color: #bae6fd;
-    color: #0369a1;
+[data-theme="dark"] .verb-tip-box {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+    color: #E5E7EB;
 }
 
 .tense-nav-tabs {
@@ -2430,78 +3074,56 @@ input.guia-search-input:focus {
     gap: 0.5rem !important;
     overflow-x: auto !important;
     padding: 4px 2px 10px 2px !important;
-    border-bottom: 2px solid rgba(56, 189, 248, 0.18) !important;
-    margin-bottom: 0.25rem !important;
+    border-bottom: 1px solid #ECECEC !important;
     flex-shrink: 0 !important;
-    scrollbar-width: thin;
 }
 
-[data-theme="light"] .tense-nav-tabs {
-    border-bottom-color: rgba(2, 132, 199, 0.2) !important;
+[data-theme="dark"] .tense-nav-tabs {
+    border-bottom-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 .tense-tab-btn {
-    background: rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    border-radius: 12px !important;
-    padding: 0.6rem 1.1rem !important;
-    color: #94a3b8 !important;
-    font-size: 0.88rem !important;
+    background: #FFFFFF !important;
+    border: 1px solid #ECECEC !important;
+    border-radius: 999px !important;
+    padding: 0.55rem 1.1rem !important;
+    color: #4B5563 !important;
+    font-size: 0.82rem !important;
     font-weight: 600 !important;
     cursor: pointer !important;
     white-space: nowrap !important;
     transition: all 0.2s ease !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    flex-shrink: 0 !important;
 }
 
-[data-theme="light"] .tense-tab-btn {
-    background: #f1f5f9 !important;
-    border-color: #cbd5e1 !important;
-    color: #475569 !important;
-}
-
-.tense-tab-btn:hover {
-    color: #f1f5f9 !important;
-    background: rgba(56, 189, 248, 0.15) !important;
-    border-color: rgba(56, 189, 248, 0.3) !important;
-}
-
-[data-theme="light"] .tense-tab-btn:hover {
-    color: #0284c7 !important;
-    background: rgba(2, 132, 199, 0.1) !important;
-    border-color: rgba(2, 132, 199, 0.3) !important;
+[data-theme="dark"] .tense-tab-btn {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #D1D5DB !important;
 }
 
 .tense-tab-btn.active {
-    background: linear-gradient(135deg, rgba(56, 189, 248, 0.25) 0%, rgba(99, 102, 241, 0.25) 100%) !important;
-    border-color: #38bdf8 !important;
-    color: #38bdf8 !important;
+    background: #18191E !important;
+    border-color: #18191E !important;
+    color: #FFFFFF !important;
     font-weight: 700 !important;
-    box-shadow: 0 2px 10px rgba(56, 189, 248, 0.2) !important;
 }
 
-[data-theme="light"] .tense-tab-btn.active {
-    background: linear-gradient(135deg, #0284c7 0%, #4f46e5 100%) !important;
-    border-color: transparent !important;
-    color: #ffffff !important;
-    font-weight: 700 !important;
-    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.28) !important;
+[data-theme="dark"] .tense-tab-btn.active {
+    background: #FCA311 !important;
+    border-color: #FCA311 !important;
+    color: #000000 !important;
 }
 
 .tense-content-display {
-    background: rgba(2, 6, 23, 0.45);
-    border-radius: 16px;
-    padding: 1.25rem 1.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    flex-shrink: 0 !important;
+    background: #F9FAFB;
+    border-radius: 18px;
+    padding: 1.25rem 1.4rem;
+    border: 1px solid #ECECEC;
 }
 
-[data-theme="light"] .tense-content-display {
-    background: #f8fafc;
-    border-color: #e2e8f0;
+[data-theme="dark"] .tense-content-display {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.08);
 }
 
 .tense-header-info {
@@ -2515,24 +3137,24 @@ input.guia-search-input:focus {
 
 .tense-header-info h4 {
     margin: 0;
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: #38bdf8;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #14213D;
 }
 
-[data-theme="light"] .tense-header-info h4 {
-    color: #0284c7;
+[data-theme="dark"] .tense-header-info h4 {
+    color: #FCA311;
 }
 
 .tense-desc-hint {
-    font-size: 0.82rem;
-    color: #64748b;
+    font-size: 0.8rem;
+    color: #6B7280;
 }
 
 .conjugation-rows-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
+    gap: 0.7rem;
 }
 
 @media (max-width: 650px) {
@@ -2542,9 +3164,9 @@ input.guia-search-input:focus {
 }
 
 .conjugation-row-card {
-    background: rgba(15, 23, 42, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 10px;
+    background: #FFFFFF;
+    border: 1px solid #ECECEC;
+    border-radius: 12px;
     padding: 0.65rem 0.9rem;
     display: flex;
     align-items: center;
@@ -2552,67 +3174,60 @@ input.guia-search-input:focus {
     gap: 0.5rem;
 }
 
-[data-theme="light"] .conjugation-row-card {
-    background: #ffffff;
-    border-color: #e2e8f0;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+[data-theme="dark"] .conjugation-row-card {
+    background: #181920;
+    border-color: rgba(255, 255, 255, 0.08);
 }
 
 .row-pronoun {
-    font-size: 0.85rem;
-    color: #94a3b8;
-    width: 65px;
+    font-size: 0.84rem;
+    color: #6B7280;
+    width: 68px;
     font-weight: 600;
 }
 
-[data-theme="light"] .row-pronoun {
-    color: #64748b;
-}
-
 .row-conjugated {
-    font-size: 1rem;
-    color: #f8fafc;
+    font-size: 0.98rem;
+    color: #111827;
     flex-grow: 1;
 }
 
-[data-theme="light"] .row-conjugated {
-    color: #0f172a;
-}
-
-.verb-examples-section {
-    flex-shrink: 0 !important;
+[data-theme="dark"] .row-conjugated {
+    color: #F9FAFB;
 }
 
 .examples-sec-title {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #f1f5f9;
+    font-size: 0.98rem;
+    font-weight: 800;
+    color: #14213D;
     margin-bottom: 0.85rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
-[data-theme="light"] .examples-sec-title {
-    color: #0f172a;
+[data-theme="dark"] .examples-sec-title {
+    color: #F9FAFB;
 }
 
 .examples-cards-grid {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.7rem;
 }
 
 .verb-example-box {
-    background: rgba(30, 41, 59, 0.4);
-    border-left: 3px solid #38bdf8;
-    border-radius: 10px;
-    padding: 0.85rem 1.15rem;
+    background: #F9FAFB;
+    border: 1px solid #ECECEC;
+    border-left: 3px solid #14213D;
+    border-radius: 12px;
+    padding: 0.85rem 1.1rem;
 }
 
-[data-theme="light"] .verb-example-box {
-    background: #f1f5f9;
-    border-left-color: #0284c7;
+[data-theme="dark"] .verb-example-box {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.08);
+    border-left-color: #FCA311;
 }
 
 .ex-top {
@@ -2623,160 +3238,52 @@ input.guia-search-input:focus {
 }
 
 .ex-fr {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #e2e8f0;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #111827;
     margin: 0;
     font-style: italic;
     flex: 1;
 }
 
-[data-theme="light"] .ex-fr {
-    color: #1e293b;
+[data-theme="dark"] .ex-fr {
+    color: #F3F4F6;
 }
 
 .ex-pt {
-    font-size: 0.85rem;
-    color: #94a3b8;
-    margin: 0.35rem 0 0 0;
-    line-height: 1.4;
-}
-
-[data-theme="light"] .ex-pt {
-    color: #475569;
-}
-
-/* BOTÃO OUVIR COM ÍCONE EM TODOS OS MODAIS E EXEMPLOS */
-.btn-ouvir-exemplo {
-    background: rgba(56, 189, 248, 0.12) !important;
-    border: 1.5px solid rgba(56, 189, 248, 0.32) !important;
-    border-radius: 20px !important;
-    color: #38bdf8 !important;
-    padding: 0.38rem 0.85rem !important;
-    font-size: 0.82rem !important;
-    font-weight: 600 !important;
-    cursor: pointer !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 0.45rem !important;
-    transition: all 0.2s ease !important;
-    white-space: nowrap !important;
-    line-height: 1 !important;
-    flex-shrink: 0 !important;
-}
-
-[data-theme="light"] .btn-ouvir-exemplo {
-    background: rgba(2, 132, 199, 0.09) !important;
-    border-color: rgba(2, 132, 199, 0.3) !important;
-    color: #0284c7 !important;
-}
-
-.btn-ouvir-exemplo:hover {
-    background: #38bdf8 !important;
-    color: #0f172a !important;
-    border-color: #38bdf8 !important;
-    transform: translateY(-1px) !important;
-    box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3) !important;
-}
-
-[data-theme="light"] .btn-ouvir-exemplo:hover {
-    background: #0284c7 !important;
-    color: #ffffff !important;
-    border-color: #0284c7 !important;
-    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25) !important;
-}
-
-.btn-ouvir-exemplo.small {
-    padding: 0.25rem 0.65rem !important;
-    font-size: 0.76rem !important;
-    gap: 0.35rem !important;
-}
-
-.btn-ouvir-exemplo svg {
-    width: 14px !important;
-    height: 14px !important;
-    flex-shrink: 0 !important;
-    stroke: currentColor !important;
-    vertical-align: middle !important;
-}
-
-.btn-mini-speaker {
-    background: rgba(56, 189, 248, 0.1) !important;
-    border: 1px solid rgba(56, 189, 248, 0.25) !important;
-    border-radius: 8px !important;
-    color: #38bdf8 !important;
-    width: 32px !important;
-    height: 32px !important;
-    min-width: 32px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    cursor: pointer !important;
-    transition: all 0.2s ease !important;
-    padding: 0 !important;
-    flex-shrink: 0 !important;
-}
-
-[data-theme="light"] .btn-mini-speaker {
-    background: rgba(2, 132, 199, 0.08) !important;
-    border-color: rgba(2, 132, 199, 0.25) !important;
-    color: #0284c7 !important;
-}
-
-.btn-mini-speaker:hover {
-    background: #38bdf8 !important;
-    color: #0f172a !important;
-    border-color: #38bdf8 !important;
-    transform: scale(1.06) !important;
-}
-
-[data-theme="light"] .btn-mini-speaker:hover {
-    background: #0284c7 !important;
-    color: #ffffff !important;
-    border-color: #0284c7 !important;
+    font-size: 0.82rem;
+    color: #6B7280;
+    margin: 0.3rem 0 0 0;
 }
 
 .modal-footer-conjugador {
-    padding: 1.1rem 1.75rem !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    padding: 1rem 1.75rem !important;
+    border-top: 1px solid #ECECEC !important;
     display: flex !important;
     justify-content: flex-end !important;
-    background: rgba(15, 23, 42, 0.8) !important;
+    background: #F9FAFB !important;
     flex-shrink: 0 !important;
 }
 
-[data-theme="light"] .modal-footer-conjugador {
-    background: #f8fafc !important;
-    border-top-color: #e2e8f0 !important;
+[data-theme="dark"] .modal-footer-conjugador {
+    background: #181920 !important;
+    border-top-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 .btn-fechar-conjugador {
-    padding: 0.65rem 1.5rem !important;
-    font-size: 0.92rem !important;
+    background: #18191E !important;
+    color: #FFFFFF !important;
+    border-radius: 999px !important;
+    padding: 8px 22px !important;
+    font-size: 0.84rem !important;
     font-weight: 600 !important;
-    border-radius: 10px !important;
+    border: none !important;
     cursor: pointer !important;
-    transition: all 0.2s ease !important;
-    background: rgba(255, 255, 255, 0.08) !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
-    color: #f1f5f9 !important;
-}
-
-[data-theme="light"] .btn-fechar-conjugador {
-    background: #ffffff !important;
-    border: 1.5px solid #cbd5e1 !important;
-    color: #334155 !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06) !important;
 }
 
 .btn-fechar-conjugador:hover {
-    background: rgba(255, 255, 255, 0.15) !important;
-}
-
-[data-theme="light"] .btn-fechar-conjugador:hover {
-    background: #f1f5f9 !important;
-    border-color: #94a3b8 !important;
-    color: #0f172a !important;
+    background: #2D2F39 !important;
+    color: #FCA311 !important;
 }
 </style>
 {% endblock %}

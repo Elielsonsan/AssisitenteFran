@@ -1,94 +1,279 @@
-# 🇫🇷 Assistente Fran — Tutor Pedagógico Inteligente de Língua Francesa
+# 🇫🇷 Assistente Fran — Plataforma Inteligente de Ensino de Francês (FLE)
 
-Aplicação web full-stack desenvolvida em **Python (Flask)**, **SQLite** e **Frontend Moderno (HTML5, Vanilla CSS e JavaScript)** para avaliação diagnóstica e geração de feedback formativo para estudantes brasileiros de **Língua Francesa**, integrada à API do **Google Gemini (gemini-1.5-flash)**.
-
----
-
-## 🌟 Diretrizes Pedagógicas do Assistente Fran
-
-O assistente foi desenhado com base em princípios da avaliação formativa para o ensino de Francês como Língua Estrangeira (FLE):
-
-1. **Autonomia do Estudante**: A IA **não entrega a frase totalmente corrigida de imediato**, estimulando o aluno a refletir sobre o erro.
-2. **Diagnóstico Preciso do Erro**: Identifica exatamente o tipo de falha (ex: escolha do verbo auxiliar no *Passé Composé*, concordância de gênero/número, emprego de artigos partitivos ou falsos cognatos).
-3. **Dicas Gramaticais Construtivas**: Fornece a regra esquecida para guiar uma nova tentativa.
-4. **Tom Encorajador e Acessível**: Expressões calorosas como *"Salut!"*, *"Très bien!"* e *"Courage!"*.
-5. **Comunicação Bilíngue Didática**: Feedback escrito em Português para facilitar a compreensão, destacando termos e regras em Francês com formatação em Markdown.
-6. **Visão do Professor**: Separação clara entre o *Feedback para o Aluno* e a *Análise Gramatical Técnica* (para logs e visão docente).
-7. **Barra de Caracteres Franceses (Acentos & Ligaturas)**: Teclado virtual integrado (`é`, `è`, `ê`, `ë`, `à`, `â`, `ç`, `ù`, `û`, `î`, `ï`, `ô`, `œ`, `« »`) com botão `a/A` para maiúsculas e inserção no cursor.
-8. **Pronúncia em Áudio Nativo (fr-FR)**: Síntese de voz com cadência didática para escutar o texto digitado, a frase submetida e a leitura no painel docente.
-9. **Ciclo Formativo com Tentativas (Loop de Correção Guiada)**: Em respostas incorretas ou parciais, o botão *'🔄 Tentar Novamente com a Dica'* ativa um banner fixo com a orientação anterior, e a IA reconhece o progresso na 2ª tentativa.
-10. **Seletor de Níveis CEFR (A1, A2, B1, B2)**: Calibra o rigor pedagógico e o vocabulário das explicações segundo o Quadro Europeu Comum de Línguas.
-11. **Générateur d'Exercices IA (`/gerar-desafio`)**: Botão *'✨ Gerar Desafio com IA'* que cria exercícios inéditos e contextualizados por nível CEFR (com Google Gemini ou banco pedagógico FLE rico de fallback).
-12. **Compréhension Orale no Enunciado (`🔊 Ouvir Enunciado`)**: Permite ao aluno escutar a frase em francês do próprio enunciado antes de responder.
-13. **Ditado por Microfone (`🎙️ Falar - Speech-to-Text fr-FR`)**: Prática de produção oral com reconhecimento de fala nativo em francês transcrevendo a resposta em tempo real.
-14. **Mémento Gramatical Interativo (`📖 Aide-Mémoire FLE`)**: Guia de consulta rápida com áudio (*La Maison d'Être, Articles Partitifs, Faux Amis, Pronoms Y & EN*).
-15. **Filtros em Tempo Real no Dashboard**: Filtragem client-side instantânea por Nível CEFR e por Status de acerto na tabela de submissões.
+> **Sistema de Gestão de Aprendizagem (LMS) e Tutoria Socrática Assistida por Inteligência Artificial Generativa para o Ensino de Francês Língua Estrangeira (*Français Langue Étrangère — FLE*), alinhado ao Quadro Europeu Comum de Referência para as Línguas (QECR / CEFR: A1 a C2).**
 
 ---
 
-## 📁 Estrutura do Projeto
+## 📌 1. Visão Geral e Justificativa Pedagógica
 
+O **Assistente Fran** foi projetado para apoiar professores e estudantes de língua francesa em sala de aula e no estudo autônomo. Diferente de corretores automáticos convencionais que apenas entregam a resposta pronta, a plataforma aplica a **Abordagem Socrática e Formativa**:
+
+1. **Andaime Pedagógico (*Scaffolding*):** Na 1ª tentativa incorreta, a IA identifica o desvio gramatical (ex.: escolha entre os auxiliares *Être* e *Avoir* no *Passé Composé*, concordância do particípio passado, uso dos pronomes *Y* e *EN* ou *Articles Partitifs*) e oferece uma **pista reflexiva** para que o próprio estudante construa a correção na 2ª tentativa.
+2. **Engenharia Didática P.P.P. (*Présentation, Pratique, Production*):** Catálogo completo de Planos de Aula estruturados por ciclo (`A1–A2`, `B1–B2`, `C1–C2`), integrando cronômetro de sala de aula, **Diário de Classe (Controle de Frequência)** e geração automática de provas multimodais alinhadas à aula.
+3. **Avaliação Multimodal:** Suporte integrado a questões de conjugação, tradução, ditado com síntese de voz nativa (`fr-FR`) e leitura oral com gravação de áudio (`MediaRecorder API`) analisada pelo modelo multimodal **Google Gemini**.
+
+---
+
+## 🏗️ 2. Arquitetura do Sistema
+
+A aplicação segue uma arquitetura modular em **Flask Blueprints**, separando claramente as responsabilidades de autenticação, portal do estudante, painel docente, fórum socrático e serviços compartilhados de IA e persistência.
+
+```mermaid
+flowchart TD
+    subgraph Cliente["Camada de Apresentação (Frontend Web)"]
+        UI_Aluno["Portal do Aluno\n(Prática, Dashboard XP, Provas, Guia FLE)"]
+        UI_Prof["Painel Docente\n(Analytics, Radar IA, Planos P.P.P., Chamada)"]
+        UI_Forum["Fórum Socrático\n(Discussão por Turma + Intervenção IA)"]
+        WebAPIs["Web Speech API (TTS fr-FR)\nMediaRecorder API (Áudio WebM)\nChart.js & Marked.js"]
+    end
+
+    subgraph Servidor["Camada de Aplicação (Flask + Blueprints)"]
+        App["app.py\n(CSRFProtect, Compress, Security Headers)"]
+        BP_Auth["blueprints/auth.py\n(Login, Sessão, Rate Limiting)"]
+        BP_Aluno["blueprints/aluno.py\n(Prática, Missões de Reforço, Provas)"]
+        BP_Prof["blueprints/professor.py\n(Gestão, Copiloto IA, Planos, Frequência)"]
+        BP_Forum["blueprints/forum.py\n(Tópicos, Respostas, Thread Assíncrona IA)"]
+        BP_Ext["blueprints/extensions.py\n(Conexão SQLite WAL, Prompt Socrático, Validações)"]
+    end
+
+    subgraph Dados_IA["Persistência & Inteligência Artificial"]
+        DB[("SQLite 3 (educacao_ia.db)\nModo WAL + Foreign Keys ON")]
+        Gemini["Google Gemini API\n(gemini-2.5-flash)\nTexto + Áudio Multimodal"]
+    end
+
+    UI_Aluno --> App
+    UI_Prof --> App
+    UI_Forum --> App
+    WebAPIs -.-> UI_Aluno
+
+    App --> BP_Auth
+    App --> BP_Aluno
+    App --> BP_Prof
+    App --> BP_Forum
+
+    BP_Auth --> BP_Ext
+    BP_Aluno --> BP_Ext
+    BP_Prof --> BP_Ext
+    BP_Forum --> BP_Ext
+
+    BP_Ext --> DB
+    BP_Ext --> Gemini
 ```
+
+---
+
+## 🗄️ 3. Modelo Entidade-Relacionamento (DER)
+
+O banco de dados relacional `educacao_ia.db` possui integridade referencial ativa (`PRAGMA foreign_keys = ON`) e índices otimizados para consultas analíticas:
+
+```mermaid
+erDiagram
+    TURMAS ||--o{ ALUNOS : "possui"
+    PROFESSORES ||--o{ PROFESSOR_TURMAS : "leciona"
+    TURMAS ||--o{ PROFESSOR_TURMAS : "vincula"
+    TEMAS ||--o{ EXERCICIOS : "classifica"
+    ALUNOS ||--o{ SUBMISSOES : "realiza"
+    EXERCICIOS ||--o{ SUBMISSOES : "avalia"
+    PROVA_QUESTOES ||--o{ SUBMISSOES : "compoe"
+    TURMAS ||--o{ AVALIACOES : "destina"
+    AVALIACOES ||--o{ PROVA_QUESTOES : "contem"
+    ALUNOS ||--o{ REFORCOS_INDIVIDUAIS : "recebe"
+    TEMAS ||--o{ REFORCOS_INDIVIDUAIS : "foca"
+    PROFESSORES ||--o{ PLANOS_AULA : "elabora"
+    TURMAS ||--o{ PLANOS_AULA : "associa"
+    PLANOS_AULA ||--o{ PRESENCAS_AULA : "registra"
+    ALUNOS ||--o{ PRESENCAS_AULA : "comparece"
+    PROFESSORES ||--o{ MENSAGENS_INBOX : "envia"
+    ALUNOS ||--o{ MENSAGENS_INBOX : "recebe"
+    TURMAS ||--o{ FORUM_TOPICOS : "organiza"
+    FORUM_TOPICOS ||--o{ FORUM_MENSAGENS : "agrupa"
+
+    ALUNOS {
+        int id PK
+        string nome_completo
+        string matricula UK
+        string senha_hash
+        int turma_id FK
+        string nivel_cefr
+        string turno
+        string status_matricula
+        string foto_url
+    }
+    PROFESSORES {
+        int id PK
+        string nome_completo
+        string usuario UK
+        string email_acesso
+        string senha_hash
+        string formacao_academica
+        string especializacao
+    }
+    PLANOS_AULA {
+        int id PK
+        int aula_numero
+        string tema
+        string nivel
+        string duracao
+        string objetivos
+        string habilidades
+        int ministrada
+        string data_ministrada
+    }
+    PRESENCAS_AULA {
+        int id PK
+        int plano_id FK
+        int turma_id FK
+        int aluno_id FK
+        string status "Presente | Falta | Justificado"
+        string observacao
+        string data_registro
+    }
+    SUBMISSOES {
+        int id PK
+        int aluno_id FK
+        int exercicio_id FK
+        int prova_questao_id FK
+        string resposta_aluno
+        string arquivo_audio_path
+        string feedback_ia
+        string analise_professor
+        float nota_professor
+        string status_resposta
+        int tentativa
+        string data_hora
+    }
+    REFORCOS_INDIVIDUAIS {
+        int id PK
+        int aluno_id FK
+        int tema_id FK
+        string mensagem_tutor
+        string exercicios_json
+        string status "Pendente | Concluido"
+    }
+```
+
+---
+
+## ✅ 4. Requisitos do Projeto Acadêmico
+
+### 4.1. Requisitos Funcionais (RF)
+| Código | Requisito Funcional | Módulo / Arquivo |
+| :--- | :--- | :--- |
+| **RF01** | Autenticação unificada para Professores (por usuário) e Alunos (por matrícula) com controle de sessão. | `blueprints/auth.py` |
+| **RF02** | Prática assistida por IA em 6 formatos (*Lacunas, V/F, Múltipla Escolha, Ditado, Expressão Oral, Produção Escrita*). | `blueprints/aluno.py` |
+| **RF03** | Feedback socrático progressivo (1ª tentativa com dica reflexiva; 2ª tentativa com resolução comentada). | `blueprints/extensions.py` |
+| **RF04** | Painel de gamificação do estudante com cálculo de XP, evolução CEFR, gráfico semanal, frequência e 6 insígnias (*Badges*). | `templates/aluno_dashboard.html` |
+| **RF05** | Provas multimodais com ditado por voz (`fr-FR`), gravação de leitura oral e avaliação fonética pelo Gemini. | `templates/aluno_prova.html` |
+| **RF06** | Guia Gramatical FLE interativo com conjugador verbal completo em 5 tempos e áudio nativo. | `guia_fle_data.py` |
+| **RF07** | Dashboard analítico docente com KPIs, gráficos por tema, filtro dinâmico por turma/nível e exportação CSV/Boletim. | `blueprints/professor.py` |
+| **RF08** | Radar de Intervenção Pedagógica para envio e conclusão interativa de Missões de Reforço individualizadas. | `blueprints/professor.py` & `aluno.py` |
+| **RF09** | Gestão de Planos de Aula no modelo P.P.P. com gerador IA, cronômetro de sala e geração de provas vinculadas. | `templates/professor_planos_aula.html` |
+| **RF10** | **Diário de Classe e Chamada** vinculado a cada Plano de Aula para registro de presença, falta ou justificativa. | `blueprints/professor.py` |
+| **RF11** | Fórum de dúvidas por turma com intervenção assíncrona em *background* do tutor socrático IA. | `blueprints/forum.py` |
+| **RF12** | Sistema interno de mensagens/recados do professor para alunos individuais ou turmas inteiras. | `blueprints/professor.py` |
+
+### 4.2. Requisitos Não-Funcionais (RNF) e Segurança
+- **RNF01 (Proteção CSRF):** Todos os formulários e chamadas `fetch` (`POST`/`DELETE`) são protegidos por tokens `Flask-WTF CSRFProtect`.
+- **RNF02 (Prevenção de Força Bruta):** Rate limiting em memória por IP no endpoint `/login`.
+- **RNF03 (Validação Binária de Uploads):** Verificação de *magic bytes* (assinatura binária PNG/JPEG/GIF/WEBP) e limite de payload (`MAX_CONTENT_LENGTH = 16 MB`).
+- **RNF04 (Prevenção contra XSS e IDOR):** Sanitização de HTML gerado por Markdown no frontend e verificação estrita de `turma_id` e propriedade de avaliações no backend.
+- **RNF05 (Concorrência SQLite):** Conexões gerenciadas no ciclo de vida da requisição (`flask.g` + `teardown_appcontext`) com `PRAGMA journal_mode = WAL` e `timeout = 15.0s`.
+- **RNF06 (Resiliência Offline/Fallback):** Caso a chave `GEMINI_API_KEY` não esteja configurada ou exceda a cota, o sistema opera de forma transparente com o banco pedagógico local estruturado (`BANCO_PEDAGOGICO_TEMAS`).
+
+---
+
+## 📂 5. Estrutura de Diretórios
+
+```text
 Assistente_Fran/
-├── .env.example            # Exemplo de configuração da chave de API do Gemini
-├── .gitignore              # Protege chaves, arquivos do banco e ambientes virtuais
-├── requirements.txt        # Dependências do projeto (Flask, google-generativeai, python-dotenv, markdown)
-├── database_setup.py       # Script SQLite para criar tabelas e dados analíticos em Francês
-├── app.py                  # Servidor Flask com gerar_feedback_frances e rotas analíticas
-├── educacao_ia.db          # Banco de dados SQLite criado automaticamente
-├── templates/
-│   ├── base.html           # Layout base com identidade visual, Google Fonts e navbar
-│   ├── index.html          # Interface do Aluno com botões rápidos de Francês e feedback
-│   └── dashboard.html      # Painel do Professor (Chart.js, tabela com filtros e exportação em PDF)
+├── app.py                      # Ponto de entrada Flask, configurações de segurança e filtros Jinja
+├── database_setup.py           # Criação do schema relacional SQLite e população inicial (Seeds)
+├── seed_planos_aula.py         # Catálogo base de 24 Planos de Aula FLE (A1 a C2) no modelo P.P.P.
+├── seed_populacao_graficos.py  # Dados realistas para demonstração de gráficos e métricas
+├── guia_fle_data.py            # Base estruturada do Guia Gramatical FLE e Conjugador Verbal
+├── requirements.txt            # Dependências Python do projeto
+├── deploy_gcp.sh               # Script de provisionamento automatizado (Nginx + Gunicorn + Systemd)
+├── blueprints/
+│   ├── extensions.py           # Conexão DB, migrações automáticas, motor Gemini e banco pedagógico
+│   ├── auth.py                 # Autenticação, logout e proteção contra força bruta
+│   ├── main.py                 # Landing page pública e mural de destaques
+│   ├── aluno.py                # Rotas do estudante (prática, dashboard, provas, reforço, perfil)
+│   ├── professor.py            # Rotas do docente (analytics, planos, chamada, avaliações, alunos)
+│   └── forum.py                # Fórum acadêmico com thread de resposta da IA
+├── templates/                  # Templates Jinja2 responsivos (Modo Claro/Escuro e Impressão A4)
 └── static/
-    ├── css/
-    │   └── style.css       # Estilo moderno com glassmorphism e tema francês
-    └── js/
-        ├── main.js         # Lógica do aluno (envio assíncrono e pílulas de exercícios)
-        └── dashboard.js    # Inicialização dos gráficos Chart.js e exportação em PDF
+    ├── css/style.css           # Design System Editorial FLE
+    └── js/                     # Lógica cliente (main.js, dashboard.js, TTS fr-FR, gráficos)
 ```
 
 ---
 
-## 🚀 Como Executar o Projeto
+## 🚀 6. Como Executar o Projeto Localmente
 
-### 1. Pré-requisitos
-- Python 3.10 ou superior instalado.
+### Pré-requisitos
+- **Python 3.10+** instalado
+- Chave de API do Google Gemini (opcional — o sistema possui modo de demonstração pedagógica integrado caso não seja informada)
 
-### 2. Ativar o Ambiente Virtual
-No terminal PowerShell ou Prompt de Comando, acesse a pasta do projeto:
+### Passo a Passo
+
+1. **Clone o repositório e acesse a pasta:**
+   ```bash
+   git clone <url-do-repositorio>
+   cd Assistente_Fran
+   ```
+
+2. **Crie e ative o ambiente virtual:**
+   ```powershell
+   # Windows (PowerShell)
+   python -m venv venv
+   .\venv\Scripts\Activate.ps1
+
+   # Linux / macOS
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+
+3. **Instale as dependências:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Configure as variáveis de ambiente:**
+   Copie o arquivo `.env.example` para `.env` e adicione sua chave do Google Gemini:
+   ```ini
+   GEMINI_API_KEY=sua_chave_aqui
+   FLASK_SECRET_KEY=chave_secreta_segura
+   FLASK_DEBUG=True
+   ```
+
+5. **(Opcional) Inicialize/recrie o banco de dados com dados de demonstração:**
+   ```bash
+   python database_setup.py
+   ```
+
+6. **Inicie o servidor:**
+   ```bash
+   python app.py
+   ```
+   Acesse no navegador: **http://127.0.0.1:5000**
+
+---
+
+## 🔑 7. Credenciais de Acesso para Demonstração (Banca / Testes)
+
+| Perfil | Login (Usuário / Matrícula) | Senha | Funcionalidades Principais para Testar |
+| :--- | :---: | :---: | :--- |
+| **Professor (Admin)** | `admin` | `admin` | Dashboard Analítico, Planos de Aula P.P.P., **Diário de Classe (Chamada)**, Radar de Reforço e Criador de Provas IA |
+| **Aluno 1 (Nível B1)** | `202601` | `123456` | Prática Assistida (`/pratica`), Meu Desempenho, **Missão de Reforço**, Provas Multimodais e Guia FLE |
+| **Aluno 2 (Nível A1)** | `202602` | `123456` | Evolução de nível inicial, Medalhas FLE, Fórum Socrático e Perfil |
+
+---
+
+## 🧪 8. Execução dos Testes Automatizados
+
+O projeto conta com suítes de testes automatizados (`unittest`) que validam as rotas do aluno, geração pedagógica de questões e regras de segurança:
 
 ```powershell
-# Ativar o ambiente virtual existente no projeto
-.\venv\Scripts\Activate.ps1
+.\venv\Scripts\python.exe scratch\test_questoes_gerador.py
+.\venv\Scripts\python.exe scratch\test_aluno_portal.py
 ```
-
-*(Se preferir recriar o ambiente virtual a qualquer momento: `python -m venv venv` e `pip install -r requirements.txt`)*.
-
-### 3. Configurar a Chave da API do Google Gemini
-1. Obtenha sua chave gratuita em [Google AI Studio](https://aistudio.google.com/).
-2. Crie um arquivo chamado `.env` na raiz do projeto (ou copie do `.env.example`):
-
-```env
-GEMINI_API_KEY=sua_chave_real_do_gemini_aqui
-GEMINI_MODEL=gemini-1.5-flash
-FLASK_SECRET_KEY=sua_chave_secreta_local
-FLASK_DEBUG=True
-```
-
-> **Nota:** Caso execute sem a chave da API definida, a aplicação funciona em **Modo de Demonstração**, simulando a classificação pedagógica e permitindo testar toda a interface, os gráficos do painel e o banco de dados.
-
-### 4. Inicializar o Banco de Dados
-```powershell
-python database_setup.py
-```
-Esse comando criará o arquivo `educacao_ia.db` com a tabela `submissoes`, incluindo `analise_professor` e exemplos de exercícios em Francês (*Passé Composé*, *Accord du Participe Passé*, *Articles Partitifs*, *Faux Amis*).
-
-### 5. Iniciar o Servidor Flask
-```powershell
-python app.py
-```
-
-Acesse no seu navegador:
-- **Área de Prática do Aluno:** [http://127.0.0.1:5000/](http://127.0.0.1:5000/)
-- **Painel do Professor (Dashboard e PDF):** [http://127.0.0.1:5000/dashboard](http://127.0.0.1:5000/dashboard)

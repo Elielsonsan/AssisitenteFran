@@ -38,7 +38,7 @@
     --text-muted: #64748b;
     --title-gradient: linear-gradient(135deg, #ffffff 30%, #cbd5e1 100%);
     --brand-title-gradient: linear-gradient(135deg, #ffffff 40%, var(--primary-light));
-    --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-main: 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --font-code: 'JetBrains Mono', 'Fira Code', monospace;
 
     /* Form Inputs & Tables */
@@ -69,21 +69,27 @@
 }
 
 [data-theme="light"] {
-    /* Color Palette - Tema Claro (Design Sofisticado, Limpo e Moderno) */
-    --bg-main: #f8fafc;
-    --bg-surface: #ffffff;
-    --bg-card: rgba(255, 255, 255, 0.90);
-    --bg-card-hover: #f1f5f9;
-    --bg-card-glass: rgba(255, 255, 255, 0.92);
-    --header-bg: rgba(255, 255, 255, 0.90);
+    /* Paleta Oficial - Modo Claro Clean (#FFFFFF, #E5E5E5, #FCA311, #14213D, #000000) */
+    --palette-white: #FFFFFF;
+    --palette-gray: #E5E5E5;
+    --palette-orange: #FCA311;
+    --palette-navy: #14213D;
+    --palette-black: #000000;
+
+    --bg-main: #FFFFFF;
+    --bg-surface: #FFFFFF;
+    --bg-card: #FFFFFF;
+    --bg-card-hover: #F7F7F7;
+    --bg-card-glass: #FFFFFF;
+    --header-bg: rgba(255, 255, 255, 0.96);
     
-    --primary: #4f46e5;
-    --primary-light: #6366f1;
-    --primary-dark: #3730a3;
-    --primary-glow: rgba(79, 70, 229, 0.15);
+    --primary: #14213D;
+    --primary-light: #FCA311;
+    --primary-dark: #000000;
+    --primary-glow: rgba(252, 163, 17, 0.20);
     
-    --accent: #7c3aed;
-    --accent-glow: rgba(124, 58, 237, 0.12);
+    --accent: #FCA311;
+    --accent-glow: rgba(252, 163, 17, 0.16);
 
     /* Status Colors (Otimizados para alto contraste no fundo claro) */
     --status-correta-text: #059669;
@@ -91,40 +97,40 @@
     --status-correta-border: rgba(16, 185, 129, 0.4);
     
     --status-parcial-text: #d97706;
-    --status-parcial-bg: rgba(245, 158, 11, 0.12);
-    --status-parcial-border: rgba(245, 158, 11, 0.4);
+    --status-parcial-bg: rgba(252, 163, 17, 0.15);
+    --status-parcial-border: rgba(252, 163, 17, 0.45);
     
     --status-incorreta-text: #dc2626;
     --status-incorreta-bg: rgba(239, 68, 68, 0.1);
     --status-incorreta-border: rgba(239, 68, 68, 0.35);
 
     /* Text & Typography */
-    --text-primary: #0f172a;
-    --text-secondary: #334155;
-    --text-muted: #64748b;
-    --text-main: #0f172a;
-    --text-light: #334155;
-    --title-gradient: linear-gradient(135deg, #0f172a 30%, #334155 100%);
-    --brand-title-gradient: linear-gradient(135deg, #0f172a 40%, var(--primary));
+    --text-primary: #000000;
+    --text-secondary: #14213D;
+    --text-muted: rgba(20, 33, 61, 0.72);
+    --text-main: #000000;
+    --text-light: #14213D;
+    --title-gradient: linear-gradient(135deg, #000000 0%, #14213D 100%);
+    --brand-title-gradient: linear-gradient(135deg, #14213D 0%, #000000 100%);
 
     /* Form Inputs & Tables */
-    --input-bg: #ffffff;
-    --input-focus-bg: #ffffff;
-    --input-border: #cbd5e1;
-    --table-th-bg: #f1f5f9;
-    --table-border: rgba(15, 23, 42, 0.08);
-    --table-hover: #f8fafc;
-    --pill-bg: #f1f5f9;
-    --box-bg: #f8fafc;
-    --glass-bg: rgba(255, 255, 255, 0.88);
-    --glass-border: rgba(226, 232, 240, 0.85);
+    --input-bg: #FFFFFF;
+    --input-focus-bg: #FFFFFF;
+    --input-border: #E5E5E5;
+    --table-th-bg: #E5E5E5;
+    --table-border: #E5E5E5;
+    --table-hover: rgba(229, 229, 229, 0.4);
+    --pill-bg: #E5E5E5;
+    --box-bg: rgba(229, 229, 229, 0.35);
+    --glass-bg: #FFFFFF;
+    --glass-border: #E5E5E5;
 
     /* Borders & Shadows */
-    --border-subtle: rgba(15, 23, 42, 0.09);
-    --border-focus: #4f46e5;
-    --shadow-card: 0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 0 0 1px rgba(15, 23, 42, 0.06);
-    --shadow-elevated: 0 14px 34px -5px rgba(15, 23, 42, 0.09), 0 0 1px rgba(15, 23, 42, 0.1);
-    --bg-glow-opacity: 0.07;
+    --border-subtle: #E5E5E5;
+    --border-focus: #FCA311;
+    --shadow-card: 0 4px 20px rgba(20, 33, 61, 0.05), 0 0 0 1px #E5E5E5;
+    --shadow-elevated: 0 12px 32px rgba(20, 33, 61, 0.08), 0 0 0 1px #E5E5E5;
+    --bg-glow-opacity: 0;
 }
 
 /* Global Reset */
@@ -157,13 +163,9 @@ body {
 
 [data-theme="light"] body,
 html[data-theme="light"] body {
-    background-color: #f8fafc !important;
-    background-image: linear-gradient(135deg, rgba(248, 250, 252, 0.74) 0%, rgba(241, 245, 249, 0.68) 100%), url('/static/img/fundo_paris.png') !important;
-    background-position: center center !important;
-    background-size: cover !important;
-    background-repeat: no-repeat !important;
-    background-attachment: fixed !important;
-    color: #0f172a !important;
+    background-color: #FFFFFF !important;
+    background-image: none !important;
+    color: #000000 !important;
 }
 
 [data-theme="dark"] body,
@@ -4278,21 +4280,37 @@ html[data-theme="dark"] body {
     height: 68px;
     z-index: 1000;
     
-    /* Glassmorphism Puro Translúcido */
-    background: rgba(11, 19, 43, 0.55);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    /* Sem separação no topo: transparente até rolar a página (.scrolled) */
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-bottom: 1px solid transparent !important;
+    box-shadow: none !important;
+    transition: background 0.28s ease, border-color 0.28s ease, box-shadow 0.28s ease, backdrop-filter 0.28s ease;
+}
+
+.app-navbar.scrolled {
+    background: rgba(11, 19, 43, 0.78) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
 }
 
 [data-theme="light"] .app-navbar {
-    background: rgba(255, 255, 255, 0.45) !important;
-    backdrop-filter: blur(20px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.6) !important;
-    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.07) !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-bottom: 1px solid transparent !important;
+    box-shadow: none !important;
+}
+
+[data-theme="light"] .app-navbar.scrolled {
+    background: rgba(255, 255, 255, 0.94) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border-bottom: 1px solid #E5E5E5 !important;
+    box-shadow: 0 2px 12px rgba(20, 33, 61, 0.05) !important;
 }
 
 .nav-container {
@@ -4354,27 +4372,27 @@ html[data-theme="dark"] body {
 }
 
 .nav-title {
-    font-size: 1.1rem;
-    font-weight: 800;
-    letter-spacing: -0.02em;
+    font-size: 1.08rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
     color: #ffffff;
     transition: color 0.2s ease;
 }
 
 [data-theme="light"] .nav-title {
-    color: #0f172a;
+    color: #14213D;
 }
 
 .nav-subtitle {
-    font-size: 0.65rem;
-    font-weight: 800;
+    font-size: 0.64rem;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.2em;
     color: #38bdf8;
 }
 
 [data-theme="light"] .nav-subtitle {
-    color: #0284c7;
+    color: #FCA311;
 }
 
 /* 3. Links de Navegação em Telas Desktop (Somente Texto com Linha Discreta na Página Ativa) */
@@ -4449,30 +4467,30 @@ html[data-theme="dark"] body {
 }
 
 [data-theme="light"] .nav-link {
-    color: #64748b;
+    color: rgba(20, 33, 61, 0.72);
 }
 
 [data-theme="light"] .nav-link:hover {
-    color: #0f172a;
+    color: #000000;
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
 }
 
 [data-theme="light"] .nav-link.active {
-    color: #0284c7 !important;
-    font-weight: 600;
+    color: #14213D !important;
+    font-weight: 700;
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
 }
 
 [data-theme="light"] .nav-link::after {
-    background: #0284c7;
+    background: #FCA311;
 }
 
 [data-theme="light"] .nav-link.active::after {
-    background: #0284c7;
+    background: #FCA311;
 }
 
 .nav-btn-link {
@@ -4548,12 +4566,12 @@ html[data-theme="dark"] body {
 [data-theme="light"] .nav-icon-btn {
     background: transparent !important;
     border-color: transparent !important;
-    color: #64748b;
+    color: #14213D;
 }
 
 [data-theme="light"] .nav-icon-btn:hover {
-    background: rgba(15, 23, 42, 0.05) !important;
-    color: #0284c7;
+    background: #E5E5E5 !important;
+    color: #000000;
 }
 
 [data-theme="light"] .nav-icon-btn .icon-sun {
@@ -4594,15 +4612,15 @@ html[data-theme="dark"] body {
 [data-theme="light"] .nav-user-btn {
     background: transparent !important;
     border: none !important;
-    color: #0f172a;
+    color: #14213D;
     box-shadow: none !important;
 }
 
 [data-theme="light"] .nav-user-btn:hover {
-    background: rgba(15, 23, 42, 0.05) !important;
+    background: #E5E5E5 !important;
     border: none !important;
     box-shadow: none !important;
-    color: #0284c7;
+    color: #000000;
 }
 
 .nav-avatar-badge {
@@ -4623,7 +4641,8 @@ html[data-theme="dark"] body {
 }
 
 [data-theme="light"] .nav-avatar-badge {
-    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.2);
+    background: #14213D;
+    box-shadow: none;
 }
 
 .avatar-initials {
@@ -4657,7 +4676,7 @@ html[data-theme="dark"] body {
 .btn-nav-login {
     display: inline-flex;
     align-items: center;
-    padding: 0.48rem 1.15rem;
+    padding: 0.48rem 1.25rem;
     background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 9999px;
@@ -4673,6 +4692,21 @@ html[data-theme="dark"] body {
     filter: brightness(1.08);
     transform: translateY(-1px);
     box-shadow: 0 6px 20px rgba(2, 132, 199, 0.5);
+}
+
+[data-theme="light"] .btn-nav-login {
+    background: #14213D;
+    border: 1px solid #14213D;
+    color: #FFFFFF;
+    box-shadow: none;
+}
+
+[data-theme="light"] .btn-nav-login:hover {
+    background: #FCA311;
+    border-color: #FCA311;
+    color: #000000;
+    filter: none;
+    box-shadow: 0 4px 14px rgba(252, 163, 17, 0.3);
 }
 
 /* Card Flyout do Usuário */
@@ -6810,9 +6844,6 @@ label, .form-label {
 .plano-card,
 .forum-card,
 .auth-card,
-.desempenho-hero-card,
-.desempenho-kpi-card,
-.desempenho-chart-card,
 .modal-content {
     position: relative;
     overflow: hidden;
@@ -6828,9 +6859,6 @@ label, .form-label {
 .plano-card::before,
 .forum-card::before,
 .auth-card::before,
-.desempenho-hero-card::before,
-.desempenho-kpi-card::before,
-.desempenho-chart-card::before,
 .modal-content::before {
     content: '';
     position: absolute;
@@ -6857,10 +6885,7 @@ label, .form-label {
 .plano-card:hover::before,
 .forum-card:hover::before,
 .auth-card:hover::before,
-.copiloto-card:hover::before,
-.desempenho-hero-card:hover::before,
-.desempenho-kpi-card:hover::before,
-.desempenho-chart-card:hover::before {
+.copiloto-card:hover::before {
     height: 4.5px;
     filter: brightness(1.18) saturate(1.15);
 }
@@ -6876,10 +6901,7 @@ label, .form-label {
 [data-theme="light"] .forum-card::before,
 [data-theme="light"] .auth-card::before,
 [data-theme="light"] .modal-content::before,
-[data-theme="light"] .copiloto-card::before,
-[data-theme="light"] .desempenho-hero-card::before,
-[data-theme="light"] .desempenho-kpi-card::before,
-[data-theme="light"] .desempenho-chart-card::before {
+[data-theme="light"] .copiloto-card::before {
     box-shadow: 0 1px 4px rgba(0, 85, 165, 0.20), 0 1px 4px rgba(239, 65, 53, 0.20);
 }
 
@@ -10655,11 +10677,7 @@ label, .form-label {
     border-right: 1px solid rgba(255, 255, 255, 0.4) !important;
 }
 
-/* Ensure body or page-container has the solid background to match Lenovo exactly */
-body {
-    background: #f1f5f9 !important;
-    background-image: none !important;
-}
+/* Ensure page-container has transparent background */
 .page-container {
     background: transparent !important;
 }
@@ -10691,14 +10709,6 @@ body {
     text-shadow: 0 2px 10px rgba(0,0,0,0.5) !important;
 }
 
-/* Restaurar o fundo do body para a imagem de Paris */
-body {
-    background-image: url('/static/img/fundo_paris.png') !important;
-    background-size: cover !important;
-    background-position: center !important;
-    background-attachment: fixed !important;
-}
-
 /* Deixar os cartões levemente mais translúcidos para aproveitar o fundo */
 .metric-card.lenovo-card {
     background: rgba(255, 255, 255, 0.85) !important;
@@ -10712,14 +10722,8 @@ body {
 
 /* FINAL CLEAN LENOVO LOOK - OVERRIDE EVERYTHING */
 
-/* Remove Paris background completely from dashboard to make it clean like Lenovo */
-body {
-    background: #e2e8f0 !important;
-    background-image: none !important;
-}
-
 .dash-main-content {
-    background: #e2e8f0 !important;
+    background: transparent !important;
     padding: 0 !important; /* Remove container padding so header can touch edges */
 }
 
@@ -10758,7 +10762,7 @@ body {
     text-shadow: none !important;
 }
 
-.hero-tag {
+.dashboard-hero-outer.lenovo-blue-header .hero-tag {
     color: #bfdbfe !important;
     background: rgba(255, 255, 255, 0.1) !important;
     border: 1px solid rgba(255, 255, 255, 0.2) !important;
@@ -10799,7 +10803,7 @@ body {
 /* ========== BANNER FIXES (PARTE 1) ========== */
 
 /* Forçar a cor do título principal para BRANCO (para não ficar preto/escuro no fundo azul) */
-.dashboard-hero-outer h1.hero-title, 
+.dashboard-hero-outer.lenovo-blue-header h1.hero-title, 
 .dashboard-hero-card h1.hero-title {
     color: #ffffff !important;
     font-size: 2.4rem !important;
@@ -10848,11 +10852,6 @@ body {
 
 /* ========== BANNER FIXES (PARTE 2) ========== */
 
-/* Restore Paris Background */
-body {
-    background-image: url('/static/img/fundo_paris.png') !important;
-    background-color: transparent !important;
-}
 .dash-main-content {
     background: transparent !important;
 }
@@ -10870,11 +10869,9 @@ body {
     box-shadow: 0 10px 25px rgba(0,0,0,0.2) !important;
 }
 
-/* Fix the Title Color to White Aggressively */
+/* Fix the Title Color to White inside the blue banner */
 .dashboard-hero-outer.lenovo-blue-header h1.hero-title,
-.dashboard-hero-outer h1.hero-title,
-.dashboard-hero-card h1.hero-title,
-h1.hero-title {
+.dashboard-hero-card h1.hero-title {
     color: #ffffff !important;
     fill: #ffffff !important;
     -webkit-text-fill-color: #ffffff !important;
@@ -11215,3 +11212,340 @@ h1.hero-title {
     border-top: 10px solid #ffffff;
 }
 
+/* ==========================================================================
+   ACESSIBILIDADE WCAG 2.1 AA - NAVEGAÇÃO POR TECLADO & FOCO
+   ========================================================================== */
+.skip-link {
+    position: fixed;
+    top: -120px;
+    left: 1.5rem;
+    background: #0284c7;
+    color: #ffffff !important;
+    padding: 0.85rem 1.4rem;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    z-index: 999999;
+    text-decoration: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    transition: top 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+    top: 1.5rem;
+    outline: 3px solid #38bdf8 !important;
+    outline-offset: 3px !important;
+}
+
+/* Anel de foco nítido e acessível para quem navega por Tab */
+:focus-visible {
+    outline: 2px solid #38bdf8 !important;
+    outline-offset: 2px !important;
+}
+
+[data-theme="light"] :focus-visible {
+    outline: 2px solid #0284c7 !important;
+    outline-offset: 2px !important;
+}
+
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+
+/* ==========================================================================
+   ACESSIBILIDADE: REDIMENSIONAMENTO DE TIPOGRAFIA (A+ / A-)
+   ========================================================================== */
+html[data-font-size="small"] {
+    font-size: 14px !important;
+}
+
+html[data-font-size="normal"] {
+    font-size: 16px !important;
+}
+
+html[data-font-size="large"] {
+    font-size: 18px !important;
+}
+
+html[data-font-size="xlarge"] {
+    font-size: 20px !important;
+}
+
+/* Toolbar de Acessibilidade no Header */
+.a11y-toolbar-desktop {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 2px 4px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+}
+
+[data-theme="light"] .a11y-toolbar-desktop {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+.a11y-toolbar-desktop .nav-icon-btn {
+    width: 32px;
+    height: 32px;
+}
+
+.a11y-font-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    font-family: var(--font-code);
+    letter-spacing: -0.5px;
+}
+
+.btn-a11y-contrast.active {
+    background: rgba(56, 189, 248, 0.18) !important;
+    color: #38bdf8 !important;
+    border-color: rgba(56, 189, 248, 0.4) !important;
+}
+
+/* Drawer A11y Controls */
+.drawer-section-title {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    font-weight: 700;
+    padding: 0.75rem 1rem 0.25rem 1rem;
+}
+
+.drawer-a11y-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+}
+
+.drawer-a11y-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0.6rem 0.4rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+[data-theme="light"] .drawer-a11y-btn {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+.drawer-a11y-btn:hover {
+    background: rgba(56, 189, 248, 0.12);
+    border-color: #38bdf8;
+    color: #38bdf8;
+}
+
+.drawer-a11y-btn span {
+    font-family: var(--font-code);
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.drawer-a11y-btn small {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    text-align: center;
+    line-height: 1.1;
+}
+
+.drawer-a11y-btn.active {
+    background: rgba(56, 189, 248, 0.2) !important;
+    border-color: #38bdf8 !important;
+    color: #38bdf8 !important;
+}
+
+/* ==========================================================================
+   ACESSIBILIDADE: MODO DE ALTO CONTRASTE (WCAG AAA)
+   ========================================================================== */
+html[data-contrast="high"] {
+    --bg-main: #000000 !important;
+    --bg-surface: #0a0a0a !important;
+    --bg-card: #121212 !important;
+    --bg-card-hover: #1f1f1f !important;
+    --bg-card-glass: #121212 !important;
+    --header-bg: #000000 !important;
+    --text-primary: #ffffff !important;
+    --text-secondary: #f1f5f9 !important;
+    --text-muted: #cbd5e1 !important;
+    --text-main: #ffffff !important;
+    --text-light: #ffffff !important;
+    --border-subtle: #ffffff !important;
+    --border-focus: #ffff00 !important;
+    --primary: #38bdf8 !important;
+    --primary-light: #7dd3fc !important;
+    --input-bg: #050505 !important;
+    --input-focus-bg: #000000 !important;
+    --input-border: #ffffff !important;
+    --table-th-bg: #18181b !important;
+    --table-border: #ffffff !important;
+}
+
+html[data-contrast="high"] .app-navbar {
+    background: #000000 !important;
+    border-bottom: 2px solid #ffffff !important;
+}
+
+html[data-contrast="high"] .chat-card,
+html[data-contrast="high"] .dashboard-card,
+html[data-contrast="high"] .stat-card,
+html[data-contrast="high"] .nav-flyout-menu,
+html[data-contrast="high"] .mobile-nav-drawer,
+html[data-contrast="high"] .result-card,
+html[data-contrast="high"] .card-conteudo,
+html[data-contrast="high"] .card,
+html[data-contrast="high"] .feedback-card {
+    background: #0d0d0d !important;
+    border: 2px solid #ffffff !important;
+    box-shadow: none !important;
+}
+
+html[data-contrast="high"] .btn-submit,
+html[data-contrast="high"] .btn-primary,
+html[data-contrast="high"] .btn-action,
+html[data-contrast="high"] .btn-nav-login {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-weight: 800 !important;
+    border: 2px solid #ffffff !important;
+}
+
+html[data-contrast="high"] .btn-submit:hover,
+html[data-contrast="high"] .btn-primary:hover,
+html[data-contrast="high"] .btn-action:hover {
+    background: #ffff00 !important;
+    color: #000000 !important;
+    border-color: #ffff00 !important;
+}
+
+html[data-contrast="high"] :focus-visible {
+    outline: 3px solid #ffff00 !important;
+    outline-offset: 3px !important;
+}
+
+html[data-contrast="high"] .skip-link {
+    background: #ffff00 !important;
+    color: #000000 !important;
+    border: 2px solid #ffffff !important;
+}
+
+/* Modo de Alto Contraste Claro */
+html[data-theme="light"][data-contrast="high"] {
+    --bg-main: #ffffff !important;
+    --bg-surface: #ffffff !important;
+    --bg-card: #ffffff !important;
+    --bg-card-hover: #f1f5f9 !important;
+    --bg-card-glass: #ffffff !important;
+    --header-bg: #ffffff !important;
+    --text-primary: #000000 !important;
+    --text-secondary: #0f172a !important;
+    --text-muted: #1e293b !important;
+    --text-main: #000000 !important;
+    --text-light: #000000 !important;
+    --border-subtle: #000000 !important;
+    --border-focus: #0000ee !important;
+    --primary: #0000cc !important;
+    --primary-light: #0000ee !important;
+    --input-bg: #ffffff !important;
+    --input-focus-bg: #ffffff !important;
+    --input-border: #000000 !important;
+    --table-th-bg: #e2e8f0 !important;
+    --table-border: #000000 !important;
+}
+
+html[data-theme="light"][data-contrast="high"] .app-navbar {
+    background: #ffffff !important;
+    border-bottom: 2px solid #000000 !important;
+}
+
+html[data-theme="light"][data-contrast="high"] .chat-card,
+html[data-theme="light"][data-contrast="high"] .dashboard-card,
+html[data-theme="light"][data-contrast="high"] .stat-card,
+html[data-theme="light"][data-contrast="high"] .nav-flyout-menu,
+html[data-theme="light"][data-contrast="high"] .mobile-nav-drawer,
+html[data-theme="light"][data-contrast="high"] .result-card,
+html[data-theme="light"][data-contrast="high"] .card-conteudo,
+html[data-theme="light"][data-contrast="high"] .card,
+html[data-theme="light"][data-contrast="high"] .feedback-card {
+    background: #ffffff !important;
+    border: 2px solid #000000 !important;
+    box-shadow: none !important;
+}
+
+html[data-theme="light"][data-contrast="high"] .btn-submit,
+html[data-theme="light"][data-contrast="high"] .btn-primary,
+html[data-theme="light"][data-contrast="high"] .btn-action,
+html[data-theme="light"][data-contrast="high"] .btn-nav-login {
+    background: #000000 !important;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    border: 2px solid #000000 !important;
+}
+
+html[data-theme="light"][data-contrast="high"] .btn-submit:hover,
+html[data-theme="light"][data-contrast="high"] .btn-primary:hover,
+html[data-theme="light"][data-contrast="high"] .btn-action:hover {
+    background: #0000ee !important;
+    color: #ffffff !important;
+    border-color: #0000ee !important;
+}
+
+html[data-theme="light"][data-contrast="high"] :focus-visible {
+    outline: 3px solid #0000cc !important;
+    outline-offset: 3px !important;
+}
+
+html[data-theme="light"][data-contrast="high"] .skip-link {
+    background: #000000 !important;
+    color: #ffffff !important;
+    border: 2px solid #000000 !important;
+}
+
+/* ==========================================================================
+   ACESSIBILIDADE: REDUÇÃO DE MOVIMENTO (PREFERS-REDUCED-MOTION)
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .bg-glow,
+    .bg-glow-1,
+    .bg-glow-2 {
+        display: none !important;
+    }
+}
+
+/* ==========================================================================
+   ACESSIBILIDADE: UTILITÁRIO PARA LEITORES DE TELA (SR-ONLY)
+   ========================================================================== */
+.sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
