@@ -463,6 +463,17 @@ function falarTextoFrancesDashboard(texto, btnElement = null) {
     window.speechSynthesis.speak(utterance);
 }
 
+function ouvirTextoFrancesDocente(btn) {
+    if (!btn) return;
+    const texto = btn.getAttribute("data-tts") || "";
+    if (!texto.trim()) {
+        showToast("Nenhuma resposta em francês disponível para reproduzir.", "erro");
+        return;
+    }
+    falarTextoFrancesDashboard(texto, btn);
+}
+window.ouvirTextoFrancesDocente = ouvirTextoFrancesDocente;
+
 function fecharModal() {
     const modal = document.getElementById("feedbackModal");
     if (modal) {
@@ -641,29 +652,36 @@ function atualizarDoughnutInterativo(status) {
 }
 
 /**
- * Atualiza a visibilidade dos conjuntos de dados no gráfico de barras
+ * Atualiza a visibilidade dos conjuntos de dados nos gráficos de barras comparativos
  */
 function atualizarBarChartInterativo(status) {
-    if (!chartTemasInstance) return;
+    const mapaBest = {
+        "TODOS": [true, true, true],
+        "Correto": [true, false, false],
+        "Parcialmente Correto": [false, true, false],
+        "Incorreto": [false, false, true]
+    };
+    const mapaWorst = {
+        "TODOS": [true, true, true],
+        "Correto": [false, false, true],
+        "Parcialmente Correto": [false, true, false],
+        "Incorreto": [true, false, false]
+    };
+    const visBest = mapaBest[status] || [true, true, true];
+    const visWorst = mapaWorst[status] || [true, true, true];
 
-    if (status === "TODOS") {
-        chartTemasInstance.setDatasetVisibility(0, true);
-        chartTemasInstance.setDatasetVisibility(1, true);
-        chartTemasInstance.setDatasetVisibility(2, true);
-    } else if (status === "Correto") {
-        chartTemasInstance.setDatasetVisibility(0, true);
-        chartTemasInstance.setDatasetVisibility(1, false);
-        chartTemasInstance.setDatasetVisibility(2, false);
-    } else if (status === "Parcialmente Correto") {
-        chartTemasInstance.setDatasetVisibility(0, false);
-        chartTemasInstance.setDatasetVisibility(1, true);
-        chartTemasInstance.setDatasetVisibility(2, false);
-    } else if (status === "Incorreto") {
-        chartTemasInstance.setDatasetVisibility(0, false);
-        chartTemasInstance.setDatasetVisibility(1, false);
-        chartTemasInstance.setDatasetVisibility(2, true);
+    if (chartTemasInstance) {
+        visBest.forEach((v, idx) => chartTemasInstance.setDatasetVisibility(idx, v));
+        chartTemasInstance.update();
     }
-    chartTemasInstance.update();
+    if (chartBestInstance) {
+        visBest.forEach((v, idx) => chartBestInstance.setDatasetVisibility(idx, v));
+        chartBestInstance.update();
+    }
+    if (chartWorstInstance) {
+        visWorst.forEach((v, idx) => chartWorstInstance.setDatasetVisibility(idx, v));
+        chartWorstInstance.update();
+    }
 }
 
 /**
@@ -927,6 +945,10 @@ async function alterarNivelAluno(alunoId, novoNivel, nomeAluno) {
             if (badge) {
                 badge.textContent = novoNivel;
                 badge.className = `badge-level-student lvl-${novoNivel.toLowerCase()}`;
+            }
+            const rowAluno = document.getElementById(`aluno-row-${alunoId}`);
+            if (rowAluno) {
+                rowAluno.setAttribute("data-cefr", String(novoNivel).toUpperCase());
             }
 
             mostrarToast(data.mensagem, "sucesso");
@@ -1193,10 +1215,18 @@ async function gerarExerciciosCopiloto(event) {
                         <div class="exercise-item-header">
                             <span class="exercise-num-badge">Item #${index + 1}</span>
                             <span class="exercise-item-meta">${escapeHtml(data.tema)} • Nível ${escapeHtml(data.nivel)}</span>
-                            <button type="button" class="btn-remove-preview" onclick="removerExercicioPreview(this)" title="Remover este item">&times;</button>
+                            <div style="display: inline-flex; align-items: center; gap: 6px; margin-left: auto;">
+                                <button type="button" class="btn-audio-pill btn-ouvir-copiloto" title="Ouvir exercício em francês">🔊 Ouvir</button>
+                                <button type="button" class="btn-remove-preview" onclick="removerExercicioPreview(this)" title="Remover este item">&times;</button>
+                            </div>
                         </div>
                         <textarea class="form-textarea exercise-editable-textarea" rows="2" placeholder="Enunciado do exercício...">${escapeHtml(enunciado)}</textarea>
                     `;
+                    const btnAudioEx = card.querySelector(".btn-ouvir-copiloto");
+                    const textareaEx = card.querySelector(".exercise-editable-textarea");
+                    if (btnAudioEx && textareaEx) {
+                        btnAudioEx.onclick = () => falarTextoFrancesDashboard(textareaEx.value || enunciado, btnAudioEx);
+                    }
                     listaCards.appendChild(card);
                 });
             }
@@ -1512,6 +1542,8 @@ function atualizarCardsMetricas(m) {
     const pctCorretas = document.getElementById("pctMetricCorretas");
     const pctParciais = document.getElementById("pctMetricParciais");
     const pctIncorretas = document.getElementById("pctMetricIncorretas");
+    const pctCard4 = document.getElementById("pctMetricGeralCard4");
+    const resumoCard4 = document.getElementById("resumoMetricGeralCard4");
 
     if (elTotal) elTotal.textContent = m.total ?? 0;
     if (elCorretas) elCorretas.textContent = m.corretos ?? 0;
@@ -1529,6 +1561,8 @@ function atualizarCardsMetricas(m) {
     if (pctCorretas) pctCorretas.textContent = `${pC}%`;
     if (pctParciais) pctParciais.textContent = `${pP}%`;
     if (pctIncorretas) pctIncorretas.textContent = `${pI}%`;
+    if (pctCard4) pctCard4.textContent = `${pC}%`;
+    if (resumoCard4) resumoCard4.textContent = `${m.corretos ?? 0} C • ${m.parciais ?? 0} P • ${m.incorretos ?? 0} I`;
 }
 window.atualizarCardsMetricas = atualizarCardsMetricas;
 
@@ -1837,7 +1871,26 @@ function mudarQtdLinhasSubmissoes(val) {
     renderizarPaginacaoSubmissoes();
 }
 
+async function exportarRelatorioPDF() {
+    try {
+        if (typeof abrirBoletimEscolar === "function") {
+            await abrirBoletimEscolar();
+            if (typeof baixarBoletimPDF === "function") {
+                baixarBoletimPDF();
+            }
+        } else {
+            window.print();
+        }
+    } catch (e) {
+        console.error("Erro ao exportar relatório PDF:", e);
+        if (typeof mostrarToast === "function") {
+            mostrarToast("Não foi possível gerar o PDF automaticamente. Use Imprimir.", "erro");
+        }
+    }
+}
+
 window.renderizarPaginacaoSubmissoes = renderizarPaginacaoSubmissoes;
 window.mudarPaginaSubmissoes = mudarPaginaSubmissoes;
 window.irParaPaginaSubmissoes = irParaPaginaSubmissoes;
 window.mudarQtdLinhasSubmissoes = mudarQtdLinhasSubmissoes;
+window.exportarRelatorioPDF = exportarRelatorioPDF;

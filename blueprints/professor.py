@@ -26,13 +26,22 @@ def dashboard():
         SELECT a.id, a.nome_completo, a.matricula, a.turma_id, a.nivel_cefr, t.nome as turma_nome,
                COUNT(s.id) as total_atividades,
                SUM(CASE WHEN s.status_resposta = 'Correto' THEN 1 ELSE 0 END) as acertos,
+               SUM(CASE WHEN s.status_resposta = 'Parcialmente Correto' THEN 1 ELSE 0 END) as parciais,
                SUM(CASE WHEN s.status_resposta = 'Incorreto' THEN 1 ELSE 0 END) as erros
         FROM alunos a
         JOIN turmas t ON a.turma_id = t.id
         LEFT JOIN submissoes s ON s.aluno_id = a.id
         GROUP BY a.id ORDER BY t.nome ASC, a.nome_completo ASC;
     """)
-    alunos_cadastrados = [dict(row) for row in cursor.fetchall()]
+    alunos_cadastrados = []
+    for row in cursor.fetchall():
+        a_dict = dict(row)
+        tot_at = int(a_dict.get("total_atividades") or 0)
+        ac_at = int(a_dict.get("acertos") or 0)
+        pa_at = int(a_dict.get("parciais") or 0)
+        a_dict["parciais"] = pa_at
+        a_dict["taxa_aproveitamento"] = round(((ac_at + pa_at * 0.5) / tot_at * 100), 1) if tot_at > 0 else 0.0
+        alunos_cadastrados.append(a_dict)
 
     turma_id_raw = request.args.get("turma_id")
     turma_id = None
@@ -928,7 +937,12 @@ Retorne JSON com a chave 'exercicios' (array de strings)."""
         questoes_ped = gerar_questoes_pedagogicas_completas(tema_nome, nivel, "exercicio", quantidade)
         exercicios = [q["enunciado"] for q in questoes_ped]
 
-    return jsonify({"status": "sucesso", "exercicios": exercicios[:quantidade]})
+    return jsonify({
+        "status": "sucesso",
+        "tema": tema_nome,
+        "nivel": nivel,
+        "exercicios": exercicios[:quantidade]
+    })
 
 @professor_bp.route("/api/copiloto/salvar_exercicios", methods=["POST"])
 @login_required_prof
@@ -950,7 +964,11 @@ def api_copiloto_salvar():
     conn.commit()
     conn.close()
 
-    return jsonify({"status": "sucesso", "salvos": len(exercicios)})
+    return jsonify({
+        "status": "sucesso",
+        "salvos": len(exercicios),
+        "mensagem": f"{len(exercicios)} exercício(s) salvo(s) no banco de questões com sucesso!"
+    })
 
 # ===================== RADAR DE INTERVENÇÃO =====================
 

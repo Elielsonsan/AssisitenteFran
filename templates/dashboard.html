@@ -388,15 +388,15 @@
 /* Chips Rápidos abaixo da Busca (100% da largura dos Cards) */
 .docente-filter-chips {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     gap: 10px;
     width: 100%;
     margin-top: 0.85rem;
 }
 
-@media (max-width: 980px) {
+@media (max-width: 1080px) {
     .docente-filter-chips {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr);
     }
 }
 
@@ -404,6 +404,90 @@
     .docente-filter-chips {
         grid-template-columns: repeat(2, 1fr);
     }
+}
+
+/* Barras visuais de progresso nos Mini-KPIs e Botão Ouvir compacto */
+.docente-kpi-progress-track {
+    width: 100%;
+    height: 6px;
+    border-radius: 999px;
+    background: #F1F2F4;
+    overflow: hidden;
+    margin-top: 2px;
+}
+
+[data-theme="dark"] .docente-kpi-progress-track {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.docente-kpi-progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.35s ease;
+}
+
+.docente-kpi-mini-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    border: 1px solid #FDE68A;
+    background: #FFFBEB;
+    color: #92400E;
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.16s ease;
+    white-space: nowrap;
+}
+
+.docente-kpi-mini-pill:hover {
+    background: #FEF3C7;
+    transform: translateY(-1px);
+}
+
+[data-theme="dark"] .docente-kpi-mini-pill {
+    background: rgba(252, 163, 17, 0.14);
+    border-color: rgba(252, 163, 17, 0.35);
+    color: #FCA311;
+}
+
+.btn-ouvir-tabela {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 6px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    border: 1px solid #E5E7EB;
+    background: #F9FAFB;
+    color: #14213D;
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+    vertical-align: middle;
+    transition: all 0.16s ease;
+}
+
+.btn-ouvir-tabela:hover,
+.btn-ouvir-tabela.speaking {
+    background: #18191E;
+    color: #FCA311;
+    border-color: #18191E;
+}
+
+[data-theme="dark"] .btn-ouvir-tabela {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #F3F4F6;
+}
+
+[data-theme="dark"] .btn-ouvir-tabela:hover,
+[data-theme="dark"] .btn-ouvir-tabela.speaking {
+    background: #FCA311;
+    color: #18191E;
+    border-color: #FCA311;
 }
 
 .docente-chip-btn {
@@ -879,7 +963,7 @@
     color: #000000;
 }
 
-/* Remove a caixa externa duplicada (.submissoes-box-outer / .risk-box-outer / .alunos-box-outer) */
+/* Controle real das abas das 3 tabelas analíticas */
 .docente-unified-card .submissoes-box-outer,
 .docente-unified-card .risk-box-outer,
 .docente-unified-card .alunos-box-outer,
@@ -889,7 +973,7 @@
 [data-theme="dark"] .docente-unified-card .submissoes-box-outer,
 [data-theme="dark"] .docente-unified-card .risk-box-outer,
 [data-theme="dark"] .docente-unified-card .alunos-box-outer {
-    display: block !important;
+    display: block;
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
@@ -898,6 +982,10 @@
     border-radius: 0 !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+}
+
+.docente-unified-card .dashboard-box-outer.is-hidden-tab {
+    display: none !important;
 }
 
 /* Mantém apenas 1 único card Editorial Clean para cada tabela */
@@ -980,12 +1068,13 @@
     color: #FCA311 !important;
 }
 
-/* 6. Padronização Editorial Clean dos 5 Modais Docentes */
+/* 6. Padronização Editorial Clean dos Modais Docentes */
 #feedbackModal .modal-content,
 #modalAluno .modal-content,
 #modalRecado .modal-content,
 #modalGestaoTurmas .modal-content,
-#modalBoletim .modal-content {
+#modalBoletim .modal-content,
+#modalCopilotoFLE .modal-content {
     background: #FFFFFF !important;
     border: 1px solid #ECECEC !important;
     border-radius: 26px !important;
@@ -998,7 +1087,8 @@
 [data-theme="dark"] #modalAluno .modal-content,
 [data-theme="dark"] #modalRecado .modal-content,
 [data-theme="dark"] #modalGestaoTurmas .modal-content,
-[data-theme="dark"] #modalBoletim .modal-content {
+[data-theme="dark"] #modalBoletim .modal-content,
+[data-theme="dark"] #modalCopilotoFLE .modal-content {
     background: #181920 !important;
     border-color: rgba(255, 255, 255, 0.1) !important;
     color: #F9FAFB !important;
@@ -1009,7 +1099,8 @@
 #modalAluno .modal-header,
 #modalRecado .modal-header,
 #modalGestaoTurmas .modal-header,
-#modalBoletim .modal-header {
+#modalBoletim .modal-header,
+#modalCopilotoFLE .modal-header {
     background: transparent !important;
     border-bottom: 1px solid #ECECEC !important;
     padding: 1.35rem 1.65rem !important;
@@ -1019,7 +1110,8 @@
 [data-theme="dark"] #modalAluno .modal-header,
 [data-theme="dark"] #modalRecado .modal-header,
 [data-theme="dark"] #modalGestaoTurmas .modal-header,
-[data-theme="dark"] #modalBoletim .modal-header {
+[data-theme="dark"] #modalBoletim .modal-header,
+[data-theme="dark"] #modalCopilotoFLE .modal-header {
     border-bottom-color: rgba(255, 255, 255, 0.08) !important;
 }
 
@@ -1027,7 +1119,8 @@
 #modalAluno .modal-title,
 #modalRecado .modal-title,
 #modalGestaoTurmas .modal-title,
-#modalBoletim .modal-title {
+#modalBoletim .modal-title,
+#modalCopilotoFLE .modal-title {
     color: #14213D !important;
     font-weight: 800 !important;
     letter-spacing: -0.02em;
@@ -1037,7 +1130,8 @@
 [data-theme="dark"] #modalAluno .modal-title,
 [data-theme="dark"] #modalRecado .modal-title,
 [data-theme="dark"] #modalGestaoTurmas .modal-title,
-[data-theme="dark"] #modalBoletim .modal-title {
+[data-theme="dark"] #modalBoletim .modal-title,
+[data-theme="dark"] #modalCopilotoFLE .modal-title {
     color: #FFFFFF !important;
 }
 
@@ -1045,7 +1139,8 @@
 #modalAluno .modal-footer,
 #modalRecado .modal-footer,
 #modalGestaoTurmas .modal-footer,
-#modalBoletim .modal-footer {
+#modalBoletim .modal-footer,
+#modalCopilotoFLE .modal-footer {
     background: transparent !important;
     border-top: 1px solid #ECECEC !important;
     padding: 1rem 1.65rem !important;
@@ -1055,14 +1150,16 @@
 [data-theme="dark"] #modalAluno .modal-footer,
 [data-theme="dark"] #modalRecado .modal-footer,
 [data-theme="dark"] #modalGestaoTurmas .modal-footer,
-[data-theme="dark"] #modalBoletim .modal-footer {
+[data-theme="dark"] #modalBoletim .modal-footer,
+[data-theme="dark"] #modalCopilotoFLE .modal-footer {
     border-top-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 #feedbackModal .modal-box,
 #modalAluno .aluno-modal-item,
 #modalGestaoTurmas .turma-mgmt-row,
-#modalBoletim .boletim-stat-box {
+#modalBoletim .boletim-stat-box,
+#modalCopilotoFLE .exercise-editable-item {
     background: #F7F7F8 !important;
     border: 1px solid #ECECEC !important;
     border-radius: 16px !important;
@@ -1072,7 +1169,8 @@
 [data-theme="dark"] #feedbackModal .modal-box,
 [data-theme="dark"] #modalAluno .aluno-modal-item,
 [data-theme="dark"] #modalGestaoTurmas .turma-mgmt-row,
-[data-theme="dark"] #modalBoletim .boletim-stat-box {
+[data-theme="dark"] #modalBoletim .boletim-stat-box,
+[data-theme="dark"] #modalCopilotoFLE .exercise-editable-item {
     background: #121318 !important;
     border-color: rgba(255, 255, 255, 0.08) !important;
     color: #E5E7EB !important;
@@ -1081,7 +1179,9 @@
 #modalAluno .form-input,
 #modalRecado .form-input,
 #modalRecado .form-textarea,
-#modalGestaoTurmas .form-input {
+#modalGestaoTurmas .form-input,
+#modalCopilotoFLE .form-input,
+#modalCopilotoFLE .form-textarea {
     background: #F7F7F8 !important;
     border: 1px solid #E5E7EB !important;
     border-radius: 14px !important;
@@ -1092,7 +1192,9 @@
 [data-theme="dark"] #modalAluno .form-input,
 [data-theme="dark"] #modalRecado .form-input,
 [data-theme="dark"] #modalRecado .form-textarea,
-[data-theme="dark"] #modalGestaoTurmas .form-input {
+[data-theme="dark"] #modalGestaoTurmas .form-input,
+[data-theme="dark"] #modalCopilotoFLE .form-input,
+[data-theme="dark"] #modalCopilotoFLE .form-textarea {
     background: #121318 !important;
     border-color: rgba(255, 255, 255, 0.12) !important;
     color: #F9FAFB !important;
@@ -1101,7 +1203,8 @@
 #modalAluno .btn-primary,
 #modalRecado .btn-primary,
 #modalGestaoTurmas .btn-primary,
-#modalBoletim .btn-primary {
+#modalBoletim .btn-primary,
+#modalCopilotoFLE .btn-primary {
     background: #18191E !important;
     color: #FFFFFF !important;
     border: 1px solid #18191E !important;
@@ -1114,9 +1217,95 @@
 #modalAluno .btn-primary:hover,
 #modalRecado .btn-primary:hover,
 #modalGestaoTurmas .btn-primary:hover,
-#modalBoletim .btn-primary:hover {
+#modalBoletim .btn-primary:hover,
+#modalCopilotoFLE .btn-primary:hover {
     background: #2D2F39 !important;
     color: #FCA311 !important;
+}
+
+/* Estilos do Co-Piloto IA e Ferramentas FLE do Recado */
+.copiloto-preview-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 0.75rem;
+}
+
+.exercise-editable-item {
+    padding: 0.85rem 1rem !important;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.exercise-item-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.exercise-num-badge {
+    background: #18191E;
+    color: #FCA311;
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+
+.exercise-item-meta {
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: #6B7280;
+}
+
+.btn-remove-preview {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid #E5E7EB;
+    background: #FFFFFF;
+    color: #EF4444;
+    font-weight: 700;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.docente-recado-chips,
+.docente-char-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.38rem;
+    margin-bottom: 0.55rem;
+}
+
+.docente-char-btn {
+    min-width: 28px;
+    height: 28px;
+    padding: 0 7px;
+    border-radius: 8px;
+    border: 1px solid #E5E7EB;
+    background: #FFFFFF;
+    color: #14213D;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.docente-char-btn:hover {
+    background: #18191E;
+    color: #FCA311;
+    border-color: #18191E;
+}
+
+[data-theme="dark"] .docente-char-btn {
+    background: #121318;
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #F3F4F6;
 }
 </style>
 {% endblock %}
@@ -1137,7 +1326,7 @@
             </p>
         </header>
 
-        <!-- 2. Linha de 4 Mini-KPIs com Ondas Crescentes e Botão Pill Escuro (#18191E) -->
+        <!-- 2. Linha de 4 Mini-KPIs com Indicadores Sincronizados e Filtro Interativo -->
         <div class="overlap-metrics-wrapper" id="dashboardMetricasBoxOuter">
             <section class="docente-kpis-grid metrics-grid" aria-label="Indicadores Pedagógicos">
 
@@ -1148,16 +1337,6 @@
                             <span class="docente-kpi-label">Total Submetido</span>
                             <div class="docente-kpi-primary" id="valMetricTotal">{{ total_submissoes }}</div>
                         </div>
-                        <svg class="docente-kpi-wave-svg" viewBox="0 0 120 48" preserveAspectRatio="none" aria-hidden="true">
-                            <defs>
-                                <linearGradient id="docenteWaveGrad1" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stop-color="#4B5563" stop-opacity="0.28"/>
-                                    <stop offset="100%" stop-color="#4B5563" stop-opacity="0.0"/>
-                                </linearGradient>
-                            </defs>
-                            <path d="M2,40 C22,38 34,26 54,28 C74,30 92,10 118,6 L118,46 L2,46 Z" fill="url(#docenteWaveGrad1)"/>
-                            <path d="M2,40 C22,38 34,26 54,28 C74,30 92,10 118,6" fill="none" stroke="#4B5563" stroke-width="2.4" stroke-linecap="round"/>
-                        </svg>
                     </div>
                     <div class="docente-kpi-mid-row">
                         <div>
@@ -1166,38 +1345,27 @@
                         </div>
                         <span class="docente-kpi-trend" id="hintMetricTotal">▲ 100%</span>
                     </div>
-                    <div class="docente-kpi-cta-row">
-                        <span class="docente-pill-btn">Exibir Todos</span>
-                    </div>
                 </article>
 
-                <!-- Card 2: Domínio Pleno (Corretas) -->
+                <!-- Card 2: Domínio Pleno (Corretas) + Filtro Rápido de Parciais -->
                 <article class="docente-kpi-card metric-card" id="cardMetricCorretas" onclick="alternarFiltroInterativoStatus('Correto', 'card')" role="button" tabindex="0">
                     <div class="docente-kpi-top-row">
                         <div>
-                            <span class="docente-kpi-label">Domínio Pleno</span>
+                            <span class="docente-kpi-label">Domínio Pleno (Corretas)</span>
                             <div class="docente-kpi-primary" id="valMetricCorretas">{{ total_corretos }}</div>
                         </div>
-                        <svg class="docente-kpi-wave-svg" viewBox="0 0 120 48" preserveAspectRatio="none" aria-hidden="true">
-                            <defs>
-                                <linearGradient id="docenteWaveGrad2" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stop-color="#4B5563" stop-opacity="0.28"/>
-                                    <stop offset="100%" stop-color="#4B5563" stop-opacity="0.0"/>
-                                </linearGradient>
-                            </defs>
-                            <path d="M2,42 C26,34 44,32 66,20 C86,10 100,12 118,5 L118,46 L2,46 Z" fill="url(#docenteWaveGrad2)"/>
-                            <path d="M2,42 C26,34 44,32 66,20 C86,10 100,12 118,5" fill="none" stroke="#4B5563" stroke-width="2.4" stroke-linecap="round"/>
-                        </svg>
+                    </div>
+                    <div class="docente-kpi-progress-track" aria-hidden="true">
+                        <div class="docente-kpi-progress-fill" id="barMetricCorretas" style="width: {{ pct_acerto }}%; background: #2A9D8F;"></div>
                     </div>
                     <div class="docente-kpi-mid-row">
                         <div>
                             <span class="docente-kpi-label">Taxa de Precisão</span>
                             <div class="docente-kpi-subval" id="pctMetricCorretas">{{ pct_acerto }}%</div>
                         </div>
-                        <span class="docente-kpi-trend" id="hintMetricCorretas">▲ <span id="valMetricParciais">{{ total_parciais }}</span> Parciais</span>
-                    </div>
-                    <div class="docente-kpi-cta-row">
-                        <span class="docente-pill-btn">Filtrar Corretas</span>
+                        <button type="button" class="docente-kpi-mini-pill no-print" onclick="event.stopPropagation(); alternarFiltroInterativoStatus('Parcialmente Correto', 'card')" title="Filtrar somente respostas parciais">
+                            ◐ <span id="valMetricParciais">{{ total_parciais }}</span> Parciais
+                        </button>
                     </div>
                 </article>
 
@@ -1208,26 +1376,16 @@
                             <span class="docente-kpi-label">Atenção Pedagógica</span>
                             <div class="docente-kpi-primary" id="valMetricIncorretas">{{ total_incorretos }}</div>
                         </div>
-                        <svg class="docente-kpi-wave-svg" viewBox="0 0 120 48" preserveAspectRatio="none" aria-hidden="true">
-                            <defs>
-                                <linearGradient id="docenteWaveGrad3" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stop-color="#4B5563" stop-opacity="0.28"/>
-                                    <stop offset="100%" stop-color="#4B5563" stop-opacity="0.0"/>
-                                </linearGradient>
-                            </defs>
-                            <path d="M2,39 C24,39 42,24 64,22 C86,20 98,9 118,6 L118,46 L2,46 Z" fill="url(#docenteWaveGrad3)"/>
-                            <path d="M2,39 C24,39 42,24 64,22 C86,20 98,9 118,6" fill="none" stroke="#4B5563" stroke-width="2.4" stroke-linecap="round"/>
-                        </svg>
+                    </div>
+                    <div class="docente-kpi-progress-track" aria-hidden="true">
+                        <div class="docente-kpi-progress-fill" id="barMetricIncorretas" style="width: {{ pct_incorreto }}%; background: #E11D48;"></div>
                     </div>
                     <div class="docente-kpi-mid-row">
                         <div>
                             <span class="docente-kpi-label">Taxa de Revisão</span>
                             <div class="docente-kpi-subval" id="pctMetricIncorretas">{{ pct_incorreto }}%</div>
                         </div>
-                        <span class="docente-kpi-trend" id="hintMetricIncorretas">▲ Intervenção</span>
-                    </div>
-                    <div class="docente-kpi-cta-row">
-                        <span class="docente-pill-btn">Filtrar Incorretas</span>
+                        <span class="docente-kpi-trend" style="color: #E11D48;" id="hintMetricIncorretas">▲ Intervenção</span>
                     </div>
                 </article>
 
@@ -1236,17 +1394,14 @@
                     <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
                         <div>
                             <span class="docente-kpi-label">Distribuição Geral</span>
-                            <div class="docente-kpi-primary" style="font-size: 1.65rem;">{{ pct_acerto }}%</div>
-                            <span style="font-size: 0.75rem; color: #6B7280; font-weight: 600;">
+                            <div class="docente-kpi-primary" id="pctMetricGeralCard4" style="font-size: 1.65rem;">{{ pct_acerto }}%</div>
+                            <span id="resumoMetricGeralCard4" style="font-size: 0.75rem; color: #6B7280; font-weight: 600;">
                                 {{ total_corretos }} C • {{ total_parciais }} P • {{ total_incorretos }} I
                             </span>
                         </div>
                         <div class="chart-container doughnut-container" style="height: 82px; width: 82px; flex-shrink: 0; display: flex; justify-content: center; align-items: center;">
                             <canvas id="graficoStatus" role="img" aria-label="Gráfico de rosca: distribuição geral de acertos, erros e acertos parciais"></canvas>
                         </div>
-                    </div>
-                    <div class="docente-kpi-cta-row">
-                        <button type="button" class="docente-pill-btn" onclick="abrirBoletimEscolar()">Emitir Boletim Escolar</button>
                     </div>
                 </article>
 
@@ -1317,6 +1472,9 @@
 
                 <!-- Chips Rápidos de Gestão & Exportação (100% da largura dos Cards) -->
                 <div class="docente-filter-chips" id="docenteQuickChips" role="group" aria-label="Atalhos rápidos do painel docente">
+                    <button type="button" class="docente-chip-btn" id="btnAbrirCopiloto" data-chip="copiloto" onclick="abrirModalCopilotoFLE()">
+                        ✨ Co-Piloto IA
+                    </button>
                     <button type="button" class="docente-chip-btn" id="btnGerenciarAlunos" data-chip="alunos" onclick="abrirModalGestaoAlunos()">
                         👥 Alunos ({{ alunos_cadastrados|length }})
                     </button>
@@ -1384,18 +1542,22 @@
         <!-- 5. Seção das Tabelas Analíticas (Cada tabela em apenas 1 box Editorial Clean) -->
         <section class="docente-unified-card" id="cardPainelUnificado" aria-label="Tabelas Analíticas do Painel Docente">
             <div class="docente-tabs-bar no-print">
-                <div class="docente-tabs-nav" role="tablist" aria-label="Atalhos para as tabelas">
-                    <button type="button" class="docente-tab-btn active" id="tabBtnPainelSubmissoes" role="tab" aria-selected="true" onclick="alternarAbaPainelDocente('submissoes', true)">
+                <div class="docente-tabs-nav" role="tablist" aria-label="Alternar visualização das tabelas analíticas">
+                    <button type="button" class="docente-tab-btn active" id="tabBtnPainelSubmissoes" role="tab" aria-selected="true" onclick="alternarAbaPainelDocente('submissoes', false)">
                         <span>📋 Histórico de Submissões</span>
                         <span class="docente-tab-count" id="tabCountSubmissoes">{{ submissoes|length }}</span>
                     </button>
-                    <button type="button" class="docente-tab-btn" id="tabBtnPainelRisco" role="tab" aria-selected="false" onclick="alternarAbaPainelDocente('risco', true)">
+                    <button type="button" class="docente-tab-btn" id="tabBtnPainelRisco" role="tab" aria-selected="false" onclick="alternarAbaPainelDocente('risco', false)">
                         <span>⚠️ Intervenção Docente</span>
                         <span class="docente-tab-count" id="tabCountRisco">{{ alunos_em_risco|length }}</span>
                     </button>
-                    <button type="button" class="docente-tab-btn" id="tabBtnPainelAlunos" role="tab" aria-selected="false" onclick="alternarAbaPainelDocente('alunos', true)">
+                    <button type="button" class="docente-tab-btn" id="tabBtnPainelAlunos" role="tab" aria-selected="false" onclick="alternarAbaPainelDocente('alunos', false)">
                         <span>👥 Desempenho por Aluno</span>
                         <span class="docente-tab-count" id="tabCountAlunos">{{ alunos_cadastrados|length }}</span>
+                    </button>
+                    <button type="button" class="docente-tab-btn" id="tabBtnPainelTodas" role="tab" aria-selected="false" onclick="alternarAbaPainelDocente('todas', false)">
+                        <span>📑 Ver Todas</span>
+                        <span class="docente-tab-count">3</span>
                     </button>
                 </div>
             </div>
@@ -1476,7 +1638,12 @@
                                     </td>
                                     <td class="cell-content">
                                         <div class="question-preview"><strong>Exercício:</strong> {{ sub['pergunta'] or sub['exercicio'] }}</div>
-                                        <div class="answer-preview french-answer"><strong>Resposta:</strong> <em>« {{ sub['resposta_aluno'] }} »</em></div>
+                                        <div class="answer-preview french-answer">
+                                            <strong>Resposta:</strong> <em>« {{ sub['resposta_aluno'] }} »</em>
+                                            {% if sub['resposta_aluno'] %}
+                                            <button type="button" class="btn-ouvir-tabela no-print" data-tts="{{ sub['resposta_aluno']|e }}" onclick="ouvirTextoFrancesDocente(this)" title="Ouvir resposta em francês">🔊 Ouvir</button>
+                                            {% endif %}
+                                        </div>
                                     </td>
                                     <td class="cell-status">
                                         {% if status_item == 'Correto' %}
@@ -1538,7 +1705,7 @@
             </div>
 
             <!-- TABELA 2: Tabela de Alunos com Dificuldade / Intervenção Docente (Apenas 1 box: #cardTabelaRisco) -->
-            <div class="dashboard-box-outer risk-box-outer" id="riskBoxOuter">
+            <div class="dashboard-box-outer risk-box-outer is-hidden-tab" id="riskBoxOuter">
                 <div class="table-card risk-table-card table-box-inner" id="cardTabelaRisco">
                     <div class="table-card-header risk-table-header">
                         <div class="table-header-left">
@@ -1593,6 +1760,9 @@
                                     <td class="cell-content">
                                         <div class="answer-preview french-answer error-box">
                                             <em>« {{ item['resposta_aluno'] }} »</em>
+                                            {% if item['resposta_aluno'] %}
+                                            <button type="button" class="btn-ouvir-tabela no-print" data-tts="{{ item['resposta_aluno']|e }}" onclick="ouvirTextoFrancesDocente(this)" title="Ouvir resposta incorreta em francês">🔊 Ouvir</button>
+                                            {% endif %}
                                         </div>
                                         <div class="question-preview small">
                                             <strong>Exercício:</strong> {{ item['exercicio'] }}
@@ -1649,7 +1819,7 @@
             </div>
 
             <!-- TABELA 3: Desempenho por Aluno (Apenas 1 box: #cardTabelaAlunosDesempenho) -->
-            <div class="dashboard-box-outer alunos-box-outer" id="alunosBoxOuter">
+            <div class="dashboard-box-outer alunos-box-outer is-hidden-tab" id="alunosBoxOuter">
                 <div class="table-card table-box-inner" id="cardTabelaAlunosDesempenho">
                     <div class="table-card-header dashboard-table-header">
                         <div class="table-header-left">
@@ -1689,10 +1859,12 @@
                                 {% for a in alunos_cadastrados %}
                                 {% set total_at = a['total_atividades'] or 0 %}
                                 {% set acertos_at = a['acertos'] or 0 %}
-                                {% set pct_aluno = ((acertos_at / total_at) * 100)|round(1) if total_at > 0 else 0 %}
+                                {% set pct_aluno = a.taxa_aproveitamento if a.taxa_aproveitamento is defined else (((acertos_at / total_at) * 100)|round(1) if total_at > 0 else 0) %}
                                 <tr class="student-perf-row"
                                     id="aluno-row-{{ a['id'] }}"
                                     data-aluno-id="{{ a['id'] }}"
+                                    data-aluno-nome="{{ a['nome_completo']|e }}"
+                                    data-aluno-matricula="{{ a['matricula']|e }}"
                                     data-turma-id="{{ a['turma_id'] or '' }}"
                                     data-cefr="{{ (a['nivel_cefr'] or 'A2')|upper }}"
                                     data-nome="{{ a['nome_completo']|lower }}"
@@ -1702,14 +1874,14 @@
                                     data-search="{{ (a['nome_completo'] ~ ' ' ~ a['matricula'] ~ ' ' ~ (a['turma_nome'] or '') ~ ' ' ~ (a['nivel_cefr'] or 'A2')) | lower }}">
                                     <td>
                                         <div class="student-name-wrap">
-                                            <span class="student-name" style="cursor: pointer;" onclick="filtrarDossieAluno({{ a['id'] }}, '{{ a['nome_completo']|escape }}')" title="Clique para filtrar o dossiê deste estudante">{{ a['nome_completo'] }}</span>
+                                            <span class="student-name" style="cursor: pointer;" onclick="filtrarDossieRow(this)" title="Clique para filtrar o dossiê deste estudante">{{ a['nome_completo'] }}</span>
                                             <span class="badge-level-student lvl-{{ (a['nivel_cefr'] or 'A2')|lower }}" id="badge-nivel-aluno-{{ a['id'] }}" style="font-size: 0.68rem;">{{ a['nivel_cefr'] or 'A2' }}</span>
                                         </div>
                                     </td>
                                     <td><code>{{ a['matricula'] }}</code></td>
                                     <td><span class="turma-plain-text">{{ a['turma_nome'] or 'Sem Turma' }}</span></td>
                                     <td>
-                                        <select class="docente-cefr-inline-select" onchange="alterarNivelAluno({{ a['id'] }}, this.value, '{{ a['nome_completo']|escape }}')" aria-label="Alterar nível CEFR de {{ a['nome_completo'] }}">
+                                        <select class="docente-cefr-inline-select" onchange="alterarNivelAlunoSelect(this)" aria-label="Alterar nível CEFR de {{ a['nome_completo']|e }}">
                                             <option value="A1" {% if a['nivel_cefr'] == 'A1' %}selected{% endif %}>A1 • Débutant</option>
                                             <option value="A2" {% if not a['nivel_cefr'] or a['nivel_cefr'] == 'A2' %}selected{% endif %}>A2 • Élémentaire</option>
                                             <option value="B1" {% if a['nivel_cefr'] == 'B1' %}selected{% endif %}>B1 • Intermédiaire</option>
@@ -1730,13 +1902,13 @@
                                     </td>
                                     <td class="cell-actions text-center no-print">
                                         <div style="display: inline-flex; gap: 5px; align-items: center; flex-wrap: nowrap;">
-                                            <button type="button" class="btn-detail" style="background: #F3F4F6 !important; color: #14213D !important; border-color: #E5E7EB !important;" onclick="filtrarDossieAluno({{ a['id'] }}, '{{ a['nome_completo']|escape }}')" title="Filtrar todo o painel para ver o dossiê de {{ a['nome_completo'] }}">
+                                            <button type="button" class="btn-detail" style="background: #F3F4F6 !important; color: #14213D !important; border-color: #E5E7EB !important;" onclick="filtrarDossieRow(this)" title="Filtrar todo o painel para ver o dossiê">
                                                 🔍 Dossiê
                                             </button>
-                                            <button type="button" class="btn-detail" onclick="abrirRecadoRapidoAluno({{ a['id'] }}, '{{ a['nome_completo']|escape }}')" title="Enviar recado direto para {{ a['nome_completo'] }}">
+                                            <button type="button" class="btn-detail" onclick="abrirRecadoRapidoRow(this)" title="Enviar recado direto">
                                                 ✉️ Recado
                                             </button>
-                                            <button type="button" class="btn-detail" style="background: #F3F4F6 !important; color: #1F2937 !important; border-color: #E5E7EB !important; padding: 6px 10px !important;" onclick="abrirModalEdicaoAluno({{ a['id'] }}, '{{ a['nome_completo']|escape }}', '{{ a['matricula']|escape }}', {{ a['turma_id'] or 'null' }}, '{{ a['nivel_cefr'] or 'A2' }}')" title="Editar cadastro do estudante">
+                                            <button type="button" class="btn-detail" style="background: #F3F4F6 !important; color: #1F2937 !important; border-color: #E5E7EB !important; padding: 6px 10px !important;" data-aluno-id="{{ a['id'] }}" data-aluno-nome="{{ a['nome_completo']|e }}" data-aluno-matricula="{{ a['matricula']|e }}" data-turma-id="{{ a['turma_id'] or '' }}" data-cefr="{{ a['nivel_cefr'] or 'A2' }}" onclick="abrirModalEdicaoAlunoBtn(this)" title="Editar cadastro do estudante">
                                                 ✏️
                                             </button>
                                         </div>
@@ -1873,10 +2045,10 @@
                             </div>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px;">
-                            <button type="button" class="btn-detail btn-sm" onclick="abrirModalEdicaoAluno({{ a['id'] }}, '{{ a['nome_completo']|escape }}', '{{ a['matricula']|escape }}', {{ a['turma_id'] }}, '{{ a['nivel_cefr'] }}')" title="Editar dados cadastrais">
+                            <button type="button" class="btn-detail btn-sm" data-aluno-id="{{ a['id'] }}" data-aluno-nome="{{ a['nome_completo']|e }}" data-aluno-matricula="{{ a['matricula']|e }}" data-turma-id="{{ a['turma_id'] or '' }}" data-cefr="{{ a['nivel_cefr'] or 'A2' }}" onclick="abrirModalEdicaoAlunoBtn(this)" title="Editar dados cadastrais">
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Editar
                             </button>
-                            <button type="button" class="btn-secondary btn-sm" onclick="excluirAlunoModal({{ a['id'] }}, '{{ a['nome_completo']|escape }}')" title="Excluir aluno" style="color: #ef4444;">
+                            <button type="button" class="btn-secondary btn-sm" data-aluno-id="{{ a['id'] }}" data-aluno-nome="{{ a['nome_completo']|e }}" onclick="excluirAlunoModalBtn(this)" title="Excluir aluno" style="color: #ef4444;">
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                             </button>
                         </div>
@@ -1955,7 +2127,7 @@
 </div>
 
 <!-- Modal Enviar Recado -->
-<div id="modalRecado" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalRecadoTitulo">
+<div id="modalRecado" class="modal hidden" onclick="if(event.target.id==='modalRecado') fecharModalRecado()" role="dialog" aria-modal="true" aria-labelledby="modalRecadoTitulo">
     <div class="modal-dialog modal-md">
         <div class="modal-content" style="border-radius: 16px;">
             <div class="modal-header">
@@ -1989,6 +2161,16 @@
                     </select>
                 </div>
 
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label class="form-label">Modelos Pedagógicos Rápidos (FR/PT):</label>
+                    <div class="docente-recado-chips">
+                        <button type="button" class="docente-chip-btn" style="width: auto; padding: 5px 11px; font-size: 0.74rem;" data-assunto="Félicitations pelo progresso em francês !" data-corpo="Bonjour ! Parabenizo você pelo excelente desempenho recente. Continuez comme ça !" onclick="aplicarModeloRecadoDocente(this)">🌟 Félicitations</button>
+                        <button type="button" class="docente-chip-btn" style="width: auto; padding: 5px 11px; font-size: 0.74rem;" data-assunto="Convite para revisão de pronúncia oral" data-corpo="Bonjour ! Vamos revisar a pronúncia e os elos vocálicos na prática guiada cette semaine ?" onclick="aplicarModeloRecadoDocente(this)">🎧 Revisão Oral</button>
+                        <button type="button" class="docente-chip-btn" style="width: auto; padding: 5px 11px; font-size: 0.74rem;" data-assunto="Reforço gramatical disponível no seu painel" data-corpo="Bonjour ! Adicionei exercícios de reforço no seu painel. Consulte o Guia FLE antes de responder. Bon courage !" onclick="aplicarModeloRecadoDocente(this)">📚 Reforço FLE</button>
+                        <button type="button" class="docente-chip-btn" style="width: auto; padding: 5px 11px; font-size: 0.74rem;" data-assunto="Lembrete de atividade avaliativa" data-corpo="Bonjour ! Lembre-se de concluir suas atividades pendentes dentro do prazo. À bientôt !" onclick="aplicarModeloRecadoDocente(this)">⏰ Lembrete de Prazo</button>
+                    </div>
+                </div>
+
                 <div class="form-group" style="margin-bottom: 15px;">
                     <label class="form-label">Assunto:</label>
                     <input type="text" id="msg_assunto" class="form-input" placeholder="Ex: Aviso sobre a prova oral de francês">
@@ -1996,6 +2178,11 @@
 
                 <div class="form-group" style="margin-bottom: 20px;">
                     <label class="form-label">Mensagem:</label>
+                    <div class="docente-char-bar" aria-label="Inserir caracteres especiais franceses">
+                        {% for ch in ['é', 'è', 'ê', 'ë', 'à', 'â', 'ù', 'û', 'ç', 'œ', '«', '»'] %}
+                        <button type="button" class="docente-char-btn" data-char="{{ ch }}" onclick="inserirAcentoRecadoDocente(this)" lang="fr">{{ ch }}</button>
+                        {% endfor %}
+                    </div>
                     <textarea id="msg_corpo" class="form-textarea" rows="4" placeholder="Escreva a mensagem para a caixa de entrada do estudante..."></textarea>
                 </div>
 
@@ -2071,10 +2258,10 @@
                                 </div>
                             </div>
                             <div class="turma-mgmt-actions">
-                                <button type="button" class="btn-sm btn-secondary" onclick="prepararEdicaoTurma({{ t['id'] }}, '{{ t['nome']|escape }}')" title="Editar nome da turma">
+                                <button type="button" class="btn-sm btn-secondary" data-turma-id="{{ t['id'] }}" data-turma-nome="{{ t['nome']|e }}" onclick="prepararEdicaoTurmaBtn(this)" title="Editar nome da turma">
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Editar
                                 </button>
-                                <button type="button" class="btn-sm btn-secondary" onclick="excluirTurmaGestao({{ t['id'] }}, '{{ t['nome']|escape }}')" title="Excluir turma" style="color: #ef4444;">
+                                <button type="button" class="btn-sm btn-secondary" data-turma-id="{{ t['id'] }}" data-turma-nome="{{ t['nome']|e }}" onclick="excluirTurmaGestaoBtn(this)" title="Excluir turma" style="color: #ef4444;">
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                                 </button>
                             </div>
@@ -2086,6 +2273,74 @@
             <div class="modal-footer" style="padding: 12px 20px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: flex-end;">
                 <button type="button" class="btn-secondary" onclick="fecharModalGestaoTurmas()">Fechar</button>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DO CO-PILOTO PEDAGÓGICO IA (GERADOR DE EXERCÍCIOS FLE) -->
+<div id="modalCopilotoFLE" class="modal hidden" onclick="if(event.target.id==='modalCopilotoFLE') fecharModalCopilotoFLE()" role="dialog" aria-modal="true" aria-labelledby="modalCopilotoTitulo">
+    <div class="modal-dialog modal-lg" style="max-width: 780px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h3 id="modalCopilotoTitulo" class="modal-title">✨ Co-Piloto Pedagógico FLE (Gerador de Exercícios)</h3>
+                    <p class="modal-subtitle text-muted" style="font-size: 0.85rem; margin-top: 2px;">Gere exercícios contextualizados em francês, edite os enunciados, ouça a pronúncia e salve no banco da Prática Guiada.</p>
+                </div>
+                <button type="button" class="btn-close-modal" onclick="fecharModalCopilotoFLE()" aria-label="Fechar Co-Piloto">&times;</button>
+            </div>
+            <form onsubmit="gerarExerciciosCopiloto(event)">
+                <div class="modal-body" style="padding: 20px;">
+                    <div class="form-row-2" style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px;">
+                        <div class="form-group">
+                            <label for="copiloto_tema" class="form-label">Tópico Gramatical FLE:</label>
+                            <select id="copiloto_tema" class="form-input" required>
+                                {% for tm in temas %}
+                                <option value="{{ tm['id'] }}">{{ tm['nome_tema'] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="copiloto_nivel" class="form-label">Nível CEFR:</label>
+                            <select id="copiloto_nivel" class="form-input">
+                                <option value="A1">A1 • Débutant</option>
+                                <option value="A2" selected>A2 • Élémentaire</option>
+                                <option value="B1">B1 • Intermédiaire</option>
+                                <option value="B2">B2 • Avancé</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="copiloto_quantidade" class="form-label">Quantidade:</label>
+                            <select id="copiloto_quantidade" class="form-input">
+                                <option value="2">2 exercícios</option>
+                                <option value="3" selected>3 exercícios</option>
+                                <option value="4">4 exercícios</option>
+                                <option value="5">5 exercícios</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 14px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        <button type="submit" id="btnGerarCopiloto" class="btn-primary">
+                            <span id="spinnerCopiloto" class="hidden" aria-hidden="true">⏳</span>
+                            <span id="btnGerarCopilotoTexto">Gerar Sugestões com IA</span>
+                        </button>
+                    </div>
+
+                    <div id="preview-exercicios" class="hidden" style="margin-top: 18px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+                            <strong style="font-size: 0.9rem;">Pré-visualização Editável</strong>
+                            <span class="badge-count" id="previewCountBadge">0 sugestões prontas</span>
+                        </div>
+                        <div id="listaCardsExercicios" class="copiloto-preview-list"></div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <button type="button" class="btn-secondary" onclick="fecharModalCopilotoFLE()">Fechar</button>
+                    <button type="button" id="btnSalvarExercicios" class="btn-primary hidden" onclick="salvarExerciciosNoBanco()">
+                        <span>Salvar no Banco de Questões</span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -2177,8 +2432,31 @@ document.addEventListener('click', function(e) {
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         fecharFiltrosPopover();
+        fecharModalGestaoTurmas();
+        fecharModalRecado();
+        fecharBoletimEscolar();
+        fecharModalCopilotoFLE();
     }
 });
+
+// ===================== CO-PILOTO PEDAGÓGICO IA =====================
+function abrirModalCopilotoFLE() {
+    const modal = document.getElementById('modalCopilotoFLE');
+    if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function fecharModalCopilotoFLE() {
+    const modal = document.getElementById('modalCopilotoFLE');
+    if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+}
+window.abrirModalCopilotoFLE = abrirModalCopilotoFLE;
+window.fecharModalCopilotoFLE = fecharModalCopilotoFLE;
 
 // ===================== CONTROLADOR DE GESTÃO DE TURMAS =====================
 function abrirModalGestaoTurmas() {
@@ -2209,6 +2487,20 @@ function fecharModalGestaoTurmasSeClicarFora(event) {
 window.abrirModalTurma = abrirModalGestaoTurmas;
 window.fecharModalTurma = fecharModalGestaoTurmas;
 
+function prepararEdicaoTurmaBtn(btn) {
+    if (!btn) return;
+    const id = Number(btn.getAttribute('data-turma-id') || '0');
+    const nome = btn.getAttribute('data-turma-nome') || '';
+    prepararEdicaoTurma(id, nome);
+}
+
+function excluirTurmaGestaoBtn(btn) {
+    if (!btn) return;
+    const id = Number(btn.getAttribute('data-turma-id') || '0');
+    const nome = btn.getAttribute('data-turma-nome') || '';
+    excluirTurmaGestao(id, nome);
+}
+
 async function carregarTurmasGestao() {
     try {
         const resp = await fetch('/api/turmas');
@@ -2234,10 +2526,10 @@ async function carregarTurmasGestao() {
                     </div>
                     <div class="turma-mgmt-actions">
                         <span class="turma-badge-alunos">${t.total_alunos} ${t.total_alunos === 1 ? 'aluno' : 'alunos'}</span>
-                        <button type="button" class="btn-sm btn-secondary" onclick="prepararEdicaoTurma(${t.id}, '${escapeHtmlTurma(t.nome).replace(/'/g, "\\'")}')" title="Editar nome da turma">
+                        <button type="button" class="btn-sm btn-secondary" data-turma-id="${t.id}" data-turma-nome="${escapeHtmlTurma(t.nome)}" onclick="prepararEdicaoTurmaBtn(this)" title="Editar nome da turma">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Editar
                         </button>
-                        <button type="button" class="btn-sm btn-secondary" onclick="excluirTurmaGestao(${t.id}, '${escapeHtmlTurma(t.nome).replace(/'/g, "\\'")}')" title="Excluir turma" style="color: #ef4444;">
+                        <button type="button" class="btn-sm btn-secondary" data-turma-id="${t.id}" data-turma-nome="${escapeHtmlTurma(t.nome)}" onclick="excluirTurmaGestaoBtn(this)" title="Excluir turma" style="color: #ef4444;">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                         </button>
                     </div>
@@ -2496,10 +2788,10 @@ async function carregarAlunosModal() {
                         </div>
                     </div>
                     <div style="display: flex; align-items: center; gap: 6px;">
-                        <button type="button" class="btn-detail btn-sm" onclick="abrirModalEdicaoAluno(${a.id}, '${escapeHtmlTurma(a.nome_completo).replace(/'/g, "\\'")}', '${escapeHtmlTurma(a.matricula).replace(/'/g, "\\'")}', ${a.turma_id}, '${a.nivel_cefr || 'A2'}')" title="Editar dados cadastrais">
+                        <button type="button" class="btn-detail btn-sm" data-aluno-id="${a.id}" data-aluno-nome="${escapeHtmlTurma(a.nome_completo)}" data-aluno-matricula="${escapeHtmlTurma(a.matricula)}" data-turma-id="${a.turma_id || ''}" data-cefr="${a.nivel_cefr || 'A2'}" onclick="abrirModalEdicaoAlunoBtn(this)" title="Editar dados cadastrais">
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Editar
                         </button>
-                        <button type="button" class="btn-secondary btn-sm" onclick="excluirAlunoModal(${a.id}, '${escapeHtmlTurma(a.nome_completo).replace(/'/g, "\\'")}')" title="Excluir aluno" style="color: #ef4444;">
+                        <button type="button" class="btn-secondary btn-sm" data-aluno-id="${a.id}" data-aluno-nome="${escapeHtmlTurma(a.nome_completo)}" onclick="excluirAlunoModalBtn(this)" title="Excluir aluno" style="color: #ef4444;">
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="line-icon"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                         </button>
                     </div>
@@ -2568,9 +2860,36 @@ function exportarPlanilhaCSV() {
 
 function abrirModalRecado() {
     document.getElementById('modalRecado').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
     carregarHistoricoRecadosDocente();
 }
-function fecharModalRecado() { document.getElementById('modalRecado').classList.add('hidden'); }
+function fecharModalRecado() {
+    const modal = document.getElementById('modalRecado');
+    if (modal) modal.classList.add('hidden');
+    document.body.style.overflow = '';
+}
+function aplicarModeloRecadoDocente(btn) {
+    if (!btn) return;
+    const assunto = btn.getAttribute('data-assunto') || '';
+    const corpo = btn.getAttribute('data-corpo') || '';
+    const inpAssunto = document.getElementById('msg_assunto');
+    const inpCorpo = document.getElementById('msg_corpo');
+    if (inpAssunto) inpAssunto.value = assunto;
+    if (inpCorpo) {
+        inpCorpo.value = corpo;
+        inpCorpo.focus();
+    }
+}
+function inserirAcentoRecadoDocente(btn) {
+    const textarea = document.getElementById('msg_corpo');
+    const ch = btn ? btn.getAttribute('data-char') : '';
+    if (!textarea || !ch) return;
+    const start = textarea.selectionStart ?? textarea.value.length;
+    const end = textarea.selectionEnd ?? textarea.value.length;
+    textarea.value = textarea.value.slice(0, start) + ch + textarea.value.slice(end);
+    textarea.focus();
+    textarea.setSelectionRange(start + ch.length, start + ch.length);
+}
 function alternarTipoDestinatario() {
     const tipo = document.getElementById('msg_tipo_dest').value;
     document.getElementById('grp_dest_aluno').classList.toggle('hidden', tipo !== 'aluno');
@@ -2667,6 +2986,7 @@ async function abrirBoletimEscolar() {
     const nivelCefr = document.getElementById('filtroNivel') ? document.getElementById('filtroNivel').value : 'todos';
 
     modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
     document.getElementById('boletimLoading').classList.remove('hidden');
     document.getElementById('boletimConteudo').classList.add('hidden');
 
@@ -2721,7 +3041,9 @@ async function abrirBoletimEscolar() {
 }
 
 function fecharBoletimEscolar() {
-    document.getElementById('modalBoletim').classList.add('hidden');
+    const modal = document.getElementById('modalBoletim');
+    if (modal) modal.classList.add('hidden');
+    document.body.style.overflow = '';
 }
 
 function fecharModalBoletimSeClicarFora(e) {
@@ -2996,11 +3318,24 @@ function baixarBoletimPDF() {
         padding: 0 !important;
         overflow: visible !important;
     }
-    body * {
+    body:has(#modalBoletim:not(.hidden)) * {
         visibility: hidden !important;
     }
-    #modalBoletim, #modalBoletim * {
+    body:has(#modalBoletim:not(.hidden)) #modalBoletim,
+    body:has(#modalBoletim:not(.hidden)) #modalBoletim * {
         visibility: visible !important;
+    }
+    body:has(#modalBoletim.hidden) .navbar,
+    body:has(#modalBoletim.hidden) .mobile-drawer,
+    body:has(#modalBoletim.hidden) .btn-detail,
+    body:has(#modalBoletim.hidden) .btn-detail-risk,
+    body:has(#modalBoletim.hidden) .docente-search-wrapper,
+    body:has(#modalBoletim.hidden) .docente-tabs-bar,
+    body:has(#modalBoletim.hidden) #toastNotification {
+        display: none !important;
+    }
+    body:has(#modalBoletim.hidden) .docente-unified-card .dashboard-box-outer {
+        display: block !important;
     }
     #modalBoletim {
         position: static !important;
@@ -3012,6 +3347,9 @@ function baixarBoletimPDF() {
         color: #0f172a !important;
         display: block !important;
         overflow: visible !important;
+    }
+    #modalBoletim.hidden {
+        display: none !important;
     }
     #modalBoletim .modal-dialog,
     #modalBoletim .modal-content,
@@ -3137,31 +3475,36 @@ function baixarBoletimPDF() {
 </script>
 <script src="{{ url_for('static', filename='js/dashboard.js') }}?v=20261020_editorial8"></script>
 <script>
-// ===================== CONTROLADOR DE NAVEGAÇÃO ENTRE AS 3 TABELAS =====================
+// ===================== CONTROLADOR DE NAVEGAÇÃO ENTRE AS ABAS ANALÍTICAS =====================
 function alternarAbaPainelDocente(aba, deveRolar) {
     const btnSub = document.getElementById('tabBtnPainelSubmissoes');
     const btnRisco = document.getElementById('tabBtnPainelRisco');
     const btnAlunos = document.getElementById('tabBtnPainelAlunos');
+    const btnTodas = document.getElementById('tabBtnPainelTodas');
 
     const boxSub = document.getElementById('submissoesBoxOuter');
     const boxRisco = document.getElementById('riskBoxOuter');
     const boxAlunos = document.getElementById('alunosBoxOuter');
 
-    [btnSub, btnRisco, btnAlunos].forEach(b => {
+    [btnSub, btnRisco, btnAlunos, btnTodas].forEach(b => {
         if (b) {
             b.classList.remove('active');
             b.setAttribute('aria-selected', 'false');
         }
     });
 
-    // Mantém todas as 3 tabelas visíveis (1 box para cada tabela)
-    [boxSub, boxRisco, boxAlunos].forEach(box => {
-        if (box) {
-            box.style.setProperty('display', 'block', 'important');
+    if (aba === 'todas') {
+        [boxSub, boxRisco, boxAlunos].forEach(box => {
+            if (box) box.classList.remove('is-hidden-tab');
+        });
+        if (btnTodas) {
+            btnTodas.classList.add('active');
+            btnTodas.setAttribute('aria-selected', 'true');
         }
-    });
-
-    if (aba === 'risco') {
+    } else if (aba === 'risco') {
+        if (boxSub) boxSub.classList.add('is-hidden-tab');
+        if (boxRisco) boxRisco.classList.remove('is-hidden-tab');
+        if (boxAlunos) boxAlunos.classList.add('is-hidden-tab');
         if (btnRisco) {
             btnRisco.classList.add('active');
             btnRisco.setAttribute('aria-selected', 'true');
@@ -3170,6 +3513,9 @@ function alternarAbaPainelDocente(aba, deveRolar) {
             boxRisco.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     } else if (aba === 'alunos') {
+        if (boxSub) boxSub.classList.add('is-hidden-tab');
+        if (boxRisco) boxRisco.classList.add('is-hidden-tab');
+        if (boxAlunos) boxAlunos.classList.remove('is-hidden-tab');
         if (btnAlunos) {
             btnAlunos.classList.add('active');
             btnAlunos.setAttribute('aria-selected', 'true');
@@ -3178,6 +3524,9 @@ function alternarAbaPainelDocente(aba, deveRolar) {
             boxAlunos.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     } else {
+        if (boxSub) boxSub.classList.remove('is-hidden-tab');
+        if (boxRisco) boxRisco.classList.add('is-hidden-tab');
+        if (boxAlunos) boxAlunos.classList.add('is-hidden-tab');
         if (btnSub) {
             btnSub.classList.add('active');
             btnSub.setAttribute('aria-selected', 'true');
@@ -3188,6 +3537,49 @@ function alternarAbaPainelDocente(aba, deveRolar) {
     }
 }
 window.alternarAbaPainelDocente = alternarAbaPainelDocente;
+
+// Helpers seguros via data-* para evitar quebra por apóstrofo em nomes/turmas
+function filtrarDossieRow(el) {
+    const tr = el ? el.closest('tr') : null;
+    if (!tr) return;
+    const id = Number(tr.getAttribute('data-aluno-id') || '0');
+    const nome = tr.getAttribute('data-aluno-nome') || 'Estudante';
+    filtrarDossieAluno(id, nome);
+}
+
+function alterarNivelAlunoSelect(sel) {
+    const tr = sel ? sel.closest('tr') : null;
+    if (!tr) return;
+    const id = Number(tr.getAttribute('data-aluno-id') || '0');
+    const nome = tr.getAttribute('data-aluno-nome') || '';
+    alterarNivelAluno(id, sel.value, nome);
+}
+
+function abrirRecadoRapidoRow(btn) {
+    const tr = btn ? btn.closest('tr') : null;
+    if (!tr) return;
+    const id = Number(tr.getAttribute('data-aluno-id') || '0');
+    const nome = tr.getAttribute('data-aluno-nome') || '';
+    abrirRecadoRapidoAluno(id, nome);
+}
+
+function abrirModalEdicaoAlunoBtn(btn) {
+    if (!btn) return;
+    const id = Number(btn.getAttribute('data-aluno-id') || '0');
+    const nome = btn.getAttribute('data-aluno-nome') || '';
+    const matricula = btn.getAttribute('data-aluno-matricula') || '';
+    const turmaRaw = btn.getAttribute('data-turma-id') || '';
+    const turmaId = turmaRaw ? Number(turmaRaw) : null;
+    const cefr = btn.getAttribute('data-cefr') || 'A2';
+    abrirModalEdicaoAluno(id, nome, matricula, turmaId, cefr);
+}
+
+function excluirAlunoModalBtn(btn) {
+    if (!btn) return;
+    const id = Number(btn.getAttribute('data-aluno-id') || '0');
+    const nome = btn.getAttribute('data-aluno-nome') || '';
+    excluirAlunoModal(id, nome);
+}
 
 // ===================== DOSSIÊ INDIVIDUAL EM 1 CLIQUE & ORDENAÇÃO DE COLUNAS =====================
 async function filtrarDossieAluno(alunoId, nomeAluno) {
@@ -3291,18 +3683,26 @@ function abrirRecadoRapidoAluno(alunoId, nomeAluno) {
 window.abrirRecadoRapidoAluno = abrirRecadoRapidoAluno;
 
 // ===================== BUSCA COM AUTOCOMPLETE E CHIPS RÁPIDOS (PAINEL DOCENTE) =====================
+function normalizarTextoDocente(str) {
+    return String(str || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase();
+}
+
 function escapeRegExpDocente(str) {
     return (str || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 function destacarTermoDocente(texto, termo) {
-    if (!termo) return texto;
-    const regex = new RegExp(`(${escapeRegExpDocente(termo)})`, 'gi');
-    return (texto || '').replace(regex, '<mark>$1</mark>');
+    const seguro = escapeHtmlTurma(String(texto || ''));
+    if (!termo) return seguro;
+    const regex = new RegExp(`(${escapeRegExpDocente(escapeHtmlTurma(termo))})`, 'gi');
+    return seguro.replace(regex, '<mark>$1</mark>');
 }
 
 function filtrarBuscaPainelDocente(valor) {
-    const termo = (valor || '').trim().toLowerCase();
+    const termo = normalizarTextoDocente((valor || '').trim());
     const btnClear = document.getElementById('btnClearBuscaDocente');
     if (btnClear) {
         btnClear.style.display = termo ? 'inline-flex' : 'none';
@@ -3311,16 +3711,20 @@ function filtrarBuscaPainelDocente(valor) {
     if (!termo) {
         if (typeof renderizarPaginacaoRisco === 'function') renderizarPaginacaoRisco();
         if (typeof renderizarPaginacaoSubmissoes === 'function') renderizarPaginacaoSubmissoes();
-        document.querySelectorAll('#tabelaDesempenhoAlunos tbody tr.student-perf-row').forEach(r => r.style.display = '');
+        if (typeof filtrarTabelaDesempenhoAlunosPorEscopo === 'function') {
+            filtrarTabelaDesempenhoAlunosPorEscopo();
+        } else {
+            document.querySelectorAll('#tabelaDesempenhoAlunos tbody tr.student-perf-row').forEach(r => r.style.display = '');
+        }
         document.getElementById('autocompleteDropdownDocente')?.classList.remove('open');
         return;
     }
 
-    // Filtra tabela de submissões pelo texto digitado
+    // Filtra tabela de submissões pelo texto digitado (insensível a acentos)
     const rowsSub = document.querySelectorAll('#tabelaSubmissoes tbody tr.submission-row');
     let subVisiveis = 0;
     rowsSub.forEach(row => {
-        const txt = row.getAttribute('data-search') || '';
+        const txt = normalizarTextoDocente(row.getAttribute('data-search') || '');
         if (txt.includes(termo)) {
             row.style.display = '';
             subVisiveis++;
@@ -3336,14 +3740,14 @@ function filtrarBuscaPainelDocente(valor) {
     // Filtra tabela de risco pelo texto digitado
     const rowsRisk = document.querySelectorAll('#tabelaAlunosRisco tbody tr.risk-row');
     rowsRisk.forEach(row => {
-        const txt = row.getAttribute('data-search') || '';
+        const txt = normalizarTextoDocente(row.getAttribute('data-search') || '');
         row.style.display = txt.includes(termo) ? '' : 'none';
     });
 
     // Filtra tabela de desempenho por aluno pelo texto digitado
     const rowsAlunos = document.querySelectorAll('#tabelaDesempenhoAlunos tbody tr.student-perf-row');
     rowsAlunos.forEach(row => {
-        const txt = row.getAttribute('data-search') || '';
+        const txt = normalizarTextoDocente(row.getAttribute('data-search') || '');
         row.style.display = txt.includes(termo) ? '' : 'none';
     });
 
@@ -3354,17 +3758,18 @@ function atualizarAutocompleteDocente(valor) {
     const dropdown = document.getElementById('autocompleteDropdownDocente');
     if (!dropdown) return;
 
-    const termo = (valor || '').trim().toLowerCase();
+    const termoRaw = (valor || '').trim();
+    const termo = normalizarTextoDocente(termoRaw);
     if (!termo) {
         dropdown.classList.remove('open');
         return;
     }
 
     const rows = Array.from(document.querySelectorAll('#tabelaSubmissoes tbody tr.submission-row'));
-    const matches = rows.filter(r => (r.getAttribute('data-search') || '').includes(termo));
+    const matches = rows.filter(r => normalizarTextoDocente(r.getAttribute('data-search') || '').includes(termo));
 
     if (matches.length === 0) {
-        dropdown.innerHTML = `<div style="padding: 0.85rem; text-align: center; font-size: 0.84rem; color: #6B7280;">Nenhuma submissão encontrada para "<strong>${valor}</strong>"</div>`;
+        dropdown.innerHTML = `<div style="padding: 0.85rem; text-align: center; font-size: 0.84rem; color: #6B7280;">Nenhuma submissão encontrada para "<strong>${escapeHtmlTurma(termoRaw)}</strong>"</div>`;
         dropdown.classList.add('open');
         return;
     }
@@ -3376,10 +3781,10 @@ function atualizarAutocompleteDocente(valor) {
         const tema = r.getAttribute('data-tema') || 'Geral';
         const status = r.getAttribute('data-status') || '';
         html += `
-            <div class="docente-ac-item" onclick="focarSubmissaoDocente('${id}')">
+            <div class="docente-ac-item" onclick="focarSubmissaoDocente('${escapeHtmlTurma(id)}')">
                 <div>
-                    <div class="docente-ac-title">#${id} • ${destacarTermoDocente(aluno, valor.trim())}</div>
-                    <div class="docente-ac-sub">${destacarTermoDocente(tema, valor.trim())} • ${status}</div>
+                    <div class="docente-ac-title">#${escapeHtmlTurma(id)} • ${destacarTermoDocente(aluno, termoRaw)}</div>
+                    <div class="docente-ac-sub">${destacarTermoDocente(tema, termoRaw)} • ${escapeHtmlTurma(status)}</div>
                 </div>
                 <span style="font-size: 0.72rem; font-weight: 700; color: #14213D;">Diagnóstico →</span>
             </div>
