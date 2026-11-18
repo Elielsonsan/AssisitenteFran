@@ -915,6 +915,47 @@ def avaliar():
 
 # ===================== DASHBOARD DO PROFESSOR =====================
 
+def _classificar_prazo_avaliacao(data_limite_str):
+    """Classifica o prazo da avaliação para exibir urgência real na UI."""
+    raw = str(data_limite_str or "").strip()
+    if not raw:
+        return {"status_prazo": "em_dia", "label_prazo": "Prazo aberto"}
+
+    data_obj = None
+    parte_data = raw.split(" ")[0].strip()
+    for fmt in ("%Y-%m-%d", "%d/%m/%Y"):
+        try:
+            data_obj = datetime.datetime.strptime(parte_data, fmt).date()
+            break
+        except ValueError:
+            continue
+
+    if not data_obj:
+        return {"status_prazo": "em_dia", "label_prazo": "Prazo aberto"}
+
+    hoje = datetime.date.today()
+    delta = (data_obj - hoje).days
+    if delta < 0:
+        return {"status_prazo": "atrasada", "label_prazo": "Prazo encerrado"}
+    if delta == 0:
+        return {"status_prazo": "urgente", "label_prazo": "Vence hoje"}
+    if delta <= 3:
+        return {"status_prazo": "urgente", "label_prazo": f"Vence em {delta} dia(s)"}
+    return {"status_prazo": "em_dia", "label_prazo": f"Faltam {delta} dias"}
+
+
+def _mapear_habilidade_fle(tipo_questao):
+    """Mapeia tipo interno de questão para rótulo pedagógico FLE."""
+    t = str(tipo_questao or "").strip().lower()
+    if t == "ditado":
+        return "🎧 Dictée"
+    if t in ("leitura_oral", "expressao_oral"):
+        return "🗣️ Leitura Oral"
+    if t in ("multipla_escolha", "teste", "verdadeiro_falso"):
+        return "☑️ QCM / V-F"
+    return "✍️ Escrita FLE"
+
+
 @aluno_bp.route("/aluno/atividades", methods=["GET"])
 @login_required
 def aluno_atividades():
@@ -922,7 +963,8 @@ def aluno_atividades():
     turma_id = session.get("turma_id")
     conn = get_db()
     cursor = conn.cursor()
-    
+    _garantir_coluna_origem_submissao(cursor, conn)
+
     if not turma_id:
         cursor.execute("SELECT turma_id FROM alunos WHERE id = ?", (aluno_id,))
         al_row = cursor.fetchone()
@@ -933,11 +975,11 @@ def aluno_atividades():
     cursor.execute("""
         SELECT a.id, a.titulo, a.tipo, a.data_limite,
                (SELECT COUNT(*) FROM prova_questoes pq WHERE pq.avaliacao_id = a.id) as total_questoes,
-               (SELECT COUNT(DISTINCT s.prova_questao_id) FROM submissoes s 
-                JOIN prova_questoes pq ON s.prova_questao_id = pq.id 
+               (SELECT COUNT(DISTINCT s.prova_questao_id) FROM submissoes s
+                JOIN prova_questoes pq ON s.prova_questao_id = pq.id
                 WHERE s.aluno_id = ? AND pq.avaliacao_id = a.id) as questoes_respondidas,
-               (SELECT ROUND(AVG(s.nota_professor), 1) FROM submissoes s 
-                JOIN prova_questoes pq ON s.prova_questao_id = pq.id 
+               (SELECT ROUND(AVG(s.nota_professor), 1) FROM submissoes s
+                JOIN prova_questoes pq ON s.prova_questao_id = pq.id
                 WHERE s.aluno_id = ? AND pq.avaliacao_id = a.id AND s.nota_professor IS NOT NULL) as media_nota
         FROM avaliacoes a
         WHERE a.turma_id = ?
@@ -945,11 +987,62 @@ def aluno_atividades():
     """, (aluno_id, aluno_id, turma_id))
     avaliacoes = [dict(row) for row in cursor.fetchall()]
 
+    escala_formativa = {
+        "Correto": 10.0,
+        "Parcialmente Correto": 5.0,
+        "Aguardando Revisão Manual": 7.5,
+        "Incorreto": 0.0,
+    }
+
     avaliacoes_pendentes = []
     avaliacoes_concluidas = []
     for a in avaliacoes:
         total = a.get("total_questoes") or 0
         resp = a.get("questoes_respondidas") or 0
+        a["progresso_pct"] = min(100, round((resp / total) * 100)) if total > 0 else 0
+        a.update(_classificar_prazo_avaliacao(a.get("data_limite")))
+
+        cursor.execute("""
+            SELECT id, tipo_questao, enunciado, texto_referencia, pontuacao_maxima
+            FROM prova_questoes
+            WHERE avaliacao_id = ?
+            ORDER BY id ASC
+        """, (a["id"],))
+        q_rows = [dict(q) for q in cursor.fetchall()]
+
+        habilidades = []
+        questoes_espelho = []
+        notas_formativas = []
+
+        for q in q_rows:
+            hab = _mapear_habilidade_fle(q.get("tipo_questao"))
+            if hab not in habilidades:
+                habilidades.append(hab)
+
+            cursor.execute("""
+                SELECT id, resposta_aluno, arquivo_audio_path, status_resposta,
+                       feedback_ia, analise_professor, nota_professor, data_hora
+                FROM submissoes
+                WHERE aluno_id = ? AND prova_questao_id = ?
+                ORDER BY id DESC
+                LIMIT 1
+            """, (aluno_id, q["id"]))
+            sub_row = cursor.fetchone()
+            sub_dict = dict(sub_row) if sub_row else None
+            if sub_dict and sub_dict.get("status_resposta") in escala_formativa:
+                notas_formativas.append(escala_formativa[sub_dict["status_resposta"]])
+
+            q["submissao"] = sub_dict
+            questoes_espelho.append(q)
+
+        a["habilidades_fle"] = habilidades
+        a["questoes_espelho"] = questoes_espelho
+        a["nota_formativa"] = (
+            round(sum(notas_formativas) / len(notas_formativas), 1)
+            if (a.get("media_nota") is None and notas_formativas)
+            else None
+        )
+
         conc = (resp is not None and resp > 0 and resp >= total and total > 0)
         a["concluida"] = conc
         if conc:
@@ -959,18 +1052,28 @@ def aluno_atividades():
 
     # Histórico recente de exercícios e feedbacks para consulta do aluno
     cursor.execute("""
-        SELECT s.id, s.resposta_aluno, s.status_resposta, s.feedback_ia, s.analise_professor, s.data_hora,
+        SELECT s.id, s.resposta_aluno, s.arquivo_audio_path, s.status_resposta,
+               s.feedback_ia, s.analise_professor, s.data_hora, s.prova_questao_id,
+               COALESCE(s.origem_submissao, 'curso') as origem_submissao,
                COALESCE(e.enunciado, pq.enunciado) as enunciado,
-               COALESCE(te.nome_tema, 'Exercício de Avaliação') as tema
+               COALESCE(te.nome_tema, a.titulo, 'Exercício de Avaliação') as tema,
+               a.id as avaliacao_id, a.titulo as avaliacao_titulo
         FROM submissoes s
         LEFT JOIN exercicios e ON s.exercicio_id = e.id
         LEFT JOIN temas te ON e.tema_id = te.id
         LEFT JOIN prova_questoes pq ON s.prova_questao_id = pq.id
+        LEFT JOIN avaliacoes a ON pq.avaliacao_id = a.id
         WHERE s.aluno_id = ?
         ORDER BY s.id DESC
-        LIMIT 10;
+        LIMIT 20;
     """, (aluno_id,))
     historico = [dict(row) for row in cursor.fetchall()]
+
+    total_historico = len(historico)
+    acertos_historico = sum(1 for h in historico if h.get("status_resposta") == "Correto")
+    parciais_historico = sum(1 for h in historico if h.get("status_resposta") == "Parcialmente Correto")
+    revisar_historico = sum(1 for h in historico if h.get("status_resposta") not in ("Correto", "Parcialmente Correto"))
+    taxa_acerto_historico = round((acertos_historico / total_historico) * 100) if total_historico > 0 else 0
 
     conn.close()
     return render_template(
@@ -979,6 +1082,11 @@ def aluno_atividades():
         avaliacoes_pendentes=avaliacoes_pendentes,
         avaliacoes_concluidas=avaliacoes_concluidas,
         historico=historico,
+        total_historico=total_historico,
+        acertos_historico=acertos_historico,
+        parciais_historico=parciais_historico,
+        revisar_historico=revisar_historico,
+        taxa_acerto_historico=taxa_acerto_historico,
         active_page="aluno_atividades"
     )
 
@@ -1224,6 +1332,7 @@ def api_aluno_responder_mensagem():
 def aluno_prova(avaliacao_id):
     aluno_id = session.get("aluno_id")
     turma_id = session.get("turma_id")
+    refazer = request.args.get("refazer") == "1"
     conn = get_db()
     cursor = conn.cursor()
 
@@ -1246,10 +1355,32 @@ def aluno_prova(avaliacao_id):
         flash("Acesso não autorizado para esta avaliação.", "erro")
         return redirect(url_for("aluno.aluno_atividades")), 403
 
-    cursor.execute("SELECT * FROM prova_questoes WHERE avaliacao_id = ?", (avaliacao_id,))
+    cursor.execute("SELECT * FROM prova_questoes WHERE avaliacao_id = ? ORDER BY id ASC", (avaliacao_id,))
     questoes = [dict(r) for r in cursor.fetchall()]
+    for q in questoes:
+        cursor.execute("""
+            SELECT id, resposta_aluno, arquivo_audio_path, status_resposta,
+                   feedback_ia, analise_professor, nota_professor, data_hora
+            FROM submissoes
+            WHERE aluno_id = ? AND prova_questao_id = ?
+            ORDER BY id DESC
+            LIMIT 1
+        """, (aluno_id, q["id"]))
+        sub_row = cursor.fetchone()
+        q["submissao"] = dict(sub_row) if sub_row else None
+
+    questoes_respondidas_count = sum(1 for q in questoes if q.get("submissao"))
+    modo_revisao = (questoes_respondidas_count > 0 and not refazer)
+
     conn.close()
-    return render_template("aluno_prova.html", avaliacao=avaliacao, questoes=questoes, active_page="aluno_atividades")
+    return render_template(
+        "aluno_prova.html",
+        avaliacao=avaliacao,
+        questoes=questoes,
+        modo_revisao=modo_revisao,
+        questoes_respondidas_count=questoes_respondidas_count,
+        active_page="aluno_atividades"
+    )
 
 @aluno_bp.route("/api/enviar_prova", methods=["POST"])
 @login_required
@@ -1263,6 +1394,7 @@ def api_enviar_prova():
     
     conn = get_db()
     cursor = conn.cursor()
+    _garantir_coluna_origem_submissao(cursor, conn)
 
     if not turma_id:
         cursor.execute("SELECT turma_id FROM alunos WHERE id = ?", (aluno_id,))
@@ -1316,12 +1448,12 @@ def api_enviar_prova():
 
             cursor.execute("""
                 INSERT INTO submissoes (
-                    aluno_id, prova_questao_id, resposta_aluno, 
-                    feedback_ia, analise_professor, status_resposta, data_hora
-                ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                    aluno_id, prova_questao_id, resposta_aluno,
+                    feedback_ia, analise_professor, status_resposta, data_hora, origem_submissao
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, 'curso')
             """, (
-                aluno_id, q_id, resposta_texto, 
-                feedback_aluno, analise_ia, status_ia, 
+                aluno_id, q_id, resposta_texto,
+                feedback_aluno, analise_ia, status_ia,
                 datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             ))
     
@@ -1342,37 +1474,59 @@ def api_enviar_prova():
                 filename = secure_filename(f"aluno_{aluno_id}_q_{q_id}_{int(datetime.datetime.now().timestamp())}.webm")
                 filepath = os.path.join(upload_dir, filename)
                 audio_file.save(filepath)
-                
+
+                status_oral = "Aguardando Revisão Manual"
+                analise_oral = ""
                 feedback_ia = "Análise pendente."
+                transcricao_oral = None
                 try:
                     if not genai_model:
                         raise RuntimeError("Modelo Gemini não configurado")
-                    
-                    # Lê os bytes salvos para enviar à IA
+
                     with open(filepath, "rb") as f:
                         audio_bytes = f.read()
-                        
+
                     audio_blob = {
                         "mime_type": "audio/webm",
                         "data": audio_bytes
                     }
-                    
+
                     prompt_audio = f"O aluno leu em francês: '{texto_ref}'. Analise o áudio anexo, atribua nota de 0-10 para a pronúncia e aponte erros de fonética. Retorne JSON no formato: {{\"nota\": 8.5, \"analise\": \"Sua justificativa\"}}"
-                    
+
                     res = genai_model.generate_content([prompt_audio, audio_blob])
-                    
+
                     texto_limpo = re.sub(r"^```json\s*", "", res.text.strip(), flags=re.IGNORECASE)
                     texto_limpo = re.sub(r"^```\s*", "", texto_limpo)
                     texto_limpo = re.sub(r"\s*```$", "", texto_limpo)
                     dados_analise = json.loads(texto_limpo)
-                    
+
                     feedback_ia = f"Análise Gemini: Nota {dados_analise.get('nota')} - {dados_analise.get('analise')}"
                 except Exception as e:
-                    print(f"Erro Gemini Áudio: {e}")
-                    feedback_ia = "Análise preliminar (Gemini Falhou): A pronúncia está compreensível, mas faltou a nasalidade."
-                
-                cursor.execute("INSERT INTO submissoes (aluno_id, prova_questao_id, arquivo_audio_path, status_resposta, feedback_ia, data_hora) VALUES (?, ?, ?, ?, ?, ?)",
-                               (aluno_id, q_id, f"static/uploads/audios/{filename}", 'Aguardando Revisão Manual', feedback_ia, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+                    print(f"[i] Usando motor de transcrição local na prova oral ({e})")
+                    status_oral, analise_oral, feedback_ia, transcricao_oral = analisar_e_transcrever_audio_oral(
+                        tema=av_row["titulo"] or "Avaliação Oral",
+                        exercicio=texto_ref or "",
+                        transcricao_cliente="",
+                        filepath_audio=filepath,
+                        tentativa=1,
+                        nivel_cefr=session.get("nivel_cefr", "A2"),
+                    )
+
+                cursor.execute("""
+                    INSERT INTO submissoes (
+                        aluno_id, prova_questao_id, resposta_aluno, arquivo_audio_path,
+                        status_resposta, feedback_ia, analise_professor, data_hora, origem_submissao
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'curso')
+                """, (
+                    aluno_id,
+                    q_id,
+                    transcricao_oral,
+                    f"static/uploads/audios/{filename}",
+                    status_oral,
+                    feedback_ia,
+                    analise_oral,
+                    datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                ))
     
     conn.commit()
     conn.close()
