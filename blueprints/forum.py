@@ -1,9 +1,94 @@
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, session, send_from_directory, flash, Response
 from werkzeug.security import check_password_hash, generate_password_hash
-from blueprints.extensions import get_db, login_required, login_required_prof, parse_retorno_gemini_frances, BASE_DIR, GEMINI_MODEL_NAME, genai_model
+import blueprints.extensions as ext
+from blueprints.extensions import get_db, login_required, login_required_prof, parse_retorno_gemini_frances, BASE_DIR, GEMINI_MODEL_NAME
 import sqlite3, json, random, datetime, re, os, csv, io, threading
 
 forum_bp = Blueprint('forum', __name__)
+
+
+def _garantir_colunas_forum(cursor, conn=None):
+    """Garante colunas incrementais criador_tipo e autor_aluno_id em forum_topicos."""
+    cols = [r[1] for r in cursor.execute("PRAGMA table_info(forum_topicos)").fetchall()]
+    alterou = False
+    if cols:
+        if "criador_tipo" not in cols:
+            cursor.execute("ALTER TABLE forum_topicos ADD COLUMN criador_tipo TEXT DEFAULT 'Professor'")
+            cursor.execute("UPDATE forum_topicos SET criador_tipo = 'Professor' WHERE criador_tipo IS NULL")
+            alterou = True
+        if "autor_aluno_id" not in cols:
+            cursor.execute("ALTER TABLE forum_topicos ADD COLUMN autor_aluno_id INTEGER")
+            alterou = True
+    if alterou and conn is not None:
+        conn.commit()
+
+
+def gerar_resposta_socratica_fle(titulo_topico, categoria, mensagem_aluno):
+    """Motor socrático FLE determinístico para orientar alunos em francês mesmo sem API externa."""
+    msg = (mensagem_aluno or "").strip()
+    msg_low = msg.lower()
+    titulo = (titulo_topico or "discussão FLE").strip()
+    cat = (categoria or "geral").strip().lower()
+
+    # 1. Desvios clássicos de Passé Composé (Auxiliar Être vs Avoir / Maison d'Être)
+    if re.search(
+        r"\b(?:avons|as|a|ai|ont|avez)\s+(?:aller|all[ée]e?s?|parti[er]?s?|arriv[ée]e?s?|venu[es]?|rest[ée]e?s?|tomb[ée]e?s?|n[ée]e?s?|sorti[es]?)\b",
+        msg_low,
+    ):
+        return (
+            "Observe com atenção o verbo principal no *Passé Composé*! Verbos de movimento e mudança de estado "
+            "(como *aller, partir, arriver, venir*) pertencem à **Maison d'Être** e exigem o auxiliar **être**, "
+            "além da concordância do particípio. Qual auxiliar você usaria aqui para corrigir a frase?"
+        )
+
+    # 2. Negação com partitivos (ne ... pas de)
+    if re.search(r"\b(?:pas|jamais|plus)\s+(?:du|de\s+la|des)\b", msg_low):
+        return (
+            "Quase lá! Em frases negativas em francês (`ne ... pas`), os artigos partitivos e indefinidos "
+            "(*du, de la, des*) sofrem uma transformação importante. Como fica a expressão sem o artigo definido combinado?"
+        )
+
+    # 3. Subjonctif após necessidade
+    if re.search(r"\b(?:il\s+faut\s+que|est\s+n[ée]cessaire\s+que)\b", msg_low) and re.search(
+        r"\b(?:prends|fais|vas|es|as|est|peux|veux|aller|faire)\b", msg_low
+    ):
+        return (
+            "Boa tentativa com *il faut que*! Lembre-se de que expressões de necessidade pedem o **Subjonctif Présent**. "
+            "Como ficaria o verbo na forma do subjuntivo depois de *que*?"
+        )
+
+    # 4. Pronomes COD / COI com verbos de comunicação
+    if re.search(r"\b(?:les|la|le)\s+(?:t[ée]l[ée]phone|parle|[ée]cris|r[ée]ponds)\b", msg_low) or re.search(
+        r"\bparle\s+[àa]\s+(?:lui|elle|eux|elles)\b", msg_low
+    ):
+        return (
+            "Atenção à regência em francês! Verbos como *parler à*, *téléphoner à* e *écrire à* introduzem um objeto indireto (COI). "
+            "Qual pronome (singular ou plural) substitui *à quelqu'un* antes do verbo?"
+        )
+
+    # 5. Perguntas ou dúvidas diretas do estudante
+    eh_duvida = ("?" in msg) or any(
+        w in msg_low
+        for w in ("dúvida", "duvida", "como ", "por que", "porque", "não entendi", "nao entendi", "explica", "diferença", "diferenca", "ajuda", "quand ", "comment ")
+    )
+    if eh_duvida:
+        dica_cat = {
+            "gramatica": "analisar qual é o sujeito, o tempo verbal e o auxiliar ou pronome envolvido",
+            "dicas": "reparar nas vogais nasais, liaisons e sílabas finais mudas",
+            "vocabulario": "observar o gênero da palavra e em qual contexto cotidiano ela aparece",
+            "cultura": "conectar a expressão ao contexto cultural francófono do tema",
+            "debate": "estruturar sua ideia com um conector lógico como *À mon avis* ou *Cependant*",
+        }.get(cat, "observar a estrutura da frase e testar uma construção curta")
+        return (
+            f"Ótima questão sobre « {titulo} »! Antes da resposta pronta, experimente {dica_cat}. "
+            "Você consegue formular uma frase curta em francês aplicando essa ideia (pode começar com *À mon avis...* ou *Par exemple...*)?"
+        )
+
+    # 6. Contribuição afirmativa
+    return (
+        f"Très bonne contribution ! 👏 Sua participação em « {titulo} » mantém a discussão ativa. "
+        "Pour approfondir en français : você consegue acrescentar um exemplo curto usando um conector como *Par exemple* ou *Cependant*?"
+    )
 
 @forum_bp.route("/professor/forum", methods=["GET"])
 @login_required_prof
@@ -28,7 +113,8 @@ def forum_lista():
         
     conn = get_db()
     cursor = conn.cursor()
-    
+    _garantir_colunas_forum(cursor, conn)
+
     filtro_turma = request.args.get("turma", "todas").strip()
     busca = request.args.get("busca", "").strip()
     
@@ -65,30 +151,52 @@ def forum_lista():
             
         # 3. Consulta de tópicos com filtro
         query = """
-            SELECT ft.*, p.nome_completo as criador_nome, t.nome as turma_nome,
-                   (SELECT COUNT(*) FROM forum_mensagens WHERE topico_id = ft.id) as total_mensagens
+            SELECT ft.*,
+                   COALESCE(ft.criador_tipo, 'Professor') as criador_tipo,
+                   CASE WHEN COALESCE(ft.criador_tipo, 'Professor') = 'Aluno'
+                        THEN COALESCE(al_c.nome_completo, 'Estudante')
+                        ELSE COALESCE(p.nome_completo, 'Docente') END as criador_nome,
+                   t.nome as turma_nome,
+                   (SELECT COUNT(*) FROM forum_mensagens WHERE topico_id = ft.id) as total_mensagens,
+                   (SELECT COUNT(*) FROM forum_mensagens WHERE topico_id = ft.id AND autor_tipo = 'IA') as total_ia,
+                   (SELECT COUNT(*) FROM forum_mensagens WHERE topico_id = ft.id AND autor_tipo = 'Professor' AND autor_id = ?) as minhas_respostas
             FROM forum_topicos ft
-            JOIN professores p ON ft.criador_id = p.id
+            LEFT JOIN professores p ON ft.criador_id = p.id
+            LEFT JOIN alunos al_c ON ft.autor_aluno_id = al_c.id
             LEFT JOIN turmas t ON ft.turma_id = t.id
             WHERE 1=1
         """
-        params = []
-        
+        params = [prof_id]
+
         if filtro_turma == "geral":
             query += " AND ft.turma_id IS NULL"
         elif filtro_turma != "todas" and filtro_turma.isdigit():
             query += " AND ft.turma_id = ?"
             params.append(int(filtro_turma))
-            
+
         if busca:
             query += " AND (LOWER(ft.titulo) LIKE ? OR LOWER(ft.descricao) LIKE ?)"
             termo = f"%{busca.lower()}%"
             params.extend([termo, termo])
-            
-        query += " ORDER BY ft.data_criacao DESC"
+
+        query += " ORDER BY ft.id DESC, ft.data_criacao DESC"
         cursor.execute(query, params)
-        topicos = [dict(row) for row in cursor.fetchall()]
-        
+        topicos = []
+        for row in cursor.fetchall():
+            t_item = dict(row)
+            t_item["tem_ia"] = bool((t_item.get("total_ia") or 0) > 0)
+            t_item["aluno_participou"] = bool(
+                (t_item.get("minhas_respostas") or 0) > 0
+                or (t_item.get("criador_tipo") == "Professor" and t_item.get("criador_id") == prof_id)
+            )
+            topicos.append(t_item)
+
+        cursor.execute("SELECT COUNT(*) as c FROM forum_mensagens WHERE autor_tipo = 'Professor' AND autor_id = ?", (prof_id,))
+        msgs_user = cursor.fetchone()["c"] or 0
+        cursor.execute("SELECT COUNT(*) as c FROM forum_topicos WHERE COALESCE(criador_tipo, 'Professor') = 'Professor' AND criador_id = ?", (prof_id,))
+        tops_user = cursor.fetchone()["c"] or 0
+        minhas_participacoes = msgs_user + tops_user
+
     else:
         # Visão do Aluno: restrito à sua turma e ao Fórum Geral
         cursor.execute("""
@@ -115,14 +223,22 @@ def forum_lista():
         
         # Consulta de tópicos com filtro restrito
         query = """
-            SELECT ft.*, p.nome_completo as criador_nome, t.nome as turma_nome,
-                   (SELECT COUNT(*) FROM forum_mensagens WHERE topico_id = ft.id) as total_mensagens
+            SELECT ft.*,
+                   COALESCE(ft.criador_tipo, 'Professor') as criador_tipo,
+                   CASE WHEN COALESCE(ft.criador_tipo, 'Professor') = 'Aluno'
+                        THEN COALESCE(al_c.nome_completo, 'Estudante')
+                        ELSE COALESCE(p.nome_completo, 'Docente') END as criador_nome,
+                   t.nome as turma_nome,
+                   (SELECT COUNT(*) FROM forum_mensagens WHERE topico_id = ft.id) as total_mensagens,
+                   (SELECT COUNT(*) FROM forum_mensagens WHERE topico_id = ft.id AND autor_tipo = 'IA') as total_ia,
+                   (SELECT COUNT(*) FROM forum_mensagens WHERE topico_id = ft.id AND autor_tipo = 'Aluno' AND autor_id = ?) as respostas_aluno
             FROM forum_topicos ft
-            JOIN professores p ON ft.criador_id = p.id
+            LEFT JOIN professores p ON ft.criador_id = p.id
+            LEFT JOIN alunos al_c ON ft.autor_aluno_id = al_c.id
             LEFT JOIN turmas t ON ft.turma_id = t.id
             WHERE (ft.turma_id = ? OR ft.turma_id IS NULL)
         """
-        params = [aluno_turma_id]
+        params = [aluno_id, aluno_turma_id]
         
         if filtro_turma == "geral":
             query += " AND ft.turma_id IS NULL"
@@ -135,10 +251,27 @@ def forum_lista():
             termo = f"%{busca.lower()}%"
             params.extend([termo, termo])
             
-        query += " ORDER BY ft.data_criacao DESC"
+        query += " ORDER BY ft.id DESC, ft.data_criacao DESC"
         cursor.execute(query, params)
-        topicos = [dict(row) for row in cursor.fetchall()]
-        
+        topicos = []
+        for row in cursor.fetchall():
+            t_item = dict(row)
+            t_item["tem_ia"] = bool((t_item.get("total_ia") or 0) > 0)
+            t_item["aluno_participou"] = bool(
+                (t_item.get("respostas_aluno") or 0) > 0
+                or (t_item.get("criador_tipo") == "Aluno" and t_item.get("autor_aluno_id") == aluno_id)
+            )
+            topicos.append(t_item)
+
+        cursor.execute("SELECT COUNT(*) as c FROM forum_mensagens WHERE autor_tipo = 'Aluno' AND autor_id = ?", (aluno_id,))
+        msgs_user = cursor.fetchone()["c"] or 0
+        cursor.execute("SELECT COUNT(*) as c FROM forum_topicos WHERE criador_tipo = 'Aluno' AND autor_aluno_id = ?", (aluno_id,))
+        tops_user = cursor.fetchone()["c"] or 0
+        minhas_participacoes = msgs_user + tops_user
+
+    total_mensagens_forum = sum((t.get("total_mensagens") or 0) for t in topicos)
+    total_intervencoes_ia = sum((t.get("total_ia") or 0) for t in topicos)
+
     conn.close()
     
     active_page = "aluno_forum" if aluno_id else "prof_forum"
@@ -150,6 +283,9 @@ def forum_lista():
         total_geral=total_geral,
         total_todos=total_todos,
         total_minha_turma=total_minha_turma,
+        total_mensagens_forum=total_mensagens_forum,
+        total_intervencoes_ia=total_intervencoes_ia,
+        minhas_participacoes=minhas_participacoes,
         aluno_turma_id=aluno_turma_id,
         aluno_turma_nome=aluno_turma_nome,
         filtro_ativo=filtro_turma,
@@ -168,11 +304,18 @@ def forum_topico(topico_id):
         
     conn = get_db()
     cursor = conn.cursor()
+    _garantir_colunas_forum(cursor, conn)
     
     cursor.execute("""
-        SELECT ft.*, t.nome as turma_nome, p.nome_completo as criador_nome
+        SELECT ft.*,
+               COALESCE(ft.criador_tipo, 'Professor') as criador_tipo,
+               t.nome as turma_nome,
+               CASE WHEN COALESCE(ft.criador_tipo, 'Professor') = 'Aluno'
+                    THEN COALESCE(al_c.nome_completo, 'Estudante')
+                    ELSE COALESCE(p.nome_completo, 'Docente') END as criador_nome
         FROM forum_topicos ft
-        JOIN professores p ON ft.criador_id = p.id
+        LEFT JOIN professores p ON ft.criador_id = p.id
+        LEFT JOIN alunos al_c ON ft.autor_aluno_id = al_c.id
         LEFT JOIN turmas t ON ft.turma_id = t.id
         WHERE ft.id = ?
     """, (topico_id,))
@@ -217,46 +360,64 @@ def forum_topico(topico_id):
     )
 
 
-def processar_resposta_ia(topico_id, mensagem_aluno):
-    """ Roda em background para nao travar o Flask """
-    prompt = f"""
-    Atue como o Assistente Fran, um tutor socrático de francês em um fórum escolar. 
-    O aluno escreveu: '{mensagem_aluno}'. 
-    Avalie se há erros gramaticais ou de vocabulário. 
-    Se estiver perfeito, retorne um elogio curto. 
-    Se houver erro, NÃO dê a resposta direta. Formule uma pergunta gentil que faça o aluno refletir sobre o erro gramatical. 
-    Retorne EXATAMENTE um JSON com as chaves 'precisa_intervencao' (booleano) e 'resposta_ia' (texto).
-    """
+def processar_resposta_ia(topico_id, mensagem_aluno, db_path=None):
+    """Processa intervenção socrática da Assistente Fran com suporte a Gemini ou fallback determinístico."""
+    caminho_banco = db_path or ext.DB_PATH
+    titulo_topico = ""
+    categoria = "geral"
     try:
-        if not genai_model:
-            return
-        resposta = genai_model.generate_content(prompt)
-        conteudo = resposta.text
-        
-        # Parse JSON
-        import re, json
-        json_str = conteudo
-        match = re.search(r'\{.*\}', json_str, re.DOTALL)
-        if match:
-            json_str = match.group(0)
-        dados_ia = json.loads(json_str)
-        
-        if dados_ia.get("precisa_intervencao", True):
-            resposta_ia = dados_ia.get("resposta_ia", "Très bien!")
-            
-            # Conecta no DB raiz em background
-            DB_PATH = os.path.join(BASE_DIR, "educacao_ia.db")
-            conn = sqlite3.connect(DB_PATH, timeout=15.0)
-            c = conn.cursor()
-            c.execute("""
-                INSERT INTO forum_mensagens (topico_id, autor_id, autor_tipo, conteudo)
-                VALUES (?, NULL, 'IA', ?)
-            """, (topico_id, resposta_ia))
-            conn.commit()
-            conn.close()
-            
+        conn_info = sqlite3.connect(caminho_banco, timeout=15.0)
+        conn_info.row_factory = sqlite3.Row
+        row_top = conn_info.execute(
+            "SELECT titulo, categoria FROM forum_topicos WHERE id = ?",
+            (topico_id,),
+        ).fetchone()
+        if row_top:
+            titulo_topico = row_top["titulo"] or ""
+            categoria = row_top["categoria"] or "geral"
+        conn_info.close()
+    except Exception:
+        pass
+
+    resposta_ia = None
+    if ext.genai_model:
+        prompt = f"""
+        Atue como a Assistente Fran, uma tutora socrática de Francês Língua Estrangeira (FLE) em um fórum escolar.
+        Tópico da discussão: "{titulo_topico}" (categoria: {categoria}).
+        O estudante escreveu: "{mensagem_aluno}".
+        Avalie se há erros gramaticais ou de vocabulário em francês ou se ele apresentou uma dúvida.
+        Se estiver bem construído, elogie com entusiasmo em francês/português e faça uma pergunta de aprofundamento.
+        Se houver erro, NÃO dê a resposta direta. Formule uma pergunta gentil socrática para fazê-lo refletir sobre a regra.
+        Retorne EXATAMENTE um JSON com as chaves "precisa_intervencao" (booleano) e "resposta_ia" (texto).
+        """
+        try:
+            resposta = ext.genai_model.generate_content(prompt)
+            conteudo = resposta.text or ""
+            match = re.search(r"\{.*\}", conteudo, re.DOTALL)
+            json_str = match.group(0) if match else conteudo
+            dados_ia = json.loads(json_str)
+            if dados_ia.get("precisa_intervencao", True) and dados_ia.get("resposta_ia"):
+                resposta_ia = str(dados_ia.get("resposta_ia")).strip()
+        except Exception as e:
+            print(f"[i] Fallback socrático local no fórum ({e})")
+
+    if not resposta_ia:
+        resposta_ia = gerar_resposta_socratica_fle(titulo_topico, categoria, mensagem_aluno)
+
+    try:
+        conn = sqlite3.connect(caminho_banco, timeout=15.0)
+        c = conn.cursor()
+        c.execute(
+            """
+            INSERT INTO forum_mensagens (topico_id, autor_id, autor_tipo, conteudo)
+            VALUES (?, NULL, 'IA', ?)
+            """,
+            (topico_id, resposta_ia),
+        )
+        conn.commit()
+        conn.close()
     except Exception as e:
-        print("Erro na IA do forum:", str(e))
+        print("Erro ao salvar resposta IA no forum:", str(e))
 
 
 @forum_bp.route("/api/forum/responder", methods=["POST"])
@@ -280,6 +441,7 @@ def api_forum_responder():
     try:
         conn = get_db()
         cursor = conn.cursor()
+        _garantir_colunas_forum(cursor, conn)
         
         # Validação de segurança para aluno
         if autor_tipo == "Aluno":
@@ -303,10 +465,16 @@ def api_forum_responder():
         conn.commit()
         conn.close()
         
-        # Dispara IA em background SE for aluno
+        # Dispara tutoria da Fran quando a intervenção parte do aluno
         if autor_tipo == "Aluno":
-            thread = threading.Thread(target=processar_resposta_ia, args=(topico_id, conteudo))
-            thread.start()
+            if ext.genai_model:
+                thread = threading.Thread(
+                    target=processar_resposta_ia,
+                    args=(topico_id, conteudo, ext.DB_PATH),
+                )
+                thread.start()
+            else:
+                processar_resposta_ia(topico_id, conteudo, ext.DB_PATH)
             
         return jsonify({
             "status": "sucesso",
@@ -381,35 +549,77 @@ def api_forum_mensagens(topico_id):
 
 
 @forum_bp.route("/api/forum/criar_topico", methods=["POST"])
-@login_required_prof
 def api_forum_criar_topico():
-    dados = request.get_json() if request.is_json else request.form
-    titulo = dados.get("titulo", "").strip()
-    descricao = dados.get("descricao", "").strip()
-    turma_id = dados.get("turma_id")
-    categoria = dados.get("categoria", "geral").strip().lower() or "geral"
+    aluno_id = session.get("aluno_id")
     prof_id = session.get("prof_id")
-    
+
+    if not aluno_id and not prof_id:
+        return jsonify({"status": "erro", "mensagem": "Não autorizado"}), 401
+
+    dados = request.get_json() if request.is_json else request.form
+    titulo = (dados.get("titulo") or "").strip()
+    descricao = (dados.get("descricao") or "").strip()
+    turma_id = dados.get("turma_id")
+    categoria = (dados.get("categoria") or "geral").strip().lower() or "geral"
+
     if not titulo:
         return jsonify({"status": "erro", "mensagem": "O título do tópico é obrigatório."}), 400
-        
-    turma_id_val = None
-    if turma_id and str(turma_id).strip().lower() not in ["geral", "", "none"]:
-        try:
-            turma_id_val = int(turma_id)
-        except ValueError:
-            turma_id_val = None
-        
+
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("""
-            INSERT INTO forum_topicos (titulo, descricao, criador_id, turma_id, categoria)
-            VALUES (?, ?, ?, ?, ?)
-        """, (titulo, descricao, prof_id, turma_id_val, categoria))
+        _garantir_colunas_forum(cursor, conn)
+
+        if prof_id:
+            criador_id = prof_id
+            criador_tipo = "Professor"
+            autor_aluno_id = None
+            turma_id_val = None
+            if turma_id and str(turma_id).strip().lower() not in ["geral", "", "none"]:
+                try:
+                    turma_id_val = int(turma_id)
+                except ValueError:
+                    turma_id_val = None
+        else:
+            cursor.execute("SELECT turma_id FROM alunos WHERE id = ?", (aluno_id,))
+            al_row = cursor.fetchone()
+            aluno_turma_id = al_row["turma_id"] if al_row else None
+
+            cursor.execute("SELECT id FROM professores ORDER BY id ASC LIMIT 1")
+            prof_ref = cursor.fetchone()
+            criador_id = prof_ref["id"] if prof_ref else 1
+            criador_tipo = "Aluno"
+            autor_aluno_id = aluno_id
+
+            t_str = str(turma_id or "").strip().lower()
+            if aluno_turma_id and (t_str == "minha" or t_str == str(aluno_turma_id)):
+                turma_id_val = aluno_turma_id
+            else:
+                turma_id_val = None
+
+        cursor.execute(
+            """
+            INSERT INTO forum_topicos (titulo, descricao, criador_id, turma_id, categoria, criador_tipo, autor_aluno_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (titulo, descricao, criador_id, turma_id_val, categoria, criador_tipo, autor_aluno_id),
+        )
         novo_id = cursor.lastrowid
         conn.commit()
         conn.close()
+
+        # Quando aluno abre uma nova dúvida/tópico, a Assistente Fran oferece a primeira orientação socrática
+        if criador_tipo == "Aluno":
+            texto_inicial = f"{titulo}. {descricao}".strip()
+            if ext.genai_model:
+                thread = threading.Thread(
+                    target=processar_resposta_ia,
+                    args=(novo_id, texto_inicial, ext.DB_PATH),
+                )
+                thread.start()
+            else:
+                processar_resposta_ia(novo_id, texto_inicial, ext.DB_PATH)
+
         return jsonify({"status": "sucesso", "topico_id": novo_id})
     except Exception as e:
         return jsonify({"status": "erro", "mensagem": str(e)}), 500

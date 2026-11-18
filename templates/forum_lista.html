@@ -147,10 +147,10 @@
 }
 
 .forum-kpi-top-row {
-    display: grid;
-    grid-template-columns: 1fr 115px;
-    align-items: center;
-    gap: 0.5rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
 }
 
 .forum-kpi-label {
@@ -848,137 +848,225 @@
     background: #181920 !important;
     border-color: rgba(255, 255, 255, 0.1) !important;
 }
+
+/* Barra de Escopo Integrada, Badges FLE & Modal Dark Mode */
+.forum-scope-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.15rem;
+}
+
+.forum-scope-pills {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.forum-scope-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    color: #374151;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.forum-scope-pill:hover {
+    border-color: #14213D;
+    color: #14213D;
+}
+
+.forum-scope-pill.active {
+    background: #14213D;
+    border-color: #14213D;
+    color: #FFFFFF;
+}
+
+[data-theme="dark"] .forum-scope-pill {
+    background: #181920;
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #D1D5DB;
+}
+
+[data-theme="dark"] .forum-scope-pill.active {
+    background: #FCA311;
+    border-color: #FCA311;
+    color: #000000;
+}
+
+.btn-forum-novo-topico {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 18px;
+    border-radius: 999px;
+    border: none;
+    background: #18191E;
+    color: #FFFFFF;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(24, 25, 30, 0.16);
+    transition: all 0.18s ease;
+}
+
+.btn-forum-novo-topico:hover {
+    background: #FCA311;
+    color: #000000;
+    transform: translateY(-1px);
+}
+
+[data-theme="dark"] .btn-forum-novo-topico {
+    background: #FCA311;
+    color: #000000;
+}
+
+.badge-participou {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: rgba(16, 185, 129, 0.14);
+    color: #047857;
+    border: 1px solid rgba(16, 185, 129, 0.28);
+}
+
+[data-theme="dark"] .badge-participou {
+    color: #6EE7B7;
+}
+
+.badge-ia-ativa {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: rgba(252, 163, 17, 0.16);
+    color: #B45309;
+    border: 1px solid rgba(252, 163, 17, 0.35);
+}
+
+[data-theme="dark"] .badge-ia-ativa {
+    color: #FCD34D;
+}
+
+.badge-autor-role {
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: rgba(20, 33, 61, 0.07);
+    color: #14213D;
+}
+
+[data-theme="dark"] .badge-autor-role {
+    background: rgba(255, 255, 255, 0.1);
+    color: #E5E7EB;
+}
+
+.btn-forum-audio-mini {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid #E5E7EB;
+    background: #FFFFFF;
+    color: #14213D;
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.16s ease;
+}
+
+.btn-forum-audio-mini:hover {
+    background: #FCA311;
+    border-color: #FCA311;
+    color: #000000;
+}
+
+[data-theme="dark"] .btn-forum-audio-mini {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.14);
+    color: #F8FAFC;
+}
+
+.forum-empty-icon-wrap {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: rgba(20, 33, 61, 0.06);
+    color: #14213D;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+}
+
+[data-theme="dark"] .forum-empty-icon-wrap {
+    background: rgba(255, 255, 255, 0.08);
+    color: #FCA311;
+}
+
+.forum-empty-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin-bottom: 0.4rem;
+    color: #111827;
+}
+
+.forum-empty-subtitle {
+    color: #6B7280;
+    max-width: 460px;
+    margin: 0 auto 1.35rem;
+    font-size: 0.9rem;
+}
+
+[data-theme="dark"] .forum-empty-title {
+    color: #F9FAFB;
+}
+
+[data-theme="dark"] .forum-empty-subtitle {
+    color: #9CA3AF;
+}
+
+.forum-modal-header {
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
+    padding: 1.35rem 1.5rem;
+    border-bottom: 1px solid #ECECEC;
+}
+
+.forum-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    border-top: 1px solid #ECECEC;
+    padding-top: 1rem;
+}
+
+[data-theme="dark"] .forum-modal-header {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .forum-modal-footer {
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="page-container dashboard-page forum-page">
-    <!-- ============================================================= -->
-    <!-- BARRA LATERAL FLUTUANTE (MENU DO FÓRUM & FILTROS POR TURMA)   -->
-    <!-- ============================================================= -->
-    <aside class="dash-sidebar no-print" id="dashSidebar" aria-label="Menu do Fórum & Filtros por Turma">
-        <div class="dash-sidebar-inner">
-            <div class="sidebar-nav-list">
-                {% if is_prof %}
-                <!-- 1. Botão Criar Novo Tópico (Destaque para Professor) -->
-                <button type="button" class="sidebar-btn sidebar-btn-primary" onclick="abrirModalCriarTopico()" title="Criar Novo Tópico no Fórum" aria-label="Novo Tópico">
-                    <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                    </svg>
-                    <span class="sidebar-text" style="font-weight: 700;">+ Novo Tópico</span>
-                </button>
-
-                <div class="sidebar-divider"></div>
-                {% endif %}
-
-                <!-- 2. Filtros & Busca Avançada (Abre Popover saindo do Ícone) -->
-                <div class="sidebar-item-wrap">
-                    <button type="button" class="sidebar-btn" id="btnToggleFiltrosPopover" onclick="toggleFiltrosPopover(event)" title="Filtros por Categoria & Busca" aria-label="Abrir Filtros">
-                        <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-                        </svg>
-                        <span class="sidebar-text">Filtros & Busca</span>
-                        <span class="sidebar-badge-dot" id="filtroAtivoDot" style="display: none;" title="Filtro ativo"></span>
-                    </button>
-
-                    <!-- Modal Popover Ancorado ao Ícone de Filtros -->
-                    <div class="popover-filtros-modal popover-forum-modal" id="popoverFiltros" onclick="event.stopPropagation()">
-                        <div class="popover-header">
-                            <div class="popover-title">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-                                </svg>
-                                <span>Filtros do Fórum</span>
-                            </div>
-                            <button type="button" class="popover-close-btn" onclick="fecharFiltrosPopover()" aria-label="Fechar Filtros">&times;</button>
-                        </div>
-                        <div class="popover-form">
-                            <div class="popover-field">
-                                <label for="popoverInputBusca">Buscar por Palavra-Chave:</label>
-                                <input type="text" id="popoverInputBusca" class="form-control glass-input" placeholder="Ex: Passé composé, cinema..." value="{{ busca }}" oninput="sincronizarBusca(this.value)">
-                            </div>
-                            <div class="popover-field">
-                                <label>Categoria Temática:</label>
-                                <div style="display: flex; gap: 6px; flex-wrap: wrap;" id="tabCategorias">
-                                    <button type="button" class="btn-tab active" data-cat="todas" onclick="filtrarPorCategoria(this, 'todas')">Todas</button>
-                                    <button type="button" class="btn-tab" data-cat="cultura" onclick="filtrarPorCategoria(this, 'cultura')">🎬 Cultura</button>
-                                    <button type="button" class="btn-tab" data-cat="gramatica" onclick="filtrarPorCategoria(this, 'gramatica')">📖 Gramática</button>
-                                    <button type="button" class="btn-tab" data-cat="dicas" onclick="filtrarPorCategoria(this, 'dicas')">💡 Fonética</button>
-                                    <button type="button" class="btn-tab" data-cat="duvidas" onclick="filtrarPorCategoria(this, 'duvidas')">❓ Dúvidas</button>
-                                    <button type="button" class="btn-tab" data-cat="vocabulario" onclick="filtrarPorCategoria(this, 'vocabulario')">📝 Vocabulário</button>
-                                    <button type="button" class="btn-tab" data-cat="debate" onclick="filtrarPorCategoria(this, 'debate')">🗣️ Debate B2</button>
-                                </div>
-                            </div>
-                            <div class="popover-actions">
-                                <button type="button" class="btn btn-primary btn-apply-filter" onclick="fecharFiltrosPopover()">
-                                    Concluído
-                                </button>
-                                <button type="button" class="btn-clear-filter" onclick="limparFiltrosForumPopover()" title="Redefinir filtros">
-                                    Limpar
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="sidebar-divider"></div>
-
-                <!-- 3. Todos os Tópicos -->
-                <a href="/forum?turma=todas" class="sidebar-btn {% if filtro_ativo == 'todas' %}active{% endif %}" title="Ver todos os tópicos acessíveis ({{ total_todos }})">
-                    <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="3" width="7" height="7"></rect>
-                        <rect x="14" y="3" width="7" height="7"></rect>
-                        <rect x="14" y="14" width="7" height="7"></rect>
-                        <rect x="3" y="14" width="7" height="7"></rect>
-                    </svg>
-                    <span class="sidebar-text">Todos os Tópicos</span>
-                    <span class="sidebar-cycle-badge">{{ total_todos }}</span>
-                </a>
-
-                <!-- 4. Fórum Geral (Aberto para Todos os Estudantes) -->
-                <a href="/forum?turma=geral" class="sidebar-btn sidebar-btn-geral {% if filtro_ativo == 'geral' %}active{% endif %}" title="Fórum Geral aberto a todos ({{ total_geral }})">
-                    <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="2" y1="12" x2="22" y2="12"></line>
-                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                    </svg>
-                    <span class="sidebar-text">🌐 Fórum Geral</span>
-                    <span class="sidebar-cycle-badge">{{ total_geral }}</span>
-                </a>
-
-                <div class="sidebar-divider"></div>
-
-                {% if is_prof %}
-                <!-- 5. Seleção das Turmas (Perfil Professor) -->
-                {% for t in turmas %}
-                <a href="/forum?turma={{ t.id }}" class="sidebar-btn {% if filtro_ativo == t.id|string %}active{% endif %}" title="{{ t.nome }} ({{ t.total_topicos }})">
-                    <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                    </svg>
-                    <span class="sidebar-text">{{ t.nome }}</span>
-                    <span class="sidebar-cycle-badge">{{ t.total_topicos }}</span>
-                </a>
-                {% endfor %}
-
-                {% else %}
-                <!-- 5. Minha Turma (Perfil Aluno) -->
-                <a href="/forum?turma=minha" class="sidebar-btn {% if filtro_ativo == 'minha' or (aluno_turma_id and filtro_ativo == aluno_turma_id|string) %}active{% endif %}" title="Minha Turma: {{ aluno_turma_nome }} ({{ total_minha_turma }})">
-                    <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                    </svg>
-                    <span class="sidebar-text">Minha Turma</span>
-                    <span class="sidebar-cycle-badge">{{ total_minha_turma }}</span>
-                </a>
-                {% endif %}
-            </div>
-        </div>
-    </aside>
-
     <!-- ============================================================= -->
     <!-- ÁREA DE CONTEÚDO PRINCIPAL DO FÓRUM (DESIGN EDITORIAL)        -->
     <!-- ============================================================= -->
@@ -992,114 +1080,82 @@
                     <span class="serif-italic">Espace d'Échange Socratique</span>
                 </h1>
                 <p class="forum-editorial-subtitle">
-                    Participe das discussões em francês, tire dúvidas e aprimore sua argumentação com o método socrático e a tutoria pedagógica da <strong>Assistente Fran</strong>.
+                    Participe das discussões em francês, tire suas dúvidas e aprimore sua argumentação com o método socrático e a tutoria pedagógica da <strong>Assistente Fran</strong>.
                 </p>
             </header>
 
-            <!-- 2. Linha de 3 Mini-KPIs com Ondas Crescentes e Botão Pill Escuro (#18191E) -->
+            <!-- 2. Linha de 3 Mini-KPIs Reais -->
             {% set total_msgs_visiveis = topicos | sum(attribute='total_mensagens') %}
             <section class="forum-kpis-grid" aria-label="Resumo do Fórum Socrático">
-                <!-- Card 1: Total de Tópicos -->
+                <!-- Card 1: Discussões Ativas -->
                 <article class="forum-kpi-card">
                     <div class="forum-kpi-top-row">
                         <div>
-                            <span class="forum-kpi-label">Total de Tópicos</span>
+                            <span class="forum-kpi-label">Discussões Ativas</span>
                             <div class="forum-kpi-primary">{{ total_todos }}</div>
                         </div>
-                        <svg class="forum-kpi-wave-svg" viewBox="0 0 120 48" preserveAspectRatio="none" aria-hidden="true">
-                            <defs>
-                                <linearGradient id="forumWaveGrad1" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stop-color="#4B5563" stop-opacity="0.28"/>
-                                    <stop offset="100%" stop-color="#4B5563" stop-opacity="0.0"/>
-                                </linearGradient>
-                            </defs>
-                            <path d="M2,40 C22,38 34,26 54,28 C74,30 92,10 118,6 L118,46 L2,46 Z" fill="url(#forumWaveGrad1)"/>
-                            <path d="M2,40 C22,38 34,26 54,28 C74,30 92,10 118,6" fill="none" stroke="#4B5563" stroke-width="2.4" stroke-linecap="round"/>
-                        </svg>
+                        <span class="badge-scope badge-geral">
+                            {% if is_prof %}{{ turmas|length }} turmas{% else %}Comunidade FLE{% endif %}
+                        </span>
                     </div>
                     <div class="forum-kpi-mid-row">
                         <div>
-                            <span class="forum-kpi-label">Interações no Filtro</span>
-                            <div class="forum-kpi-subval">{{ total_msgs_visiveis }} mensagens</div>
+                            <span class="forum-kpi-label">Distribuição</span>
+                            <div class="forum-kpi-subval">
+                                {% if is_prof %}
+                                    {{ total_geral }} no Geral • {{ turmas|length }} turmas
+                                {% else %}
+                                    {{ total_geral }} Geral • {{ total_minha_turma }} na Turma
+                                {% endif %}
+                            </div>
                         </div>
-                        <span class="forum-kpi-trend">▲ Comunidade FLE</span>
                     </div>
-                    <div class="forum-kpi-cta-row">
-                        <a href="/forum?turma=todas" class="forum-pill-btn">Ver Todos os Tópicos</a>
+                    <div style="margin-top: auto; padding-top: 0.45rem; border-top: 1px solid rgba(148, 163, 184, 0.2);">
+                        <span class="forum-kpi-label" style="margin: 0;">
+                            {% if filtro_ativo != 'todas' %}Exibindo {{ topicos|length }} tópico(s) neste escopo{% else %}Fórum Geral + turmas acessíveis{% endif %}
+                        </span>
                     </div>
                 </article>
 
-                <!-- Card 2: Fórum Geral -->
+                <!-- Card 2: Interações & Tutoria IA -->
                 <article class="forum-kpi-card">
                     <div class="forum-kpi-top-row">
                         <div>
-                            <span class="forum-kpi-label">Fórum Geral</span>
-                            <div class="forum-kpi-primary">{{ total_geral }}</div>
+                            <span class="forum-kpi-label">Interações &amp; Tutoria IA</span>
+                            <div class="forum-kpi-primary">{{ total_mensagens_forum|default(total_msgs_visiveis) }}</div>
                         </div>
-                        <svg class="forum-kpi-wave-svg" viewBox="0 0 120 48" preserveAspectRatio="none" aria-hidden="true">
-                            <defs>
-                                <linearGradient id="forumWaveGrad2" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stop-color="#4B5563" stop-opacity="0.28"/>
-                                    <stop offset="100%" stop-color="#4B5563" stop-opacity="0.0"/>
-                                </linearGradient>
-                            </defs>
-                            <path d="M2,42 C26,34 44,32 66,20 C86,10 100,12 118,5 L118,46 L2,46 Z" fill="url(#forumWaveGrad2)"/>
-                            <path d="M2,42 C26,34 44,32 66,20 C86,10 100,12 118,5" fill="none" stroke="#4B5563" stroke-width="2.4" stroke-linecap="round"/>
-                        </svg>
+                        <span class="badge-ia-ativa">🤖 Tutora Ativa</span>
                     </div>
                     <div class="forum-kpi-mid-row">
                         <div>
-                            <span class="forum-kpi-label">Acesso Aberto</span>
-                            <div class="forum-kpi-subval">Todos os Níveis</div>
+                            <span class="forum-kpi-label">Intervenções Socráticas</span>
+                            <div class="forum-kpi-subval">{{ total_intervencoes_ia|default(0) }} respostas da Fran</div>
                         </div>
-                        <span class="forum-kpi-trend">▲ Tutora IA Ativa</span>
                     </div>
-                    <div class="forum-kpi-cta-row">
-                        <a href="/forum?turma=geral" class="forum-pill-btn">Explorar Fórum Geral</a>
+                    <div style="margin-top: auto; padding-top: 0.45rem; border-top: 1px solid rgba(148, 163, 184, 0.2);">
+                        <span class="forum-kpi-label" style="margin: 0;">Feedback formativo em francês e português</span>
                     </div>
                 </article>
 
-                <!-- Card 3: Minha Turma (Aluno) ou Gestão Docente (Professor) -->
+                <!-- Card 3: Sua Participação FLE -->
                 <article class="forum-kpi-card">
                     <div class="forum-kpi-top-row">
                         <div>
-                            {% if is_prof %}
-                            <span class="forum-kpi-label">Turmas Ativas</span>
-                            <div class="forum-kpi-primary">{{ turmas|length }}</div>
-                            {% else %}
-                            <span class="forum-kpi-label">Tópicos da Turma</span>
-                            <div class="forum-kpi-primary">{{ total_minha_turma }}</div>
-                            {% endif %}
+                            <span class="forum-kpi-label">Sua Participação FLE</span>
+                            <div class="forum-kpi-primary">{{ minhas_participacoes|default(0) }}</div>
                         </div>
-                        <svg class="forum-kpi-wave-svg" viewBox="0 0 120 48" preserveAspectRatio="none" aria-hidden="true">
-                            <defs>
-                                <linearGradient id="forumWaveGrad3" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stop-color="#4B5563" stop-opacity="0.28"/>
-                                    <stop offset="100%" stop-color="#4B5563" stop-opacity="0.0"/>
-                                </linearGradient>
-                            </defs>
-                            <path d="M2,39 C24,39 42,24 64,22 C86,20 98,9 118,6 L118,46 L2,46 Z" fill="url(#forumWaveGrad3)"/>
-                            <path d="M2,39 C24,39 42,24 64,22 C86,20 98,9 118,6" fill="none" stroke="#4B5563" stroke-width="2.4" stroke-linecap="round"/>
-                        </svg>
+                        <span class="badge-participou">{% if is_prof %}Docente{% else %}Estudante{% endif %}</span>
                     </div>
                     <div class="forum-kpi-mid-row">
                         <div>
-                            {% if is_prof %}
-                            <span class="forum-kpi-label">Mediação Docente</span>
-                            <div class="forum-kpi-subval">Debates Socráticos</div>
-                            {% else %}
-                            <span class="forum-kpi-label">Sua Turma</span>
-                            <div class="forum-kpi-subval">{{ aluno_turma_nome or 'Minha Turma' }}</div>
-                            {% endif %}
+                            <span class="forum-kpi-label">Contribuições no Fórum</span>
+                            <div class="forum-kpi-subval">
+                                {% if minhas_participacoes|default(0) > 0 %}Participação ativa{% else %}Envie sua 1ª dúvida!{% endif %}
+                            </div>
                         </div>
-                        <span class="forum-kpi-trend">▲ Participativo</span>
                     </div>
                     <div class="forum-kpi-cta-row">
-                        {% if is_prof %}
-                        <button type="button" onclick="abrirModalCriarTopico()" class="forum-pill-btn">+ Criar Novo Tópico</button>
-                        {% else %}
-                        <a href="/forum?turma=minha" class="forum-pill-btn">Ver Minha Turma</a>
-                        {% endif %}
+                        <button type="button" onclick="abrirModalCriarTopico()" class="forum-pill-btn">+ Nova Dúvida / Tópico</button>
                     </div>
                 </article>
             </section>
@@ -1159,6 +1215,36 @@
             <div class="forum-box-outer" id="forumBoxOuter">
                 <div class="forum-box-inner">
 
+                    <!-- Barra Integrada de Escopo e Ação -->
+                    <div class="forum-scope-bar no-print" aria-label="Filtros por turma e participação">
+                        <div class="forum-scope-pills">
+                            <a href="/forum?turma=todas" class="forum-scope-pill {% if filtro_ativo == 'todas' %}active{% endif %}">
+                                🌐 Todos ({{ total_todos }})
+                            </a>
+                            <a href="/forum?turma=geral" class="forum-scope-pill {% if filtro_ativo == 'geral' %}active{% endif %}">
+                                🏛️ Fórum Geral ({{ total_geral }})
+                            </a>
+                            {% if is_prof %}
+                                {% for t in turmas %}
+                                <a href="/forum?turma={{ t.id }}" class="forum-scope-pill {% if filtro_ativo == t.id|string %}active{% endif %}">
+                                    👥 {{ t.nome }} ({{ t.total_topicos }})
+                                </a>
+                                {% endfor %}
+                            {% else %}
+                            <a href="/forum?turma=minha" class="forum-scope-pill {% if filtro_ativo == 'minha' or (aluno_turma_id and filtro_ativo == aluno_turma_id|string) %}active{% endif %}">
+                                👥 {{ aluno_turma_nome or 'Minha Turma' }} ({{ total_minha_turma }})
+                            </a>
+                            {% endif %}
+                            <button type="button" class="forum-scope-pill" id="btnFiltroParticipados" onclick="alternarFiltroParticipados(this)">
+                                ✓ Já Participei
+                            </button>
+                        </div>
+
+                        <button type="button" class="btn-forum-novo-topico" onclick="abrirModalCriarTopico()">
+                            <span>+ Nova Dúvida / Tópico</span>
+                        </button>
+                    </div>
+
                     <!-- Cabeçalho de Contexto da Lista -->
                     <div id="bannerFiltroAtivoForum" class="forum-section-header no-print">
                         <div class="forum-section-title-group">
@@ -1191,13 +1277,14 @@
                              data-turma="{{ topico.turma_id if topico.turma_id else 'geral' }}"
                              data-titulo="{{ topico.titulo|lower }}"
                              data-titulo-raw="{{ topico.titulo }}"
-                             data-desc="{{ topico.descricao|lower }}"
+                             data-desc="{{ (topico.descricao or '')|lower }}"
                              data-categoria="{{ topico.categoria|lower if topico.categoria else 'geral' }}"
                              data-autor="{{ topico.criador_nome }}"
-                             data-msgs="{{ topico.total_mensagens }}">
+                             data-msgs="{{ topico.total_mensagens }}"
+                             data-participou="{{ '1' if topico.aluno_participou else '0' }}">
                             <a href="/forum/topico/{{ topico.id }}" class="forum-card-inner">
                                 <div>
-                                    <!-- Cabeçalho do Card: Badges de Escopo, Categoria e Mensagens -->
+                                    <!-- Cabeçalho do Card: Badges de Escopo, Categoria, IA, Participação e Mensagens -->
                                     <div class="forum-card-header">
                                         <div class="forum-badges-left">
                                             {% if topico.turma_nome %}
@@ -1213,11 +1300,11 @@
                                             {% endif %}
 
                                             {% if topico.categoria == 'cultura' %}
-                                            <span class="badge-cat badge-cat-cultura">🎬 Cultura & Mídia</span>
+                                            <span class="badge-cat badge-cat-cultura">🎬 Cultura &amp; Mídia</span>
                                             {% elif topico.categoria == 'gramatica' %}
                                             <span class="badge-cat badge-cat-gramatica">📖 Gramática</span>
                                             {% elif topico.categoria == 'dicas' %}
-                                            <span class="badge-cat badge-cat-dicas">💡 Fonética & Dicas</span>
+                                            <span class="badge-cat badge-cat-dicas">💡 Fonética &amp; Dicas</span>
                                             {% elif topico.categoria == 'duvidas' %}
                                             <span class="badge-cat badge-cat-duvidas">❓ Dúvidas Gerais</span>
                                             {% elif topico.categoria == 'vocabulario' %}
@@ -1227,12 +1314,28 @@
                                             {% else %}
                                             <span class="badge-cat badge-cat-geral">💬 Conversação</span>
                                             {% endif %}
+
+                                            {% if topico.tem_ia %}
+                                            <span class="badge-ia-ativa" title="Discussão com tutoria da Assistente Fran">🤖 Tutoria Fran</span>
+                                            {% endif %}
+
+                                            {% if topico.aluno_participou %}
+                                            <span class="badge-participou" title="Você já contribuiu neste tópico">✓ Você participou</span>
+                                            {% endif %}
                                         </div>
 
-                                        <span class="badge-msg-count" title="Total de mensagens nesta discussão">
-                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                                            {{ topico.total_mensagens }} msgs
-                                        </span>
+                                        <div style="display: inline-flex; align-items: center; gap: 6px;">
+                                            <button type="button"
+                                                    class="btn-forum-audio-mini"
+                                                    data-texto="{{ (topico.titulo ~ '. ' ~ (topico.descricao or ''))|e }}"
+                                                    onclick="event.preventDefault(); event.stopPropagation(); falarCardTopicoForum(this)"
+                                                    title="Ouvir tema em francês"
+                                                    aria-label="Ouvir tópico em francês">🔊 Ouvir</button>
+                                            <span class="badge-msg-count" title="Total de mensagens nesta discussão">
+                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                                {{ topico.total_mensagens }} msgs
+                                            </span>
+                                        </div>
                                     </div>
 
                                     <!-- Título e Descrição do Tópico -->
@@ -1245,8 +1348,9 @@
                                     <div class="forum-author-info">
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                                         <span>{{ topico.criador_nome }}</span>
+                                        <span class="badge-autor-role">{{ 'Estudante' if topico.criador_tipo == 'Aluno' else 'Docente' }}</span>
                                         <span class="author-dot">•</span>
-                                        <span>{{ topico.data_criacao[:10] }}</span>
+                                        <span>{{ topico.data_criacao[:10] if topico.data_criacao else '' }}</span>
                                     </div>
                                     <span class="forum-cta-link">
                                         Participar
@@ -1258,17 +1362,15 @@
                         {% else %}
                         <!-- Empty State se não houver tópicos no filtro -->
                         <div class="forum-empty-state">
-                            <div class="empty-icon-wrap" style="width: 60px; height: 60px; border-radius: 50%; background: rgba(20, 33, 61, 0.06); color: #14213D; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.1rem;">
+                            <div class="forum-empty-icon-wrap">
                                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                             </div>
-                            <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 0.4rem;">Nenhum tópico encontrado</h3>
-                            <p style="color: #6B7280; max-width: 460px; margin: 0 auto 1.35rem; font-size: 0.9rem;">
+                            <h3 class="forum-empty-title">Nenhum tópico encontrado</h3>
+                            <p class="forum-empty-subtitle">
                                 {% if busca %}
                                 Não encontramos tópicos correspondentes a "{{ busca }}".
-                                {% elif is_prof %}
-                                Não há tópicos criados para este filtro. Use o botão "+ Criar Novo Tópico" para iniciar uma discussão!
                                 {% else %}
-                                Ainda não há tópicos publicados nesta seção para sua turma.
+                                Ainda não há tópicos publicados neste filtro. Use "+ Nova Dúvida / Tópico" para iniciar uma discussão!
                                 {% endif %}
                             </p>
                             {% if busca or filtro_ativo != 'todas' %}
@@ -1280,11 +1382,11 @@
 
                     <!-- Empty State para busca no cliente -->
                     <div id="emptySearchForum" class="forum-empty-state hidden" style="display: none; margin-top: 1.25rem;">
-                        <div class="empty-icon-wrap" style="width: 56px; height: 56px; border-radius: 50%; background: rgba(20, 33, 61, 0.06); color: #14213D; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                        <div class="forum-empty-icon-wrap">
                             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                         </div>
-                        <h3 style="font-size: 1.12rem; font-weight: 800; margin-bottom: 0.35rem;">Nenhum tópico corresponde à pesquisa</h3>
-                        <p style="color: #6B7280; font-size: 0.88rem; margin-bottom: 1.2rem;">Tente ajustar as palavras-chave ou selecionar outra categoria temática.</p>
+                        <h3 class="forum-empty-title">Nenhum tópico corresponde à pesquisa</h3>
+                        <p class="forum-empty-subtitle">Tente ajustar as palavras-chave ou selecionar outra categoria temática.</p>
                         <button type="button" class="forum-pill-btn" onclick="limparBuscaLocal()" style="width: auto;">Limpar Pesquisa</button>
                     </div>
                 </div>
@@ -1296,39 +1398,44 @@
 {% endblock %}
 
 {% block modals %}
-{% if is_prof %}
-<!-- Modal de Criação de Tópico (Docente) -->
+<!-- Modal de Criação de Tópico (Aberto para Professores e Alunos) -->
 <div id="modalCriarTopico" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalCriarTopicoTitulo">
     <div class="modal-dialog modal-md">
         <div class="card-moldura-outer" style="margin-bottom: 0; width: 100%;">
             <div class="modal-content hero-card-inner" style="padding: 0; text-align: left; display: block; border: none; box-shadow: none; background: transparent;">
-                <div class="modal-header" style="border-top-left-radius: inherit; border-top-right-radius: inherit; padding: 1.35rem 1.5rem; border-bottom: 1px solid #ECECEC;">
+                <div class="modal-header forum-modal-header">
                     <div>
                         <h3 id="modalCriarTopicoTitulo" class="modal-title" style="display: flex; align-items: center; gap: 8px; font-weight: 800;">
                             <svg class="line-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                            Novo Tópico de Discussão
+                            {% if is_prof %}Novo Tópico de Discussão{% else %}Nova Dúvida ou Discussão FLE{% endif %}
                         </h3>
-                        <p class="modal-subtitle text-muted" style="margin: 2px 0 0; font-size: 0.84rem;">Crie um tema no Fórum Geral ou selecione uma turma específica.</p>
+                        <p class="modal-subtitle text-muted" style="margin: 2px 0 0; font-size: 0.84rem;">
+                            {% if is_prof %}Crie um tema no Fórum Geral ou selecione uma turma específica.{% else %}Publique uma dúvida em francês ou português — a Assistente Fran e seu professor acompanham por aqui.{% endif %}
+                        </p>
                     </div>
                     <button type="button" class="btn-close-modal" onclick="fecharModalCriarTopico()" aria-label="Fechar janela de novo tópico">&times;</button>
                 </div>
 
                 <form id="formCriarTopico" style="padding: 1.5rem;">
                     <div class="form-group" style="margin-bottom: 1.25rem;">
-                        <label class="form-label" for="novoTopicoTitulo" style="font-weight: 600; font-size: 0.88rem;">Título do Tópico: *</label>
-                        <input type="text" id="novoTopicoTitulo" class="form-input" placeholder="Ex: Dicas para uso dos pronomes Y e EN..." required>
+                        <label class="form-label" for="novoTopicoTitulo" style="font-weight: 600; font-size: 0.88rem;">Título do Tópico ou Dúvida: *</label>
+                        <input type="text" id="novoTopicoTitulo" class="form-input" placeholder="Ex: Dúvida sobre Passé Composé com Être..." required>
                     </div>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
                         <div class="form-group">
-                            <label class="form-label" for="novoTopicoTurma" style="font-weight: 600; font-size: 0.88rem;">Destino / Turma Alvo: *</label>
+                            <label class="form-label" for="novoTopicoTurma" style="font-weight: 600; font-size: 0.88rem;">Destino / Escopo: *</label>
                             <select id="novoTopicoTurma" class="form-input" required>
                                 <option value="geral" selected>🌐 Fórum Geral (Todos os Alunos)</option>
+                                {% if is_prof %}
                                 <optgroup label="Turmas Específicas">
                                     {% for t in turmas %}
                                     <option value="{{ t.id }}">👥 {{ t.nome }}</option>
                                     {% endfor %}
                                 </optgroup>
+                                {% elif aluno_turma_id %}
+                                <option value="minha">👥 Minha Turma ({{ aluno_turma_nome }})</option>
+                                {% endif %}
                             </select>
                             <small class="text-muted" style="font-size: 0.74rem; display: block; margin-top: 4px;">
                                 No Fórum Geral, qualquer aluno tem acesso à discussão.
@@ -1338,23 +1445,23 @@
                         <div class="form-group">
                             <label class="form-label" for="novoTopicoCategoria" style="font-weight: 600; font-size: 0.88rem;">Categoria Temática:</label>
                             <select id="novoTopicoCategoria" class="form-input">
-                                <option value="geral">💬 Conversação & Geral</option>
-                                <option value="cultura">🎬 Cultura & Mídia Francesa</option>
-                                <option value="gramatica">📖 Gramática & Estrutura</option>
-                                <option value="vocabulario">📝 Vocabulário & Expressões</option>
-                                <option value="dicas">💡 Fonética & Dicas de Estudo</option>
-                                <option value="duvidas">❓ Dúvidas dos Alunos</option>
-                                <option value="debate">🗣️ Debate & Argumentação B2</option>
+                                <option value="duvidas" {% if not is_prof %}selected{% endif %}>❓ Dúvidas dos Alunos</option>
+                                <option value="geral" {% if is_prof %}selected{% endif %}>💬 Conversação &amp; Geral</option>
+                                <option value="gramatica">📖 Gramática &amp; Estrutura</option>
+                                <option value="vocabulario">📝 Vocabulário &amp; Expressões</option>
+                                <option value="dicas">💡 Fonética &amp; Dicas de Estudo</option>
+                                <option value="cultura">🎬 Cultura &amp; Mídia Francesa</option>
+                                <option value="debate">🗣️ Debate &amp; Argumentação B2</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="form-group" style="margin-bottom: 1.5rem;">
-                        <label class="form-label" for="novoTopicoDescricao" style="font-weight: 600; font-size: 0.88rem;">Mensagem / Pergunta Disparadora: *</label>
-                        <textarea id="novoTopicoDescricao" class="form-input" rows="4" placeholder="Escreva o contexto da discussão ou uma questão provocativa para incentivar a participação dos estudantes..." required style="resize: vertical;"></textarea>
+                        <label class="form-label" for="novoTopicoDescricao" style="font-weight: 600; font-size: 0.88rem;">Sua Pergunta ou Contexto da Discussão: *</label>
+                        <textarea id="novoTopicoDescricao" class="form-input" rows="4" placeholder="Escreva sua frase em francês ou explique sua dúvida..." required style="resize: vertical;"></textarea>
                     </div>
 
-                    <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #ECECEC; padding-top: 1rem;">
+                    <div class="forum-modal-footer">
                         <button type="button" class="btn btn-secondary" onclick="fecharModalCriarTopico()" style="border-radius: 999px; padding: 8px 18px;">Cancelar</button>
                         <button type="submit" class="forum-pill-btn" id="btnSalvarTopico" style="width: auto;">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
@@ -1366,49 +1473,15 @@
         </div>
     </div>
 </div>
-{% endif %}
 {% endblock %}
 
 {% block extra_js %}
 <script>
 // ==========================================
-// CONTROLE DO POPOVER DE FILTROS DA SIDEBAR
-// ==========================================
-function toggleFiltrosPopover(e) {
-    if (e) e.stopPropagation();
-    const pop = document.getElementById('popoverFiltros');
-    if (pop) {
-        pop.classList.toggle('open');
-        if (pop.classList.contains('open')) {
-            document.getElementById('popoverInputBusca')?.focus();
-        }
-    }
-}
-
-function fecharFiltrosPopover() {
-    const pop = document.getElementById('popoverFiltros');
-    if (pop) pop.classList.remove('open');
-}
-
-document.addEventListener('click', (e) => {
-    const pop = document.getElementById('popoverFiltros');
-    const btn = document.getElementById('btnToggleFiltrosPopover');
-    if (pop && pop.classList.contains('open')) {
-        if (!pop.contains(e.target) && !btn.contains(e.target)) {
-            fecharFiltrosPopover();
-        }
-    }
-
-    const searchWrap = document.getElementById('forumSearchWrapper');
-    if (searchWrap && !searchWrap.contains(e.target)) {
-        fecharAutocompleteForum();
-    }
-});
-
-// ==========================================
-// FILTRAGEM INSTANTÂNEA, CHIPS E AUTOCOMPLETE
+// FILTRAGEM INSTANTÂNEA, CHIPS, ÁUDIO E AUTOCOMPLETE
 // ==========================================
 let categoriaAtiva = 'todas';
+let somenteParticipados = false;
 let indiceAutocompleteForum = -1;
 
 const CATEGORIA_NOMES_FORUM = {
@@ -1422,58 +1495,42 @@ const CATEGORIA_NOMES_FORUM = {
     'geral': '💬 Conversação'
 };
 
+function falarCardTopicoForum(btn) {
+    if (!btn) return;
+    const texto = btn.getAttribute('data-texto') || '';
+    if (texto && typeof window.falarTextoFrancesBase === 'function') {
+        window.falarTextoFrancesBase(texto, btn, { status: 'Correto' });
+    }
+}
+
+function alternarFiltroParticipados(btn) {
+    somenteParticipados = !somenteParticipados;
+    if (btn) btn.classList.toggle('active', somenteParticipados);
+    filtrarCardsLocalmente();
+}
+
+document.addEventListener('click', (e) => {
+    const searchWrap = document.getElementById('forumSearchWrapper');
+    if (searchWrap && !searchWrap.contains(e.target)) {
+        fecharAutocompleteForum();
+    }
+});
+
 function sincronizarBusca(valor) {
-    const inputPrincipal = document.getElementById('inputBuscaForum');
-    const inputPopover = document.getElementById('popoverInputBusca');
     const btnClear = document.getElementById('btnClearBuscaForum');
-
-    if (inputPrincipal && inputPrincipal !== document.activeElement) inputPrincipal.value = valor;
-    if (inputPopover && inputPopover !== document.activeElement) inputPopover.value = valor;
-
     if (btnClear) {
         btnClear.style.display = (valor && valor.trim().length > 0) ? 'inline-flex' : 'none';
     }
-
     filtrarCardsLocalmente();
     atualizarAutocompleteForum(valor);
 }
 
 function selecionarChipCategoriaForum(cat) {
     categoriaAtiva = cat;
-
-    // Sincroniza chips rápidos
     document.querySelectorAll('#forumQuickChips .forum-chip-btn').forEach(b => {
         b.classList.toggle('active', b.getAttribute('data-cat') === cat);
     });
-
-    // Sincroniza botões do popover da barra lateral
-    document.querySelectorAll('#tabCategorias .btn-tab').forEach(b => {
-        b.classList.toggle('active', b.getAttribute('data-cat') === cat);
-    });
-
-    const dot = document.getElementById('filtroAtivoDot');
-    if (dot) {
-        dot.style.display = (cat !== 'todas') ? 'block' : 'none';
-    }
-
     filtrarCardsLocalmente();
-}
-
-function filtrarPorCategoria(btn, cat) {
-    selecionarChipCategoriaForum(cat);
-}
-
-function limparFiltrosForumPopover() {
-    const inputPopover = document.getElementById('popoverInputBusca');
-    if (inputPopover) inputPopover.value = '';
-    const inputPrincipal = document.getElementById('inputBuscaForum');
-    if (inputPrincipal) inputPrincipal.value = '';
-    const btnClear = document.getElementById('btnClearBuscaForum');
-    if (btnClear) btnClear.style.display = 'none';
-
-    selecionarChipCategoriaForum('todas');
-    fecharFiltrosPopover();
-    fecharAutocompleteForum();
 }
 
 function escapeRegExpForum(str) {
@@ -1576,7 +1633,7 @@ document.getElementById('inputBuscaForum')?.addEventListener('keydown', (e) => {
 });
 
 function filtrarCardsLocalmente() {
-    const termo = (document.getElementById('inputBuscaForum')?.value || document.getElementById('popoverInputBusca')?.value || '').toLowerCase().trim();
+    const termo = (document.getElementById('inputBuscaForum')?.value || '').toLowerCase().trim();
     const cards = document.querySelectorAll('.forum-card');
     const emptySearch = document.getElementById('emptySearchForum');
     let visiveis = 0;
@@ -1585,11 +1642,13 @@ function filtrarCardsLocalmente() {
         const titulo = card.getAttribute('data-titulo') || '';
         const desc = card.getAttribute('data-desc') || '';
         const cat = card.getAttribute('data-categoria') || '';
+        const participou = card.getAttribute('data-participou') === '1';
 
         const matchTermo = !termo || titulo.includes(termo) || desc.includes(termo);
         const matchCat = (categoriaAtiva === 'todas') || (cat === categoriaAtiva);
+        const matchParticipou = !somenteParticipados || participou;
 
-        if (matchTermo && matchCat) {
+        if (matchTermo && matchCat && matchParticipou) {
             card.style.display = 'flex';
             visiveis++;
         } else {
@@ -1608,10 +1667,12 @@ function filtrarCardsLocalmente() {
 function limparBuscaLocal() {
     const inputPrincipal = document.getElementById('inputBuscaForum');
     if (inputPrincipal) inputPrincipal.value = '';
-    const inputPopover = document.getElementById('popoverInputBusca');
-    if (inputPopover) inputPopover.value = '';
     const btnClear = document.getElementById('btnClearBuscaForum');
     if (btnClear) btnClear.style.display = 'none';
+
+    somenteParticipados = false;
+    const btnPart = document.getElementById('btnFiltroParticipados');
+    if (btnPart) btnPart.classList.remove('active');
 
     fecharAutocompleteForum();
 
@@ -1625,7 +1686,7 @@ function limparBuscaLocal() {
 }
 
 // ==========================================
-// MODAL DE NOVO TÓPICO (PROFESSOR)
+// MODAL DE NOVO TÓPICO / DÚVIDA FLE
 // ==========================================
 function abrirModalCriarTopico() {
     const modal = document.getElementById('modalCriarTopico');
@@ -1647,7 +1708,6 @@ function fecharModalCriarTopico() {
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         fecharModalCriarTopico();
-        fecharFiltrosPopover();
         fecharAutocompleteForum();
     }
 });
@@ -1669,13 +1729,18 @@ document.getElementById('formCriarTopico')?.addEventListener('submit', async (e)
         return;
     }
 
+    const originalHtml = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = 'Publicando...';
 
     try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
         const res = await fetch('/api/forum/criar_topico', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
             body: JSON.stringify({
                 titulo: titulo,
                 descricao: descricao,
@@ -1684,16 +1749,18 @@ document.getElementById('formCriarTopico')?.addEventListener('submit', async (e)
             })
         });
         const data = await res.json();
-        if (data.status === 'sucesso') {
+        if (data.status === 'sucesso' && data.topico_id) {
+            window.location.href = `/forum/topico/${data.topico_id}`;
+        } else if (data.status === 'sucesso') {
             window.location.reload();
         } else {
             alert('Erro ao criar tópico: ' + (data.mensagem || 'Tente novamente.'));
-            btn.innerHTML = 'Publicar Tópico';
+            btn.innerHTML = originalHtml;
             btn.disabled = false;
         }
     } catch (err) {
         alert('Erro de conexão ao salvar tópico.');
-        btn.innerHTML = 'Publicar Tópico';
+        btn.innerHTML = originalHtml;
         btn.disabled = false;
     }
 });

@@ -671,6 +671,99 @@
     border-color: rgba(255, 255, 255, 0.12);
     color: #9CA3AF;
 }
+
+/* Recursos FLE: Ações do Tópico & Conectores de Debate */
+.topic-actions-bar {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-praticar-topico {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    border: 1px solid #E2E8F0;
+    background: #F8FAFC;
+    color: #14213D;
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.18s ease;
+}
+
+.btn-praticar-topico:hover {
+    background: #FCA311;
+    border-color: #FCA311;
+    color: #000000;
+}
+
+[data-theme="dark"] .btn-praticar-topico {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.14);
+    color: #F8FAFC;
+}
+
+.forum-connecteurs-bar {
+    margin-top: 0.65rem;
+    padding: 0.6rem 0.85rem;
+    border-radius: 14px;
+    background: rgba(252, 163, 17, 0.08);
+    border: 1px solid rgba(252, 163, 17, 0.25);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+[data-theme="dark"] .forum-connecteurs-bar {
+    background: rgba(252, 163, 17, 0.1);
+    border-color: rgba(252, 163, 17, 0.24);
+}
+
+.forum-connecteurs-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #92400E;
+    margin-right: 4px;
+}
+
+[data-theme="dark"] .forum-connecteurs-label {
+    color: #FCD34D;
+}
+
+.connecteur-pill {
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(20, 33, 61, 0.14);
+    background: #FFFFFF;
+    color: #14213D;
+    font-size: 0.76rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.connecteur-pill:hover {
+    background: #14213D;
+    border-color: #14213D;
+    color: #FCA311;
+}
+
+[data-theme="dark"] .connecteur-pill {
+    background: rgba(15, 23, 42, 0.8);
+    border-color: rgba(255, 255, 255, 0.14);
+    color: #F8FAFC;
+}
+
+[data-theme="dark"] .connecteur-pill:hover {
+    background: #FCA311;
+    border-color: #FCA311;
+    color: #000000;
+}
 </style>
 {% endblock %}
 
@@ -722,10 +815,22 @@
                     {% endif %}
                 </div>
 
-                <span style="font-size: 0.8rem; color: #6B7280; display: inline-flex; align-items: center; gap: 5px; font-weight: 500;">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                    Iniciado em {{ topico['data_criacao'][:10] }}
-                </span>
+                <div style="display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    <button type="button"
+                            id="btnOuvirTopicoHero"
+                            class="btn-listen-msg"
+                            data-texto="{{ (topico['titulo'] ~ '. ' ~ (topico['descricao'] or ''))|e }}"
+                            onclick="ouvirEnunciadoTopico(this)"
+                            title="Ouvir título e enunciado do tópico em francês"
+                            aria-label="Ouvir enunciado do tópico em francês">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                        <span>Ouvir Enunciado</span>
+                    </button>
+                    <span style="font-size: 0.8rem; color: #6B7280; display: inline-flex; align-items: center; gap: 5px; font-weight: 500;">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        Iniciado em {{ topico['data_criacao'][:10] }}
+                    </span>
+                </div>
             </div>
 
             <h1 class="topic-main-title">
@@ -736,11 +841,19 @@
             </p>
 
             <div class="topic-meta-footer">
-                <div style="display: inline-flex; align-items: center; gap: 6px;">
+                <div style="display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap;">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                     <span>Proposto por <strong>{{ topico['criador_nome'] }}</strong></span>
+                    <span class="badge-role {{ 'badge-role-aluno' if topico.get('criador_tipo') == 'Aluno' else 'badge-role-prof' }}">
+                        {{ 'Estudante' if topico.get('criador_tipo') == 'Aluno' else 'Docente' }}
+                    </span>
                 </div>
-                <span class="topic-subtitle-italic" style="font-size: 0.85rem;">Tutoria Socrática Ativa</span>
+                <div class="topic-actions-bar">
+                    <span class="topic-subtitle-italic" style="font-size: 0.85rem;">Tutoria Socrática Ativa</span>
+                    <a href="/pratica?tema={{ topico['titulo'] | urlencode }}" class="btn-praticar-topico">
+                        ⚡ Praticar este Tema &rarr;
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -807,6 +920,14 @@
                     Sua Contribuição para a Discussão:
                 </label>
                 <textarea id="conteudo" class="form-input" rows="3" placeholder="Escreva sua mensagem em francês ou português. A Assistente Fran poderá dar feedbacks pedagógicos!" required style="resize: vertical;"></textarea>
+
+                <!-- Pílulas de Conectores Lógicos & Expressões de Debate em Francês -->
+                <div class="forum-connecteurs-bar" role="group" aria-label="Conectores lógicos e expressões em francês">
+                    <span class="forum-connecteurs-label">💡 Connecteurs FLE:</span>
+                    {% for expr in ['À mon avis, ', 'Je pense que ', "Je suis d'accord parce que ", 'Cependant, ', 'Par exemple, ', "J'ai une question sur ", 'En conclusion, '] %}
+                    <button type="button" class="connecteur-pill" data-expr="{{ expr|e }}" onclick="inserirConectorForum(this)" lang="fr">{{ expr|trim }}</button>
+                    {% endfor %}
+                </div>
 
                 <!-- Barra de Caracteres Especiais Franceses & Voz -->
                 <div class="forum-french-toolbar" role="toolbar" aria-label="Caracteres acentuados franceses e controles de voz">
@@ -937,8 +1058,8 @@
         document.querySelectorAll('.btn-listen-msg.speaking').forEach(b => b.classList.remove('speaking'));
         btn.classList.add('speaking');
 
-        if (typeof falarTextoFrancesBase === 'function') {
-            falarTextoFrancesBase(texto);
+        if (typeof window.falarTextoFrancesBase === 'function') {
+            window.falarTextoFrancesBase(texto, btn, { status: 'Correto' });
         } else if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
             const u = new SpeechSynthesisUtterance(texto);
@@ -948,6 +1069,42 @@
 
         const duracaoEst = Math.min(Math.max(texto.length * 65, 1800), 12000);
         setTimeout(() => btn.classList.remove('speaking'), duracaoEst);
+    }
+
+    function ouvirEnunciadoTopico(btn) {
+        if (!btn) return;
+        const texto = btn.getAttribute('data-texto') || '';
+        if (!texto) return;
+
+        document.querySelectorAll('.btn-listen-msg.speaking').forEach(b => b.classList.remove('speaking'));
+        btn.classList.add('speaking');
+
+        if (typeof window.falarTextoFrancesBase === 'function') {
+            window.falarTextoFrancesBase(texto, btn, { status: 'Correto' });
+        } else if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(texto);
+            u.lang = 'fr-FR';
+            window.speechSynthesis.speak(u);
+        }
+
+        const duracaoEst = Math.min(Math.max(texto.length * 65, 1800), 12000);
+        setTimeout(() => btn.classList.remove('speaking'), duracaoEst);
+    }
+
+    function inserirConectorForum(btn) {
+        const ta = document.getElementById('conteudo');
+        if (!ta || !btn) return;
+        const expr = btn.getAttribute('data-expr') || '';
+        if (!expr) return;
+        const start = ta.selectionStart ?? ta.value.length;
+        const end = ta.selectionEnd ?? ta.value.length;
+        const prefixoEspaco = (start > 0 && !/\s$/.test(ta.value.slice(0, start))) ? ' ' : '';
+        const insercao = prefixoEspaco + expr;
+        ta.value = ta.value.slice(0, start) + insercao + ta.value.slice(end);
+        const pos = start + insercao.length;
+        ta.focus();
+        ta.setSelectionRange(pos, pos);
     }
 
     function toggleMajForum() {
@@ -975,13 +1132,14 @@
 
     function ouvirRascunhoForum() {
         const ta = document.getElementById('conteudo');
+        const btn = document.getElementById('btnAudioForum');
         const texto = ta ? ta.value.trim() : '';
         if (!texto) {
             showToast('Escreva algo no campo antes de ouvir a pronúncia.', 'aviso');
             return;
         }
-        if (typeof falarTextoFrancesBase === 'function') {
-            falarTextoFrancesBase(texto);
+        if (typeof window.falarTextoFrancesBase === 'function') {
+            window.falarTextoFrancesBase(texto, btn, { status: 'Correto' });
         }
     }
 
@@ -1146,19 +1304,14 @@
             }
 
             if (tentativas < maxTentativas) {
-                pollingTimer = setTimeout(verificarNovas, 1500);
+                pollingTimer = setTimeout(verificarNovas, 1200);
             } else if (typing) {
                 typing.style.display = 'none';
             }
         }
 
-        pollingTimer = setTimeout(verificarNovas, 1500);
+        pollingTimer = setTimeout(verificarNovas, 600);
     }
-
-    // Scroll suave para a última mensagem ao carregar
-    window.addEventListener('load', () => {
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-    });
 
     // Atalho Ctrl + Enter para publicar resposta
     document.getElementById('conteudo')?.addEventListener('keydown', (e) => {
@@ -1185,9 +1338,13 @@
         btn.innerHTML = '<svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation: spin 1s linear infinite;"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a10 10 0 0 1 10 10"></path></svg> Enviando...';
         
         try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
             const res = await fetch('/api/forum/responder', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
                 body: JSON.stringify({ topico_id: topico_id, conteudo: conteudo })
             });
             const data = await res.json();
