@@ -299,15 +299,83 @@ def api_forum_responder():
             INSERT INTO forum_mensagens (topico_id, autor_id, autor_tipo, conteudo)
             VALUES (?, ?, ?, ?)
         """, (topico_id, autor_id, autor_tipo, conteudo))
+        nova_msg_id = cursor.lastrowid
         conn.commit()
         conn.close()
         
         # Dispara IA em background SE for aluno
-        if autor_tipo == "Aluno" :
+        if autor_tipo == "Aluno":
             thread = threading.Thread(target=processar_resposta_ia, args=(topico_id, conteudo))
             thread.start()
             
-        return jsonify({"status": "sucesso"})
+        return jsonify({
+            "status": "sucesso",
+            "mensagem_id": nova_msg_id,
+            "autor_tipo": autor_tipo
+        })
+    except Exception as e:
+        return jsonify({"status": "erro", "mensagem": str(e)}), 500
+
+
+@forum_bp.route("/api/forum/topico/<int:topico_id>/mensagens", methods=["GET"])
+def api_forum_mensagens(topico_id):
+    aluno_id = session.get("aluno_id")
+    prof_id = session.get("prof_id")
+
+    if not aluno_id and not prof_id:
+        return jsonify({"status": "erro", "mensagem": "Não autorizado"}), 401
+
+    after_id = request.args.get("after_id", type=int, default=0)
+
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT id, turma_id FROM forum_topicos WHERE id = ?", (topico_id,))
+        top = cursor.fetchone()
+        if not top:
+            conn.close()
+            return jsonify({"status": "erro", "mensagem": "Tópico não encontrado"}), 404
+
+        if aluno_id and not prof_id and top["turma_id"] is not None:
+            cursor.execute("SELECT turma_id FROM alunos WHERE id = ?", (aluno_id,))
+            aluno_t = cursor.fetchone()
+            if not aluno_t or aluno_t["turma_id"] != top["turma_id"]:
+                conn.close()
+                return jsonify({"status": "erro", "mensagem": "Acesso não autorizado para esta turma."}), 403
+
+        cursor.execute("""
+            SELECT fm.id, fm.topico_id, fm.autor_id, fm.autor_tipo, fm.conteudo, fm.data_envio,
+                   CASE WHEN fm.autor_tipo = 'Aluno' THEN a.nome_completo
+                        WHEN fm.autor_tipo = 'Professor' THEN p.nome_completo
+                        ELSE 'Assistente Fran' END as autor_nome
+            FROM forum_mensagens fm
+            LEFT JOIN alunos a ON fm.autor_id = a.id AND fm.autor_tipo = 'Aluno'
+            LEFT JOIN professores p ON fm.autor_id = p.id AND fm.autor_tipo = 'Professor'
+            WHERE fm.topico_id = ? AND fm.id > ?
+            ORDER BY fm.id ASC
+        """, (topico_id, after_id))
+
+        novas = []
+        for row in cursor.fetchall():
+            item = dict(row)
+            is_me = (
+                (item["autor_tipo"] == "Professor" and bool(prof_id) and item["autor_id"] == prof_id)
+                or (item["autor_tipo"] == "Aluno" and bool(aluno_id) and not prof_id and item["autor_id"] == aluno_id)
+            )
+            item["is_me"] = is_me
+            novas.append(item)
+
+        cursor.execute("SELECT COUNT(*) as total FROM forum_mensagens WHERE topico_id = ?", (topico_id,))
+        total_row = cursor.fetchone()
+        total_mensagens = total_row["total"] if total_row else len(novas)
+
+        conn.close()
+        return jsonify({
+            "status": "sucesso",
+            "mensagens": novas,
+            "total_mensagens": total_mensagens
+        })
     except Exception as e:
         return jsonify({"status": "erro", "mensagem": str(e)}), 500
 

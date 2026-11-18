@@ -422,6 +422,11 @@ function ouvirRespostaModal() {
 }
 
 function falarTextoFrancesDashboard(texto, btnElement = null) {
+    if (typeof window.falarTextoFrancesBase === "function") {
+        window.falarTextoFrancesBase(texto, btnElement);
+        return;
+    }
+
     if (!('speechSynthesis' in window)) {
         showToast("Seu navegador não possui suporte à síntese de voz nativa.");
         return;

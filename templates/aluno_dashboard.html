@@ -3,6 +3,7 @@
 {% block title %}Meu Desempenho — Assistente Fran{% endblock %}
 
 {% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,500;1,600;1,700&display=swap" rel="stylesheet">
 <style>
 /* ===================================================================
@@ -1179,7 +1180,10 @@
                     🎯 Precisão: {{ ((acertos / total_atividades) * 100)|round|int if total_atividades > 0 else 0 }}%
                 </span>
                 <span class="hero-pill-item pill-activities">
-                    📚 {{ total_atividades }} Atividades Concluídas
+                    📚 {{ total_atividades }} Atividades do Curso
+                </span>
+                <span class="hero-pill-item pill-activities" title="XP pessoal ganho na Prática Guiada autônoma (separado do aprendizado do curso)">
+                    ⚡ XP Prática Pessoal: {{ xp_pessoal|default(0) }} XP
                 </span>
             </div>
         </div>
@@ -1208,13 +1212,13 @@
                     </div>
                 </div>
 
-                <!-- Linha 2: Submétrica (Progresso XP) + Badge de Tendência com Triângulo Verde -->
+                <!-- Linha 2: Submétrica (Progresso XP do Curso vs XP Pessoal) + Badge de Tendência com Triângulo Verde -->
                 <div class="kpi-design-mid-row">
                     <div class="kpi-design-col-submetric">
-                        <span class="kpi-design-sublabel">Progresso XP</span>
-                        <div class="kpi-design-subvalue">{{ (progresso_xp * 10) if total_atividades > 0 else 0 }} XP</div>
+                        <span class="kpi-design-sublabel">XP do Curso (Separado)</span>
+                        <div class="kpi-design-subvalue">{{ xp_curso|default(0) }} XP</div>
                     </div>
-                    <div class="kpi-design-trend" title="Progresso rumo ao próximo nível">
+                    <div class="kpi-design-trend" title="Progresso rumo ao próximo nível do curso">
                         <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true">
                             <path d="M5 1.5L9 8.5H1L5 1.5Z"/>
                         </svg>

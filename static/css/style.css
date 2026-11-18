@@ -11549,3 +11549,100 @@ html[data-theme="light"][data-contrast="high"] .skip-link {
     white-space: nowrap !important;
     border: 0 !important;
 }
+
+/* ==========================================================================
+   DESIGN SYSTEM EDITORIAL CLEAN — UTILITÁRIOS COMPARTILHADOS & GAMIFICAÇÃO
+   ========================================================================== */
+.editorial-page-wrapper {
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 1.5rem 1.25rem 3.2rem;
+}
+
+.editorial-hero {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1.15rem;
+    margin-bottom: 1.65rem;
+    padding-bottom: 1.15rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.editorial-title {
+    margin: 0;
+    font-size: clamp(1.5rem, 2.5vw, 2.05rem);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    color: var(--text-main);
+}
+
+.editorial-subtitle {
+    margin: 0.35rem 0 0;
+    font-size: 0.94rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.editorial-kpis-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.editorial-kpi-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 1rem 1.15rem;
+    box-shadow: 0 2px 10px rgba(20, 33, 61, 0.04);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.editorial-kpi-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(252, 163, 17, 0.45);
+}
+
+.editorial-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.35rem;
+    box-shadow: 0 4px 16px rgba(20, 33, 61, 0.05);
+}
+
+.xp-gain-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.24rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    color: #92400E;
+    background: rgba(252, 163, 17, 0.18);
+    border: 1px solid rgba(252, 163, 17, 0.5);
+    animation: xpPopIn 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-theme="dark"] .xp-gain-badge {
+    color: #FDE68A;
+    background: rgba(252, 163, 17, 0.16);
+    border-color: rgba(252, 163, 17, 0.45);
+}
+
+@keyframes xpPopIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.86);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

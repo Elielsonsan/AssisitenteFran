@@ -729,126 +729,7 @@
             </p>
         </header>
 
-        <!-- 2. 4 MINI-KPIS COM ONDAS COLORIDAS -->
-        <section class="prof-perfil-kpis-grid" aria-label="Indicadores Docentes e de Alunos">
-            <!-- KPI 1: Alunos Matriculados -->
-            <article class="prof-kpi-card">
-                <div class="prof-kpi-top-row">
-                    <div>
-                        <span class="prof-kpi-label">Alunos Matriculados</span>
-                        <div class="prof-kpi-primary" id="kpiTotalAlunos">{{ total_alunos }}</div>
-                    </div>
-                    <svg class="prof-kpi-wave-svg" viewBox="0 0 120 46" fill="none" aria-hidden="true">
-                        <defs>
-                            <linearGradient id="profWaveDark" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#18191E" stop-opacity="0.24"/>
-                                <stop offset="100%" stop-color="#18191E" stop-opacity="0.0"/>
-                            </linearGradient>
-                        </defs>
-                        <path d="M2 36 C24 30, 42 18, 66 20 C88 22, 102 10, 118 6 L118 44 L2 44 Z" fill="url(#profWaveDark)"/>
-                        <path d="M2 36 C24 30, 42 18, 66 20 C88 22, 102 10, 118 6" stroke="#18191E" stroke-width="2.6" stroke-linecap="round"/>
-                    </svg>
-                </div>
-                <div class="prof-kpi-mid-row">
-                    <span class="prof-kpi-subval">Quadro Discente Ativo</span>
-                    <span class="prof-kpi-trend">▲ A1 ao C2</span>
-                </div>
-                <div>
-                    <button type="button" class="prof-pill-btn" onclick="abrirModalMatricularAluno()">
-                        <span>➕ Matricular Novo Aluno</span>
-                    </button>
-                </div>
-            </article>
-
-            <!-- KPI 2: Turmas Ativas -->
-            <article class="prof-kpi-card">
-                <div class="prof-kpi-top-row">
-                    <div>
-                        <span class="prof-kpi-label">Turmas FLE Ativas</span>
-                        <div class="prof-kpi-primary" id="kpiTotalTurmas">{{ total_turmas }}</div>
-                    </div>
-                    <svg class="prof-kpi-wave-svg" viewBox="0 0 120 46" fill="none" aria-hidden="true">
-                        <defs>
-                            <linearGradient id="profWaveGreen" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#10B981" stop-opacity="0.26"/>
-                                <stop offset="100%" stop-color="#10B981" stop-opacity="0.0"/>
-                            </linearGradient>
-                        </defs>
-                        <path d="M2 34 C28 24, 52 28, 76 16 C94 8, 108 12, 118 5 L118 44 L2 44 Z" fill="url(#profWaveGreen)"/>
-                        <path d="M2 34 C28 24, 52 28, 76 16 C94 8, 108 12, 118 5" stroke="#10B981" stroke-width="2.6" stroke-linecap="round"/>
-                    </svg>
-                </div>
-                <div class="prof-kpi-mid-row">
-                    <span class="prof-kpi-subval">Organização por Ciclo</span>
-                    <span class="prof-kpi-trend">▲ {{ total_turmas }} turmas</span>
-                </div>
-                <div>
-                    <button type="button" class="prof-pill-btn" onclick="abrirModalGerenciarTurmas()">
-                        <span>🏫 Gerenciar Turmas</span>
-                    </button>
-                </div>
-            </article>
-
-            <!-- KPI 3: Aproveitamento Geral -->
-            <article class="prof-kpi-card">
-                <div class="prof-kpi-top-row">
-                    <div>
-                        <span class="prof-kpi-label">Aproveitamento Médio</span>
-                        <div class="prof-kpi-primary">{{ media_acerto_geral }}%</div>
-                    </div>
-                    <svg class="prof-kpi-wave-svg" viewBox="0 0 120 46" fill="none" aria-hidden="true">
-                        <defs>
-                            <linearGradient id="profWaveAmber" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.26"/>
-                                <stop offset="100%" stop-color="#F59E0B" stop-opacity="0.0"/>
-                            </linearGradient>
-                        </defs>
-                        <path d="M2 35 C24 32, 48 16, 72 19 C92 21, 106 9, 118 7 L118 44 L2 44 Z" fill="url(#profWaveAmber)"/>
-                        <path d="M2 35 C24 32, 48 16, 72 19 C92 21, 106 9, 118 7" stroke="#F59E0B" stroke-width="2.6" stroke-linecap="round"/>
-                    </svg>
-                </div>
-                <div class="prof-kpi-mid-row">
-                    <span class="prof-kpi-subval">{{ total_submissoes_geral }} submissões</span>
-                    <span class="prof-kpi-trend" style="color:#D97706;">▲ Relatório FLE</span>
-                </div>
-                <div>
-                    <a href="/api/relatorio/exportar_csv" class="prof-pill-btn">
-                        <span>📊 Exportar Boletim CSV</span>
-                    </a>
-                </div>
-            </article>
-
-            <!-- KPI 4: Credencial Docente -->
-            <article class="prof-kpi-card">
-                <div class="prof-kpi-top-row">
-                    <div>
-                        <span class="prof-kpi-label">Credencial Docente</span>
-                        <div class="prof-kpi-primary" style="font-size:1.55rem;">{{ professor.status_acesso or 'Ativo' }}</div>
-                    </div>
-                    <svg class="prof-kpi-wave-svg" viewBox="0 0 120 46" fill="none" aria-hidden="true">
-                        <defs>
-                            <linearGradient id="profWaveBlue" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.26"/>
-                                <stop offset="100%" stop-color="#3B82F6" stop-opacity="0.0"/>
-                            </linearGradient>
-                        </defs>
-                        <path d="M2 36 C25 26, 48 22, 74 14 C94 8, 108 10, 118 6 L118 44 L2 44 Z" fill="url(#profWaveBlue)"/>
-                        <path d="M2 36 C25 26, 48 22, 74 14 C94 8, 108 10, 118 6" stroke="#3B82F6" stroke-width="2.6" stroke-linecap="round"/>
-                    </svg>
-                </div>
-                <div class="prof-kpi-mid-row">
-                    <span class="prof-kpi-subval" id="kpiProfUsuario">@{{ professor.usuario }}</span>
-                    <span class="prof-kpi-trend" style="color:#2563EB;">▲ Titular FLE</span>
-                </div>
-                <div>
-                    <button type="button" class="prof-pill-btn" onclick="focarFormularioProfessor()">
-                        <span>✏️ Editar Meu Perfil</span>
-                    </button>
-                </div>
-            </article>
-        </section>
-
-        <!-- 3. SPLIT GRID: MEU PERFIL DOCENTE (ESQUERDA) + GESTÃO DE ALUNOS (DIREITA) -->
+        <!-- 2. SPLIT GRID: MEU PERFIL DOCENTE (ESQUERDA) + GESTÃO DE ALUNOS (DIREITA) -->
         <div class="prof-perfil-split-grid">
 
             <!-- COLUNA ESQUERDA: MEU PERFIL DOCENTE -->
@@ -1343,7 +1224,8 @@ async function salvarPerfilProfessor(ev) {
             if (data.professor) {
                 document.getElementById('tituloMeuPerfilDocente').textContent = data.professor.nome_completo;
                 document.getElementById('badgeProfLogin').textContent = data.professor.usuario;
-                document.getElementById('kpiProfUsuario').textContent = '@' + data.professor.usuario;
+                const kpiUser = document.getElementById('kpiProfUsuario');
+                if (kpiUser) kpiUser.textContent = '@' + data.professor.usuario;
                 const navName = document.querySelector('.nav-user-name');
                 if (navName) navName.textContent = data.professor.nome_completo;
                 document.getElementById('profNovaSenha').value = '';

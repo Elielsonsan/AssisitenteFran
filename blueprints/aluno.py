@@ -5,7 +5,8 @@ from werkzeug.utils import secure_filename
 from blueprints.extensions import (
     get_db, login_required, login_required_prof, parse_retorno_gemini_frances,
     genai_model, BASE_DIR, GEMINI_MODEL_NAME, gerar_feedback_frances,
-    feedback_demonstracao_frances, validar_magic_bytes_imagem,
+    feedback_demonstracao_frances, analisar_e_transcrever_audio_oral,
+    validar_magic_bytes_imagem,
     BANCO_PEDAGOGICO_TEMAS, mapear_chave_tema, gerar_questoes_pedagogicas_completas,
     eh_questao_valida, sanitizar_questoes_geradas
 )
@@ -13,12 +14,23 @@ import sqlite3, json, random, datetime, re, os, csv, io
 
 aluno_bp = Blueprint('aluno', __name__)
 
+def _garantir_coluna_origem_submissao(cursor, conn=None):
+    """Garante a coluna origem_submissao ('curso' vs 'pratica_pessoal') na tabela submissoes."""
+    cols = [r[1] for r in cursor.execute("PRAGMA table_info(submissoes)").fetchall()]
+    if cols and "origem_submissao" not in cols:
+        cursor.execute("ALTER TABLE submissoes ADD COLUMN origem_submissao TEXT DEFAULT 'curso'")
+        cursor.execute("UPDATE submissoes SET origem_submissao = 'curso' WHERE origem_submissao IS NULL")
+        if conn is not None:
+            conn.commit()
+
+
 @aluno_bp.route("/pratica", methods=["GET"])
 @login_required
 def index():
     aluno_id = session.get("aluno_id")
     conn = get_db()
     cursor = conn.cursor()
+    _garantir_coluna_origem_submissao(cursor, conn)
     cursor.execute("SELECT nivel_cefr FROM alunos WHERE id = ?;", (aluno_id,))
     row = cursor.fetchone()
     nivel_aluno = row["nivel_cefr"] if row and row["nivel_cefr"] else "A2"
@@ -30,6 +42,18 @@ def index():
 
     cursor.execute("SELECT id, nome_tema FROM temas ORDER BY nome_tema ASC;")
     lista_temas = [dict(r) for r in cursor.fetchall()]
+
+    # XP Pessoal exclusivo da Prática Guiada (separado do aprendizado do curso)
+    cursor.execute("""
+        SELECT COUNT(*) as total,
+               SUM(CASE WHEN status_resposta = 'Correto' THEN 1 ELSE 0 END) as acertos,
+               SUM(CASE WHEN status_resposta = 'Parcialmente Correto' THEN 1 ELSE 0 END) as parciais
+        FROM submissoes
+        WHERE aluno_id = ? AND origem_submissao = 'pratica_pessoal'
+    """, (aluno_id,))
+    stats_pratica = cursor.fetchone()
+    xp_pessoal = ((stats_pratica["acertos"] or 0) * 10 + (stats_pratica["parciais"] or 0) * 5) if stats_pratica else 0
+    total_pratica_pessoal = (stats_pratica["total"] or 0) if stats_pratica else 0
 
     # Exercício inicial recomendado automático de acordo com o nível do aluno
     exercicio_inicial = None
@@ -62,7 +86,9 @@ def index():
         aluno_nivel=nivel_aluno, 
         reforco=reforco,
         exercicio_inicial=exercicio_inicial,
-        lista_temas=lista_temas
+        lista_temas=lista_temas,
+        xp_pessoal=xp_pessoal,
+        total_pratica_pessoal=total_pratica_pessoal
     )
 
 # ===================== ROTAS DE ALUNO (GERAR E AVALIAR) =====================
@@ -80,8 +106,9 @@ def aluno_dashboard():
     
     conn = get_db()
     cursor = conn.cursor()
+    _garantir_coluna_origem_submissao(cursor, conn)
     
-    # Buscar atividades e acertos do aluno
+    # Buscar atividades e acertos do APRENDIZADO NO CURSO (separado da prática livre pessoal)
     cursor.execute("""
         SELECT 
             COUNT(*) as total_atividades,
@@ -89,7 +116,7 @@ def aluno_dashboard():
             SUM(CASE WHEN status_resposta = 'Parcialmente Correto' THEN 1 ELSE 0 END) as parciais,
             SUM(CASE WHEN status_resposta = 'Incorreto' THEN 1 ELSE 0 END) as erros
         FROM submissoes 
-        WHERE aluno_id = ?
+        WHERE aluno_id = ? AND COALESCE(origem_submissao, 'curso') != 'pratica_pessoal'
     """, (aluno_id,))
     stats = cursor.fetchone()
     
@@ -98,28 +125,40 @@ def aluno_dashboard():
     parciais = stats["parciais"] or 0
     erros = stats["erros"] or 0
     
-    # Progresso simulado (para gamificação) = mínimo(100, (acertos * 10 + parciais * 5) % 100)
-    progresso_xp = min(100, (acertos * 10 + parciais * 5))
-    if progresso_xp > 100: progresso_xp = progresso_xp % 100
-    if total == 0: progresso_xp = 0
+    xp_curso = (acertos * 10) + (parciais * 5)
+    progresso_xp = 0 if total == 0 else (xp_curso % 100 if xp_curso > 100 else xp_curso)
+
+    # Métricas separadas da Prática Pessoal (Prática Guiada autônoma)
+    cursor.execute("""
+        SELECT
+            COUNT(*) as total_pratica,
+            SUM(CASE WHEN status_resposta = 'Correto' THEN 1 ELSE 0 END) as acertos_pratica,
+            SUM(CASE WHEN status_resposta = 'Parcialmente Correto' THEN 1 ELSE 0 END) as parciais_pratica
+        FROM submissoes
+        WHERE aluno_id = ? AND origem_submissao = 'pratica_pessoal'
+    """, (aluno_id,))
+    stats_pessoal = cursor.fetchone()
+    total_pratica_pessoal = (stats_pessoal["total_pratica"] or 0) if stats_pessoal else 0
+    acertos_pratica_pessoal = (stats_pessoal["acertos_pratica"] or 0) if stats_pessoal else 0
+    parciais_pratica_pessoal = (stats_pessoal["parciais_pratica"] or 0) if stats_pessoal else 0
+    xp_pessoal = (acertos_pratica_pessoal * 10) + (parciais_pratica_pessoal * 5)
     
-    # Participação semanal calculada a partir das submissões reais dos últimos 5 dias
+    # Participação semanal calculada a partir das submissões do curso nos últimos 5 dias
     hoje = datetime.date.today()
     dias_iso = [(hoje - datetime.timedelta(days=i)).strftime("%Y-%m-%d") for i in range(4, -1, -1)]
     cursor.execute("""
         SELECT substr(data_hora, 1, 10) as dia, COUNT(*) as qtd
         FROM submissoes
-        WHERE aluno_id = ? AND substr(data_hora, 1, 10) >= ?
+        WHERE aluno_id = ? AND COALESCE(origem_submissao, 'curso') != 'pratica_pessoal' AND substr(data_hora, 1, 10) >= ?
         GROUP BY dia
     """, (aluno_id, dias_iso[0]))
     mapa_dias = {r["dia"]: r["qtd"] for r in cursor.fetchall()}
     participacao_semanal = [mapa_dias.get(d, 0) for d in dias_iso]
     if sum(participacao_semanal) == 0 and total > 0:
-        # Se o aluno possui histórico anterior aos últimos 5 dias, distribui as últimas submissões
         cursor.execute("""
             SELECT substr(data_hora, 1, 10) as dia, COUNT(*) as qtd
             FROM submissoes
-            WHERE aluno_id = ?
+            WHERE aluno_id = ? AND COALESCE(origem_submissao, 'curso') != 'pratica_pessoal'
             GROUP BY dia
             ORDER BY dia DESC
             LIMIT 5
@@ -163,6 +202,9 @@ def aluno_dashboard():
     faltas_count = (freq_row["faltas"] or 0) if freq_row else 0
     taxa_frequencia = round((presencas_count / total_aulas_chamada) * 100) if total_aulas_chamada > 0 else 100
 
+    total_geral = total + total_pratica_pessoal
+    acertos_geral = acertos + acertos_pratica_pessoal
+
     # Sistema de Medalhas Gamificadas (Badges FLE)
     badges = [
         {
@@ -170,27 +212,27 @@ def aluno_dashboard():
             "nome": "Premier Pas",
             "icone": "star",
             "descricao": "Concluiu sua primeira atividade de francês.",
-            "desbloqueado": total >= 1
+            "desbloqueado": total_geral >= 1
         },
         {
             "id": "tir_precis",
             "nome": "Tir Précis",
             "icone": "target",
             "descricao": "Alcançou 5 acertos perfeitos nas atividades.",
-            "desbloqueado": acertos >= 5
+            "desbloqueado": acertos_geral >= 5
         },
         {
             "id": "erudit_fle",
             "nome": "Érudit du FLE",
             "icone": "book",
             "descricao": "Praticou pelo menos 10 exercícios na plataforma.",
-            "desbloqueado": total >= 10
+            "desbloqueado": total_geral >= 10
         },
         {
             "id": "voix_paris",
             "nome": "Voix de Paris",
             "icone": "mic",
-            "descricao": "Gravou e enviou áudio em uma prova oral.",
+            "descricao": "Gravou e enviou áudio em uma avaliação ou expressão oral.",
             "desbloqueado": tem_audio
         },
         {
@@ -217,6 +259,10 @@ def aluno_dashboard():
         aluno_nivel=aluno_nivel,
         proximo_nivel=proximo_nivel,
         progresso_xp=progresso_xp,
+        xp_curso=xp_curso,
+        xp_pessoal=xp_pessoal,
+        total_pratica_pessoal=total_pratica_pessoal,
+        acertos_pratica_pessoal=acertos_pratica_pessoal,
         total_atividades=total,
         acertos=acertos,
         parciais=parciais,
@@ -440,7 +486,7 @@ Retorne EXATAMENTE um JSON válido com as chaves:
                 "trad": "Responda em francês usando Y ou EN: « — Combien de frères as-tu ? (Responda: Tenho dois) »"
             },
             "Les Pronoms Personnels (COD et COI)": {
-                "correta": "Pierre est l'anniversaire de ma mère ; je lui ai téléphoné pour la féliciter.",
+                "correta": "Hier, c'était l'anniversaire de ma mère ; je lui ai téléphoné pour la féliciter.",
                 "incorreta": "Je téléphone à mes parents tous les dimanches : je les téléphone.",
                 "lacuna": "Complétez avec le pronom COI (lui ou leur) : « Mes parents habitent loin, mais je ___ écris chaque semaine. »",
                 "mc": "Escolha o pronome correto para substituir « à Sophie » em « Je parle à Sophie »:\nA) Je la parle.\nB) Je lui parle.\nC) Je leur parle.\nD) J'y parle.",
@@ -476,7 +522,7 @@ Retorne EXATAMENTE um JSON válido com as chaves:
             exercicio_gerado = base["correta"]
         elif tipo_atividade == "expressao_oral":
             exercicio_gerado = (
-                f"Pronuncie em voz alta utilizando o botão 'Falar' (microfone) a seguinte frase em francês:\n\n"
+                f"Pronuncie em voz alta utilizando o botão 'Gravar Áudio' abaixo a seguinte frase em francês:\n\n"
                 f"« {base['correta']} »"
             )
         elif tipo_atividade == "producao_escrita":
@@ -590,18 +636,25 @@ def aceitar_reforco():
 @login_required
 def avaliar():
     aluno_id = session.get("aluno_id")
-    dados = request.get_json() if request.is_json else request.form
-    
-    exercicio_id = dados.get("exercicio_id")
-    resposta = dados.get("resposta_aluno", "").strip()
-    tentativa = int(dados.get("tentativa", 1))
-    dica_anterior = (dados.get("dica_anterior") or "").strip()
+    dados = request.get_json(silent=True) if request.is_json else request.form
 
-    if not exercicio_id or not resposta:
-        return jsonify({"status": "erro", "mensagem": "Preencha todos os campos."}), 400
+    exercicio_id = dados.get("exercicio_id")
+    resposta = (dados.get("resposta_aluno") or "").strip()
+    transcricao_oral = (dados.get("transcricao_oral") or resposta or "").strip()
+    tentativa = int(dados.get("tentativa") or 1)
+    dica_anterior = (dados.get("dica_anterior") or "").strip()
+    tipo_atividade = (dados.get("tipo_atividade") or "").strip().lower()
+    files_dict = getattr(request, "files", None) or {}
+    audio_oral_file = files_dict.get("audio_oral")
+    tem_arquivo_audio = bool(audio_oral_file and getattr(audio_oral_file, "filename", ""))
+
+    if not exercicio_id or (not resposta and not tem_arquivo_audio):
+        return jsonify({"status": "erro", "mensagem": "Preencha a resposta ou grave seu áudio antes de enviar."}), 400
 
     conn = get_db()
     cursor = conn.cursor()
+    _garantir_coluna_origem_submissao(cursor, conn)
+
     cursor.execute("""
         SELECT e.enunciado, t.nome_tema, e.nivel_exigido
         FROM exercicios e JOIN temas t ON e.tema_id = t.id
@@ -611,23 +664,108 @@ def avaliar():
     if not row:
         conn.close()
         return jsonify({"status": "erro", "mensagem": "Exercício inválido."}), 400
-    
+
     tema = row["nome_tema"]
     exercicio = row["enunciado"]
     nivel_cefr = row["nivel_exigido"]
 
-    status_resposta, analise_prof, feedback_ia = gerar_feedback_frances(
-        tema, exercicio, resposta, tentativa=tentativa, dica_anterior=dica_anterior, nivel_cefr=nivel_cefr
-    )
-    
+    arquivo_audio_path = None
+    filepath = None
+    if tem_arquivo_audio:
+        upload_dir = os.path.join(BASE_DIR, "static", "uploads", "audios")
+        os.makedirs(upload_dir, exist_ok=True)
+        filename = secure_filename(f"oral_pratica_{aluno_id or 0}_{int(datetime.datetime.now().timestamp())}.webm")
+        filepath = os.path.join(upload_dir, filename)
+        audio_oral_file.save(filepath)
+        arquivo_audio_path = f"static/uploads/audios/{filename}"
+
+    if arquivo_audio_path or tipo_atividade == "expressao_oral":
+        status_resposta, analise_prof, feedback_ia, resposta = analisar_e_transcrever_audio_oral(
+            tema=tema,
+            exercicio=exercicio,
+            transcricao_cliente=transcricao_oral,
+            filepath_audio=filepath,
+            tentativa=tentativa,
+            dica_anterior=dica_anterior,
+            nivel_cefr=nivel_cefr,
+        )
+    else:
+        status_resposta, analise_prof, feedback_ia = gerar_feedback_frances(
+            tema,
+            exercicio,
+            resposta,
+            tentativa=tentativa,
+            dica_anterior=dica_anterior,
+            nivel_cefr=nivel_cefr,
+            tipo_atividade=tipo_atividade,
+        )
+
     data_hora = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    cursor.execute("""
-        INSERT INTO submissoes (aluno_id, exercicio_id, resposta_aluno, feedback_ia, analise_professor, status_resposta, tentativa, data_hora)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    """, (aluno_id, exercicio_id, resposta, feedback_ia, analise_prof, status_resposta, tentativa, data_hora))
+    cols_sub = [r[1] for r in cursor.execute("PRAGMA table_info(submissoes)").fetchall()]
+    if "arquivo_audio_path" in cols_sub:
+        cursor.execute("""
+            INSERT INTO submissoes (
+                aluno_id, exercicio_id, resposta_aluno, arquivo_audio_path,
+                feedback_ia, analise_professor, status_resposta, tentativa, data_hora, origem_submissao
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pratica_pessoal')
+        """, (aluno_id, exercicio_id, resposta, arquivo_audio_path, feedback_ia, analise_prof, status_resposta, tentativa, data_hora))
+    else:
+        cursor.execute("""
+            INSERT INTO submissoes (
+                aluno_id, exercicio_id, resposta_aluno,
+                feedback_ia, analise_professor, status_resposta, tentativa, data_hora, origem_submissao
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pratica_pessoal')
+        """, (aluno_id, exercicio_id, resposta, feedback_ia, analise_prof, status_resposta, tentativa, data_hora))
     conn.commit()
     novo_id = cursor.lastrowid
+
+    # Gamificação pessoal em tempo real (separada do XP de aprendizado no curso)
+    xp_ganho = 10 if status_resposta == "Correto" else (5 if status_resposta == "Parcialmente Correto" else 0)
+    progresso_xp = xp_ganho
+    total_atividades = 1
+    xp_curso = 0
+    conquista_desbloqueada = None
+
+    if aluno_id:
+        cursor.execute(
+            """
+            SELECT COUNT(*) as total,
+                   SUM(CASE WHEN status_resposta = 'Correto' THEN 1 ELSE 0 END) as acertos,
+                   SUM(CASE WHEN status_resposta = 'Parcialmente Correto' THEN 1 ELSE 0 END) as parciais
+            FROM submissoes
+            WHERE aluno_id = ? AND origem_submissao = 'pratica_pessoal'
+            """,
+            (aluno_id,),
+        )
+        stats_xp = cursor.fetchone()
+        if stats_xp:
+            total_atividades = stats_xp["total"] or 0
+            acertos_totais = stats_xp["acertos"] or 0
+            parciais_totais = stats_xp["parciais"] or 0
+            progresso_xp = (acertos_totais * 10) + (parciais_totais * 5)
+            if total_atividades == 1:
+                conquista_desbloqueada = "Premier Pas na Prática (1ª Atividade Pessoal)"
+            elif acertos_totais == 5 and status_resposta == "Correto":
+                conquista_desbloqueada = "Tir Précis na Prática (5 Acertos Perfeitos)"
+            elif total_atividades == 10:
+                conquista_desbloqueada = "Érudit du FLE (10 Práticas Pessoais)"
+
+        cursor.execute(
+            """
+            SELECT SUM(CASE WHEN status_resposta = 'Correto' THEN 1 ELSE 0 END) as acertos,
+                   SUM(CASE WHEN status_resposta = 'Parcialmente Correto' THEN 1 ELSE 0 END) as parciais
+            FROM submissoes
+            WHERE aluno_id = ? AND COALESCE(origem_submissao, 'curso') != 'pratica_pessoal'
+            """,
+            (aluno_id,),
+        )
+        stats_curso = cursor.fetchone()
+        if stats_curso:
+            xp_curso = ((stats_curso["acertos"] or 0) * 10) + ((stats_curso["parciais"] or 0) * 5)
+
     conn.close()
 
     return jsonify({
@@ -636,10 +774,17 @@ def avaliar():
         "tema": tema,
         "exercicio": exercicio,
         "resposta_aluno": resposta,
+        "transcricao_audio": resposta if (arquivo_audio_path or tipo_atividade == "expressao_oral") else None,
         "status_resposta": status_resposta,
         "feedback_ia": feedback_ia,
         "analise_professor": analise_prof,
-        "tentativa": tentativa
+        "tentativa": tentativa,
+        "xp_ganho": xp_ganho,
+        "progresso_xp": progresso_xp,
+        "xp_pessoal": progresso_xp,
+        "xp_curso": xp_curso,
+        "total_atividades": total_atividades,
+        "conquista_desbloqueada": conquista_desbloqueada,
     })
 
 # ===================== DASHBOARD DO PROFESSOR =====================
@@ -711,12 +856,29 @@ def aluno_atividades():
         active_page="aluno_atividades"
     )
 
+def _garantir_colunas_resposta_inbox(cursor, conn=None):
+    """Garante colunas incrementais de resposta rápida do aluno na tabela mensagens_inbox."""
+    cols_msg = [r[1] for r in cursor.execute("PRAGMA table_info(mensagens_inbox)").fetchall()]
+    alterou = False
+    if cols_msg:
+        if "resposta_aluno" not in cols_msg:
+            cursor.execute("ALTER TABLE mensagens_inbox ADD COLUMN resposta_aluno TEXT")
+            alterou = True
+        if "data_resposta" not in cols_msg:
+            cursor.execute("ALTER TABLE mensagens_inbox ADD COLUMN data_resposta TEXT")
+            alterou = True
+    if alterou and conn is not None:
+        conn.commit()
+
+
 @aluno_bp.route("/aluno/perfil", methods=["GET"])
 @login_required
 def aluno_perfil():
     aluno_id = session.get("aluno_id")
     conn = get_db()
     cursor = conn.cursor()
+
+    _garantir_colunas_resposta_inbox(cursor, conn)
 
     cursor.execute("""
         SELECT a.id, a.nome_completo, a.nome_completo as nome, a.matricula,
@@ -735,7 +897,8 @@ def aluno_perfil():
         session["aluno_nome"] = aluno["nome_completo"]
 
     cursor.execute("""
-        SELECT m.id, m.assunto, m.corpo, m.data_envio, m.lida_status, p.nome_completo as remetente_nome
+        SELECT m.id, m.assunto, m.corpo, m.data_envio, COALESCE(m.lida_status, 0) as lida_status,
+               m.resposta_aluno, m.data_resposta, p.nome_completo as remetente_nome
         FROM mensagens_inbox m
         LEFT JOIN professores p ON m.remetente_id = p.id
         WHERE m.destinatario_id = ?
@@ -832,6 +995,102 @@ def api_atualizar_perfil():
     except Exception as e:
         conn.close()
         return jsonify({"status": "erro", "mensagem": f"Erro ao atualizar perfil: {e}"}), 500
+
+
+@aluno_bp.route("/api/aluno/mensagem/marcar_lida", methods=["POST"])
+@login_required
+def api_aluno_marcar_mensagem_lida():
+    aluno_id = session.get("aluno_id")
+    dados = request.get_json(silent=True) if request.is_json else request.form
+    marcar_todas = str(dados.get("todas", "")).strip().lower() in ("true", "1", "sim")
+    mensagem_id = dados.get("mensagem_id")
+
+    conn = get_db()
+    cursor = conn.cursor()
+    try:
+        if marcar_todas:
+            cursor.execute(
+                "UPDATE mensagens_inbox SET lida_status = 1 WHERE destinatario_id = ?",
+                (aluno_id,),
+            )
+        else:
+            if not mensagem_id:
+                conn.close()
+                return jsonify({"status": "erro", "mensagem": "Mensagem não informada."}), 400
+            cursor.execute(
+                "SELECT id FROM mensagens_inbox WHERE id = ? AND destinatario_id = ?",
+                (mensagem_id, aluno_id),
+            )
+            if not cursor.fetchone():
+                conn.close()
+                return jsonify({"status": "erro", "mensagem": "Recado não encontrado."}), 404
+            cursor.execute(
+                "UPDATE mensagens_inbox SET lida_status = 1 WHERE id = ? AND destinatario_id = ?",
+                (mensagem_id, aluno_id),
+            )
+
+        conn.commit()
+        cursor.execute(
+            "SELECT COUNT(*) as c FROM mensagens_inbox WHERE destinatario_id = ? AND COALESCE(lida_status, 0) = 0",
+            (aluno_id,),
+        )
+        nao_lidas = (cursor.fetchone()["c"] or 0)
+        conn.close()
+        return jsonify({"status": "sucesso", "nao_lidas": nao_lidas})
+    except Exception as e:
+        conn.close()
+        return jsonify({"status": "erro", "mensagem": f"Erro ao atualizar leitura: {e}"}), 500
+
+
+@aluno_bp.route("/api/aluno/mensagem/responder", methods=["POST"])
+@login_required
+def api_aluno_responder_mensagem():
+    aluno_id = session.get("aluno_id")
+    dados = request.get_json(silent=True) if request.is_json else request.form
+    mensagem_id = dados.get("mensagem_id")
+    resposta = (dados.get("resposta") or "").strip()
+
+    if not mensagem_id or not resposta:
+        return jsonify({"status": "erro", "mensagem": "Informe a mensagem e o texto da resposta."}), 400
+    if len(resposta) > 1000:
+        return jsonify({"status": "erro", "mensagem": "A resposta deve ter no máximo 1000 caracteres."}), 400
+
+    conn = get_db()
+    cursor = conn.cursor()
+    try:
+        _garantir_colunas_resposta_inbox(cursor, conn)
+        cursor.execute(
+            "SELECT id FROM mensagens_inbox WHERE id = ? AND destinatario_id = ?",
+            (mensagem_id, aluno_id),
+        )
+        if not cursor.fetchone():
+            conn.close()
+            return jsonify({"status": "erro", "mensagem": "Recado não encontrado."}), 404
+
+        data_resp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+        cursor.execute("""
+            UPDATE mensagens_inbox
+            SET lida_status = 1, resposta_aluno = ?, data_resposta = ?
+            WHERE id = ? AND destinatario_id = ?
+        """, (resposta, data_resp, mensagem_id, aluno_id))
+        conn.commit()
+
+        cursor.execute(
+            "SELECT COUNT(*) as c FROM mensagens_inbox WHERE destinatario_id = ? AND COALESCE(lida_status, 0) = 0",
+            (aluno_id,),
+        )
+        nao_lidas = (cursor.fetchone()["c"] or 0)
+        conn.close()
+        return jsonify({
+            "status": "sucesso",
+            "mensagem": "Resposta enviada com sucesso ao professor!",
+            "resposta_aluno": resposta,
+            "data_resposta": data_resp,
+            "nao_lidas": nao_lidas,
+        })
+    except Exception as e:
+        conn.close()
+        return jsonify({"status": "erro", "mensagem": f"Erro ao enviar resposta: {e}"}), 500
 
 # ===================== MÓDULO DE PROVAS MULTIMODAIS =====================
 @aluno_bp.route("/aluno/prova/<int:avaliacao_id>", methods=["GET"])

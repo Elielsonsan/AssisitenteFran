@@ -59,8 +59,29 @@ function selecionarNivelCEFR(lvl) {
     }
 }
 
+function ocultarFeedbackAnterior() {
+    const resultContainer = document.getElementById("resultContainer");
+    const analiseProfessorBox = document.getElementById("analiseProfessorBox");
+    const btnTentarNovamente = document.getElementById("btnTentarNovamenteDica");
+    const arrow = document.getElementById("arrowIcon");
+    const feedbackContent = document.getElementById("feedbackContent");
+
+    if (resultContainer) resultContainer.classList.add("hidden");
+    if (analiseProfessorBox) analiseProfessorBox.classList.add("hidden");
+    if (btnTentarNovamente) btnTentarNovamente.classList.add("hidden");
+    if (arrow) arrow.style.transform = "rotate(0deg)";
+    if (feedbackContent) feedbackContent.innerHTML = "";
+
+    ultimaRespostaSubmetida = "";
+    if ("speechSynthesis" in window) {
+        try { window.speechSynthesis.cancel(); } catch (e) {}
+    }
+}
+window.ocultarFeedbackAnterior = ocultarFeedbackAnterior;
+
 async function gerarNovoDesafioIA(temaEscolhido = null, tipoEscolhido = null) {
     cancelarTentativa();
+    ocultarFeedbackAnterior();
     const btn = document.getElementById("btnGerarDesafio");
     const inputNivel = document.getElementById("nivel_cefr");
     const nivelText = document.getElementById("btnGerarNivel");
@@ -120,6 +141,8 @@ async function gerarNovoDesafioIA(temaEscolhido = null, tipoEscolhido = null) {
         // Se houver callback para ajustar UI da modalidade (ex: dicas de ditado ou botões rápidos)
         if (typeof aplicarAjustesModalidadeUI === "function") {
             aplicarAjustesModalidadeUI(tipoParam, data.exercicio, data.opcoes);
+        } else if (perguntaInput && typeof autoAjustarAlturaTextarea === "function") {
+            autoAjustarAlturaTextarea(perguntaInput, 76);
         }
 
         if (data.dica_inicial) {
@@ -148,6 +171,37 @@ async function gerarNovoDesafioIA(temaEscolhido = null, tipoEscolhido = null) {
     }
 }
 
+function obterCampoRespostaAtivo() {
+    const lacunaInput = document.getElementById("respostaLacunaInput");
+    const vfInput = document.getElementById("vfCorrecaoInput");
+    const vfWrap = document.getElementById("vfCorrecaoWrap");
+    const textarea = document.getElementById("resposta_aluno");
+
+    if (lacunaInput && lacunaInput.offsetParent !== null) {
+        return lacunaInput;
+    }
+    if (vfInput && vfWrap && vfWrap.style.display !== "none" && vfInput.offsetParent !== null) {
+        return vfInput;
+    }
+    return textarea;
+}
+
+function sincronizarCampoAtivo(target) {
+    if (!target) return;
+    const lacunaInput = document.getElementById("respostaLacunaInput");
+    const vfInput = document.getElementById("vfCorrecaoInput");
+    const textarea = document.getElementById("resposta_aluno");
+
+    if (typeof autoAjustarAlturaTextarea === "function") {
+        autoAjustarAlturaTextarea(target, target === textarea ? 88 : 76);
+    }
+    if (target === lacunaInput && textarea) {
+        textarea.value = target.value;
+    } else if (target === vfInput && typeof atualizarRespostaVFPeloInput === "function") {
+        atualizarRespostaVFPeloInput();
+    }
+}
+
 // Função carregarExemplo removida pois os exercícios agora requerem um exercicio_id validado via DB.
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -164,10 +218,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!form) return;
 
-    // Acessibilidade WCAG: Atalho de Teclado (Ctrl+Enter ou Cmd+Enter) para submeter a resposta
+    // Acessibilidade WCAG: Atalho de Teclado (Ctrl+Enter ou Cmd+Enter) para submeter a resposta + auto-expansão
     const respostaInput = document.getElementById("resposta_aluno");
     const lacunaInput = document.getElementById("respostaLacunaInput");
-    [respostaInput, lacunaInput].forEach(inp => {
+    const vfCorrecaoInput = document.getElementById("vfCorrecaoInput");
+    if (respostaInput) {
+        respostaInput.addEventListener("input", () => {
+            if (typeof autoAjustarAlturaTextarea === "function") {
+                autoAjustarAlturaTextarea(respostaInput, 88);
+            }
+        });
+    }
+    [respostaInput, lacunaInput, vfCorrecaoInput].forEach(inp => {
         if (inp) {
             inp.addEventListener("keydown", (e) => {
                 if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
@@ -185,18 +247,46 @@ document.addEventListener("DOMContentLoaded", () => {
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
+        if (typeof pararDitadoVozForcado === "function") {
+            pararDitadoVozForcado();
+        }
+        if (typeof pararDitadoAudioPlayer === "function") {
+            pararDitadoAudioPlayer();
+        }
+
         const tema = document.getElementById("tema_aula").value.trim();
         const pergunta = document.getElementById("pergunta").value.trim();
-        const lacunaInput = document.getElementById("respostaLacunaInput");
+        const tipoAtiv = (document.getElementById("tipo_atividade")?.value || "lacunas").trim().toLowerCase();
+        const lacunaInp = document.getElementById("respostaLacunaInput");
+        const vfInp = document.getElementById("vfCorrecaoInput");
         const respostaElem = document.getElementById("resposta_aluno");
-        if (lacunaInput && lacunaInput.offsetParent !== null && lacunaInput.value.trim()) {
-            respostaElem.value = lacunaInput.value.trim();
+
+        if (lacunaInp && lacunaInp.offsetParent !== null && lacunaInp.value.trim()) {
+            respostaElem.value = lacunaInp.value.trim();
+        } else if (tipoAtiv === "vf" && vfInp && vfInp.offsetParent !== null && typeof atualizarRespostaVFPeloInput === "function") {
+            atualizarRespostaVFPeloInput();
         }
+
         const resposta = respostaElem ? respostaElem.value.trim() : "";
         const exercicioId = document.getElementById("exercicio_id").value;
+        if (tipoAtiv === "expressao_oral" && window._oralGravandoAtivo) {
+            showToast("Clique em 'Parar Gravação' antes de enviar seu áudio para análise.", "aviso");
+            return;
+        }
+        const transcricaoOral = String(window._oralTranscricaoCapturada || resposta || "").trim();
+        const temAudioOralGravado = (tipoAtiv === "expressao_oral" && Boolean(window._oralAudioBlob));
 
-        if (!tema || !pergunta || !resposta) {
-            showToast("Por favor, preencha todos os campos antes de enviar.");
+        if (!tema || !pergunta) {
+            showToast("Por favor, selecione o tema e o exercício antes de enviar.", "aviso");
+            return;
+        }
+        if (tipoAtiv === "expressao_oral") {
+            if (!temAudioOralGravado && !transcricaoOral) {
+                showToast("Por favor, clique em 'Gravar Áudio' e pronuncie a frase em francês antes de analisar.", "aviso");
+                return;
+            }
+        } else if (!resposta) {
+            showToast("Por favor, preencha ou selecione sua resposta antes de enviar.", "aviso");
             return;
         }
 
@@ -211,30 +301,53 @@ document.addEventListener("DOMContentLoaded", () => {
         resultContainer.classList.add("hidden");
 
         if (typeof anunciarParaLeitorDeTela === "function") {
-            anunciarParaLeitorDeTela("Enviando sua resposta. O Assistente Fran está analisando sua conjugação, gramática e concordância...");
+            anunciarParaLeitorDeTela("Enviando sua resposta. O Assistente Fran está analisando sua conjugação, gramática e pronúncia...");
         }
 
         try {
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
                               document.querySelector('input[name="csrf_token"]')?.value || "";
 
-            // 2. Envio via POST para a rota /avaliar incluindo tentativa e nível CEFR
-            const response = await fetch("/avaliar", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": csrfToken
-                },
-                body: JSON.stringify({
-                    exercicio_id: exercicioId,
-                    tema: tema,
-                    exercicio: pergunta,
-                    resposta_aluno: resposta,
-                    tentativa: numeroTentativa,
-                    dica_anterior: dicaAtual,
-                    nivel_cefr: nivelCEFRSelecionado
-                })
-            });
+            let fetchOptions;
+            if (temAudioOralGravado) {
+                const fd = new FormData();
+                fd.append("exercicio_id", exercicioId);
+                fd.append("tema", tema);
+                fd.append("exercicio", pergunta);
+                fd.append("resposta_aluno", transcricaoOral);
+                fd.append("transcricao_oral", transcricaoOral);
+                fd.append("tentativa", String(numeroTentativa));
+                fd.append("dica_anterior", dicaAtual || "");
+                fd.append("nivel_cefr", nivelCEFRSelecionado || "A2");
+                fd.append("tipo_atividade", tipoAtiv);
+                fd.append("audio_oral", window._oralAudioBlob, "expressao_oral.webm");
+                fetchOptions = {
+                    method: "POST",
+                    headers: { "X-CSRFToken": csrfToken },
+                    body: fd
+                };
+            } else {
+                fetchOptions = {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": csrfToken
+                    },
+                    body: JSON.stringify({
+                        exercicio_id: exercicioId,
+                        tema: tema,
+                        exercicio: pergunta,
+                        resposta_aluno: resposta,
+                        tentativa: numeroTentativa,
+                        dica_anterior: dicaAtual,
+                        nivel_cefr: nivelCEFRSelecionado,
+                        tipo_atividade: tipoAtiv
+                    })
+                };
+            }
+
+            // 2. Envio via POST para a rota /avaliar
+            const response = await fetch("/avaliar", fetchOptions);
 
             const data = await response.json();
 
@@ -281,6 +394,7 @@ function exibirFeedback(data) {
     const resultContainer = document.getElementById("resultContainer");
     const statusBadge = document.getElementById("statusBadge");
     const cefrBadge = document.getElementById("cefrBadge");
+    const xpGainBadge = document.getElementById("xpGainBadge");
     const feedbackContent = document.getElementById("feedbackContent");
     const analiseProfessorText = document.getElementById("analiseProfessorText");
     const analiseProfessorBox = document.getElementById("analiseProfessorBox");
@@ -297,6 +411,28 @@ function exibirFeedback(data) {
         const lvl = (data.nivel_cefr || nivelCEFRSelecionado || "A2").toUpperCase();
         cefrBadge.textContent = `Niveau ${lvl}`;
         cefrBadge.className = `cefr-level-badge lvl-${lvl.toLowerCase()}`;
+    }
+
+    // Configurar feedback imediato de XP Pessoal e conquistas (separado do XP do curso)
+    if (xpGainBadge) {
+        if (typeof data.xp_ganho === "number" && data.xp_ganho > 0) {
+            const totalTexto = (typeof data.progresso_xp === "number" && data.progresso_xp > 0)
+                ? ` • Total na Prática: ${data.progresso_xp} XP`
+                : "";
+            xpGainBadge.textContent = `⚡ +${data.xp_ganho} XP Pessoal${totalTexto}`;
+            xpGainBadge.classList.remove("hidden");
+        } else {
+            xpGainBadge.classList.add("hidden");
+        }
+    }
+
+    const xpTopoValor = document.getElementById("xpPessoalTopoValor");
+    if (xpTopoValor && typeof data.progresso_xp === "number") {
+        xpTopoValor.textContent = `${data.progresso_xp} XP`;
+    }
+
+    if (data.conquista_desbloqueada && typeof showToast === "function") {
+        showToast(`🏅 Nova insígnia desbloqueada: ${data.conquista_desbloqueada}!`, "sucesso");
     }
 
     if (status === "Correto") {
@@ -370,11 +506,14 @@ function exibirFeedback(data) {
 function tentarNovamenteComDica() {
     numeroTentativa++;
 
-    // Exibe o banner fixo com a dica acima do campo de digitação
+    // Exibe o banner fixo com a dica acima do campo de resposta
     const banner = document.getElementById("activeDicaBanner");
     const badge = document.getElementById("badgeTentativa");
     const dicaText = document.getElementById("activeDicaText");
-    const textarea = document.getElementById("resposta_aluno");
+    const tipoAtiv = (document.getElementById("tipo_atividade")?.value || "lacunas").trim().toLowerCase();
+    const campoAtivo = typeof obterCampoRespostaAtivo === "function"
+        ? obterCampoRespostaAtivo()
+        : document.getElementById("resposta_aluno");
     const resultContainer = document.getElementById("resultContainer");
 
     if (badge) badge.textContent = `Tentativa ${numeroTentativa}`;
@@ -389,13 +528,25 @@ function tentarNovamenteComDica() {
     if (banner) banner.classList.remove("hidden");
     if (resultContainer) resultContainer.classList.add("hidden");
 
-    if (textarea) {
-        textarea.focus();
-        textarea.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (tipoAtiv === "expressao_oral") {
+        if (typeof limparAudioOralGravado === "function") {
+            limparAudioOralGravado();
+        }
+        const btnGravar = document.getElementById("btnGravarOral");
+        const oralBox = document.getElementById("respostaOralContainer");
+        if (btnGravar) {
+            btnGravar.scrollIntoView({ behavior: "smooth", block: "center" });
+            btnGravar.focus();
+        } else if (oralBox) {
+            oralBox.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+    } else if (campoAtivo) {
+        campoAtivo.focus();
+        campoAtivo.scrollIntoView({ behavior: "smooth", block: "center" });
     }
 
     if (typeof anunciarParaLeitorDeTela === "function") {
-        anunciarParaLeitorDeTela(`Tentativa ${numeroTentativa} iniciada com dica pedagógica ativa. Campo de resposta pronto para sua revisão.`);
+        anunciarParaLeitorDeTela(`Tentativa ${numeroTentativa} iniciada com dica pedagógica ativa. Pronto para sua nova resposta.`);
     }
 }
 
@@ -427,16 +578,28 @@ function toggleAnaliseProfessor() {
 
 function novaSubmissao() {
     cancelarTentativa();
-    const resultContainer = document.getElementById("resultContainer");
+    ocultarFeedbackAnterior();
+    if (typeof pararDitadoVozForcado === "function") pararDitadoVozForcado();
+    if (typeof pararDitadoAudioPlayer === "function") pararDitadoAudioPlayer();
+    if (typeof limparAudioOralGravado === "function") limparAudioOralGravado();
     const textarea = document.getElementById("resposta_aluno");
     const lacunaInput = document.getElementById("respostaLacunaInput");
-    if (resultContainer) resultContainer.classList.add("hidden");
+    const vfInput = document.getElementById("vfCorrecaoInput");
     if (textarea) textarea.value = "";
     if (lacunaInput) lacunaInput.value = "";
-    const tipo = document.getElementById("tipo_atividade")?.value || "lacunas";
-    const pergunta = document.getElementById("pergunta")?.value || "";
-    if (typeof aplicarAjustesModalidadeUI === "function") {
-        aplicarAjustesModalidadeUI(tipo, pergunta);
+    if (vfInput) vfInput.value = "";
+    if (typeof gerarNovoDesafioIA === "function") {
+        gerarNovoDesafioIA();
+    } else {
+        const tipo = document.getElementById("tipo_atividade")?.value || "lacunas";
+        const pergunta = document.getElementById("pergunta")?.value || "";
+        if (typeof aplicarAjustesModalidadeUI === "function") {
+            aplicarAjustesModalidadeUI(tipo, pergunta);
+        }
+    }
+    const formCard = document.querySelector(".form-card");
+    if (formCard) {
+        formCard.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 }
 
@@ -466,16 +629,7 @@ function inserirCharBotao(btn) {
 }
 
 function inserirCaractere(char) {
-    const lacunaInput = document.getElementById("respostaLacunaInput");
-    const vfInput = document.getElementById("vfCorrecaoInput");
-    const textarea = document.getElementById("resposta_aluno");
-    
-    let target = textarea;
-    if (lacunaInput && lacunaInput.offsetParent !== null) {
-        target = lacunaInput;
-    } else if (vfInput && vfInput.offsetParent !== null && (document.activeElement === vfInput || (textarea && textarea.offsetParent === null))) {
-        target = vfInput;
-    }
+    const target = obterCampoRespostaAtivo();
     if (!target) return;
 
     const start = target.selectionStart !== undefined ? target.selectionStart : target.value.length;
@@ -491,11 +645,7 @@ function inserirCaractere(char) {
     }
 
     target.focus();
-    if (target === lacunaInput && textarea) {
-        textarea.value = target.value;
-    } else if (target === vfInput && typeof atualizarRespostaVFPeloInput === "function") {
-        atualizarRespostaVFPeloInput();
-    }
+    sincronizarCampoAtivo(target);
 }
 
 /**
@@ -516,97 +666,33 @@ if ('speechSynthesis' in window) {
 }
 
 function falarTextoFrances(texto, btnElement = null) {
+    if (typeof window.falarTextoFrancesBase === "function") {
+        window.falarTextoFrancesBase(texto, btnElement);
+        return;
+    }
+
     if (!('speechSynthesis' in window)) {
-        showToast("Seu navegador não possui suporte à síntese de voz nativa.");
+        showToast("Seu navegador não possui suporte à síntese de voz nativa.", "aviso");
         return;
     }
 
-    // Se clicou no botão que já está falando, para a reprodução
-    if (btnElement && btnElement.classList.contains("speaking")) {
-        window.speechSynthesis.cancel();
-        btnElement.classList.remove("speaking");
-        btnElement.setAttribute("aria-pressed", "false");
-        if (btnElement._originalHtmlSalvo) {
-            btnElement.innerHTML = btnElement._originalHtmlSalvo;
-        }
-        return;
-    }
-
-    if (!texto || !texto.trim()) {
-        showToast("Digite ou selecione uma frase em francês para ouvir a pronúncia.");
-        return;
-    }
-
-    // Para qualquer áudio em andamento e reseta botões ativos
     window.speechSynthesis.cancel();
-    document.querySelectorAll(".btn-audio-pill.speaking, .french-char-btn.speaking, .btn-ouvir-exemplo.speaking").forEach(b => {
-        b.classList.remove("speaking");
-        b.setAttribute("aria-pressed", "false");
-        if (b._originalHtmlSalvo) {
-            b.innerHTML = b._originalHtmlSalvo;
-        }
-    });
-
-    // Limpeza inteligente de Markdown e formatações para leitura pura
-    const textoLimpo = texto
-        .replace(/[*_#`~>«»\\]/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
-
+    const textoLimpo = String(texto || "").replace(/[*_#`~>«»\\]/g, " ").replace(/\s+/g, " ").trim();
+    if (!textoLimpo) return;
     const utterance = new SpeechSynthesisUtterance(textoLimpo);
     utterance.lang = 'fr-FR';
-    utterance.rate = 0.88; // Cadência pedagógica levemente pausada para estudantes de FLE
-    utterance.pitch = 1.0;
-
+    utterance.rate = 0.88;
     const vozes = window.speechSynthesis.getVoices();
     const vozFrancesa = vozes.find(v => v.lang === 'fr-FR' || v.lang.startsWith('fr') || v.lang.includes('fr'));
-    if (vozFrancesa) {
-        utterance.voice = vozFrancesa;
-    }
-
-    if (btnElement) {
-        if (!btnElement._originalHtmlSalvo) {
-            btnElement._originalHtmlSalvo = btnElement.innerHTML;
-        }
-        btnElement.classList.add("speaking");
-        btnElement.setAttribute("aria-pressed", "true");
-        btnElement.innerHTML = `<svg class="line-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 3px; vertical-align: text-bottom;"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg> <span>Parar</span>`;
-
-        const resetarBtn = () => {
-            btnElement.classList.remove("speaking");
-            btnElement.setAttribute("aria-pressed", "false");
-            if (btnElement._originalHtmlSalvo) {
-                btnElement.innerHTML = btnElement._originalHtmlSalvo;
-            }
-        };
-
-        utterance.onend = resetarBtn;
-        utterance.onerror = (e) => {
-            console.warn("SpeechSynthesis error:", e);
-            resetarBtn();
-        };
-    }
-
-    // Bugfix comum do Chrome: timeout após cancel() e verificação de paused
-    setTimeout(() => {
-        try {
-            if (window.speechSynthesis.paused) {
-                window.speechSynthesis.resume();
-            }
-            window.speechSynthesis.speak(utterance);
-        } catch (e) {
-            console.error("Erro ao reproduzir voz:", e);
-        }
-    }, 40);
+    if (vozFrancesa) utterance.voice = vozFrancesa;
+    window.speechSynthesis.speak(utterance);
 }
 
 function ouvirTextoDigitado() {
-    const lacunaInput = document.getElementById("respostaLacunaInput");
-    const textarea = document.getElementById("resposta_aluno");
-    const target = (lacunaInput && lacunaInput.offsetParent !== null) ? lacunaInput : textarea;
+    const target = obterCampoRespostaAtivo();
     const btn = document.getElementById("btnAudioInput");
     if (!target || !target.value.trim()) {
-        showToast("Digite uma frase em francês no campo abaixo para ouvir a pronúncia.");
+        showToast("Digite ou dite uma frase em francês no campo abaixo para ouvir a pronúncia.", "info");
         if (target) target.focus();
         return;
     }
@@ -617,8 +703,8 @@ function ouvirRespostaSubmetida() {
     const btn = document.getElementById("btnOuvirResposta");
     const textarea = document.getElementById("resposta_aluno");
     const texto = ultimaRespostaSubmetida || (textarea ? textarea.value : "");
-    if (!texto) {
-        showToast("Nenhuma frase submetida para reproduzir.", 'erro');
+    if (!texto || texto.startsWith("[")) {
+        showToast("Nenhuma frase falada/digitada pôde ser transcrita para reprodução.", 'aviso');
         return;
     }
     falarTextoFrances(texto, btn);
@@ -645,82 +731,186 @@ function ouvirEnunciado() {
 }
 
 /**
- * Reconhecimento de Voz Nativo em Francês (Web Speech Recognition API)
+ * Reconhecimento de Voz Nativo em Francês Contínuo e Interativo (Web Speech Recognition API)
  */
 let reconhecimentoVoz = null;
 let gravandoVoz = false;
+let ditadoAtivoPeloUsuario = false;
+
+const ICONE_MIC_PADRAO = `<svg class="line-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 3px; vertical-align: text-bottom;"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>Falar`;
+const ICONE_MIC_PARAR = `<svg class="line-icon" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="margin-right: 4px; vertical-align: text-bottom;"><rect x="5" y="5" width="14" height="14" rx="2"></rect></svg><span>Parar Fala</span>`;
+
+function atualizarEstadoBotaoFalar(ativo, textoParcial = "") {
+    const btn = document.getElementById("btnDictation");
+    const liveBar = document.getElementById("dictationLiveBar");
+    const liveText = document.getElementById("dictationLiveText");
+
+    if (btn) {
+        btn.classList.toggle("recording", ativo);
+        btn.setAttribute("aria-pressed", ativo ? "true" : "false");
+        btn.setAttribute("aria-label", ativo ? "Ouvindo em francês — clique para parar de falar" : "Ditar resposta por voz em francês");
+        btn.innerHTML = ativo ? ICONE_MIC_PARAR : ICONE_MIC_PADRAO;
+    }
+    if (liveBar) {
+        liveBar.classList.toggle("hidden", !ativo);
+    }
+    if (liveText && ativo) {
+        liveText.textContent = textoParcial
+            ? `🎙️ Ouvindo (fr-FR): "${textoParcial}"`
+            : '🎙️ Ouvindo em francês (fr-FR)... fale sua frase com calma; clique em "Parar Fala" ao terminar.';
+    }
+}
+
+function pararDitadoVozForcado() {
+    ditadoAtivoPeloUsuario = false;
+    gravandoVoz = false;
+    if (reconhecimentoVoz) {
+        try {
+            reconhecimentoVoz.onend = null;
+            reconhecimentoVoz.stop();
+        } catch (e) {}
+    }
+    atualizarEstadoBotaoFalar(false);
+}
+
+function iniciarDitadoVozSeInativo() {
+    if (!ditadoAtivoPeloUsuario) {
+        alternarDitadoVoz();
+    }
+}
+window.iniciarDitadoVozSeInativo = iniciarDitadoVozSeInativo;
+
+function _inserirTranscricaoNoCampoAtivo(transcricao) {
+    const target = obterCampoRespostaAtivo();
+    if (!target || !transcricao) return;
+
+    const start = target.selectionStart !== undefined ? target.selectionStart : target.value.length;
+    const end = target.selectionEnd !== undefined ? target.selectionEnd : target.value.length;
+    const currentText = target.value;
+
+    const charAntes = start > 0 ? currentText[start - 1] : "";
+    const precisaEspacoAntes = start > 0 && !/\s/.test(charAntes) && charAntes !== "'";
+    const espacoAntes = precisaEspacoAntes ? " " : "";
+    const novoTexto = currentText.substring(0, start) + espacoAntes + transcricao + currentText.substring(end);
+    target.value = novoTexto;
+    const novaPos = start + espacoAntes.length + transcricao.length;
+    try {
+        target.selectionStart = target.selectionEnd = novaPos;
+    } catch (e) {}
+    target.focus();
+    sincronizarCampoAtivo(target);
+}
+
+function _criarEIniciarSessaoVoz() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) return;
+
+    reconhecimentoVoz = new SpeechRecognition();
+    reconhecimentoVoz.lang = 'fr-FR';
+    reconhecimentoVoz.continuous = true;
+    reconhecimentoVoz.interimResults = true;
+    reconhecimentoVoz.maxAlternatives = 1;
+
+    reconhecimentoVoz.onstart = () => {
+        gravandoVoz = true;
+        atualizarEstadoBotaoFalar(true);
+        if (typeof anunciarParaLeitorDeTela === "function") {
+            anunciarParaLeitorDeTela("Microfone contínuo ativado. Fale em francês e clique em Parar Fala ao terminar.");
+        }
+    };
+
+    reconhecimentoVoz.onresult = (event) => {
+        const tipoAtiv = (document.getElementById("tipo_atividade")?.value || "").trim().toLowerCase();
+        let interimTxt = "";
+        let finalTxt = "";
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            const res = event.results[i];
+            const trecho = res[0] ? res[0].transcript : "";
+            if (res.isFinal) {
+                finalTxt += (finalTxt ? " " : "") + trecho.trim();
+            } else {
+                interimTxt += trecho;
+            }
+        }
+        if (tipoAtiv === "expressao_oral" || window._oralGravandoAtivo) {
+            if (interimTxt.trim()) {
+                window._oralTranscricaoParcial = interimTxt.trim();
+            }
+            if (finalTxt.trim()) {
+                window._oralTranscricaoCapturada = [window._oralTranscricaoCapturada || "", finalTxt.trim()]
+                    .map(s => String(s || "").trim())
+                    .filter(Boolean)
+                    .join(" ")
+                    .trim();
+                window._oralTranscricaoParcial = "";
+            }
+            if (typeof window.atualizarOralTranscricaoUI === "function") {
+                window.atualizarOralTranscricaoUI(window._oralTranscricaoCapturada || "", window._oralTranscricaoParcial || "");
+            }
+            return;
+        }
+        if (interimTxt.trim()) {
+            atualizarEstadoBotaoFalar(true, interimTxt.trim());
+        }
+        if (finalTxt.trim()) {
+            _inserirTranscricaoNoCampoAtivo(finalTxt.trim());
+            atualizarEstadoBotaoFalar(true, "");
+            if (typeof anunciarParaLeitorDeTela === "function") {
+                anunciarParaLeitorDeTela(`Texto reconhecido: ${finalTxt.trim()}`);
+            }
+        }
+    };
+
+    reconhecimentoVoz.onerror = (event) => {
+        console.warn("Aviso no reconhecimento de voz:", event.error);
+        if (event.error === 'not-allowed' || event.error === 'service-not-allowed' || event.error === 'audio-capture') {
+            const gravandoOral = Boolean(window._oralGravandoAtivo);
+            pararDitadoVozForcado();
+            if (!gravandoOral) {
+                showToast("Acesso ao microfone foi negado ou indisponível. Libere a permissão no navegador para usar a fala em francês.", 'erro');
+            }
+        }
+        // Em 'no-speech' ou 'aborted', mantém ditadoAtivoPeloUsuario = true para retomar até o aluno clicar em Parar
+    };
+
+    reconhecimentoVoz.onend = () => {
+        gravandoVoz = false;
+        if (ditadoAtivoPeloUsuario) {
+            setTimeout(() => {
+                if (ditadoAtivoPeloUsuario) {
+                    try {
+                        _criarEIniciarSessaoVoz();
+                    } catch (e) {
+                        pararDitadoVozForcado();
+                    }
+                }
+            }, 140);
+        } else {
+            atualizarEstadoBotaoFalar(false);
+        }
+    };
+
+    reconhecimentoVoz.start();
+}
 
 function alternarDitadoVoz() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-        showToast("Seu navegador não possui suporte ao reconhecimento de voz nativo.\nRecomendamos usar Google Chrome, Microsoft Edge ou Safari para ditar em francês.");
+        showToast("Seu navegador não possui suporte ao reconhecimento de voz nativo.\nRecomendamos usar Google Chrome, Microsoft Edge ou Safari para ditar em francês.", "aviso");
         return;
     }
 
-    const btn = document.getElementById("btnDictation");
-    const textarea = document.getElementById("resposta_aluno");
-
-    if (gravandoVoz && reconhecimentoVoz) {
-        reconhecimentoVoz.stop();
+    if (ditadoAtivoPeloUsuario) {
+        pararDitadoVozForcado();
         return;
     }
 
     try {
-        reconhecimentoVoz = new SpeechRecognition();
-        reconhecimentoVoz.lang = 'fr-FR';
-        reconhecimentoVoz.interimResults = false;
-        reconhecimentoVoz.maxAlternatives = 1;
-
-        reconhecimentoVoz.onstart = () => {
-            gravandoVoz = true;
-            if (btn) {
-                btn.classList.add("recording");
-                btn.setAttribute("aria-label", "Gravando voz em francês... Clique para parar");
-                btn.innerHTML = `<svg class="line-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 3px; vertical-align: text-bottom;"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg> <span>Ouvindo...</span>`;
-            }
-            if (typeof anunciarParaLeitorDeTela === "function") {
-                anunciarParaLeitorDeTela("Microfone ativado. Fale em francês...");
-            }
-        };
-
-        reconhecimentoVoz.onresult = (event) => {
-            const transcricao = event.results[0][0].transcript;
-            if (textarea && transcricao) {
-                const start = textarea.selectionStart !== undefined ? textarea.selectionStart : textarea.value.length;
-                const end = textarea.selectionEnd !== undefined ? textarea.selectionEnd : textarea.value.length;
-                const currentText = textarea.value;
-
-                const espacoAntes = (start > 0 && currentText[start - 1] !== ' ') ? ' ' : '';
-                const novoTexto = currentText.substring(0, start) + espacoAntes + transcricao + currentText.substring(end);
-                textarea.value = novoTexto;
-                textarea.selectionStart = textarea.selectionEnd = start + espacoAntes.length + transcricao.length;
-                textarea.focus();
-                if (typeof anunciarParaLeitorDeTela === "function") {
-                    anunciarParaLeitorDeTela(`Texto reconhecido: ${transcricao}`);
-                }
-            }
-        };
-
-        reconhecimentoVoz.onerror = (event) => {
-            console.warn("Aviso no reconhecimento de voz:", event.error);
-            if (event.error === 'not-allowed') {
-                showToast("Acesso ao microfone foi negado. Por favor, libere a permissão no navegador para usar o ditado em francês.", 'erro');
-            }
-        };
-
-        reconhecimentoVoz.onend = () => {
-            gravandoVoz = false;
-            if (btn) {
-                btn.classList.remove("recording");
-                btn.setAttribute("aria-label", "Ditar resposta por voz em francês");
-                btn.innerHTML = `<svg class="line-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 3px; vertical-align: text-bottom;"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>Falar`;
-            }
-        };
-
-        reconhecimentoVoz.start();
-
+        ditadoAtivoPeloUsuario = true;
+        _criarEIniciarSessaoVoz();
     } catch (e) {
         console.error("Falha ao iniciar SpeechRecognition:", e);
+        pararDitadoVozForcado();
         showToast("Não foi possível iniciar o microfone no momento.", 'erro');
     }
 }
@@ -769,6 +959,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function aceitarReforco(reforcoId) {
     cancelarTentativa();
+    ocultarFeedbackAnterior();
     const btn = document.getElementById("btnAceitarReforco");
     const banner = document.getElementById("reforco-banner");
     
@@ -805,15 +996,22 @@ async function aceitarReforco(reforcoId) {
             if (temaInput && data.tema) temaInput.value = data.tema;
             if (perguntaInput && data.exercicio) perguntaInput.value = data.exercicio;
             if (exercicioIdInput && data.exercicio_id) exercicioIdInput.value = data.exercicio_id;
-            
-            if (respostaInput) {
-                respostaInput.value = "";
-            }
-            if (respostaLacunaInput) {
-                respostaLacunaInput.value = "";
-                respostaLacunaInput.focus();
-            } else if (respostaInput) {
-                respostaInput.focus();
+
+            const tipoAtivInput = document.getElementById("tipo_atividade");
+            if (tipoAtivInput) tipoAtivInput.value = "lacunas";
+
+            if (typeof selecionarModalidadeFormato === "function") {
+                selecionarModalidadeFormato("lacunas");
+            } else if (typeof aplicarAjustesModalidadeUI === "function") {
+                aplicarAjustesModalidadeUI("lacunas", data.exercicio || "");
+            } else {
+                if (respostaInput) respostaInput.value = "";
+                if (respostaLacunaInput) {
+                    respostaLacunaInput.value = "";
+                    respostaLacunaInput.focus();
+                } else if (respostaInput) {
+                    respostaInput.focus();
+                }
             }
 
             showToast("Missão de reforço carregada! Complete o exercício abaixo.", "sucesso");
@@ -853,15 +1051,20 @@ async function aceitarReforco(reforcoId) {
 
 // Sistema Global de Toasts
 function showToast(mensagem, tipo = 'sucesso') {
+    const tipoNorm = String(tipo || 'sucesso').toLowerCase();
+    const isErro = tipoNorm === 'erro' || tipoNorm === 'error';
+    const isAviso = tipoNorm === 'aviso' || tipoNorm === 'warning';
+    const isInfo = tipoNorm === 'info';
+
     if (typeof anunciarParaLeitorDeTela === "function") {
-        anunciarParaLeitorDeTela(mensagem, tipo === 'erro');
+        anunciarParaLeitorDeTela(mensagem, isErro);
     }
     const container = document.getElementById('toast-container');
     if (!container) return;
     const toast = document.createElement('div');
-    toast.setAttribute('role', tipo === 'erro' ? 'alert' : 'status');
-    toast.setAttribute('aria-live', tipo === 'erro' ? 'assertive' : 'polite');
-    const bg = tipo === 'erro' ? '#ef4444' : '#10b981';
+    toast.setAttribute('role', isErro ? 'alert' : 'status');
+    toast.setAttribute('aria-live', isErro ? 'assertive' : 'polite');
+    const bg = isErro ? '#ef4444' : (isAviso ? '#f59e0b' : (isInfo ? '#3b82f6' : '#10b981'));
     toast.style.cssText = 'background: ' + bg + '; color: white; padding: 12px 24px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-size: 0.95rem; font-weight: 500; opacity: 0; transform: translateY(10px); transition: all 0.3s ease;';
     toast.innerText = mensagem;
     container.appendChild(toast);

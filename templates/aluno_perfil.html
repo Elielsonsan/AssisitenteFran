@@ -903,6 +903,251 @@
 [data-theme="dark"] .perfil-msg-body {
     color: #D1D5DB;
 }
+
+/* Filtros simples e fluxo de leitura/resposta nos Recados */
+.perfil-msg-filters {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.perfil-msg-filter-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.perfil-msg-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 13px;
+    border-radius: 999px;
+    background: #F3F4F6;
+    border: 1px solid #E5E7EB;
+    color: #374151;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.16s ease;
+}
+
+.perfil-msg-filter-btn:hover {
+    border-color: #18191E;
+    color: #111827;
+}
+
+.perfil-msg-filter-btn.active {
+    background: #18191E;
+    color: #FFFFFF;
+    border-color: #18191E;
+}
+
+[data-theme="dark"] .perfil-msg-filter-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #D1D5DB;
+}
+
+[data-theme="dark"] .perfil-msg-filter-btn.active {
+    background: #FCA311;
+    color: #111827;
+    border-color: #FCA311;
+}
+
+.perfil-msg-markall-btn {
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(22, 163, 74, 0.1);
+    border: 1px solid rgba(22, 163, 74, 0.28);
+    color: #15803D;
+    font-size: 0.76rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.16s ease;
+}
+
+.perfil-msg-markall-btn:hover {
+    background: #16A34A;
+    color: #FFFFFF;
+}
+
+[data-theme="dark"] .perfil-msg-markall-btn {
+    color: #4ADE80;
+}
+
+.perfil-msg-item.msg-nao-lida {
+    border-left: 4px solid #FCA311 !important;
+    background: #FFFDF7 !important;
+}
+
+[data-theme="dark"] .perfil-msg-item.msg-nao-lida {
+    background: rgba(252, 163, 17, 0.06) !important;
+}
+
+.perfil-msg-status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+
+.perfil-msg-status-badge.unread {
+    background: rgba(252, 163, 17, 0.18);
+    color: #B45309;
+    border: 1px solid rgba(252, 163, 17, 0.45);
+}
+
+.perfil-msg-status-badge.read {
+    background: rgba(22, 163, 74, 0.12);
+    color: #15803D;
+    border: 1px solid rgba(22, 163, 74, 0.25);
+}
+
+[data-theme="dark"] .perfil-msg-status-badge.unread {
+    color: #FCA311;
+}
+
+[data-theme="dark"] .perfil-msg-status-badge.read {
+    color: #4ADE80;
+}
+
+.perfil-msg-reply-box-sent {
+    margin-top: 0.8rem;
+    padding: 0.7rem 0.9rem;
+    border-radius: 12px;
+    background: rgba(20, 33, 61, 0.05);
+    border-left: 3px solid #14213D;
+    font-size: 0.84rem;
+    color: #1F2937;
+}
+
+[data-theme="dark"] .perfil-msg-reply-box-sent {
+    background: rgba(255, 255, 255, 0.05);
+    border-left-color: #FCA311;
+    color: #E5E7EB;
+}
+
+.perfil-msg-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 0.85rem;
+    padding-top: 0.75rem;
+    border-top: 1px dashed #E5E7EB;
+}
+
+[data-theme="dark"] .perfil-msg-actions {
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.perfil-msg-action-btn {
+    padding: 6px 13px;
+    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1px solid #D1D5DB;
+    background: #FFFFFF;
+    color: #14213D;
+    transition: all 0.16s ease;
+}
+
+.perfil-msg-action-btn:hover {
+    border-color: #14213D;
+    background: #F3F4F6;
+}
+
+.perfil-msg-action-btn.confirm {
+    background: #14213D;
+    color: #FFFFFF;
+    border-color: #14213D;
+}
+
+.perfil-msg-action-btn.confirm:hover {
+    background: #FCA311;
+    color: #14213D;
+    border-color: #FCA311;
+}
+
+[data-theme="dark"] .perfil-msg-action-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #F9FAFB;
+}
+
+.perfil-msg-reply-form {
+    margin-top: 0.8rem;
+    padding: 0.85rem;
+    border-radius: 14px;
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+}
+
+[data-theme="dark"] .perfil-msg-reply-form {
+    background: #121318;
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.perfil-msg-quick-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 0.6rem;
+}
+
+.perfil-msg-quick-chip {
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid #E5E7EB;
+    background: #F9FAFB;
+    color: #374151;
+    font-size: 0.73rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.perfil-msg-quick-chip:hover {
+    border-color: #FCA311;
+    background: rgba(252, 163, 17, 0.12);
+}
+
+[data-theme="dark"] .perfil-msg-quick-chip {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #E5E7EB;
+}
+
+.perfil-msg-reply-textarea {
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    border-radius: 10px;
+    border: 1px solid #D1D5DB;
+    background: #FFFFFF;
+    color: #111827;
+    font-size: 0.85rem;
+    font-family: inherit;
+    resize: vertical;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.perfil-msg-reply-textarea:focus {
+    border-color: #14213D;
+}
+
+[data-theme="dark"] .perfil-msg-reply-textarea {
+    background: #181920;
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #F9FAFB;
+}
 </style>
 {% endblock %}
 
@@ -922,144 +1167,7 @@
             </p>
         </header>
 
-        <!-- 2. Linha de 3 Mini-KPIs com Ondas Crescentes e Botão Pill Escuro (#18191E) -->
-        <section class="perfil-kpis-grid" aria-label="Resumo Acadêmico do Estudante">
-            <!-- Card 1: Nível CEFR Atual -->
-            <article class="perfil-kpi-card">
-                <div class="perfil-kpi-top-row">
-                    <div>
-                        <span class="perfil-kpi-label">Nível CEFR Atual</span>
-                        <div class="perfil-kpi-primary">{{ aluno.nivel_cefr or 'A1' }}</div>
-                    </div>
-                    <svg class="perfil-kpi-wave-svg" viewBox="0 0 120 48" preserveAspectRatio="none" aria-hidden="true">
-                        <defs>
-                            <linearGradient id="perfilWaveGrad1" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#4B5563" stop-opacity="0.28"/>
-                                <stop offset="100%" stop-color="#4B5563" stop-opacity="0.0"/>
-                            </linearGradient>
-                        </defs>
-                        <path d="M2,40 C22,38 34,26 54,28 C74,30 92,10 118,6 L118,46 L2,46 Z" fill="url(#perfilWaveGrad1)"/>
-                        <path d="M2,40 C22,38 34,26 54,28 C74,30 92,10 118,6" fill="none" stroke="#4B5563" stroke-width="2.4" stroke-linecap="round"/>
-                    </svg>
-                </div>
-                <div class="perfil-kpi-mid-row">
-                    <div>
-                        <span class="perfil-kpi-label">Turma Vinculada</span>
-                        <div class="perfil-kpi-subval">{{ aluno.turma_nome or 'Turma FLE' }}</div>
-                    </div>
-                    <span class="perfil-kpi-trend">▲ Em Progresso</span>
-                </div>
-                <div class="perfil-kpi-cta-row">
-                    <a href="/aluno/dashboard" class="perfil-pill-btn">Ver Meu Desempenho</a>
-                </div>
-            </article>
-
-            <!-- Card 2: Total Praticado -->
-            <article class="perfil-kpi-card">
-                <div class="perfil-kpi-top-row">
-                    <div>
-                        <span class="perfil-kpi-label">Total Praticado</span>
-                        <div class="perfil-kpi-primary">{{ total_submissoes }}</div>
-                    </div>
-                    <svg class="perfil-kpi-wave-svg" viewBox="0 0 120 48" preserveAspectRatio="none" aria-hidden="true">
-                        <defs>
-                            <linearGradient id="perfilWaveGrad2" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#4B5563" stop-opacity="0.28"/>
-                                <stop offset="100%" stop-color="#4B5563" stop-opacity="0.0"/>
-                            </linearGradient>
-                        </defs>
-                        <path d="M2,42 C26,34 44,32 66,20 C86,10 100,12 118,5 L118,46 L2,46 Z" fill="url(#perfilWaveGrad2)"/>
-                        <path d="M2,42 C26,34 44,32 66,20 C86,10 100,12 118,5" fill="none" stroke="#4B5563" stroke-width="2.4" stroke-linecap="round"/>
-                    </svg>
-                </div>
-                <div class="perfil-kpi-mid-row">
-                    <div>
-                        <span class="perfil-kpi-label">Submissões Registradas</span>
-                        <div class="perfil-kpi-subval">Prática &amp; Avaliações</div>
-                    </div>
-                    <span class="perfil-kpi-trend">▲ Constante</span>
-                </div>
-                <div class="perfil-kpi-cta-row">
-                    <a href="/aluno/atividades" class="perfil-pill-btn">Ir para Atividades</a>
-                </div>
-            </article>
-
-            <!-- Card 3: Caixa de Mensagens -->
-            <article class="perfil-kpi-card">
-                <div class="perfil-kpi-top-row">
-                    <div>
-                        <span class="perfil-kpi-label">Recados Docentes</span>
-                        <div class="perfil-kpi-primary">{{ mensagens|length }}</div>
-                    </div>
-                    <svg class="perfil-kpi-wave-svg" viewBox="0 0 120 48" preserveAspectRatio="none" aria-hidden="true">
-                        <defs>
-                            <linearGradient id="perfilWaveGrad3" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#4B5563" stop-opacity="0.28"/>
-                                <stop offset="100%" stop-color="#4B5563" stop-opacity="0.0"/>
-                            </linearGradient>
-                        </defs>
-                        <path d="M2,39 C24,39 42,24 64,22 C86,20 98,9 118,6 L118,46 L2,46 Z" fill="url(#perfilWaveGrad3)"/>
-                        <path d="M2,39 C24,39 42,24 64,22 C86,20 98,9 118,6" fill="none" stroke="#4B5563" stroke-width="2.4" stroke-linecap="round"/>
-                    </svg>
-                </div>
-                <div class="perfil-kpi-mid-row">
-                    <div>
-                        <span class="perfil-kpi-label">Caixa de Entrada</span>
-                        <div class="perfil-kpi-subval">{{ 'Em dia' if mensagens|length == 0 else 'Comunicados Ativos' }}</div>
-                    </div>
-                    <span class="perfil-kpi-trend">▲ Tutoria FLE</span>
-                </div>
-                <div class="perfil-kpi-cta-row">
-                    <a href="#secaoMensagensPerfil" class="perfil-pill-btn">Ler Comunicados</a>
-                </div>
-            </article>
-        </section>
-
-        <!-- 3. Barra de Busca com Autocomplete + Chips Rápidos (Abaixo dos Cards, 100% da largura) -->
-        <div class="perfil-search-wrapper no-print" id="perfilSearchWrapper">
-            <div class="perfil-search-box">
-                <span class="perfil-search-icon" aria-hidden="true">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                </span>
-                <input
-                    type="text"
-                    id="inputBuscaMensagensPerfil"
-                    class="perfil-search-input"
-                    placeholder="Pesquisar recado dos professores por assunto, remetente ou conteúdo..."
-                    autocomplete="off"
-                    oninput="filtrarMensagensPerfil(this.value)"
-                    aria-label="Pesquisar recados no perfil"
-                >
-                <button type="button" id="btnClearBuscaPerfil" class="perfil-search-clear" onclick="limparBuscaPerfil()" title="Limpar busca" aria-label="Limpar busca">&times;</button>
-            </div>
-
-            <!-- Dropdown de Autocomplete -->
-            <div id="autocompleteDropdownPerfil" class="perfil-autocomplete-dropdown" role="listbox" aria-label="Sugestões de recados"></div>
-
-            <!-- Chips Rápidos de Filtro (100% da largura dos Cards) -->
-            <div class="perfil-filter-chips" id="perfilQuickChips" role="group" aria-label="Filtrar comunicados do perfil">
-                <button type="button" class="perfil-chip-btn active" data-chip="todos" onclick="selecionarChipPerfil(this, '')">
-                    Todos os Recados ({{ mensagens|length }})
-                </button>
-                <button type="button" class="perfil-chip-btn" data-chip="aviso" onclick="selecionarChipPerfil(this, 'aviso')">
-                    📌 Avisos
-                </button>
-                <button type="button" class="perfil-chip-btn" data-chip="avaliacao" onclick="selecionarChipPerfil(this, 'avalia')">
-                    📝 Avaliações
-                </button>
-                <button type="button" class="perfil-chip-btn" data-chip="feedback" onclick="selecionarChipPerfil(this, 'feedback')">
-                    💡 Orientações
-                </button>
-                <button type="button" class="perfil-chip-btn" data-chip="editar" onclick="abrirModalEditarPerfil()">
-                    ✏️ Editar Perfil &amp; Foto
-                </button>
-            </div>
-        </div>
-
-        <!-- 4. Quadro Dividido do Perfil -->
+        <!-- 2. Quadro Dividido do Perfil -->
         <div class="perfil-box-outer" id="perfilBoxOuter">
             <div class="perfil-box-inner">
                 <div class="perfil-split-grid">
@@ -1161,7 +1269,7 @@
                                 </svg>
                                 <span>Editar Meus Dados &amp; Foto</span>
                             </button>
-                            <a href="/ logout" onclick="window.location.href='/logout'; return false;" class="btn-perfil-logout" title="Sair da sua conta">
+                            <a href="/logout" class="btn-perfil-logout" title="Sair da sua conta">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                                     <polyline points="16 17 21 12 16 7"></polyline>
@@ -1173,6 +1281,12 @@
                     </div>
 
                     <!-- COLUNA 2: RECADOS E COMUNICADOS DOS PROFESSORES -->
+                    {% set ns_msg = namespace(nao_lidas=0) %}
+                    {% for m in mensagens %}
+                        {% if not m.lida_status %}
+                            {% set ns_msg.nao_lidas = ns_msg.nao_lidas + 1 %}
+                        {% endif %}
+                    {% endfor %}
                     <div class="perfil-card-box perfil-mensagens-card" id="secaoMensagensPerfil">
                         <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;">
                             <h3 style="margin: 0; font-size: 1.18rem; font-weight: 800; color: #14213D; display: flex; align-items: center; gap: 8px;">
@@ -1190,15 +1304,33 @@
                         <div class="perfil-card-divider"></div>
 
                         {% if mensagens %}
+                        <div class="perfil-msg-filters no-print" role="group" aria-label="Filtrar recados por leitura">
+                            <div class="perfil-msg-filter-group">
+                                <button type="button" class="perfil-msg-filter-btn active" data-filtro-msg="todas" onclick="filtrarRecadosPorStatus('todas', this)">
+                                    Todas (<span id="countMsgTodas">{{ mensagens|length }}</span>)
+                                </button>
+                                <button type="button" class="perfil-msg-filter-btn" data-filtro-msg="nao_lidas" onclick="filtrarRecadosPorStatus('nao_lidas', this)">
+                                    Não Lidas (<span id="countMsgNaoLidas">{{ ns_msg.nao_lidas }}</span>)
+                                </button>
+                            </div>
+                            <button type="button" id="btnMarcarTodasLidas" class="perfil-msg-markall-btn" onclick="marcarTodasMensagensLidas()" {% if ns_msg.nao_lidas == 0 %}style="display: none;"{% endif %}>
+                                ✓ Marcar todas como lidas
+                            </button>
+                        </div>
+
                         <div class="perfil-msg-list" id="listaMensagensPerfil">
                             {% for m in mensagens %}
-                            <div class="perfil-msg-item"
+                            <div class="perfil-msg-item {% if not m.lida_status %}msg-nao-lida{% endif %}"
+                                 id="msgItem_{{ m.id }}"
                                  data-id="{{ m.id }}"
-                                 data-assunto="{{ m.assunto }}"
-                                 data-remetente="{{ m.remetente_nome or 'Professor(a)' }}"
-                                 data-search="{{ (m.assunto ~ ' ' ~ (m.remetente_nome or '') ~ ' ' ~ m.corpo) | lower }}">
+                                 data-lida="{{ 1 if m.lida_status else 0 }}">
                                 <div class="perfil-msg-header">
-                                    <span class="perfil-msg-subject">{{ m.assunto }}</span>
+                                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                        <span class="perfil-msg-subject">{{ m.assunto }}</span>
+                                        <span id="badgeStatusMsg_{{ m.id }}" class="perfil-msg-status-badge {{ 'read' if m.lida_status else 'unread' }}">
+                                            {{ '✓ Lido' if m.lida_status else '● Novo' }}
+                                        </span>
+                                    </div>
                                     <span style="font-size: 0.76rem; color: #6B7280; display: inline-flex; align-items: center; gap: 4px; font-weight: 500;">
                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                                         {{ m.data_envio }}
@@ -1211,13 +1343,42 @@
                                 <div class="perfil-msg-body">
                                     {{ m.corpo }}
                                 </div>
+
+                                <div id="respostaEnviadaWrap_{{ m.id }}" class="perfil-msg-reply-box-sent" {% if not m.resposta_aluno %}style="display: none;"{% endif %}>
+                                    <div style="font-size: 0.74rem; font-weight: 700; color: #6B7280; margin-bottom: 2px;">
+                                        Sua resposta enviada <span id="respostaDataMsg_{{ m.id }}">{{ ('em ' ~ m.data_resposta) if m.data_resposta else '' }}</span>:
+                                    </div>
+                                    <div id="respostaTextoMsg_{{ m.id }}">{{ m.resposta_aluno or '' }}</div>
+                                </div>
+
+                                <div class="perfil-msg-actions no-print">
+                                    <button type="button" id="btnConfirmarLeitura_{{ m.id }}" class="perfil-msg-action-btn confirm" onclick="confirmarLeituraMensagem({{ m.id }})" {% if m.lida_status %}style="display: none;"{% endif %}>
+                                        ✓ Confirmar Leitura
+                                    </button>
+                                    <button type="button" class="perfil-msg-action-btn" onclick="alternarBoxRespostaMensagem({{ m.id }})">
+                                        ↩ Responder / Tirar Dúvida
+                                    </button>
+                                </div>
+
+                                <div id="boxRespostaMsg_{{ m.id }}" class="perfil-msg-reply-form no-print" style="display: none;">
+                                    <div class="perfil-msg-quick-chips">
+                                        <button type="button" class="perfil-msg-quick-chip" onclick="preencherChipRespostaMsg({{ m.id }}, 'Ciente, obrigado(a) professor(a)!')">Ciente, obrigado(a)!</button>
+                                        <button type="button" class="perfil-msg-quick-chip" onclick="preencherChipRespostaMsg({{ m.id }}, 'Confirmado! Revisarei o conteúdo indicado.')">Revisarei o conteúdo</button>
+                                        <button type="button" class="perfil-msg-quick-chip" onclick="preencherChipRespostaMsg({{ m.id }}, 'Professor(a), fiquei com uma dúvida sobre este recado: ')">Tirar dúvida</button>
+                                    </div>
+                                    <textarea id="inputRespostaMsg_{{ m.id }}" class="perfil-msg-reply-textarea" rows="2" maxlength="1000" placeholder="Escreva uma confirmação ou dúvida rápida para o professor..."></textarea>
+                                    <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 0.55rem;">
+                                        <button type="button" class="perfil-msg-action-btn" onclick="alternarBoxRespostaMensagem({{ m.id }})">Cancelar</button>
+                                        <button type="button" id="btnEnviarRespMsg_{{ m.id }}" class="perfil-msg-action-btn confirm" onclick="enviarRespostaMensagem({{ m.id }})">Enviar Resposta</button>
+                                    </div>
+                                </div>
                             </div>
                             {% endfor %}
                         </div>
 
-                        <div id="emptySearchMensagensPerfil" style="display: none; text-align: center; padding: 2.5rem 1.25rem; color: #6B7280;">
-                            <p style="margin: 0 0 1rem; font-size: 0.92rem; font-weight: 600;">Nenhum recado encontrado para o filtro pesquisado.</p>
-                            <button type="button" class="perfil-pill-btn" onclick="limparBuscaPerfil()" style="width: auto;">Limpar Pesquisa</button>
+                        <div id="emptyFiltroMensagensPerfil" style="display: none; text-align: center; padding: 2.25rem 1.25rem; color: #6B7280;">
+                            <p style="margin: 0 0 0.85rem; font-size: 0.92rem; font-weight: 600;">Nenhum recado não lido no momento. Tudo em dia!</p>
+                            <button type="button" class="perfil-pill-btn" onclick="filtrarRecadosPorStatus('todas', document.querySelector('[data-filtro-msg=&quot;todas&quot;]'))" style="width: auto;">Mostrar Todas</button>
                         </div>
                         {% else %}
                         <div style="text-align: center; padding: 3rem 1.5rem; color: #6B7280;">
@@ -1343,35 +1504,46 @@
 
 {% block extra_js %}
 <script>
-function escapeRegExpPerfil(str) {
-    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
+let filtroStatusRecadosAtual = 'todas';
 
-function destacarTermoPerfil(texto, termo) {
-    if (!termo) return texto;
-    const regex = new RegExp(`(${escapeRegExpPerfil(termo)})`, 'gi');
-    return texto.replace(regex, '<mark>$1</mark>');
-}
+function atualizarContadoresLeituraPerfil(naoLidasOverride = null) {
+    const itens = Array.from(document.querySelectorAll('.perfil-msg-item'));
+    const naoLidas = naoLidasOverride !== null
+        ? naoLidasOverride
+        : itens.filter(el => el.getAttribute('data-lida') !== '1').length;
 
-function filtrarMensagensPerfil(valor) {
-    const termo = (valor || '').trim().toLowerCase();
-    const btnClear = document.getElementById('btnClearBuscaPerfil');
-    if (btnClear) {
-        btnClear.style.display = termo ? 'inline-flex' : 'none';
+    const spanNaoLidas = document.getElementById('countMsgNaoLidas');
+    if (spanNaoLidas) spanNaoLidas.textContent = String(naoLidas);
+
+    const btnMarcarTodas = document.getElementById('btnMarcarTodasLidas');
+    if (btnMarcarTodas) {
+        btnMarcarTodas.style.display = naoLidas > 0 ? 'inline-flex' : 'none';
     }
 
-    const itens = document.querySelectorAll('.perfil-msg-item');
-    const emptyBox = document.getElementById('emptySearchMensagensPerfil');
-    let visiveis = 0;
-
-    itens.forEach(item => {
-        const txt = item.getAttribute('data-search') || '';
-        if (!termo || txt.includes(termo)) {
-            item.style.display = 'block';
-            visiveis++;
+    document.querySelectorAll('[data-unread-badge="true"]').forEach(badge => {
+        if (naoLidas > 0) {
+            badge.textContent = String(naoLidas);
+            badge.style.display = '';
         } else {
-            item.style.display = 'none';
+            badge.style.display = 'none';
         }
+    });
+}
+
+function filtrarRecadosPorStatus(filtro, btn) {
+    filtroStatusRecadosAtual = filtro === 'nao_lidas' ? 'nao_lidas' : 'todas';
+    document.querySelectorAll('.perfil-msg-filter-btn').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-filtro-msg') === filtroStatusRecadosAtual);
+    });
+    if (btn) btn.classList.add('active');
+
+    const itens = document.querySelectorAll('.perfil-msg-item');
+    let visiveis = 0;
+    itens.forEach(item => {
+        const lida = item.getAttribute('data-lida') === '1';
+        const mostrar = filtroStatusRecadosAtual === 'todas' || !lida;
+        item.style.display = mostrar ? 'block' : 'none';
+        if (mostrar) visiveis++;
     });
 
     const badge = document.getElementById('badgeCountMensagensPerfil');
@@ -1379,78 +1551,159 @@ function filtrarMensagensPerfil(valor) {
         badge.textContent = `${visiveis} ${visiveis === 1 ? 'mensagem' : 'mensagens'}`;
     }
 
+    const emptyBox = document.getElementById('emptyFiltroMensagensPerfil');
     if (emptyBox && itens.length > 0) {
-        emptyBox.style.display = (visiveis === 0) ? 'block' : 'none';
+        emptyBox.style.display = visiveis === 0 ? 'block' : 'none';
     }
-
-    atualizarAutocompletePerfil(valor);
 }
 
-function atualizarAutocompletePerfil(valor) {
-    const dropdown = document.getElementById('autocompleteDropdownPerfil');
-    if (!dropdown) return;
-
-    const termo = (valor || '').trim().toLowerCase();
-    if (!termo) {
-        dropdown.classList.remove('open');
-        return;
-    }
-
-    const itens = Array.from(document.querySelectorAll('.perfil-msg-item'));
-    const matches = itens.filter(el => (el.getAttribute('data-search') || '').includes(termo));
-
-    if (matches.length === 0) {
-        dropdown.innerHTML = `<div style="padding: 0.85rem; text-align: center; font-size: 0.84rem; color: #6B7280;">Nenhum comunicado encontrado para "<strong>${valor}</strong>"</div>`;
-        dropdown.classList.add('open');
-        return;
-    }
-
-    let html = '';
-    matches.slice(0, 5).forEach(el => {
-        const assunto = el.getAttribute('data-assunto') || 'Comunicado';
-        const remetente = el.getAttribute('data-remetente') || 'Professor(a)';
-        html += `
-            <div class="perfil-ac-item" onclick="focarMensagemPerfil('${el.getAttribute('data-id')}')">
-                <div>
-                    <div class="perfil-ac-title">${destacarTermoPerfil(assunto, valor.trim())}</div>
-                    <div class="perfil-ac-sub">De: ${remetente}</div>
-                </div>
-                <span style="font-size: 0.72rem; font-weight: 700; color: #14213D;">Ver recado →</span>
-            </div>
-        `;
-    });
-
-    dropdown.innerHTML = html;
-    dropdown.classList.add('open');
-}
-
-function focarMensagemPerfil(id) {
-    const dropdown = document.getElementById('autocompleteDropdownPerfil');
-    if (dropdown) dropdown.classList.remove('open');
-    const item = document.querySelector(`.perfil-msg-item[data-id="${id}"]`);
+function marcarItemComoLidoNoDOM(msgId) {
+    const item = document.getElementById(`msgItem_${msgId}`);
     if (item) {
-        item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        item.setAttribute('data-lida', '1');
+        item.classList.remove('msg-nao-lida');
+    }
+    const badge = document.getElementById(`badgeStatusMsg_${msgId}`);
+    if (badge) {
+        badge.textContent = '✓ Lido';
+        badge.classList.remove('unread');
+        badge.classList.add('read');
+    }
+    const btnConfirmar = document.getElementById(`btnConfirmarLeitura_${msgId}`);
+    if (btnConfirmar) {
+        btnConfirmar.style.display = 'none';
     }
 }
 
-function selecionarChipPerfil(btn, termo) {
-    document.querySelectorAll('#perfilQuickChips .perfil-chip-btn').forEach(b => b.classList.remove('active'));
-    if (btn) btn.classList.add('active');
-
-    const inp = document.getElementById('inputBuscaMensagensPerfil');
-    if (inp) inp.value = termo || '';
-    filtrarMensagensPerfil(termo || '');
-    document.getElementById('autocompleteDropdownPerfil')?.classList.remove('open');
+async function confirmarLeituraMensagem(msgId) {
+    const btn = document.getElementById(`btnConfirmarLeitura_${msgId}`);
+    if (btn) btn.disabled = true;
+    try {
+        const resp = await fetch('/api/aluno/mensagem/marcar_lida', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mensagem_id: msgId })
+        });
+        const data = await resp.json();
+        if (!resp.ok || data.status !== 'sucesso') {
+            throw new Error(data.mensagem || 'Não foi possível confirmar a leitura.');
+        }
+        marcarItemComoLidoNoDOM(msgId);
+        atualizarContadoresLeituraPerfil(data.nao_lidas);
+        filtrarRecadosPorStatus(filtroStatusRecadosAtual);
+        if (typeof window.showToast === 'function') {
+            window.showToast('Leitura do recado confirmada.', 'success');
+        }
+    } catch (err) {
+        if (btn) btn.disabled = false;
+        if (typeof window.showToast === 'function') {
+            window.showToast(err.message || 'Erro ao confirmar leitura.', 'error');
+        }
+    }
 }
 
-function limparBuscaPerfil() {
-    const inp = document.getElementById('inputBuscaMensagensPerfil');
-    if (inp) inp.value = '';
-    document.querySelectorAll('#perfilQuickChips .perfil-chip-btn').forEach(b => {
-        b.classList.toggle('active', b.getAttribute('data-chip') === 'todos');
-    });
-    filtrarMensagensPerfil('');
-    document.getElementById('autocompleteDropdownPerfil')?.classList.remove('open');
+async function marcarTodasMensagensLidas() {
+    const btn = document.getElementById('btnMarcarTodasLidas');
+    if (btn) btn.disabled = true;
+    try {
+        const resp = await fetch('/api/aluno/mensagem/marcar_lida', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ todas: true })
+        });
+        const data = await resp.json();
+        if (!resp.ok || data.status !== 'sucesso') {
+            throw new Error(data.mensagem || 'Não foi possível marcar todos os recados como lidos.');
+        }
+        document.querySelectorAll('.perfil-msg-item').forEach(item => {
+            const id = item.getAttribute('data-id');
+            if (id) marcarItemComoLidoNoDOM(id);
+        });
+        atualizarContadoresLeituraPerfil(0);
+        filtrarRecadosPorStatus(filtroStatusRecadosAtual);
+        if (typeof window.showToast === 'function') {
+            window.showToast('Todos os recados foram marcados como lidos.', 'success');
+        }
+    } catch (err) {
+        if (btn) btn.disabled = false;
+        if (typeof window.showToast === 'function') {
+            window.showToast(err.message || 'Erro ao atualizar recados.', 'error');
+        }
+    }
+}
+
+function alternarBoxRespostaMensagem(msgId) {
+    const box = document.getElementById(`boxRespostaMsg_${msgId}`);
+    if (!box) return;
+    const abrindo = box.style.display === 'none' || !box.style.display;
+    box.style.display = abrindo ? 'block' : 'none';
+    if (abrindo) {
+        document.getElementById(`inputRespostaMsg_${msgId}`)?.focus();
+    }
+}
+
+function preencherChipRespostaMsg(msgId, texto) {
+    const textarea = document.getElementById(`inputRespostaMsg_${msgId}`);
+    if (!textarea) return;
+    textarea.value = texto;
+    textarea.focus();
+}
+
+async function enviarRespostaMensagem(msgId) {
+    const textarea = document.getElementById(`inputRespostaMsg_${msgId}`);
+    const btn = document.getElementById(`btnEnviarRespMsg_${msgId}`);
+    const resposta = (textarea?.value || '').trim();
+    if (!resposta) {
+        if (typeof window.showToast === 'function') {
+            window.showToast('Escreva uma resposta ou selecione um atalho antes de enviar.', 'warning');
+        }
+        textarea?.focus();
+        return;
+    }
+
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Enviando...';
+    }
+    try {
+        const resp = await fetch('/api/aluno/mensagem/responder', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mensagem_id: msgId, resposta: resposta })
+        });
+        const data = await resp.json();
+        if (!resp.ok || data.status !== 'sucesso') {
+            throw new Error(data.mensagem || 'Não foi possível enviar a resposta.');
+        }
+
+        const wrap = document.getElementById(`respostaEnviadaWrap_${msgId}`);
+        const textoEl = document.getElementById(`respostaTextoMsg_${msgId}`);
+        const dataEl = document.getElementById(`respostaDataMsg_${msgId}`);
+        if (textoEl) textoEl.textContent = data.resposta_aluno || resposta;
+        if (dataEl && data.data_resposta) dataEl.textContent = `em ${data.data_resposta}`;
+        if (wrap) wrap.style.display = 'block';
+
+        const box = document.getElementById(`boxRespostaMsg_${msgId}`);
+        if (box) box.style.display = 'none';
+        if (textarea) textarea.value = '';
+
+        marcarItemComoLidoNoDOM(msgId);
+        atualizarContadoresLeituraPerfil(data.nao_lidas);
+        filtrarRecadosPorStatus(filtroStatusRecadosAtual);
+
+        if (typeof window.showToast === 'function') {
+            window.showToast(data.mensagem || 'Resposta enviada ao professor!', 'success');
+        }
+    } catch (err) {
+        if (typeof window.showToast === 'function') {
+            window.showToast(err.message || 'Erro ao enviar resposta.', 'error');
+        }
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = 'Enviar Resposta';
+        }
+    }
 }
 
 function abrirModalEditarPerfil(focarFoto = false) {
@@ -1546,10 +1799,6 @@ async function salvarEdicaoPerfilAluno(event) {
 }
 
 document.addEventListener('click', (e) => {
-    const wrap = document.getElementById('perfilSearchWrapper');
-    if (wrap && !wrap.contains(e.target)) {
-        document.getElementById('autocompleteDropdownPerfil')?.classList.remove('open');
-    }
     const modal = document.getElementById('modalEditarPerfil');
     if (modal && e.target === modal) {
         fecharModalEditarPerfil();

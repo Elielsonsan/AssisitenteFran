@@ -15,8 +15,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <!-- Main CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=20261016_v15">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         (function() {
             // Interceptor Global de CSRF para todas as chamadas fetch()
@@ -64,6 +62,121 @@
         })();
     </script>
     {% block extra_head %}{% endblock %}
+    <style>
+        /* Badges discretos de notificação na navbar e drawer mobile */
+        .nav-notif-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 5px;
+            border-radius: 999px;
+            font-size: 0.68rem;
+            font-weight: 800;
+            background: #FCA311;
+            color: #14213D;
+            line-height: 1;
+            margin-left: 4px;
+            box-shadow: 0 2px 6px rgba(252, 163, 17, 0.35);
+            flex-shrink: 0;
+        }
+        .nav-notif-badge.nav-notif-avatar {
+            position: relative;
+            margin-left: 2px;
+        }
+        .drawer-link .nav-notif-badge {
+            margin-left: auto;
+        }
+
+        /* Compactação global dos Mini-KPIs no topo das páginas editoriais */
+        body .ativ-kpi-wave-svg,
+        body .perfil-kpi-wave-svg,
+        body .docente-kpi-wave-svg,
+        body .forum-kpi-wave-svg,
+        body .guia-kpi-wave-svg,
+        body .prof-kpi-wave-svg,
+        body .kpi-design-col-sparkline,
+        body .kpi-design-wave-svg {
+            display: none !important;
+        }
+
+        body .ativ-kpi-top-row,
+        body .perfil-kpi-top-row,
+        body .docente-kpi-top-row,
+        body .forum-kpi-top-row,
+        body .guia-kpi-top-row,
+        body .prof-kpi-top-row {
+            grid-template-columns: 1fr !important;
+        }
+
+        body .ativ-kpi-cta-row,
+        body .perfil-kpi-cta-row,
+        body .docente-kpi-cta-row,
+        body .forum-kpi-cta-row,
+        body .guia-kpi-cta-row,
+        body .kpi-design-bottom-row,
+        body .prof-kpi-card > div:last-child:has(.prof-pill-btn) {
+            display: none !important;
+        }
+
+        body .ativ-kpi-card,
+        body .perfil-kpi-card,
+        body .docente-kpi-card,
+        body .forum-kpi-card,
+        body .guia-kpi-card,
+        body .prof-kpi-card,
+        body .desempenho-kpi-card {
+            padding: 1rem 1.25rem !important;
+            gap: 0.35rem !important;
+        }
+
+        body .atividades-kpis-grid,
+        body .perfil-kpis-grid,
+        body .docente-kpis-grid,
+        body .forum-kpis-grid,
+        body .guia-kpis-grid,
+        body .prof-perfil-kpis-grid,
+        body .desempenho-kpis-grid {
+            margin-bottom: 1rem !important;
+            gap: 0.85rem !important;
+        }
+
+        /* Fallback global para Toasts */
+        .fran-global-toast {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            max-width: 360px;
+            padding: 0.75rem 1.1rem;
+            border-radius: 14px;
+            background: #14213D;
+            color: #FFFFFF;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22);
+            font-size: 0.86rem;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .fran-global-toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .fran-global-toast.success {
+            background: #065F46;
+            border-color: #10B981;
+        }
+        .fran-global-toast.error {
+            background: #991B1B;
+            border-color: #F87171;
+        }
+        .fran-global-toast.warning {
+            background: #92400E;
+            border-color: #FCA311;
+        }
+    </style>
 </head>
 <body>
     <!-- Regiões Globais para Leitores de Tela (WCAG 2.1 AA - Live Regions) -->
@@ -102,6 +215,7 @@
                     </a>
                     <a href="/professor/avaliacoes" class="nav-link {% if active_page == 'prof_avaliacoes' %}active{% endif %}">
                         <span>Avaliações</span>
+                        {% if nav_badges is defined and nav_badges.prof_revisoes_pendentes > 0 %}<span class="nav-notif-badge" title="{{ nav_badges.prof_revisoes_pendentes }} revisão(ões) oral(is) pendente(s)">{{ nav_badges.prof_revisoes_pendentes }}</span>{% endif %}
                     </a>
                     <a href="/professor/planos-aula" class="nav-link {% if active_page == 'prof_planos' %}active{% endif %}">
                         <span>Planos de Aula</span>
@@ -117,19 +231,21 @@
                     </a>
                 {% elif session.get('aluno_id') %}
                     <a href="/pratica" class="nav-link {% if active_page == 'student' %}active{% endif %}">
-                        <span>Prática (Chat)</span>
+                        <span>Prática Guiada</span>
                     </a>
                     <a href="/aluno/dashboard" class="nav-link {% if active_page == 'aluno_dashboard' %}active{% endif %}">
                         <span>Meu Desempenho</span>
                     </a>
                     <a href="/aluno/atividades" class="nav-link {% if active_page == 'aluno_atividades' %}active{% endif %}">
                         <span>Atividades</span>
+                        {% if nav_badges is defined and nav_badges.aluno_atividades_pendentes > 0 %}<span class="nav-notif-badge" title="{{ nav_badges.aluno_atividades_pendentes }} atividade(s) pendente(s)">{{ nav_badges.aluno_atividades_pendentes }}</span>{% endif %}
                     </a>
                     <a href="/forum" class="nav-link {% if active_page == 'aluno_forum' %}active{% endif %}">
                         <span>Fórum</span>
                     </a>
                     <a href="/aluno/perfil" class="nav-link {% if active_page == 'aluno_perfil' %}active{% endif %}">
                         <span>Perfil</span>
+                        {% if nav_badges is defined and nav_badges.aluno_mensagens_nao_lidas > 0 %}<span class="nav-notif-badge nav-notif-avatar" id="navBadgeUnreadMsgs" data-unread-badge="true" title="{{ nav_badges.aluno_mensagens_nao_lidas }} recado(s) não lido(s)">{{ nav_badges.aluno_mensagens_nao_lidas }}</span>{% endif %}
                     </a>
                     <a href="/guia-fle" class="nav-link {% if active_page == 'guia_fle' %}active{% endif %}">
                         <span>Guia FLE</span>
@@ -210,6 +326,7 @@
                             <a href="/aluno/perfil" class="flyout-item">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                                 <span>Meu Perfil</span>
+                                {% if nav_badges is defined and nav_badges.aluno_mensagens_nao_lidas > 0 %}<span class="nav-notif-badge" data-unread-badge="true" style="margin-left: auto;">{{ nav_badges.aluno_mensagens_nao_lidas }}</span>{% endif %}
                             </a>
                             {% else %}
                             <a href="/professor/perfil" class="flyout-item">
@@ -317,6 +434,7 @@
                         <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                     </span>
                     <span>Avaliações</span>
+                    {% if nav_badges is defined and nav_badges.prof_revisoes_pendentes > 0 %}<span class="nav-notif-badge">{{ nav_badges.prof_revisoes_pendentes }}</span>{% endif %}
                 </a>
                 <a href="/professor/planos-aula" class="drawer-link {% if active_page == 'prof_planos' %}active{% endif %}" onclick="fecharMenuMobile()">
                     <span class="drawer-icon">
@@ -341,7 +459,7 @@
                     <span class="drawer-icon">
                         <svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                     </span>
-                    <span>Prática de Francês</span>
+                    <span>Prática Guiada</span>
                 </a>
                 <a href="/aluno/dashboard" class="drawer-link {% if active_page == 'aluno_dashboard' %}active{% endif %}" onclick="fecharMenuMobile()">
                     <span class="drawer-icon">
@@ -354,6 +472,7 @@
                         <svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
                     </span>
                     <span>Minhas Atividades</span>
+                    {% if nav_badges is defined and nav_badges.aluno_atividades_pendentes > 0 %}<span class="nav-notif-badge">{{ nav_badges.aluno_atividades_pendentes }}</span>{% endif %}
                 </a>
                 <a href="/forum" class="drawer-link {% if active_page == 'aluno_forum' %}active{% endif %}" onclick="fecharMenuMobile()">
                     <span class="drawer-icon">
@@ -366,6 +485,7 @@
                         <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     </span>
                     <span>Meu Perfil</span>
+                    {% if nav_badges is defined and nav_badges.aluno_mensagens_nao_lidas > 0 %}<span class="nav-notif-badge" data-unread-badge="true">{{ nav_badges.aluno_mensagens_nao_lidas }}</span>{% endif %}
                 </a>
             {% else %}
                 <a href="/login" class="drawer-link" onclick="fecharMenuMobile()">
@@ -379,7 +499,7 @@
             {% if session.get('aluno_id') or session.get('prof_id') %}
             <div class="drawer-divider"></div>
 
-            <a href="/guia-fle" class="drawer-link" onclick="fecharMenuMobile()">
+            <a href="/guia-fle" class="drawer-link {% if active_page == 'guia_fle' %}active{% endif %}" onclick="fecharMenuMobile()">
                 <span class="drawer-icon">
                     <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
                 </span>
@@ -448,18 +568,112 @@
             window.location.href = '/guia-fle';
         }
 
-        function falarTextoFrancesBase(texto) {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(texto.replace(/[*_#`~>«»]/g, "").trim());
-                utterance.lang = 'fr-FR';
-                utterance.rate = 0.88;
-                const vozes = window.speechSynthesis.getVoices();
-                const voz = vozes.find(v => v.lang === 'fr-FR' || v.lang.startsWith('fr'));
-                if (voz) utterance.voice = voz;
-                window.speechSynthesis.speak(utterance);
+        let _franTtsKeepAlive = null;
+
+        function falarTextoFrancesBase(texto, btnElement = null, opcoes = {}) {
+            if (!('speechSynthesis' in window)) {
+                if (typeof window.showToast === 'function') {
+                    window.showToast("Seu navegador não possui suporte à síntese de voz nativa.", "warning");
+                }
+                return;
             }
+
+            if (_franTtsKeepAlive) {
+                clearInterval(_franTtsKeepAlive);
+                _franTtsKeepAlive = null;
+            }
+
+            if (btnElement && btnElement.classList.contains("speaking") && !opcoes.forcarInicio) {
+                window.speechSynthesis.cancel();
+                btnElement.classList.remove("speaking");
+                btnElement.setAttribute("aria-pressed", "false");
+                if (btnElement._originalHtmlSalvo) {
+                    btnElement.innerHTML = btnElement._originalHtmlSalvo;
+                }
+                return;
+            }
+
+            if (!texto || !String(texto).trim()) {
+                if (typeof window.showToast === 'function') {
+                    window.showToast("Digite ou selecione uma frase em francês para ouvir a pronúncia.", "info");
+                }
+                return;
+            }
+
+            window.speechSynthesis.cancel();
+            document.querySelectorAll(".btn-audio-pill.speaking, .french-char-btn.speaking, .btn-ouvir-exemplo.speaking").forEach(b => {
+                b.classList.remove("speaking");
+                b.setAttribute("aria-pressed", "false");
+                if (b._originalHtmlSalvo) {
+                    b.innerHTML = b._originalHtmlSalvo;
+                }
+            });
+
+            const textoLimpo = String(texto)
+                .replace(/[*_#`~>«»\\]/g, " ")
+                .replace(/\s+/g, " ")
+                .trim();
+
+            const utterance = new SpeechSynthesisUtterance(textoLimpo);
+            utterance.lang = 'fr-FR';
+            utterance.rate = typeof opcoes.rate === 'number' ? opcoes.rate : 0.88;
+            utterance.pitch = 1.0;
+
+            const vozes = window.speechSynthesis.getVoices();
+            const voz = vozes.find(v => v.lang === 'fr-FR' || v.lang.startsWith('fr') || v.lang.includes('fr'));
+            if (voz) utterance.voice = voz;
+
+            if (btnElement && !opcoes.semAlterarBotao) {
+                if (!btnElement._originalHtmlSalvo) {
+                    btnElement._originalHtmlSalvo = btnElement.innerHTML;
+                }
+                btnElement.classList.add("speaking");
+                btnElement.setAttribute("aria-pressed", "true");
+                btnElement.innerHTML = `<svg class="line-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 3px; vertical-align: text-bottom;"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg> <span>Parar</span>`;
+            }
+
+            const finalizarFala = (houveErro = false) => {
+                if (_franTtsKeepAlive) {
+                    clearInterval(_franTtsKeepAlive);
+                    _franTtsKeepAlive = null;
+                }
+                if (btnElement && !opcoes.semAlterarBotao) {
+                    btnElement.classList.remove("speaking");
+                    btnElement.setAttribute("aria-pressed", "false");
+                    if (btnElement._originalHtmlSalvo) {
+                        btnElement.innerHTML = btnElement._originalHtmlSalvo;
+                    }
+                }
+                if (!houveErro && typeof opcoes.onend === 'function') opcoes.onend();
+                if (houveErro && typeof opcoes.onerror === 'function') opcoes.onerror();
+            };
+
+            utterance.onend = () => finalizarFala(false);
+            utterance.onerror = () => finalizarFala(true);
+
+            setTimeout(() => {
+                try {
+                    if (window.speechSynthesis.paused) {
+                        window.speechSynthesis.resume();
+                    }
+                    window.speechSynthesis.speak(utterance);
+                    _franTtsKeepAlive = setInterval(() => {
+                        if (!window.speechSynthesis.speaking) {
+                            clearInterval(_franTtsKeepAlive);
+                            _franTtsKeepAlive = null;
+                            return;
+                        }
+                        if (window.speechSynthesis.paused && !opcoes.pausadoPeloUsuario) {
+                            window.speechSynthesis.resume();
+                        }
+                    }, 1200);
+                } catch (e) {
+                    console.error("Erro ao reproduzir voz:", e);
+                    finalizarFala(true);
+                }
+            }, 40);
         }
+        window.falarTextoFrancesBase = falarTextoFrancesBase;
 
         // =============================================================
         // GERENCIAMENTO DO TEMA CLARO / ESCURO
@@ -715,6 +929,41 @@
             const isHighContrast = document.documentElement.getAttribute("data-contrast") === "high";
             atualizarBotoesContraste(isHighContrast);
         });
+
+        // Fallback Global de Notificação Toast (para páginas que não definem showToast próprio)
+        if (typeof window.showToast !== 'function') {
+            window.showToast = function(mensagem, tipo = 'info') {
+                const container = document.getElementById('toast-container');
+                if (!container || !mensagem) return;
+                const mapaTipos = {
+                    sucesso: 'success',
+                    success: 'success',
+                    erro: 'error',
+                    error: 'error',
+                    aviso: 'warning',
+                    warning: 'warning',
+                    info: 'info'
+                };
+                const rawTipo = String(tipo || 'info').toLowerCase();
+                const tipoLimpo = mapaTipos[rawTipo] || 'info';
+                if (typeof anunciarParaLeitorDeTela === "function") {
+                    anunciarParaLeitorDeTela(String(mensagem), tipoLimpo === 'error');
+                }
+                const toast = document.createElement('div');
+                toast.className = `fran-global-toast ${tipoLimpo}`;
+                toast.setAttribute('role', tipoLimpo === 'error' ? 'alert' : 'status');
+                toast.setAttribute('aria-live', tipoLimpo === 'error' ? 'assertive' : 'polite');
+                toast.textContent = String(mensagem);
+                container.appendChild(toast);
+                requestAnimationFrame(() => toast.classList.add('show'));
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => {
+                        if (toast.parentNode) toast.parentNode.removeChild(toast);
+                    }, 220);
+                }, 3600);
+            };
+        }
     </script>
 
     {% block scripts %}{% endblock %}

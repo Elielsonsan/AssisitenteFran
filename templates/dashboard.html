@@ -2002,6 +2002,20 @@
                 <button type="button" id="btnEnviarRecado" class="btn-primary" style="width: 100%;" onclick="enviarRecado()">
                     Enviar Mensagem
                 </button>
+
+                <div id="historicoRecadosDocenteWrap" style="margin-top: 1.35rem; padding-top: 1.1rem; border-top: 1px solid var(--border-color);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.65rem;">
+                        <h4 style="margin: 0; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 800;">
+                            📬 Últimos Recados &amp; Respostas dos Alunos
+                        </h4>
+                        <button type="button" class="btn-outline" style="padding: 0.22rem 0.6rem; font-size: 0.72rem; border-radius: 6px;" onclick="carregarHistoricoRecadosDocente()">
+                            Atualizar
+                        </button>
+                    </div>
+                    <div id="listaRecadosEnviadosDocente" style="max-height: 210px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.55rem; font-size: 0.82rem;">
+                        <span style="color: var(--text-muted); font-size: 0.8rem;">Carregando histórico de recados...</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -2552,12 +2566,51 @@ function exportarPlanilhaCSV() {
     window.location.href = url;
 }
 
-function abrirModalRecado() { document.getElementById('modalRecado').classList.remove('hidden'); }
+function abrirModalRecado() {
+    document.getElementById('modalRecado').classList.remove('hidden');
+    carregarHistoricoRecadosDocente();
+}
 function fecharModalRecado() { document.getElementById('modalRecado').classList.add('hidden'); }
 function alternarTipoDestinatario() {
     const tipo = document.getElementById('msg_tipo_dest').value;
     document.getElementById('grp_dest_aluno').classList.toggle('hidden', tipo !== 'aluno');
     document.getElementById('grp_dest_turma').classList.toggle('hidden', tipo !== 'turma');
+}
+async function carregarHistoricoRecadosDocente() {
+    const box = document.getElementById('listaRecadosEnviadosDocente');
+    if (!box) return;
+    box.innerHTML = '<span style="color: var(--text-muted); font-size: 0.8rem;">Atualizando histórico...</span>';
+    try {
+        const resp = await fetch('/api/professor/recados_enviados');
+        const data = await resp.json();
+        if (data.status !== 'sucesso' || !Array.isArray(data.recados) || data.recados.length === 0) {
+            box.innerHTML = '<span style="color: var(--text-muted); font-size: 0.8rem;">Nenhum recado enviado ainda.</span>';
+            return;
+        }
+        box.innerHTML = data.recados.map(r => {
+            const lido = Number(r.lida_status || 0) === 1;
+            const badgeLido = lido
+                ? '<span style="background: rgba(16,185,129,0.14); color: #059669; border: 1px solid rgba(16,185,129,0.35); border-radius: 999px; padding: 1px 7px; font-size: 0.7rem; font-weight: 700;">✓ Lido</span>'
+                : '<span style="background: rgba(245,158,11,0.14); color: #B45309; border: 1px solid rgba(245,158,11,0.35); border-radius: 999px; padding: 1px 7px; font-size: 0.7rem; font-weight: 700;">● Pendente</span>';
+            const respHtml = r.resposta_aluno
+                ? `<div style="margin-top: 0.45rem; padding: 0.45rem 0.6rem; border-radius: 8px; background: rgba(42,157,143,0.1); border-left: 3px solid #2A9D8F; font-size: 0.78rem; color: var(--text-main);"><strong>💬 Resposta do aluno:</strong> ${escapeHtmlTurma(r.resposta_aluno)}${r.data_resposta ? ` <span style="color: var(--text-muted); font-size: 0.72rem;">(${escapeHtmlTurma(r.data_resposta)})</span>` : ''}</div>`
+                : '';
+            const turmaLabel = r.turma_nome ? ` • ${escapeHtmlTurma(r.turma_nome)}` : '';
+            return `
+                <div style="padding: 0.65rem 0.75rem; border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-app);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.25rem;">
+                        <strong style="font-size: 0.82rem; color: var(--text-main);">${escapeHtmlTurma(r.aluno_nome || 'Estudante')}${turmaLabel}</strong>
+                        ${badgeLido}
+                    </div>
+                    <div style="font-size: 0.78rem; font-weight: 600; color: var(--text-main);">${escapeHtmlTurma(r.assunto || '')}</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;">${escapeHtmlTurma(r.corpo || '')}</div>
+                    ${respHtml}
+                </div>
+            `;
+        }).join('');
+    } catch (err) {
+        box.innerHTML = '<span style="color: #ef4444; font-size: 0.8rem;">Não foi possível carregar o histórico.</span>';
+    }
 }
 async function enviarRecado() {
     const tipo = document.getElementById('msg_tipo_dest').value;
@@ -2567,7 +2620,8 @@ async function enviarRecado() {
     const btn = document.getElementById('btnEnviarRecado');
 
     if (!assunto || !corpo) {
-        alert("Preencha o assunto e a mensagem.");
+        if (typeof window.showToast === 'function') window.showToast("Preencha o assunto e a mensagem.", "aviso");
+        else alert("Preencha o assunto e a mensagem.");
         return;
     }
 
@@ -2587,15 +2641,18 @@ async function enviarRecado() {
         });
         const data = await resp.json();
         if (data.status === "sucesso") {
-            alert(data.mensagem);
-            fecharModalRecado();
+            if (typeof window.showToast === 'function') window.showToast(data.mensagem, "sucesso");
+            else alert(data.mensagem);
             document.getElementById('msg_assunto').value = '';
             document.getElementById('msg_corpo').value = '';
+            await carregarHistoricoRecadosDocente();
         } else {
-            alert("Erro: " + data.mensagem);
+            if (typeof window.showToast === 'function') window.showToast("Erro: " + data.mensagem, "erro");
+            else alert("Erro: " + data.mensagem);
         }
     } catch (e) {
-        alert("Erro na conexão: " + e);
+        if (typeof window.showToast === 'function') window.showToast("Erro na conexão: " + e, "erro");
+        else alert("Erro na conexão: " + e);
     } finally {
         btn.disabled = false;
         btn.innerText = "Enviar Mensagem";

@@ -1,69 +1,711 @@
 {% extends "base.html" %}
 
-{% block title %}Correção de Áudio | Professor{% endblock %}
+{% block title %}Correção de Áudio — {{ submissao.aluno_nome }} | Professor{% endblock %}
+
+{% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,500;1,600;1,700&display=swap" rel="stylesheet">
+<style>
+/* ===================================================================
+   Correção de Produção Oral — Editorial Clean
+   =================================================================== */
+
+[data-theme="light"] body:has(.correcao-editorial-page) {
+    background-color: #F7F7F8 !important;
+}
+
+.correcao-editorial-page {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0.9rem 1.25rem 4rem;
+    box-sizing: border-box;
+}
+
+/* Remove molduras antigas e faixas tricolores mantendo a estrutura para testes */
+.correcao-editorial-page .hero-card-outer,
+.correcao-editorial-page .hero-card-inner,
+.correcao-editorial-page .card-moldura-outer,
+.correcao-editorial-page .correcao-hero-outer,
+.correcao-editorial-page .correcao-box-outer {
+    background-image: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+.correcao-editorial-page .hero-card-outer::before,
+.correcao-editorial-page .hero-card-outer::after,
+.correcao-editorial-page .hero-card-inner::before,
+.correcao-editorial-page .hero-card-inner::after,
+.correcao-editorial-page .card-moldura-outer::before,
+.correcao-editorial-page .card-moldura-outer::after {
+    display: none !important;
+    content: none !important;
+}
+
+/* Barra de Navegação Superior */
+.correcao-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.15rem;
+}
+
+.correcao-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: #111827;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 9999px;
+    background: #FFFFFF;
+    border: 1px solid #ECECEC;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    transition: all 0.2s ease;
+}
+
+.correcao-back-btn:hover {
+    border-color: #18191E;
+    transform: translateX(-2px);
+}
+
+[data-theme="dark"] .correcao-back-btn {
+    background: #181920;
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #F9FAFB;
+}
+
+.correcao-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 9999px;
+    background: rgba(252, 163, 17, 0.14);
+    border: 1px solid rgba(252, 163, 17, 0.35);
+    color: #B45309;
+}
+
+.correcao-status-pill.is-done {
+    background: rgba(16, 185, 129, 0.12);
+    border-color: rgba(16, 185, 129, 0.3);
+    color: #059669;
+}
+
+[data-theme="dark"] .correcao-status-pill {
+    color: #FCA311;
+}
+
+[data-theme="dark"] .correcao-status-pill.is-done {
+    color: #34D399;
+}
+
+/* Hero Card e Box Editorial */
+.correcao-editorial-page .correcao-hero-outer,
+.correcao-editorial-page .correcao-box-outer {
+    background: #FFFFFF !important;
+    border: 1px solid #ECECEC !important;
+    border-radius: 26px !important;
+    padding: 0 !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.02) !important;
+    margin-bottom: 1.5rem !important;
+}
+
+[data-theme="dark"] .correcao-editorial-page .correcao-hero-outer,
+[data-theme="dark"] .correcao-editorial-page .correcao-box-outer {
+    background: #181920 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45) !important;
+}
+
+.correcao-editorial-page .hero-card-inner {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 1.75rem 2rem !important;
+}
+
+.correcao-tag-editorial {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #18191E;
+    color: #FCA311;
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 9999px;
+    margin-bottom: 0.75rem;
+}
+
+.correcao-hero-title {
+    margin: 0;
+    font-size: clamp(1.5rem, 2.8vw, 2.05rem);
+    font-weight: 800;
+    color: #14213D;
+    letter-spacing: -0.025em;
+}
+
+[data-theme="dark"] .correcao-hero-title {
+    color: #FFFFFF;
+}
+
+.correcao-hero-subtitle {
+    margin: 0.35rem 0 0;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: 0.96rem;
+    color: rgba(20, 33, 61, 0.68);
+}
+
+[data-theme="dark"] .correcao-hero-subtitle {
+    color: #FCA311;
+}
+
+.correcao-section-title {
+    font-size: 0.96rem;
+    font-weight: 800;
+    color: #14213D;
+    margin: 0 0 0.75rem 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+[data-theme="dark"] .correcao-section-title {
+    color: #F9FAFB;
+}
+
+.correcao-divider {
+    border: none;
+    border-top: 1px solid #F3F4F6;
+    margin: 1.5rem 0;
+}
+
+[data-theme="dark"] .correcao-divider {
+    border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Box de Referência da Questão */
+.correcao-ref-card {
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 18px;
+    padding: 1.15rem 1.35rem;
+}
+
+[data-theme="dark"] .correcao-ref-card {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.correcao-enunciado-text {
+    font-size: 0.94rem;
+    color: #4B5563;
+    margin: 0 0 0.65rem 0;
+    line-height: 1.55;
+}
+
+[data-theme="dark"] .correcao-enunciado-text {
+    color: #D1D5DB;
+}
+
+.correcao-ref-phrase-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.correcao-ref-phrase {
+    font-size: 1.08rem;
+    font-weight: 700;
+    color: #14213D;
+    margin: 0;
+    line-height: 1.45;
+}
+
+[data-theme="dark"] .correcao-ref-phrase {
+    color: #FFFFFF;
+}
+
+.btn-ouvir-ref {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 9999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    color: #14213D;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    flex-shrink: 0;
+}
+
+.btn-ouvir-ref:hover {
+    background: #18191E;
+    border-color: #18191E;
+    color: #FCA311;
+}
+
+[data-theme="dark"] .btn-ouvir-ref {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.14);
+    color: #F3F4F6;
+}
+
+[data-theme="dark"] .btn-ouvir-ref:hover {
+    background: #FCA311;
+    border-color: #FCA311;
+    color: #14213D;
+}
+
+/* Player do Aluno */
+.correcao-audio-box {
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 18px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+[data-theme="dark"] .correcao-audio-box {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.correcao-audio-box audio {
+    width: 100%;
+    max-width: 480px;
+    height: 40px;
+}
+
+/* Análise Prévia IA Editorial */
+.correcao-editorial-page .feedback-student-box {
+    background: #FFFDF7 !important;
+    border: 1px solid rgba(252, 163, 17, 0.35) !important;
+    border-left: 4px solid #FCA311 !important;
+    border-radius: 18px !important;
+    padding: 1.15rem 1.35rem !important;
+}
+
+[data-theme="dark"] .correcao-editorial-page .feedback-student-box {
+    background: #1C1E28 !important;
+    border-color: rgba(252, 163, 17, 0.35) !important;
+}
+
+.correcao-editorial-page .feedback-heading {
+    color: #B45309 !important;
+    font-size: 0.88rem !important;
+    font-weight: 800 !important;
+    margin: 0 0 0.5rem 0 !important;
+}
+
+[data-theme="dark"] .correcao-editorial-page .feedback-heading {
+    color: #FCA311 !important;
+}
+
+.correcao-editorial-page .feedback-content {
+    color: #1F2937 !important;
+    font-size: 0.94rem !important;
+    line-height: 1.6;
+}
+
+[data-theme="dark"] .correcao-editorial-page .feedback-content {
+    color: #E5E7EB !important;
+}
+
+/* Inputs e Chips Rápidos */
+.correcao-editorial-page .form-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #14213D;
+    display: block;
+    margin-bottom: 0.45rem;
+}
+
+[data-theme="dark"] .correcao-editorial-page .form-label {
+    color: #F3F4F6;
+}
+
+.correcao-score-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.correcao-editorial-page .form-input,
+.correcao-editorial-page .form-textarea {
+    border-radius: 16px !important;
+    border: 1px solid #E5E7EB !important;
+    background: #F9FAFB !important;
+    color: #111827 !important;
+    padding: 0.8rem 1rem !important;
+    font-size: 0.95rem !important;
+}
+
+.correcao-editorial-page .form-input:focus,
+.correcao-editorial-page .form-textarea:focus {
+    background: #FFFFFF !important;
+    border-color: #14213D !important;
+    outline: none !important;
+}
+
+[data-theme="dark"] .correcao-editorial-page .form-input,
+[data-theme="dark"] .correcao-editorial-page .form-textarea {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    color: #F9FAFB !important;
+}
+
+.quick-score-chips,
+.quick-feedback-chips {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.quick-score-pill,
+.quick-feedback-chip {
+    padding: 6px 13px;
+    border-radius: 9999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    color: #14213D;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.quick-score-pill:hover,
+.quick-feedback-chip:hover {
+    background: #18191E;
+    border-color: #18191E;
+    color: #FCA311;
+    transform: translateY(-1px);
+}
+
+.quick-score-pill.active {
+    background: #14213D;
+    border-color: #14213D;
+    color: #FCA311;
+}
+
+[data-theme="dark"] .quick-score-pill,
+[data-theme="dark"] .quick-feedback-chip {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #E5E7EB;
+}
+
+[data-theme="dark"] .quick-score-pill.active,
+[data-theme="dark"] .quick-score-pill:hover,
+[data-theme="dark"] .quick-feedback-chip:hover {
+    background: #FCA311;
+    border-color: #FCA311;
+    color: #14213D;
+}
+
+.correcao-french-toolbar {
+    margin-top: 0.65rem;
+    padding: 0.55rem 0.75rem;
+    border-radius: 14px;
+    background: #F9FAFB;
+    border: 1px solid #ECECEC;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+[data-theme="dark"] .correcao-french-toolbar {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.correcao-char-btn {
+    min-width: 30px;
+    height: 28px;
+    padding: 0 6px;
+    border-radius: 8px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    color: #14213D;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+
+.correcao-char-btn:hover {
+    background: #18191E;
+    border-color: #18191E;
+    color: #FCA311;
+}
+
+[data-theme="dark"] .correcao-char-btn {
+    background: #1E2230;
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #F3F4F6;
+}
+
+[data-theme="dark"] .correcao-char-btn:hover {
+    background: #FCA311;
+    border-color: #FCA311;
+    color: #14213D;
+}
+
+.btn-salvar-correcao-editorial {
+    margin-top: 1.35rem;
+    background: #18191E !important;
+    color: #FFFFFF !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 9999px !important;
+    padding: 12px 28px !important;
+    font-size: 0.94rem !important;
+    font-weight: 700 !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 8px 20px rgba(24, 25, 30, 0.18);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-salvar-correcao-editorial:hover:not(:disabled) {
+    background: #2D2F39 !important;
+    color: #FCA311 !important;
+    transform: translateY(-1px);
+}
+
+.btn-salvar-correcao-editorial:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="page-container">
+<div class="page-container correcao-editorial-page">
+    <!-- Barra de Retorno e Status -->
+    <div class="correcao-topbar">
+        <a href="/professor/avaliacoes" class="correcao-back-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            <span>Voltar para Avaliações</span>
+        </a>
+        <span class="correcao-status-pill {% if submissao.status_resposta != 'Aguardando Revisão Manual' %}is-done{% endif %}">
+            {{ submissao.status_resposta or 'Aguardando Revisão Manual' }}
+        </span>
+    </div>
+
+    <!-- Header Editorial (Preserva correcao-hero-outer.hero-card-outer > hero-card-inner) -->
     <div class="correcao-hero-outer hero-card-outer">
-        <div class="hero-card-inner">
-            <span class="hero-tag"><svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>Correction Orale</span>
-            <h1 class="hero-title" style="margin-bottom: 0;">Correção: {{ submissao.aluno_nome }}</h1>
+        <div class="hero-card-inner" style="text-align: left; align-items: flex-start;">
+            <span class="correcao-tag-editorial">
+                <svg class="line-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                <span>Correction Orale</span>
+            </span>
+            <h1 class="correcao-hero-title">Correção: {{ submissao.aluno_nome }}</h1>
+            <p class="correcao-hero-subtitle">Évaluation de la prononciation et de l'articulation en français</p>
         </div>
     </div>
 
+    <!-- Card de Correção (Preserva correcao-box-outer.card-moldura-outer > hero-card-inner) -->
     <div class="correcao-box-outer card-moldura-outer">
         <div class="hero-card-inner" style="text-align: left; align-items: stretch;">
-            <h3 style="margin-top: 0; margin-bottom: 15px;">Enunciado da Questão</h3>
-            <p style="margin-bottom: 0;"><strong>Texto de Referência:</strong> {{ submissao.texto_referencia }}</p>
-        
-        <hr style="border-color: rgba(255,255,255,0.1); margin: 20px 0;">
+            <h3 class="correcao-section-title">Enunciado da Questão &amp; Texto de Referência</h3>
+            <div class="correcao-ref-card">
+                {% if submissao.enunciado %}
+                <p class="correcao-enunciado-text">{{ submissao.enunciado }}</p>
+                {% endif %}
+                <div class="correcao-ref-phrase-row">
+                    <p class="correcao-ref-phrase" id="textoRefCorrecao">"{{ submissao.texto_referencia }}"</p>
+                    <button type="button" class="btn-ouvir-ref" data-ref="{{ submissao.texto_referencia | e }}" onclick="ouvirTextoReferenciaCorrecao(this.getAttribute('data-ref'))">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                        <span>Ouvir Referência (fr-FR)</span>
+                    </button>
+                </div>
+            </div>
 
-        <h3>Áudio Gravado pelo Aluno</h3>
-        <div style="margin: 20px 0;">
-            <audio controls>
-                <source src="/{{ submissao.arquivo_audio_path }}" type="audio/webm">
-                Seu navegador não suporta a tag de áudio.
-            </audio>
-        </div>
+            <hr class="correcao-divider">
 
-        <div class="feedback-student-box">
-            <h4 class="feedback-heading"><svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>Análise Prévia da IA (Gemini):</h4>
-            <div class="feedback-content">{{ submissao.feedback_ia }}</div>
-        </div>
+            <h3 class="correcao-section-title">Áudio Gravado pelo Aluno</h3>
+            <div class="correcao-audio-box">
+                {% if submissao.arquivo_audio_path %}
+                <audio controls preload="metadata">
+                    <source src="/{{ submissao.arquivo_audio_path }}" type="audio/webm">
+                    Seu navegador não suporta a tag de áudio.
+                </audio>
+                {% else %}
+                <p style="margin: 0; font-size: 0.9rem; opacity: 0.72;">Nenhum arquivo de áudio anexado a esta submissão.</p>
+                {% endif %}
+            </div>
 
-        <hr style="border-color: rgba(255,255,255,0.1); margin: 20px 0;">
+            <div class="feedback-student-box">
+                <h4 class="feedback-heading">
+                    <svg class="line-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>Análise Prévia da IA (Gemini):
+                </h4>
+                <div class="feedback-content">{{ submissao.feedback_ia }}</div>
+            </div>
 
-        <div class="form-group">
-            <label class="form-label">Nota Final do Professor (0 a 10):</label>
-            <input type="number" id="nota_prof" class="form-input" min="0" max="10" step="0.1" value="{{ submissao.nota_professor if submissao.nota_professor is not none else '' }}" placeholder="Ex: 8.5" required>
-        </div>
+            <hr class="correcao-divider">
 
-        <div class="form-group" style="margin-top: 15px;">
-            <label class="form-label">Parecer Pedagógico do Professor:</label>
-            <textarea id="analise_prof" class="form-textarea" rows="3" placeholder="Insira seus comentários e orientações para o aluno...">{{ submissao.analise_professor if submissao.analise_professor else '' }}</textarea>
-        </div>
+            <div class="form-group">
+                <label for="nota_prof" class="form-label">Nota Final do Professor (0 a 10):</label>
+                <div class="correcao-score-row">
+                    <input type="number" id="nota_prof" class="form-input" style="max-width: 150px;" min="0" max="10" step="0.1" value="{{ submissao.nota_professor if submissao.nota_professor is not none else '' }}" placeholder="Ex: 8.5" required oninput="sincronizarQuickScore()">
+                    <div class="quick-score-chips" aria-label="Notas rápidas">
+                        <span style="font-size: 0.76rem; font-weight: 600; opacity: 0.7;">Atalho de nota:</span>
+                        {% for val in ['6.0', '7.5', '8.5', '9.5', '10.0'] %}
+                        <button type="button" class="quick-score-pill" data-nota="{{ val }}" onclick="definirNotaRapida('{{ val }}', this)">{{ val }}</button>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
 
-        <button type="button" id="btnSalvarNota" class="btn-primary" onclick="salvarNota()" style="margin-top: 15px;">
-            Salvar Correção
-        </button>
+            <div class="form-group" style="margin-top: 1.25rem;">
+                <label for="analise_prof" class="form-label">Parecer Pedagógico do Professor:</label>
+                <textarea id="analise_prof" class="form-textarea" rows="4" placeholder="Insira seus comentários e orientações de fonética/pronúncia para o aluno...">{{ submissao.analise_professor if submissao.analise_professor else '' }}</textarea>
+
+                <div class="correcao-french-toolbar" role="toolbar" aria-label="Caracteres acentuados franceses">
+                    <span style="font-size: 0.72rem; font-weight: 700; opacity: 0.7; margin-right: 4px;">Acentos:</span>
+                    {% for ch_l in ['é','è','ê','ë','à','â','ç','ù','û','î','ï','ô','œ','« »'] %}
+                    <button type="button" class="correcao-char-btn" onclick="inserirCharCorrecao('{{ ch_l }}')" lang="fr">{{ ch_l }}</button>
+                    {% endfor %}
+                </div>
+
+                <div class="quick-feedback-chips" style="margin-top: 0.75rem;" aria-label="Sugestões de parecer pedagógico">
+                    <span style="font-size: 0.75rem; font-weight: 600; opacity: 0.7;">Sugestões rápidas:</span>
+                    <button type="button" class="quick-feedback-chip" onclick="adicionarSugestaoParecer('Excelente articulação e ritmo natural em francês!')">+ Excelente articulação</button>
+                    <button type="button" class="quick-feedback-chip" onclick="adicionarSugestaoParecer('Atenção às vogais nasais (an/en/on/in) para maior precisão.')">+ Vogais nasais</button>
+                    <button type="button" class="quick-feedback-chip" onclick="adicionarSugestaoParecer('Pratique um pouco mais a pronúncia do &quot;u&quot; francês [y] e do &quot;r&quot; uvular.')">+ Fonética [y] / [ʀ]</button>
+                    <button type="button" class="quick-feedback-chip" onclick="adicionarSugestaoParecer('Boa leitura! Continue atento às liaisons obrigatórias.')">+ Liaisons</button>
+                </div>
+            </div>
+
+            <div>
+                <button type="button" id="btnSalvarNota" class="btn-salvar-correcao-editorial" onclick="salvarNota()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <span>Salvar Correção</span>
+                </button>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
+if (typeof window.showToast !== 'function') {
+    window.showToast = function(mensagem, tipo = 'sucesso') {
+        if (typeof anunciarParaLeitorDeTela === 'function') {
+            anunciarParaLeitorDeTela(mensagem, tipo === 'erro');
+        }
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        const cores = {
+            sucesso: '#10B981',
+            erro: '#EF4444',
+            aviso: '#F59E0B',
+            info: '#14213D'
+        };
+        const toast = document.createElement('div');
+        toast.setAttribute('role', tipo === 'erro' ? 'alert' : 'status');
+        toast.style.cssText = 'background:' + (cores[tipo] || cores.sucesso) + '; color:#FFFFFF; padding:12px 20px; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.2); font-size:0.88rem; font-weight:600; opacity:0; transform:translateY(10px); transition:all 0.25s ease;';
+        toast.innerText = mensagem;
+        container.appendChild(toast);
+        requestAnimationFrame(() => {
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateY(0)';
+        });
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(10px)';
+            setTimeout(() => toast.remove(), 250);
+        }, 3500);
+    };
+}
+
+function ouvirTextoReferenciaCorrecao(texto) {
+    if (!texto) return;
+    if (typeof falarTextoFrancesBase === 'function') {
+        falarTextoFrancesBase(texto);
+    } else if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance(texto);
+        msg.lang = 'fr-FR';
+        msg.rate = 0.88;
+        window.speechSynthesis.speak(msg);
+    } else {
+        showToast('Síntese de voz não suportada neste navegador.', 'aviso');
+    }
+}
+
+function definirNotaRapida(valor, btn) {
+    const input = document.getElementById('nota_prof');
+    if (input) {
+        input.value = valor;
+        input.focus();
+    }
+    document.querySelectorAll('.quick-score-pill').forEach(p => p.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+}
+
+function sincronizarQuickScore() {
+    const val = parseFloat(document.getElementById('nota_prof')?.value);
+    document.querySelectorAll('.quick-score-pill').forEach(p => {
+        p.classList.toggle('active', !isNaN(val) && parseFloat(p.getAttribute('data-nota')) === val);
+    });
+}
+
+function inserirCharCorrecao(val) {
+    const ta = document.getElementById('analise_prof');
+    if (!ta) return;
+    const start = ta.selectionStart ?? ta.value.length;
+    const end = ta.selectionEnd ?? ta.value.length;
+    ta.value = ta.value.slice(0, start) + val + ta.value.slice(end);
+    const cursorPos = val === '« »' ? start + 2 : start + val.length;
+    ta.focus();
+    ta.setSelectionRange(cursorPos, cursorPos);
+}
+
+function adicionarSugestaoParecer(texto) {
+    const ta = document.getElementById('analise_prof');
+    if (!ta) return;
+    const atual = ta.value.trim();
+    if (atual.includes(texto)) return;
+    ta.value = atual ? `${atual}\n${texto}` : texto;
+    ta.focus();
+}
+
+document.addEventListener('DOMContentLoaded', sincronizarQuickScore);
+
 async function salvarNota() {
     const submissaoId = {{ submissao.id }};
     const notaInput = document.getElementById("nota_prof");
     const analiseInput = document.getElementById("analise_prof");
     const btn = document.getElementById("btnSalvarNota");
+    const btnOriginalHtml = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Salvar Correção</span>';
 
     const nota = parseFloat(notaInput.value);
     if (isNaN(nota) || nota < 0 || nota > 10) {
-        if (typeof showToast === "function") {
-            showToast("Por favor, informe uma nota válida entre 0 e 10.", "aviso");
-        } else {
-            alert("Por favor, informe uma nota válida entre 0 e 10.");
-        }
+        showToast("Por favor, informe uma nota válida entre 0 e 10.", "aviso");
         notaInput.focus();
         return;
     }
@@ -86,21 +728,17 @@ async function salvarNota() {
 
         const data = await resp.json();
         if (data.status === "sucesso") {
-            if (typeof showToast === "function") {
-                showToast("Correção salva com sucesso!", "sucesso");
-            }
-            setTimeout(() => { window.location.href = "/professor/avaliacoes"; }, 600);
+            showToast("Correção salva com sucesso!", "sucesso");
+            setTimeout(() => { window.location.href = "/professor/avaliacoes"; }, 650);
         } else {
-            const msgErro = "Erro ao salvar: " + (data.mensagem || "Erro desconhecido");
-            if (typeof showToast === "function") showToast(msgErro, "erro"); else alert(msgErro);
+            showToast("Erro ao salvar: " + (data.mensagem || "Erro desconhecido"), "erro");
             btn.disabled = false;
-            btn.innerText = "Salvar Correção";
+            btn.innerHTML = btnOriginalHtml;
         }
     } catch (e) {
-        const msgConn = "Erro de conexão ao salvar nota: " + e;
-        if (typeof showToast === "function") showToast(msgConn, "erro"); else alert(msgConn);
+        showToast("Erro de conexão ao salvar nota: " + (e.message || e), "erro");
         btn.disabled = false;
-        btn.innerText = "Salvar Correção";
+        btn.innerHTML = btnOriginalHtml;
     }
 }
 </script>

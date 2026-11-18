@@ -11,8 +11,7 @@
 
 /* 4. Fundo da Bandeira Francesa com Degradê Suave e Faixa Branca Ampliada */
 body:has(.login-page-wrapper),
-[data-theme="light"] body:has(.login-page-wrapper),
-[data-theme="dark"] body:has(.login-page-wrapper) {
+[data-theme="light"] body:has(.login-page-wrapper) {
     background: linear-gradient(
         90deg,
         #002654 0%,
@@ -282,6 +281,94 @@ body:has(.login-page-wrapper) .footer {
     background: rgba(252, 163, 17, 0.08) !important;
 }
 
+/* Link e painel de orientação "Esqueceu sua senha?" */
+.login-forgot-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 0.3rem;
+}
+
+.btn-forgot-pwd {
+    background: transparent;
+    border: none;
+    padding: 2px 0;
+    color: #14213D;
+    font-size: 0.74rem;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+    opacity: 0.85;
+    transition: opacity 0.15s ease, color 0.15s ease;
+}
+
+.btn-forgot-pwd:hover {
+    opacity: 1;
+    color: #000000;
+}
+
+.login-forgot-help {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    padding: 0.65rem 0.8rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(20, 33, 61, 0.16);
+    color: #14213D;
+    font-size: 0.74rem;
+    line-height: 1.45;
+    text-align: left;
+    box-shadow: 0 6px 18px rgba(20, 33, 61, 0.08);
+}
+
+.login-forgot-help p {
+    margin: 0;
+}
+
+/* Acordeão Discreto das Contas de Demonstração */
+.demo-outside-container {
+    padding: 0.85rem 1.2rem !important;
+}
+
+.demo-accounts-accordion {
+    width: 100%;
+}
+
+.demo-accordion-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    list-style: none;
+    cursor: pointer;
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #14213D;
+    user-select: none;
+    padding: 0.25rem 0;
+}
+
+.demo-accordion-summary::-webkit-details-marker {
+    display: none;
+}
+
+.demo-accordion-summary::after {
+    content: "▾";
+    font-size: 0.9rem;
+    color: #6B7280;
+    transition: transform 0.2s ease;
+}
+
+.demo-accounts-accordion[open] .demo-accordion-summary::after {
+    transform: rotate(180deg);
+}
+
+.demo-accounts-accordion[open] .demo-accounts-box {
+    margin-top: 0.85rem !important;
+    padding-top: 0.85rem !important;
+    border-top: 1px solid rgba(20, 33, 61, 0.1) !important;
+}
+
 @media (max-width: 540px) {
     .login-visual-stage {
         max-width: 340px;
@@ -293,6 +380,88 @@ body:has(.login-page-wrapper) .footer {
         margin-top: -118px;
         padding: 1.25rem 1.35rem 1.55rem;
     }
+}
+
+/* ===================================================================
+   ADAPTAÇÃO AO MODO ESCURO (DARK MODE NOCTURNAL TRICOLOR)
+   =================================================================== */
+html[data-theme="dark"] body:has(.login-page-wrapper) {
+    background:
+        radial-gradient(circle at 12% 24%, rgba(0, 85, 164, 0.42) 0%, transparent 45%),
+        radial-gradient(circle at 88% 22%, rgba(239, 65, 53, 0.32) 0%, transparent 45%),
+        linear-gradient(135deg, #070B14 0%, #0F172A 52%, #111827 100%) !important;
+    background-attachment: fixed !important;
+}
+
+html[data-theme="dark"] .login-welcome-title {
+    color: #F8FAFC !important;
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.45);
+}
+
+html[data-theme="dark"] .login-glass-backdrop {
+    background: rgba(15, 23, 42, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+}
+
+html[data-theme="dark"] .login-glass-card,
+html[data-theme="dark"] .login-glass-card .form-label,
+html[data-theme="dark"] .login-glass-card .form-label .label-icon,
+html[data-theme="dark"] .login-glass-card .btn-toggle-password,
+html[data-theme="dark"] .btn-forgot-pwd {
+    color: #E2E8F0 !important;
+}
+
+html[data-theme="dark"] .btn-forgot-pwd:hover {
+    color: #FCA311 !important;
+}
+
+html[data-theme="dark"] .login-glass-card .form-input {
+    background: rgba(15, 23, 42, 0.78) !important;
+    border-color: rgba(148, 163, 184, 0.3) !important;
+    color: #F8FAFC !important;
+}
+
+html[data-theme="dark"] .login-glass-card .form-input::placeholder {
+    color: rgba(203, 213, 225, 0.55) !important;
+}
+
+html[data-theme="dark"] .login-glass-card .form-input:focus {
+    background: rgba(15, 23, 42, 0.96) !important;
+    border-color: #FCA311 !important;
+}
+
+html[data-theme="dark"] .login-forgot-help {
+    background: rgba(15, 23, 42, 0.92);
+    border-color: rgba(255, 255, 255, 0.14);
+    color: #E2E8F0;
+}
+
+html[data-theme="dark"] .demo-outside-container {
+    background: rgba(15, 23, 42, 0.82) !important;
+    border-color: rgba(255, 255, 255, 0.14) !important;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.4);
+}
+
+html[data-theme="dark"] .demo-accordion-summary,
+html[data-theme="dark"] .demo-outside-container .demo-accounts-header {
+    color: #F1F5F9 !important;
+}
+
+html[data-theme="dark"] .demo-accounts-accordion[open] .demo-accounts-box {
+    border-top-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+html[data-theme="dark"] .demo-outside-container .demo-account-pill {
+    background: rgba(30, 41, 59, 0.88) !important;
+    border-color: rgba(148, 163, 184, 0.25) !important;
+    color: #F1F5F9 !important;
+}
+
+html[data-theme="dark"] body:has(.login-page-wrapper) .app-footer {
+    background: rgba(15, 23, 42, 0.82) !important;
+    border-top-color: rgba(255, 255, 255, 0.1) !important;
+    color: #CBD5E1 !important;
 }
 </style>
 {% endblock %}
@@ -359,9 +528,18 @@ body:has(.login-page-wrapper) .footer {
                             placeholder="Digite sua senha" 
                             required
                         >
-                        <button type="button" class="btn-toggle-password" onclick="toggleVisibilidadeSenha()" title="Mostrar/Ocultar Senha">
+                        <button type="button" id="btnToggleSenhaLogin" class="btn-toggle-password" onclick="alternarVisibilidadeSenhaLogin()" title="Mostrar/Ocultar Senha" aria-label="Mostrar ou ocultar senha">
                             <svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                         </button>
+                    </div>
+                    <div class="login-forgot-row">
+                        <button type="button" class="btn-forgot-pwd" id="btnEsqueceuSenha" onclick="alternarAjudaSenhaLogin()" aria-expanded="false">
+                            Esqueceu sua senha ou matrícula?
+                        </button>
+                    </div>
+                    <div id="boxAjudaSenhaLogin" class="login-forgot-help" style="display: none;" role="region" aria-label="Orientação para recuperação de acesso">
+                        <p><strong>Estudantes:</strong> Solicite a consulta da sua matrícula ou a redefinição de senha diretamente ao seu professor de Francês (via <em>Painel Docente → Gestão de Alunos</em>).</p>
+                        <p style="margin-top: 4px;"><strong>Professores:</strong> Caso precise recuperar o acesso docente, contate a coordenação pedagógica.</p>
                     </div>
                 </div>
 
@@ -378,32 +556,37 @@ body:has(.login-page-wrapper) .footer {
         </div>
     </div>
 
-    <!-- Contas de Demonstração Fora do Login (Abaixo, para remoção futura) -->
+    <!-- Contas de Demonstração em Acordeão Discreto (Fora do Card Principal) -->
     <div class="demo-outside-container">
-        <div class="demo-accounts-box">
-            <div class="demo-accounts-header">
-                <svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: #FCA311;"><line x1="9" y1="18" x2="15" y2="18"></line><line x1="10" y1="22" x2="14" y2="22"></line><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path></svg>
-                <strong>Contas de Demonstração (Clique para Preencher):</strong>
+        <details class="demo-accounts-accordion" id="demoAccountsAccordion">
+            <summary class="demo-accordion-summary">
+                <span>🧪 Contas de Demonstração (Acesso Rápido 1-Clique)</span>
+            </summary>
+            <div class="demo-accounts-box">
+                <div class="demo-accounts-header">
+                    <svg class="line-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: #FCA311;"><line x1="9" y1="18" x2="15" y2="18"></line><line x1="10" y1="22" x2="14" y2="22"></line><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path></svg>
+                    <strong>Clique em um perfil para preencher automaticamente:</strong>
+                </div>
+                <div class="demo-accounts-grid">
+                    <button type="button" class="demo-account-pill" onclick="preencherCredenciais('202601', '123456')">
+                        <span class="demo-name">Lucas Silva</span>
+                        <span class="demo-badge">1º Ano A</span>
+                        <span class="demo-cred">Login: 202601</span>
+                    </button>
+                    <button type="button" class="demo-account-pill" onclick="preencherCredenciais('202602', '123456')">
+                        <span class="demo-name">Camila Rodrigues</span>
+                        <span class="demo-badge">1º Ano A</span>
+                        <span class="demo-cred">Login: 202602</span>
+                    </button>
+                    <button type="button" class="demo-account-pill" onclick="preencherCredenciais('admin', 'admin')">
+                        <span class="demo-name">Prof. Admin</span>
+                        <span class="demo-badge highlight">Professor</span>
+                        <span class="demo-cred">Login: admin</span>
+                    </button>
+                </div>
+                <span class="demo-hint">* O sistema direciona automaticamente para o painel de Aluno ou Professor conforme o login informado.</span>
             </div>
-            <div class="demo-accounts-grid">
-                <button type="button" class="demo-account-pill" onclick="preencherCredenciais('202601', '123456')">
-                    <span class="demo-name">Lucas Silva</span>
-                    <span class="demo-badge">1º Ano A</span>
-                    <span class="demo-cred">Login: 202601</span>
-                </button>
-                <button type="button" class="demo-account-pill" onclick="preencherCredenciais('202602', '123456')">
-                    <span class="demo-name">Camila Rodrigues</span>
-                    <span class="demo-badge">1º Ano A</span>
-                    <span class="demo-cred">Login: 202602</span>
-                </button>
-                <button type="button" class="demo-account-pill" onclick="preencherCredenciais('admin', 'admin')">
-                    <span class="demo-name">Prof. Admin</span>
-                    <span class="demo-badge highlight">Professor</span>
-                    <span class="demo-cred">Login: admin</span>
-                </button>
-            </div>
-            <span class="demo-hint">* O sistema direciona automaticamente para o painel de Aluno ou Professor conforme o login informado.</span>
-        </div>
+        </details>
     </div>
 </div>
 {% endblock %}
@@ -422,13 +605,29 @@ body:has(.login-page-wrapper) .footer {
         }
     }
 
-    function toggleVisibilidadeSenha() {
+    function alternarVisibilidadeSenhaLogin() {
         const inputPass = document.getElementById("senha");
+        const btn = document.getElementById("btnToggleSenhaLogin");
         if (!inputPass) return;
-        if (inputPass.type === "password") {
-            inputPass.type = "text";
-        } else {
-            inputPass.type = "password";
+        const mostrar = inputPass.type === "password";
+        inputPass.type = mostrar ? "text" : "password";
+        if (btn) {
+            btn.setAttribute("aria-pressed", mostrar ? "true" : "false");
+        }
+    }
+
+    function toggleVisibilidadeSenha() {
+        alternarVisibilidadeSenhaLogin();
+    }
+
+    function alternarAjudaSenhaLogin() {
+        const box = document.getElementById("boxAjudaSenhaLogin");
+        const btn = document.getElementById("btnEsqueceuSenha");
+        if (!box) return;
+        const abrindo = box.style.display === "none" || !box.style.display;
+        box.style.display = abrindo ? "block" : "none";
+        if (btn) {
+            btn.setAttribute("aria-expanded", abrindo ? "true" : "false");
         }
     }
 </script>

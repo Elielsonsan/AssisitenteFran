@@ -445,6 +445,218 @@
     40% { transform: scale(1); }
 }
 
+@keyframes forumMsgFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+
+.message-wrapper.msg-enter {
+    animation: forumMsgFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Botão Ouvir Mensagem no Cabeçalho da Bolha */
+.msg-header-right {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-listen-msg {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    background: #F3F4F6;
+    color: #14213D;
+    border: 1px solid #E5E7EB;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    line-height: 1.2;
+}
+
+.btn-listen-msg:hover {
+    background: #18191E;
+    color: #FCA311;
+    border-color: #18191E;
+}
+
+.btn-listen-msg.speaking {
+    background: #FCA311;
+    color: #14213D;
+    border-color: #FCA311;
+}
+
+[data-theme="dark"] .btn-listen-msg {
+    background: rgba(255, 255, 255, 0.08);
+    color: #E5E7EB;
+    border-color: rgba(255, 255, 255, 0.14);
+}
+
+[data-theme="dark"] .btn-listen-msg:hover {
+    background: #FCA311;
+    color: #14213D;
+    border-color: #FCA311;
+}
+
+/* Barra de Caracteres Especiais Franceses — Editorial Clean */
+.forum-french-toolbar {
+    margin-top: 0.75rem;
+    padding: 0.75rem 0.9rem;
+    border-radius: 16px;
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+}
+
+[data-theme="dark"] .forum-french-toolbar {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.forum-french-toolbar-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: #6B7280;
+    margin-bottom: 0.55rem;
+}
+
+[data-theme="dark"] .forum-french-toolbar-label {
+    color: #9CA3AF;
+}
+
+.forum-french-toolbar .toolbar-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.forum-french-toolbar .french-char-btn {
+    min-width: 34px;
+    height: 32px;
+    padding: 0 8px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    color: #14213D;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    transition: all 0.15s ease;
+}
+
+.forum-french-toolbar .french-char-btn:hover {
+    background: #18191E;
+    border-color: #18191E;
+    color: #FCA311;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(24, 25, 30, 0.14);
+}
+
+[data-theme="dark"] .forum-french-toolbar .french-char-btn {
+    background: #1E2230;
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #F3F4F6;
+}
+
+[data-theme="dark"] .forum-french-toolbar .french-char-btn:hover {
+    background: #FCA311;
+    border-color: #FCA311;
+    color: #14213D;
+}
+
+.forum-french-toolbar .french-char-btn.btn-maj {
+    font-size: 0.76rem;
+    font-weight: 700;
+    margin-left: auto;
+    background: rgba(20, 33, 61, 0.06);
+    color: #14213D;
+}
+
+.forum-french-toolbar .french-char-btn.btn-maj.active {
+    background: #14213D;
+    border-color: #14213D;
+    color: #FCA311;
+}
+
+[data-theme="dark"] .forum-french-toolbar .french-char-btn.btn-maj {
+    background: rgba(255, 255, 255, 0.08);
+    color: #E5E7EB;
+}
+
+[data-theme="dark"] .forum-french-toolbar .french-char-btn.btn-maj.active {
+    background: #FCA311;
+    border-color: #FCA311;
+    color: #14213D;
+}
+
+.forum-french-toolbar .french-char-btn.btn-audio,
+.forum-french-toolbar .french-char-btn.btn-mic {
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0 12px;
+    border-radius: 9999px;
+}
+
+.forum-french-toolbar .french-char-btn.btn-mic.recording {
+    background: #EF4444 !important;
+    border-color: #DC2626 !important;
+    color: #FFFFFF !important;
+    animation: typingBounce 1.2s infinite ease-in-out;
+}
+
+.forum-shortcut-hint {
+    font-size: 0.74rem;
+    color: #6B7280;
+}
+
+[data-theme="dark"] .forum-shortcut-hint {
+    color: #9CA3AF;
+}
+
+.forum-shortcut-hint kbd {
+    background: #FFFFFF;
+    border: 1px solid #D1D5DB;
+    border-radius: 5px;
+    padding: 1px 6px;
+    font-size: 0.72rem;
+    font-family: inherit;
+    color: #14213D;
+}
+
+[data-theme="dark"] .forum-shortcut-hint kbd {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.16);
+    color: #F3F4F6;
+}
+
+.topic-subtitle-italic {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-weight: 600;
+    color: #14213D;
+}
+
+[data-theme="dark"] .topic-subtitle-italic {
+    color: #FCA311;
+}
+
 .forum-empty-messages {
     text-align: center;
     padding: 3rem 1.5rem;
@@ -472,7 +684,7 @@
         </a>
         <span class="topic-msg-counter-pill">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-            {{ mensagens|length }} intervenções na discussão
+            <span id="topicMsgCounterText">{{ mensagens|length }} intervenções na discussão</span>
         </span>
     </div>
 
@@ -528,7 +740,7 @@
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                     <span>Proposto por <strong>{{ topico['criador_nome'] }}</strong></span>
                 </div>
-                <span style="font-size: 0.78rem; font-weight: 600; color: #16A34A;">▲ Tutoria Socrática Ativa</span>
+                <span class="topic-subtitle-italic" style="font-size: 0.85rem;">Tutoria Socrática Ativa</span>
             </div>
         </div>
     </div>
@@ -541,11 +753,11 @@
         {% set is_prof_msg = (msg['autor_tipo'] == 'Professor') %}
         {% set is_me = (msg['autor_id'] == session.get('aluno_id') and not is_prof) or (msg['autor_id'] == session.get('prof_id') and is_prof) %}
         
-        <div class="message-wrapper {% if is_ia %}msg-ia-wrap{% elif is_me %}msg-me-wrap{% else %}msg-other-wrap{% endif %}">
+        <div class="message-wrapper {% if is_ia %}msg-ia-wrap{% elif is_me %}msg-me-wrap{% else %}msg-other-wrap{% endif %}" data-msg-id="{{ msg['id'] }}">
             <div class="message-bubble {% if is_ia %}bubble-ia{% elif is_prof_msg %}bubble-prof{% elif is_me %}bubble-me{% else %}bubble-other{% endif %}">
                 <!-- Cabeçalho da Mensagem -->
                 <div class="msg-header">
-                    <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                         {% if is_ia %}
                         <span class="avatar-ia">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
@@ -562,7 +774,13 @@
                         <span class="badge-role badge-role-aluno">Estudante</span>
                         {% endif %}
                     </div>
-                    <span class="msg-time">{{ msg['data_envio'][11:16] }}</span>
+                    <div class="msg-header-right">
+                        <button type="button" class="btn-listen-msg" onclick="ouvirMensagemForum(this)" title="Ouvir mensagem com pronúncia francesa (fr-FR)" aria-label="Ouvir mensagem em francês">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                            <span>Ouvir</span>
+                        </button>
+                        <span class="msg-time">{{ msg['data_envio'][11:16] }}</span>
+                    </div>
                 </div>
 
                 <!-- Conteúdo -->
@@ -589,6 +807,52 @@
                     Sua Contribuição para a Discussão:
                 </label>
                 <textarea id="conteudo" class="form-input" rows="3" placeholder="Escreva sua mensagem em francês ou português. A Assistente Fran poderá dar feedbacks pedagógicos!" required style="resize: vertical;"></textarea>
+
+                <!-- Barra de Caracteres Especiais Franceses & Voz -->
+                <div class="forum-french-toolbar" role="toolbar" aria-label="Caracteres acentuados franceses e controles de voz">
+                    <div class="forum-french-toolbar-label">
+                        <span style="display: inline-flex; align-items: center; gap: 6px;">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
+                                <line x1="6" y1="8" x2="6.01" y2="8"></line>
+                                <line x1="10" y1="8" x2="10.01" y2="8"></line>
+                                <line x1="14" y1="8" x2="14.01" y2="8"></line>
+                                <line x1="18" y1="8" x2="18.01" y2="8"></line>
+                                <line x1="8" y1="12" x2="8.01" y2="12"></line>
+                                <line x1="12" y1="12" x2="12.01" y2="12"></line>
+                                <line x1="16" y1="12" x2="16.01" y2="12"></line>
+                                <line x1="7" y1="16" x2="17" y2="16"></line>
+                            </svg>
+                            Teclas auxiliares de francês &amp; voz (fr-FR):
+                        </span>
+                        <span class="forum-shortcut-hint">Atalho: <kbd>Ctrl</kbd> + <kbd>Enter</kbd> para enviar</span>
+                    </div>
+                    <div class="toolbar-buttons">
+                        <button type="button" class="french-char-btn" data-char="é" data-char-maj="É" onclick="inserirCharForum(this)" lang="fr" aria-label="Inserir letra é">é</button>
+                        <button type="button" class="french-char-btn" data-char="è" data-char-maj="È" onclick="inserirCharForum(this)" lang="fr" aria-label="Inserir letra è">è</button>
+                        <button type="button" class="french-char-btn" data-char="ê" data-char-maj="Ê" onclick="inserirCharForum(this)" lang="fr" aria-label="Inserir letra ê">ê</button>
+                        <button type="button" class="french-char-btn" data-char="ë" data-char-maj="Ë" onclick="inserirCharForum(this)" lang="fr" aria-label="Inserir letra ë">ë</button>
+                        <button type="button" class="french-char-btn" data-char="à" data-char-maj="À" onclick="inserirCharForum(this)" lang="fr" aria-label="Inserir letra à">à</button>
+                        <button type="button" class="french-char-btn" data-char="â" data-char-maj="Â" onclick="inserirCharForum(this)" lang="fr" aria-label="Inserir letra â">â</button>
+                        <button type="button" class="french-char-btn" data-char="ç" data-char-maj="Ç" onclick="inserirCharForum(this)" lang="fr" aria-label="Inserir letra ç">ç</button>
+                        <button type="button" class="french-char-btn" data-char="ù" data-char-maj="Ù" onclick="inserirCharForum(this)" lang="fr" aria-label="Inserir letra ù">ù</button>
+                        <button type="button" class="french-char-btn" data-char="û" data-char-maj="Û" onclick="inserirCharForum(this)" lang="fr" aria-label="Inserir letra û">û</button>
+                        <button type="button" class="french-char-btn" data-char="î" data-char-maj="Î" onclick="inserirCharForum(this)" lang="fr" aria-label="Inserir letra î">î</button>
+                        <button type="button" class="french-char-btn" data-char="ï" data-char-maj="Ï" onclick="inserirCharForum(this)" lang="fr" aria-label="Inserir letra ï">ï</button>
+                        <button type="button" class="french-char-btn" data-char="ô" data-char-maj="Ô" onclick="inserirCharForum(this)" lang="fr" aria-label="Inserir letra ô">ô</button>
+                        <button type="button" class="french-char-btn" data-char="œ" data-char-maj="Œ" onclick="inserirCharForum(this)" lang="fr" aria-label="Inserir ligatura œ">œ</button>
+                        <button type="button" class="french-char-btn" data-char="« »" data-char-maj="« »" onclick="inserirCharForum(this)" lang="fr" aria-label="Inserir aspas francesas">« »</button>
+                        <button type="button" id="btnToggleMajForum" class="french-char-btn btn-maj" onclick="toggleMajForum()" title="Alternar Maiúsculas / Minúsculas" aria-label="Alternar maiúsculas e minúsculas">a/A</button>
+                        <button type="button" id="btnAudioForum" class="french-char-btn btn-audio" onclick="ouvirRascunhoForum()" title="Ouvir texto digitado em francês (fr-FR)" aria-label="Ouvir rascunho em francês">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                            <span>Ouvir</span>
+                        </button>
+                        <button type="button" id="btnDictationForum" class="french-char-btn btn-mic" onclick="alternarDitadoForum()" title="Falar em Francês (Ditado por Microfone - fr-FR)" aria-label="Ditar resposta por voz em francês">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                            <span>Falar</span>
+                        </button>
+                    </div>
+                </div>
             </div>
             
             <div style="display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap;">
@@ -613,12 +877,298 @@
 
 {% block extra_js %}
 <script>
+    if (typeof window.showToast !== 'function') {
+        window.showToast = function(mensagem, tipo = 'sucesso') {
+            if (typeof anunciarParaLeitorDeTela === 'function') {
+                anunciarParaLeitorDeTela(mensagem, tipo === 'erro');
+            }
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const cores = {
+                sucesso: '#10B981',
+                erro: '#EF4444',
+                aviso: '#F59E0B',
+                info: '#14213D'
+            };
+            const toast = document.createElement('div');
+            toast.setAttribute('role', tipo === 'erro' ? 'alert' : 'status');
+            toast.style.cssText = 'background:' + (cores[tipo] || cores.sucesso) + '; color:#FFFFFF; padding:12px 20px; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.2); font-size:0.88rem; font-weight:600; opacity:0; transform:translateY(10px); transition:all 0.25s ease;';
+            toast.innerText = mensagem;
+            container.appendChild(toast);
+            requestAnimationFrame(() => {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateY(0)';
+            });
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(10px)';
+                setTimeout(() => toast.remove(), 250);
+            }, 3500);
+        };
+    }
+
+    let ultimoMsgId = {{ mensagens[-1]['id'] if mensagens and mensagens[-1]['id'] else 0 }};
+    let totalMensagensAtual = {{ mensagens|length }};
+    let isMajForum = false;
+    let recognitionForum = null;
+    let ditandoForum = false;
+    let pollingTimer = null;
+
+    function escapeHtmlForum(text) {
+        const div = document.createElement('div');
+        div.textContent = text || '';
+        return div.innerHTML;
+    }
+
+    function atualizarContadorMensagens(novoTotal) {
+        totalMensagensAtual = novoTotal;
+        const el = document.getElementById('topicMsgCounterText');
+        if (el) {
+            el.textContent = `${novoTotal} ${novoTotal === 1 ? 'intervenção' : 'intervenções'} na discussão`;
+        }
+    }
+
+    function ouvirMensagemForum(btn) {
+        const bubble = btn.closest('.message-bubble');
+        const body = bubble ? bubble.querySelector('.msg-body') : null;
+        const texto = body ? body.innerText.trim() : '';
+        if (!texto) return;
+
+        document.querySelectorAll('.btn-listen-msg.speaking').forEach(b => b.classList.remove('speaking'));
+        btn.classList.add('speaking');
+
+        if (typeof falarTextoFrancesBase === 'function') {
+            falarTextoFrancesBase(texto);
+        } else if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(texto);
+            u.lang = 'fr-FR';
+            window.speechSynthesis.speak(u);
+        }
+
+        const duracaoEst = Math.min(Math.max(texto.length * 65, 1800), 12000);
+        setTimeout(() => btn.classList.remove('speaking'), duracaoEst);
+    }
+
+    function toggleMajForum() {
+        isMajForum = !isMajForum;
+        const btnMaj = document.getElementById('btnToggleMajForum');
+        if (btnMaj) btnMaj.classList.toggle('active', isMajForum);
+        document.querySelectorAll('.forum-french-toolbar .french-char-btn[data-char]').forEach(btn => {
+            const val = isMajForum ? btn.getAttribute('data-char-maj') : btn.getAttribute('data-char');
+            if (val) btn.textContent = val;
+        });
+    }
+
+    function inserirCharForum(btn) {
+        const ta = document.getElementById('conteudo');
+        if (!ta) return;
+        const val = isMajForum ? (btn.getAttribute('data-char-maj') || btn.getAttribute('data-char')) : btn.getAttribute('data-char');
+        if (!val) return;
+        const start = ta.selectionStart ?? ta.value.length;
+        const end = ta.selectionEnd ?? ta.value.length;
+        ta.value = ta.value.slice(0, start) + val + ta.value.slice(end);
+        const cursorPos = val === '« »' ? start + 2 : start + val.length;
+        ta.focus();
+        ta.setSelectionRange(cursorPos, cursorPos);
+    }
+
+    function ouvirRascunhoForum() {
+        const ta = document.getElementById('conteudo');
+        const texto = ta ? ta.value.trim() : '';
+        if (!texto) {
+            showToast('Escreva algo no campo antes de ouvir a pronúncia.', 'aviso');
+            return;
+        }
+        if (typeof falarTextoFrancesBase === 'function') {
+            falarTextoFrancesBase(texto);
+        }
+    }
+
+    function alternarDitadoForum() {
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const btn = document.getElementById('btnDictationForum');
+        const ta = document.getElementById('conteudo');
+
+        if (!SpeechRec) {
+            showToast('Seu navegador não suporta ditado por voz. Utilize o Chrome ou Edge.', 'aviso');
+            return;
+        }
+
+        if (ditandoForum && recognitionForum) {
+            recognitionForum.stop();
+            return;
+        }
+
+        recognitionForum = new SpeechRec();
+        recognitionForum.lang = 'fr-FR';
+        recognitionForum.interimResults = false;
+        recognitionForum.maxAlternatives = 1;
+
+        recognitionForum.onstart = () => {
+            ditandoForum = true;
+            if (btn) btn.classList.add('recording');
+            showToast('Microfone ativo em francês (fr-FR)... Pode falar!', 'info');
+        };
+
+        recognitionForum.onresult = (event) => {
+            const transcricao = event.results[0][0].transcript;
+            if (ta && transcricao) {
+                const atual = ta.value.trim();
+                ta.value = atual ? `${atual} ${transcricao}` : transcricao;
+                ta.focus();
+            }
+        };
+
+        recognitionForum.onerror = () => {
+            ditandoForum = false;
+            if (btn) btn.classList.remove('recording');
+            showToast('Não foi possível reconhecer o áudio. Tente novamente.', 'erro');
+        };
+
+        recognitionForum.onend = () => {
+            ditandoForum = false;
+            if (btn) btn.classList.remove('recording');
+        };
+
+        recognitionForum.start();
+    }
+
+    function criarElementoMensagem(msg) {
+        const autorTipo = msg.autor_tipo || 'Aluno';
+        const isIA = autorTipo === 'IA';
+        const isProfMsg = autorTipo === 'Professor';
+        const isMe = Boolean(msg.is_me);
+
+        const wrapClass = isIA ? 'msg-ia-wrap' : (isMe ? 'msg-me-wrap' : 'msg-other-wrap');
+        const bubbleClass = isIA ? 'bubble-ia' : (isProfMsg ? 'bubble-prof' : (isMe ? 'bubble-me' : 'bubble-other'));
+
+        let headerLeftHtml = '';
+        if (isIA) {
+            headerLeftHtml = `
+                <span class="avatar-ia">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+                </span>
+                <strong>Assistente Fran</strong>
+                <span class="badge-role badge-role-ia">Tutora IA</span>
+            `;
+        } else if (isProfMsg) {
+            headerLeftHtml = `
+                <span class="avatar-prof">P</span>
+                <strong>${escapeHtmlForum(msg.autor_nome || 'Docente')}</strong>
+                <span class="badge-role badge-role-prof">Docente</span>
+            `;
+        } else {
+            const nome = isMe ? 'Você' : (msg.autor_nome || 'Estudante');
+            const inicial = (msg.autor_nome || 'E').slice(0, 1);
+            headerLeftHtml = `
+                <span class="avatar-aluno">${escapeHtmlForum(inicial)}</span>
+                <strong>${escapeHtmlForum(nome)}</strong>
+                <span class="badge-role badge-role-aluno">${isMe ? 'Agora' : 'Estudante'}</span>
+            `;
+        }
+
+        const horaTexto = msg.data_envio ? String(msg.data_envio).slice(11, 16) : 'agora';
+        const div = document.createElement('div');
+        div.className = `message-wrapper ${wrapClass} msg-enter`;
+        if (msg.id) div.setAttribute('data-msg-id', String(msg.id));
+
+        div.innerHTML = `
+            <div class="message-bubble ${bubbleClass}">
+                <div class="msg-header">
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        ${headerLeftHtml}
+                    </div>
+                    <div class="msg-header-right">
+                        <button type="button" class="btn-listen-msg" onclick="ouvirMensagemForum(this)" title="Ouvir mensagem com pronúncia francesa (fr-FR)" aria-label="Ouvir mensagem em francês">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                            <span>Ouvir</span>
+                        </button>
+                        <span class="msg-time">${escapeHtmlForum(horaTexto)}</span>
+                    </div>
+                </div>
+                <div class="msg-body">
+                    ${escapeHtmlForum(msg.conteudo).replace(/\n/g, '<br>')}
+                </div>
+            </div>
+        `;
+        return div;
+    }
+
+    function aguardarRespostaIA(topicoId, afterId) {
+        if (pollingTimer) {
+            clearTimeout(pollingTimer);
+            pollingTimer = null;
+        }
+
+        const typing = document.getElementById('typingIndicator');
+        const chatContainer = document.getElementById('chatContainer');
+        let tentativas = 0;
+        const maxTentativas = 10;
+
+        async function verificarNovas() {
+            tentativas++;
+            try {
+                const resp = await fetch(`/api/forum/topico/${topicoId}/mensagens?after_id=${ultimoMsgId || afterId || 0}`);
+                const data = await resp.json();
+
+                if (data.status === 'sucesso' && Array.isArray(data.mensagens) && data.mensagens.length > 0) {
+                    let recebeuIA = false;
+                    const emptyMsg = chatContainer.querySelector('.forum-empty-messages');
+                    if (emptyMsg) emptyMsg.remove();
+
+                    data.mensagens.forEach(m => {
+                        if (!document.querySelector(`.message-wrapper[data-msg-id="${m.id}"]`)) {
+                            const novoEl = criarElementoMensagem(m);
+                            chatContainer.appendChild(novoEl);
+                        }
+                        if (Number(m.id) > ultimoMsgId) {
+                            ultimoMsgId = Number(m.id);
+                        }
+                        if (m.autor_tipo === 'IA') {
+                            recebeuIA = true;
+                        }
+                    });
+
+                    if (typeof data.total_mensagens === 'number') {
+                        atualizarContadorMensagens(data.total_mensagens);
+                    }
+
+                    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+
+                    if (recebeuIA) {
+                        if (typing) typing.style.display = 'none';
+                        return;
+                    }
+                }
+            } catch (err) {
+                console.error('Erro ao buscar resposta da IA no fórum:', err);
+            }
+
+            if (tentativas < maxTentativas) {
+                pollingTimer = setTimeout(verificarNovas, 1500);
+            } else if (typing) {
+                typing.style.display = 'none';
+            }
+        }
+
+        pollingTimer = setTimeout(verificarNovas, 1500);
+    }
+
     // Scroll suave para a última mensagem ao carregar
     window.addEventListener('load', () => {
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     });
 
-    // Envio de Resposta
+    // Atalho Ctrl + Enter para publicar resposta
+    document.getElementById('conteudo')?.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            e.preventDefault();
+            document.getElementById('formResponder')?.requestSubmit();
+        }
+    });
+
+    // Envio de Resposta sem recarregar a página
     document.getElementById('formResponder')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const btn = document.getElementById('btnResponder');
@@ -627,6 +1177,7 @@
         const topico_id = document.getElementById('topico_id').value;
         const typing = document.getElementById('typingIndicator');
         const chatContainer = document.getElementById('chatContainer');
+        const btnOriginalHtml = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg><span>Publicar Resposta</span>';
         
         if (!conteudo) return;
 
@@ -643,57 +1194,46 @@
             
             if (data.status === 'sucesso') {
                 conteudoInput.value = '';
-                btn.innerHTML = 'Publicar Resposta';
+                btn.innerHTML = btnOriginalHtml;
                 btn.disabled = false;
-                
-                function escapeHtml(text) {
-                    const div = document.createElement('div');
-                    div.textContent = text;
-                    return div.innerHTML;
+
+                const novaId = Number(data.mensagem_id) || 0;
+                if (novaId > ultimoMsgId) {
+                    ultimoMsgId = novaId;
                 }
 
-                // Renderiza imediatamente a mensagem do usuário na tela
-                const meDiv = document.createElement('div');
-                meDiv.className = 'message-wrapper msg-me-wrap';
-                meDiv.innerHTML = `
-                    <div class="message-bubble bubble-me">
-                        <div class="msg-header">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <span class="avatar-aluno">V</span>
-                                <strong>Você</strong>
-                                <span class="badge-role badge-role-aluno">Agora</span>
-                            </div>
-                            <span class="msg-time">agora</span>
-                        </div>
-                        <div class="msg-body">
-                            ${escapeHtml(conteudo).replace(/\n/g, '<br>')}
-                        </div>
-                    </div>
-                `;
-                
-                // Remove placeholder vazio se existir
                 const emptyMsg = chatContainer.querySelector('.forum-empty-messages');
                 if (emptyMsg) emptyMsg.remove();
-                
-                chatContainer.appendChild(meDiv);
+
+                if (!novaId || !document.querySelector(`.message-wrapper[data-msg-id="${novaId}"]`)) {
+                    const meEl = criarElementoMensagem({
+                        id: novaId || undefined,
+                        autor_tipo: data.autor_tipo || 'Aluno',
+                        autor_nome: 'Você',
+                        is_me: true,
+                        conteudo: conteudo,
+                        data_envio: null
+                    });
+                    chatContainer.appendChild(meEl);
+                }
+
+                atualizarContadorMensagens(totalMensagensAtual + 1);
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-                
-                // Ativa o typing indicator da Assistente Fran e atualiza após 3.5s
-                if (typing) typing.style.display = 'flex';
-                
-                setTimeout(() => {
-                    window.location.reload();
-                }, 3800);
-                
+
+                if (data.autor_tipo === 'Aluno') {
+                    if (typing) typing.style.display = 'flex';
+                    aguardarRespostaIA(topico_id, novaId || ultimoMsgId);
+                } else {
+                    showToast('Resposta publicada no tópico!', 'sucesso');
+                }
             } else {
-                const msg = 'Erro ao enviar mensagem: ' + (data.mensagem || 'Tente novamente.');
-                if (typeof showToast === 'function') showToast(msg, 'erro'); else alert(msg);
-                btn.innerHTML = 'Publicar Resposta';
+                showToast('Erro ao enviar mensagem: ' + (data.mensagem || 'Tente novamente.'), 'erro');
+                btn.innerHTML = btnOriginalHtml;
                 btn.disabled = false;
             }
         } catch (err) {
-            if (typeof showToast === 'function') showToast('Erro de conexão ao enviar resposta.', 'erro'); else alert('Erro de conexão ao enviar resposta.');
-            btn.innerHTML = 'Publicar Resposta';
+            showToast('Erro de conexão ao enviar resposta.', 'erro');
+            btn.innerHTML = btnOriginalHtml;
             btn.disabled = false;
         }
     });

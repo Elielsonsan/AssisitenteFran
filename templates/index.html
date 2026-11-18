@@ -15,9 +15,11 @@
 }
 
 .pratica-editorial-page {
-    max-width: 820px;
+    width: 100%;
+    max-width: 1140px;
     margin: 0 auto;
-    padding: 1.25rem 1rem 4rem;
+    padding: 0.25rem 1.25rem 4rem;
+    box-sizing: border-box;
 }
 
 /* 1. Cabeçalho Editorial Aberto (Sem caixa externa, inspirado na 1ª imagem) */
@@ -885,6 +887,351 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* XP Pessoal no topo do card da Prática (separado do curso) */
+.pratica-xp-pessoal-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.45rem 0.95rem;
+    border-radius: 999px;
+    background: rgba(252, 163, 17, 0.14);
+    border: 1px solid rgba(252, 163, 17, 0.42);
+    color: #92400E;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+[data-theme="dark"] .pratica-xp-pessoal-pill {
+    background: rgba(252, 163, 17, 0.14);
+    border-color: rgba(252, 163, 17, 0.4);
+    color: #FDE68A;
+}
+
+/* Balão "Exercício Proposto" auto-expansível */
+#pergunta.readonly-field {
+    overflow-y: hidden;
+    resize: none;
+    min-height: 76px;
+    line-height: 1.55;
+    transition: height 0.16s ease;
+}
+
+/* Player Destacado de Compreensão Auditiva (Ditado) */
+.ditado-player-box {
+    background: #FFFFFF;
+    border: 1.5px solid #14213D;
+    border-radius: 16px;
+    padding: 1.15rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    box-shadow: 0 8px 22px rgba(20, 33, 61, 0.08);
+}
+
+[data-theme="dark"] .ditado-player-box {
+    background: rgba(15, 23, 42, 0.88);
+    border-color: rgba(252, 163, 17, 0.5);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
+}
+
+.ditado-player-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.ditado-player-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #14213D;
+}
+
+[data-theme="dark"] .ditado-player-badge {
+    color: #F8FAFC;
+}
+
+.ditado-hidden-notice {
+    font-size: 0.74rem;
+    color: rgba(20, 33, 61, 0.65);
+    font-weight: 500;
+}
+
+[data-theme="dark"] .ditado-hidden-notice {
+    color: rgba(226, 232, 240, 0.7);
+}
+
+.ditado-controls-row {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    flex-wrap: wrap;
+}
+
+.ditado-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.72rem 1.35rem;
+    border-radius: 999px;
+    border: none;
+    background: #FCA311;
+    color: #000000;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(252, 163, 17, 0.34);
+    transition: all 0.2s ease;
+}
+
+.ditado-btn-primary:hover {
+    background: #14213D;
+    color: #FFFFFF;
+    transform: translateY(-1px);
+}
+
+.ditado-btn-primary.playing {
+    background: #14213D;
+    color: #FCA311;
+}
+
+.ditado-ctrl-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0.52rem 0.9rem;
+    border-radius: 999px;
+    border: 1px solid #E5E5E5;
+    background: #F7F7F8;
+    color: #14213D;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.ditado-ctrl-btn:hover:not(:disabled) {
+    border-color: #14213D;
+    background: #FFFFFF;
+}
+
+.ditado-ctrl-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.ditado-ctrl-btn.active {
+    background: rgba(42, 157, 143, 0.14);
+    border-color: #2A9D8F;
+    color: #0F766E;
+}
+
+[data-theme="dark"] .ditado-ctrl-btn {
+    background: rgba(30, 41, 59, 0.85);
+    border-color: rgba(255, 255, 255, 0.14);
+    color: #E2E8F0;
+}
+
+[data-theme="dark"] .ditado-ctrl-btn.active {
+    background: rgba(42, 157, 143, 0.24);
+    color: #5EEAD4;
+}
+
+.ditado-progress-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.ditado-progress-track {
+    width: 100%;
+    height: 7px;
+    border-radius: 999px;
+    background: rgba(20, 33, 61, 0.1);
+    overflow: hidden;
+}
+
+[data-theme="dark"] .ditado-progress-track {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.ditado-progress-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #14213D 0%, #FCA311 100%);
+    transition: width 0.25s ease;
+}
+
+.ditado-status-text {
+    font-size: 0.78rem;
+    color: rgba(20, 33, 61, 0.72);
+    font-weight: 500;
+}
+
+[data-theme="dark"] .ditado-status-text {
+    color: rgba(226, 232, 240, 0.75);
+}
+
+/* Painel de Gravação de Áudio para Expressão Oral */
+.oral-recorder-box {
+    background: #FFFFFF;
+    border: 1.5px solid rgba(20, 33, 61, 0.18);
+    border-radius: 14px;
+    padding: 1rem 1.15rem;
+    margin-bottom: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+[data-theme="dark"] .oral-recorder-box {
+    background: rgba(15, 23, 42, 0.82);
+    border-color: rgba(255, 255, 255, 0.14);
+}
+
+.oral-controls-row {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+}
+
+.oral-btn-record {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 0.62rem 1.2rem;
+    border-radius: 999px;
+    border: none;
+    background: #DC2626;
+    color: #FFFFFF;
+    font-size: 0.86rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(220, 38, 38, 0.28);
+    transition: all 0.2s ease;
+}
+
+.oral-btn-record:hover {
+    background: #B91C1C;
+    transform: translateY(-1px);
+}
+
+.oral-btn-stop {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 0.62rem 1.2rem;
+    border-radius: 999px;
+    border: 1.5px solid #DC2626;
+    background: rgba(220, 38, 38, 0.12);
+    color: #B91C1C;
+    font-size: 0.86rem;
+    font-weight: 700;
+    cursor: pointer;
+    animation: pulseMicBtn 1.3s infinite;
+}
+
+[data-theme="dark"] .oral-btn-stop {
+    color: #FCA5A5;
+}
+
+.oral-timer-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.84rem;
+    font-weight: 700;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(20, 33, 61, 0.08);
+    color: #14213D;
+}
+
+[data-theme="dark"] .oral-timer-badge {
+    background: rgba(255, 255, 255, 0.1);
+    color: #F8FAFC;
+}
+
+.oral-status-msg {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: rgba(20, 33, 61, 0.75);
+}
+
+[data-theme="dark"] .oral-status-msg {
+    color: rgba(226, 232, 240, 0.8);
+}
+
+.oral-preview-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding-top: 0.35rem;
+    border-top: 1px dashed rgba(20, 33, 61, 0.14);
+}
+
+.oral-preview-wrap audio {
+    width: 100%;
+    height: 38px;
+}
+
+.oral-transcricao-box {
+    font-size: 0.82rem;
+    line-height: 1.45;
+    padding: 0.55rem 0.75rem;
+    border-radius: 10px;
+    background: rgba(20, 33, 61, 0.045);
+    border: 1px solid rgba(20, 33, 61, 0.12);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .oral-transcricao-box {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.14);
+}
+
+/* Botão Falar interativo e barra de status de reconhecimento contínuo */
+.pratica-soft-row .french-char-btn.btn-mic.recording {
+    background: #DC2626 !important;
+    border-color: #DC2626 !important;
+    color: #FFFFFF !important;
+    font-weight: 700;
+    padding-left: 0.85rem !important;
+    padding-right: 0.85rem !important;
+    animation: pulseMicBtn 1.4s infinite;
+}
+
+.dictation-live-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 0.55rem;
+    padding: 0.55rem 0.85rem;
+    border-radius: 10px;
+    background: rgba(220, 38, 38, 0.08);
+    border: 1px solid rgba(220, 38, 38, 0.3);
+    color: #991B1B;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+[data-theme="dark"] .dictation-live-bar {
+    background: rgba(220, 38, 38, 0.16);
+    border-color: rgba(248, 113, 113, 0.38);
+    color: #FECACA;
+}
+
+@keyframes pulseMicBtn {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.42); }
+    50% { box-shadow: 0 0 0 6px rgba(220, 38, 38, 0); }
+}
 </style>
 {% endblock %}
 
@@ -904,11 +1251,14 @@
     <!-- 2. Card Principal Clean -->
     <div class="form-wrapper">
         <div class="form-card pratica-main-card" id="formCard">
-            <!-- Topo do Card: Informação à esquerda -->
+            <!-- Topo do Card: Informação à esquerda + XP Pessoal à direita -->
             <div class="pratica-card-top-bar" id="examplesContainer">
                 <div class="pratica-top-meta">
                     <span class="pratica-meta-label">Ambiente de Prática Assistida por IA</span>
                     <span class="pratica-meta-value">Nível Pedagógico Ativo: CEFR <span id="btnGerarNivel">{{ session.get('nivel_cefr', 'A2') }}</span></span>
+                </div>
+                <div class="pratica-xp-pessoal-pill" id="xpPessoalTopoBadge" title="XP acumulado exclusivamente nas suas práticas autônomas (separado do XP do curso)">
+                    ⚡ XP Pessoal (Prática): <strong id="xpPessoalTopoValor">{{ xp_pessoal|default(0) }} XP</strong>
                 </div>
             </div>
 
@@ -931,7 +1281,7 @@
             </div>
             {% endif %}
 
-            <form id="submissionForm" action="/avaliar" method="POST" class="submission-form">
+            <form id="submissionForm" action="/avaliar" method="POST" class="submission-form" novalidate>
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <input type="hidden" id="nivel_cefr" name="nivel_cefr" value="{{ session.get('nivel_cefr', 'A2') }}">
                 <input type="hidden" id="exercicio_id" name="exercicio_id" value="{{ exercicio_inicial.id if exercicio_inicial else '' }}">
@@ -1044,13 +1394,48 @@
                 <!-- BLOCO 2: A Pergunta (Exercício Proposto) -->
                 <div class="pratica-soft-row" id="exercicioRow" style="margin-top: 1.35rem;">
                     <div class="pratica-row-header">
-                        <label for="pergunta" class="pratica-row-label">
+                        <label for="pergunta" class="pratica-row-label" id="exercicioRowLabel">
                             Exercício Proposto
                         </label>
                         <button type="button" id="btnAudioPergunta" class="pratica-audio-circle-btn" onclick="ouvirEnunciado()" title="Ouvir enunciado em francês com sotaque nativo" aria-label="Ouvir enunciado em francês">
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
                             <span>Ouvir</span>
                         </button>
+                    </div>
+
+                    <!-- Player Destacado de Compreensão Auditiva (Oculta o texto do ditado) -->
+                    <div id="ditadoPlayerBox" class="ditado-player-box" style="display: none;">
+                        <div class="ditado-player-header">
+                            <span class="ditado-player-badge">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
+                                <span>Compreensão Auditiva (Dictée)</span>
+                            </span>
+                            <span class="ditado-hidden-notice">Texto oculto para escuta ativa — ouça com calma e transcreva abaixo</span>
+                        </div>
+                        <div class="ditado-controls-row">
+                            <button type="button" id="btnDitadoPlayPause" class="ditado-btn-primary" onclick="iniciarOuPausarDitado()" title="Ouvir ou pausar o ditado em francês">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>
+                                <span>Ouvir (Iniciar)</span>
+                            </button>
+                            <button type="button" id="btnDitadoVoltar" class="ditado-ctrl-btn" onclick="voltarTrechoDitado()" title="Voltar para o trecho anterior do ditado">
+                                <span>⏮ Voltar</span>
+                            </button>
+                            <button type="button" id="btnDitadoAvancar" class="ditado-ctrl-btn" onclick="avancarTrechoDitado()" title="Avançar para o próximo trecho do ditado">
+                                <span>⏭ Avançar</span>
+                            </button>
+                            <button type="button" id="btnDitadoReiniciar" class="ditado-ctrl-btn" onclick="reiniciarDitado()" title="Voltar ao início do ditado">
+                                <span>↺ Reiniciar</span>
+                            </button>
+                            <button type="button" id="btnDitadoVelocidade" class="ditado-ctrl-btn" onclick="alternarVelocidadeDitado()" title="Alternar entre velocidade calma (0.65x) e normal (0.85x)">
+                                <span>🐢 Ritmo: 0.85x</span>
+                            </button>
+                        </div>
+                        <div class="ditado-progress-wrap">
+                            <div class="ditado-progress-track">
+                                <div id="ditadoProgressFill" class="ditado-progress-fill"></div>
+                            </div>
+                            <span id="ditadoStatusTexto" class="ditado-status-text">Clique em "Ouvir (Iniciar)" para começar o ditado em francês.</span>
+                        </div>
                     </div>
 
                     <textarea 
@@ -1061,6 +1446,7 @@
                         lang="fr"
                         aria-label="Enunciado do exercício em francês"
                         placeholder="O enunciado do exercício aparecerá aqui automaticamente..." 
+                        oninput="if (typeof autoAjustarAlturaTextarea === 'function') autoAjustarAlturaTextarea(this, 76);"
                         readonly
                         required
                     >{{ exercicio_inicial.enunciado if exercicio_inicial else '' }}</textarea>
@@ -1109,8 +1495,8 @@
                             </button>
                         </div>
                         <div id="vfCorrecaoWrap" class="vf-correcao-box" style="display: none;">
-                            <label class="vf-correcao-label" for="vfCorrecaoInput">Opcional: reescreva a frase de forma correta em francês:</label>
-                            <input type="text" id="vfCorrecaoInput" class="form-input" placeholder="Ex: Hier soir, Marie et Sophie sont arrivées..." oninput="atualizarRespostaVFPeloInput()">
+                            <label class="vf-correcao-label" for="vfCorrecaoInput">Frase identificada como incorreta — reescreva a sentença corrigida em francês (você também pode usar o botão "Falar"):</label>
+                            <textarea id="vfCorrecaoInput" class="form-textarea lacuna-input-highlight" rows="2" lang="fr" spellcheck="true" placeholder="Reescreva aqui a frase corrigida em francês..." oninput="atualizarRespostaVFPeloInput()"></textarea>
                         </div>
                     </div>
 
@@ -1122,7 +1508,7 @@
 
                     <!-- Opção C: Completar Sentença (Lacuna individual expansível) -->
                     <div id="respostaLacunaContainer" class="resposta-dinamica-bloco">
-                        <span class="resposta-opcao-instrucao">Preencha o espaço com o termo correto em francês:</span>
+                        <span class="resposta-opcao-instrucao">Preencha o espaço com o termo correto em francês (ou clique em "Falar" para ditar por voz):</span>
                         <textarea 
                             id="respostaLacunaInput" 
                             class="form-textarea lacuna-input-highlight" 
@@ -1130,13 +1516,37 @@
                             lang="fr"
                             spellcheck="true"
                             aria-label="Preencha o espaço com o termo correto em francês"
-                            placeholder="Digite a palavra ou expressão que completa a frase..."
+                            placeholder="Digite ou dite a palavra/expressão que completa a frase..."
                             autocomplete="off"
                             oninput="sincronizarRespostaLacuna()"
                         ></textarea>
                     </div>
 
-                    <!-- Opção D: As demais (Ditado, Expressão Oral, Produção Escrita) -->
+                    <!-- Opção D1: Gravação de Áudio para Expressão Oral -->
+                    <div id="respostaOralContainer" class="resposta-dinamica-bloco" style="display: none;">
+                        <span class="resposta-opcao-instrucao">Grave sua pronúncia em francês e clique em "Analisar com o Assistente Fran" — o assistente irá transcrever e avaliar seu áudio automaticamente:</span>
+                        <div class="oral-recorder-box">
+                            <div class="oral-controls-row">
+                                <button type="button" id="btnGravarOral" class="oral-btn-record" onclick="iniciarGravacaoOral()">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                                    <span>Gravar Áudio</span>
+                                </button>
+                                <button type="button" id="btnPararOral" class="oral-btn-stop hidden" onclick="pararGravacaoOral()">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="2"></rect></svg>
+                                    <span>Parar Gravação</span>
+                                </button>
+                                <span id="oralTimerBadge" class="oral-timer-badge">00:00</span>
+                                <span id="oralStatusMsg" class="oral-status-msg">Pronto para gravar</span>
+                            </div>
+                            <div id="oralPreviewWrap" class="oral-preview-wrap hidden">
+                                <span style="font-size: 0.76rem; font-weight: 700; color: var(--text-muted);">🎧 Ouça sua gravação:</span>
+                                <audio id="oralAudioPreview" controls preload="metadata"></audio>
+                            </div>
+                            <div id="oralTranscricaoBox" class="oral-transcricao-box hidden" aria-live="polite"></div>
+                        </div>
+                    </div>
+
+                    <!-- Opção D: As demais (Ditado, Produção Escrita) -->
                     <div id="respostaTextoContainer" class="resposta-dinamica-bloco" style="display: none;">
                         <textarea 
                             id="resposta_aluno" 
@@ -1146,8 +1556,7 @@
                             lang="fr"
                             spellcheck="true"
                             aria-label="Campo para digitar sua resposta em francês"
-                            placeholder="Digite ou dite sua resposta em francês..." 
-                            required
+                            placeholder="Digite ou dite sua resposta em francês..."
                         ></textarea>
                     </div>
 
@@ -1188,9 +1597,13 @@
                             <button type="button" id="btnAudioInput" class="french-char-btn btn-audio" onclick="ouvirTextoDigitado()" title="Ouvir pronúncia do texto digitado em francês (fr-FR)" aria-label="Ouvir texto digitado">
                                 <svg class="line-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 3px; vertical-align: text-bottom;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>Ouvir
                             </button>
-                            <button type="button" id="btnDictation" class="french-char-btn btn-mic" onclick="alternarDitadoVoz()" title="Falar em Francês (Ditado por Microfone - fr-FR)" aria-label="Ditar resposta por voz em francês">
+                            <button type="button" id="btnDictation" class="french-char-btn btn-mic" onclick="alternarDitadoVoz()" title="Falar em Francês (Ditado contínuo — clique novamente para parar)" aria-label="Ditar resposta por voz em francês">
                                 <svg class="line-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 3px; vertical-align: text-bottom;"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>Falar
                             </button>
+                        </div>
+                        <div id="dictationLiveBar" class="dictation-live-bar hidden" role="status" aria-live="polite">
+                            <span id="dictationLiveText">🎙️ Ouvindo em francês (fr-FR)... fale normalmente; clique em "Parar Fala" quando terminar.</span>
+                            <button type="button" class="ditado-ctrl-btn" style="padding: 0.25rem 0.7rem; font-size: 0.74rem;" onclick="alternarDitadoVoz()">⏹ Parar Fala</button>
                         </div>
                     </div>
                     <div id="resposta-hint" class="textarea-hint-bar" style="display: flex; justify-content: flex-end; align-items: center; margin-top: 6px; font-size: 0.76rem; opacity: 0.65;">
@@ -1236,6 +1649,7 @@
                             <span class="status-label">Diagnóstico do Assistente:</span>
                             <span id="statusBadge" class="status-badge status-correta">Correto</span>
                             <span id="cefrBadge" class="cefr-level-badge">Niveau A2</span>
+                            <span id="xpGainBadge" class="xp-gain-badge hidden" title="Pontos de experiência ganhos nesta prática">⚡ +0 XP</span>
                         </div>
                         <div class="result-header-actions">
                             <button type="button" id="btnOuvirResposta" class="btn-audio-pill" onclick="ouvirRespostaSubmetida()" title="Ouvir pronúncia da sua frase em francês nativo" aria-label="Ouvir sua frase em francês">
@@ -1287,9 +1701,15 @@
                         <button type="button" class="btn-secondary" onclick="novaSubmissao()">
                             Novo Exercício
                         </button>
+                        {% if session.get('prof_id') %}
                         <a href="/dashboard" class="btn-outline">
                             Ver Desempenho no Painel do Professor →
                         </a>
+                        {% else %}
+                        <a href="/aluno/dashboard" class="btn-outline">
+                            Ver Meu Desempenho &amp; XP →
+                        </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -1300,7 +1720,7 @@
 
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="{{ url_for('static', filename='js/main.js') }}?v=20261016_expand1"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}?v=20261115_oral2"></script>
 <script>
     let indiceTemaDestacado = -1;
 
@@ -1452,6 +1872,419 @@
     }
 
     // Gerenciamento Unificado de Formato da Atividade e Resposta Dinâmica
+    function autoAjustarAlturaTextarea(el, minAltura = 68) {
+        if (!el) return;
+        el.style.height = "auto";
+        el.style.height = Math.max(minAltura, el.scrollHeight + 4) + "px";
+    }
+
+    function autoAjustarAlturaPorTextoReferencia(el, textoReferencia, minBase = 84) {
+        if (!el) return;
+        const tam = (textoReferencia || "").trim().length;
+        const linhasEst = Math.max(2, Math.ceil(tam / 62) + ((textoReferencia || "").split("\n").length - 1));
+        const alturaSugerida = Math.max(minBase, Math.min(280, linhasEst * 28 + 26));
+        el.style.minHeight = alturaSugerida + "px";
+        autoAjustarAlturaTextarea(el, alturaSugerida);
+    }
+
+    // ==================== PLAYER DE COMPREENSÃO AUDITIVA (DITADO) ====================
+    let ditadoTrechos = [];
+    let ditadoIndiceAtual = 0;
+    let ditadoVelocidade = 0.85;
+    let ditadoTocando = false;
+    let ditadoPausado = false;
+    let ditadoSessaoToken = 0;
+
+    function dividirEmTrechosDitado(texto) {
+        const limpo = (texto || "").replace(/[«»"]/g, "").replace(/\s+/g, " ").trim();
+        if (!limpo) return [];
+        const sentencas = limpo.split(/(?<=[.!?])\s+/).filter(Boolean);
+        const chunks = [];
+        for (const s of sentencas) {
+            const palavras = s.split(/\s+/);
+            if (palavras.length <= 5) {
+                chunks.push(s);
+            } else {
+                const subPartes = s.split(/(?<=[,;:])\s+/).filter(Boolean);
+                for (const sub of subPartes) {
+                    const pSub = sub.split(/\s+/);
+                    if (pSub.length <= 5) {
+                        chunks.push(sub);
+                    } else {
+                        for (let i = 0; i < pSub.length; i += 4) {
+                            chunks.push(pSub.slice(i, i + 4).join(" "));
+                        }
+                    }
+                }
+            }
+        }
+        return chunks.length > 0 ? chunks : [limpo];
+    }
+
+    function atualizarUIDitadoPlayer(msgPersonalizada = null) {
+        const btnPlay = document.getElementById("btnDitadoPlayPause");
+        const btnVoltar = document.getElementById("btnDitadoVoltar");
+        const btnAvancar = document.getElementById("btnDitadoAvancar");
+        const btnVel = document.getElementById("btnDitadoVelocidade");
+        const fill = document.getElementById("ditadoProgressFill");
+        const statusEl = document.getElementById("ditadoStatusTexto");
+
+        const total = ditadoTrechos.length;
+        const pct = total > 0 ? Math.round(((Math.min(ditadoIndiceAtual + (ditadoTocando ? 1 : 0), total)) / total) * 100) : 0;
+        if (fill) fill.style.width = `${pct}%`;
+
+        if (btnPlay) {
+            btnPlay.classList.toggle("playing", ditadoTocando);
+            if (ditadoTocando) {
+                btnPlay.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg> <span>Pausar</span>`;
+            } else if (ditadoPausado && ditadoIndiceAtual < total) {
+                btnPlay.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg> <span>Continuar (Trecho ${ditadoIndiceAtual + 1}/${total})</span>`;
+            } else {
+                btnPlay.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg> <span>Ouvir (Iniciar)</span>`;
+            }
+        }
+
+        if (btnVoltar) btnVoltar.disabled = total === 0 || ditadoIndiceAtual <= 0;
+        if (btnAvancar) btnAvancar.disabled = total === 0 || ditadoIndiceAtual >= total - 1;
+        if (btnVel) {
+            const calmo = ditadoVelocidade <= 0.7;
+            btnVel.classList.toggle("active", calmo);
+            btnVel.innerHTML = calmo ? "<span>🐢 Calmo: 0.65x</span>" : "<span>🔊 Ritmo: 0.85x</span>";
+        }
+        if (statusEl) {
+            if (msgPersonalizada) {
+                statusEl.textContent = msgPersonalizada;
+            } else if (total === 0) {
+                statusEl.textContent = "Gere um exercício de ditado para ouvir.";
+            } else if (ditadoTocando) {
+                statusEl.textContent = `Ouvindo trecho ${ditadoIndiceAtual + 1} de ${total}... (clique em Pausar se precisar de mais tempo)`;
+            } else if (ditadoPausado) {
+                statusEl.textContent = `Pausado no trecho ${ditadoIndiceAtual + 1} de ${total}. Clique em Continuar ou Voltar trecho.`;
+            } else {
+                statusEl.textContent = `Pronto: ${total} trecho(s) de áudio. Clique em "Ouvir (Iniciar)" para começar.`;
+            }
+        }
+    }
+
+    function pararDitadoAudioPlayer() {
+        ditadoSessaoToken++;
+        ditadoTocando = false;
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+        }
+        atualizarUIDitadoPlayer();
+    }
+
+    function resetarEstadoDitadoUI(textoExercicio) {
+        ditadoSessaoToken++;
+        ditadoTocando = false;
+        ditadoPausado = false;
+        ditadoIndiceAtual = 0;
+        ditadoTrechos = dividirEmTrechosDitado(textoExercicio);
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+        }
+        atualizarUIDitadoPlayer();
+    }
+
+    function reproduzirDitadoDoIndice(indice, tokenAtual, apenasTrechoAtual = false) {
+        if (!('speechSynthesis' in window)) {
+            if (typeof showToast === 'function') showToast("Seu navegador não suporta síntese de voz.", "aviso");
+            return;
+        }
+        if (tokenAtual !== ditadoSessaoToken || indice >= ditadoTrechos.length) {
+            ditadoTocando = false;
+            ditadoPausado = false;
+            if (indice >= ditadoTrechos.length) ditadoIndiceAtual = 0;
+            atualizarUIDitadoPlayer("Ditado concluído! Revise sua transcrição ou clique em Reiniciar / Voltar para conferir.");
+            return;
+        }
+
+        ditadoIndiceAtual = indice;
+        ditadoTocando = true;
+        ditadoPausado = false;
+        atualizarUIDitadoPlayer();
+
+        const trecho = ditadoTrechos[indice];
+        window.speechSynthesis.cancel();
+        const utt = new SpeechSynthesisUtterance(trecho);
+        utt.lang = "fr-FR";
+        utt.rate = ditadoVelocidade;
+        utt.pitch = 1.0;
+        const vozes = window.speechSynthesis.getVoices();
+        const voz = vozes.find(v => v.lang === "fr-FR" || v.lang.startsWith("fr"));
+        if (voz) utt.voice = voz;
+
+        utt.onend = () => {
+            if (tokenAtual !== ditadoSessaoToken) return;
+            if (apenasTrechoAtual) {
+                ditadoTocando = false;
+                ditadoPausado = true;
+                atualizarUIDitadoPlayer(`Trecho ${indice + 1} de ${ditadoTrechos.length} reproduzido. Clique em Continuar ou Avançar.`);
+                return;
+            }
+            setTimeout(() => {
+                if (tokenAtual !== ditadoSessaoToken) return;
+                reproduzirDitadoDoIndice(indice + 1, tokenAtual, false);
+            }, 420);
+        };
+        utt.onerror = () => {
+            if (tokenAtual !== ditadoSessaoToken) return;
+            ditadoTocando = false;
+            atualizarUIDitadoPlayer();
+        };
+
+        setTimeout(() => {
+            if (tokenAtual !== ditadoSessaoToken) return;
+            if (window.speechSynthesis.paused) window.speechSynthesis.resume();
+            window.speechSynthesis.speak(utt);
+        }, 40);
+    }
+
+    function iniciarOuPausarDitado() {
+        if (ditadoTrechos.length === 0) {
+            const perguntaEl = document.getElementById("pergunta");
+            ditadoTrechos = dividirEmTrechosDitado(perguntaEl ? perguntaEl.value : "");
+        }
+        if (ditadoTocando) {
+            ditadoSessaoToken++;
+            ditadoTocando = false;
+            ditadoPausado = true;
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            atualizarUIDitadoPlayer();
+            return;
+        }
+        const token = ++ditadoSessaoToken;
+        reproduzirDitadoDoIndice(ditadoIndiceAtual, token, false);
+    }
+
+    function voltarTrechoDitado() {
+        if (ditadoTrechos.length === 0) return;
+        const novoIdx = Math.max(0, ditadoIndiceAtual - 1);
+        const token = ++ditadoSessaoToken;
+        reproduzirDitadoDoIndice(novoIdx, token, true);
+    }
+
+    function avancarTrechoDitado() {
+        if (ditadoTrechos.length === 0) return;
+        const novoIdx = Math.min(ditadoTrechos.length - 1, ditadoIndiceAtual + 1);
+        const token = ++ditadoSessaoToken;
+        reproduzirDitadoDoIndice(novoIdx, token, true);
+    }
+
+    function reiniciarDitado() {
+        if (ditadoTrechos.length === 0) return;
+        ditadoIndiceAtual = 0;
+        const token = ++ditadoSessaoToken;
+        reproduzirDitadoDoIndice(0, token, false);
+    }
+
+    function alternarVelocidadeDitado() {
+        ditadoVelocidade = ditadoVelocidade <= 0.7 ? 0.85 : 0.65;
+        if (ditadoTocando) {
+            const token = ++ditadoSessaoToken;
+            reproduzirDitadoDoIndice(ditadoIndiceAtual, token, false);
+        } else {
+            atualizarUIDitadoPlayer();
+        }
+    }
+
+    // ==================== GRAVAÇÃO DE ÁUDIO (EXPRESSÃO ORAL) ====================
+    let _oralMediaRecorder = null;
+    let _oralStream = null;
+    let _oralTimerInterval = null;
+    let _oralSegundos = 0;
+    let _oralObjectUrl = null;
+    window._oralAudioBlob = null;
+    window._oralGravandoAtivo = false;
+    window._oralTranscricaoCapturada = "";
+    window._oralTranscricaoParcial = "";
+
+    function formatarTempoOral(seg) {
+        const m = String(Math.floor(seg / 60)).padStart(2, "0");
+        const s = String(seg % 60).padStart(2, "0");
+        return `${m}:${s}`;
+    }
+
+    function atualizarOralTranscricaoUI(textoFinal = "", textoParcial = "") {
+        const box = document.getElementById("oralTranscricaoBox");
+        const respReal = document.getElementById("resposta_aluno");
+        const combinado = [textoFinal || window._oralTranscricaoCapturada || "", textoParcial || ""]
+            .map(s => String(s || "").trim())
+            .filter(Boolean)
+            .join(" ")
+            .trim();
+        if (respReal && (document.getElementById("tipo_atividade")?.value || "").trim().toLowerCase() === "expressao_oral") {
+            respReal.value = combinado;
+        }
+        if (!box) return;
+        if (!combinado) {
+            box.classList.add("hidden");
+            box.innerHTML = "";
+        } else {
+            box.classList.remove("hidden");
+            const safe = combinado.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            box.innerHTML = `<strong>🎙️ Prévia capturada em francês:</strong> <span lang="fr">« ${safe} »</span>`;
+        }
+    }
+    window.atualizarOralTranscricaoUI = atualizarOralTranscricaoUI;
+
+    function limparAudioOralGravado() {
+        window._oralGravandoAtivo = false;
+        window._oralTranscricaoCapturada = "";
+        window._oralTranscricaoParcial = "";
+        if (_oralTimerInterval) {
+            clearInterval(_oralTimerInterval);
+            _oralTimerInterval = null;
+        }
+        if (_oralMediaRecorder && _oralMediaRecorder.state !== "inactive") {
+            try { _oralMediaRecorder.stop(); } catch (e) {}
+        }
+        if (_oralStream) {
+            _oralStream.getTracks().forEach(t => t.stop());
+            _oralStream = null;
+        }
+        if (_oralObjectUrl) {
+            URL.revokeObjectURL(_oralObjectUrl);
+            _oralObjectUrl = null;
+        }
+        window._oralAudioBlob = null;
+        _oralSegundos = 0;
+
+        const btnG = document.getElementById("btnGravarOral");
+        const btnP = document.getElementById("btnPararOral");
+        const timer = document.getElementById("oralTimerBadge");
+        const status = document.getElementById("oralStatusMsg");
+        const wrap = document.getElementById("oralPreviewWrap");
+        const audio = document.getElementById("oralAudioPreview");
+        const box = document.getElementById("oralTranscricaoBox");
+
+        if (btnG) {
+            btnG.classList.remove("hidden");
+            btnG.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg><span>Gravar Áudio</span>`;
+        }
+        if (btnP) btnP.classList.add("hidden");
+        if (timer) timer.textContent = "00:00";
+        if (status) status.textContent = "Pronto para gravar";
+        if (wrap) wrap.classList.add("hidden");
+        if (audio) audio.removeAttribute("src");
+        if (box) {
+            box.classList.add("hidden");
+            box.innerHTML = "";
+        }
+    }
+
+    async function iniciarGravacaoOral() {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            if (typeof showToast === "function") {
+                showToast("Seu navegador não permite acesso ao microfone para gravação direta.", "aviso");
+            }
+            return;
+        }
+        try {
+            window._oralTranscricaoCapturada = "";
+            window._oralTranscricaoParcial = "";
+            const respReset = document.getElementById("resposta_aluno");
+            if (respReset) respReset.value = "";
+            atualizarOralTranscricaoUI("", "");
+
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            _oralStream = stream;
+            const recorder = new MediaRecorder(stream);
+            const chunks = [];
+
+            recorder.ondataavailable = (e) => {
+                if (e.data && e.data.size > 0) chunks.push(e.data);
+            };
+
+            recorder.onstop = () => {
+                window._oralGravandoAtivo = false;
+                if (_oralTimerInterval) {
+                    clearInterval(_oralTimerInterval);
+                    _oralTimerInterval = null;
+                }
+                const blob = new Blob(chunks, { type: "audio/webm" });
+                window._oralAudioBlob = blob;
+
+                if (_oralObjectUrl) URL.revokeObjectURL(_oralObjectUrl);
+                _oralObjectUrl = URL.createObjectURL(blob);
+
+                const audio = document.getElementById("oralAudioPreview");
+                const wrap = document.getElementById("oralPreviewWrap");
+                const status = document.getElementById("oralStatusMsg");
+                if (audio && wrap) {
+                    audio.src = _oralObjectUrl;
+                    wrap.classList.remove("hidden");
+                }
+                if (status) {
+                    status.textContent = `✓ Áudio gravado (${formatarTempoOral(_oralSegundos)})! Clique em "Analisar com o Assistente Fran".`;
+                }
+                if (_oralStream) {
+                    _oralStream.getTracks().forEach(t => t.stop());
+                    _oralStream = null;
+                }
+                if (typeof showToast === "function") {
+                    showToast("Áudio gravado! Clique em 'Analisar com o Assistente Fran' para transcrever e avaliar.", "sucesso");
+                }
+            };
+
+            _oralMediaRecorder = recorder;
+            _oralSegundos = 0;
+            window._oralGravandoAtivo = true;
+            recorder.start();
+
+            const btnG = document.getElementById("btnGravarOral");
+            const btnP = document.getElementById("btnPararOral");
+            const timer = document.getElementById("oralTimerBadge");
+            const status = document.getElementById("oralStatusMsg");
+            if (btnG) btnG.classList.add("hidden");
+            if (btnP) btnP.classList.remove("hidden");
+            if (timer) timer.textContent = "00:00";
+            if (status) status.textContent = "🔴 Gravando sua pronúncia em francês...";
+
+            _oralTimerInterval = setInterval(() => {
+                _oralSegundos++;
+                if (timer) timer.textContent = formatarTempoOral(_oralSegundos);
+            }, 1000);
+
+            if ((window.SpeechRecognition || window.webkitSpeechRecognition) && typeof window.iniciarDitadoVozSeInativo === "function") {
+                window.iniciarDitadoVozSeInativo();
+            }
+        } catch (err) {
+            window._oralGravandoAtivo = false;
+            if (typeof showToast === "function") {
+                showToast("Não foi possível iniciar o microfone: " + (err.message || err), "erro");
+            }
+        }
+    }
+
+    function pararGravacaoOral() {
+        window._oralGravandoAtivo = false;
+        if (window._oralTranscricaoParcial && !window._oralTranscricaoCapturada.includes(window._oralTranscricaoParcial)) {
+            window._oralTranscricaoCapturada = [window._oralTranscricaoCapturada, window._oralTranscricaoParcial]
+                .map(s => String(s || "").trim())
+                .filter(Boolean)
+                .join(" ")
+                .trim();
+            window._oralTranscricaoParcial = "";
+            atualizarOralTranscricaoUI(window._oralTranscricaoCapturada, "");
+        }
+        if (_oralMediaRecorder && _oralMediaRecorder.state !== "inactive") {
+            _oralMediaRecorder.stop();
+        }
+        if (typeof pararDitadoVozForcado === "function") {
+            pararDitadoVozForcado();
+        }
+        const btnG = document.getElementById("btnGravarOral");
+        const btnP = document.getElementById("btnPararOral");
+        if (btnP) btnP.classList.add("hidden");
+        if (btnG) {
+            btnG.classList.remove("hidden");
+            btnG.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg><span>Gravar Novamente</span>`;
+        }
+    }
+
+    // ==================== SELEÇÃO E MODALIDADES ====================
     function selecionarModalidadeFormato(tipo) {
         if (!tipo) return;
         const tipoInput = document.getElementById("tipo_atividade");
@@ -1484,15 +2317,27 @@
         const correcaoWrap = document.getElementById("vfCorrecaoWrap");
         const inputCorrecao = document.getElementById("vfCorrecaoInput");
         const respostaReal = document.getElementById("resposta_aluno");
+        const toolbar = document.getElementById("frenchCharsToolbar");
+        const perguntaEl = document.getElementById("pergunta");
 
         if (btnVrai) btnVrai.classList.toggle("active", valor === "Vrai");
         if (btnFaux) btnFaux.classList.toggle("active", valor === "Faux");
 
+        if (valor !== "Faux" && typeof pararDitadoVozForcado === "function") {
+            pararDitadoVozForcado();
+        }
+
         if (correcaoWrap) {
             correcaoWrap.style.display = valor === "Faux" ? "block" : "none";
             if (valor === "Faux" && inputCorrecao) {
+                const textoRef = perguntaEl ? perguntaEl.value : "";
+                autoAjustarAlturaPorTextoReferencia(inputCorrecao, textoRef, 76);
                 inputCorrecao.focus();
             }
+        }
+
+        if (toolbar) {
+            toolbar.style.display = valor === "Faux" ? "flex" : "none";
         }
 
         if (respostaReal) {
@@ -1512,6 +2357,9 @@
         const btnFaux = document.getElementById("btnFaux");
         const inputCorrecao = document.getElementById("vfCorrecaoInput");
         const respostaReal = document.getElementById("resposta_aluno");
+        if (inputCorrecao) {
+            autoAjustarAlturaTextarea(inputCorrecao, 76);
+        }
         if (!respostaReal) return;
 
         if (btnFaux && btnFaux.classList.contains("active")) {
@@ -1543,38 +2391,48 @@
         if (!texto) return { textoFormatado: "", posicaoCursor: 0 };
 
         let frase = "";
-        // 1. Aspas francesas « ... »
         const matchGuillemets = texto.match(/«([^»]*_{2,}[^»]*)»/);
         if (matchGuillemets && matchGuillemets[1]) {
             frase = matchGuillemets[1].trim();
         } else {
-            // 2. Aspas duplas " ... "
             const matchDouble = texto.match(/"([^"\n]*_{2,}[^"\n]*)"/);
             if (matchDouble && matchDouble[1]) {
                 frase = matchDouble[1].trim();
             } else {
-                // 3. Aspas simples sem confundir com apóstrofos franceses (j', l', c', etc)
-                const matchSingle = texto.match(/(?:^|[\s:\(])'([^'\n]*_{2,}[^'\n]*)'(?:$|[\s\)\.\?!])/);
-                if (matchSingle && matchSingle[1]) {
-                    frase = matchSingle[1].trim();
+                const matchColonSingle = texto.match(/:\s*'(.+)'\s*$/);
+                if (matchColonSingle && matchColonSingle[1] && /_{2,}/.test(matchColonSingle[1])) {
+                    frase = matchColonSingle[1].trim();
                 } else {
-                    // 4. Linha contendo ___
-                    const linhas = texto.split("\n");
-                    for (const l of linhas) {
-                        if (/_{2,}/.test(l)) {
-                            const partes = l.split(":");
-                            frase = (partes.length > 1 && /_{2,}/.test(partes[1])) ? partes.slice(1).join(":").trim() : l.trim();
-                            break;
+                    const matchSingle = texto.match(/(?:^|[\s:\(])'([^'\n]*_{2,}[^'\n]*)'(?:$|[\s\)\.\?!])/);
+                    if (matchSingle && matchSingle[1]) {
+                        frase = matchSingle[1].trim();
+                    } else {
+                        const linhas = texto.split("\n");
+                        for (const l of linhas) {
+                            if (/_{2,}/.test(l)) {
+                                const partes = l.split(":");
+                                frase = (partes.length > 1 && /_{2,}/.test(partes[1])) ? partes.slice(1).join(":").trim() : l.trim();
+                                break;
+                            }
                         }
                     }
                 }
             }
         }
 
-        if (!frase) frase = texto.trim();
+        if (!frase) {
+            const matchColonAny = texto.match(/:\s*'(.+)'\s*$/);
+            const matchGulAny = texto.match(/«([^»]+)»/);
+            if (matchColonAny && matchColonAny[1]) {
+                frase = matchColonAny[1].trim();
+            } else if (matchGulAny && matchGulAny[1]) {
+                frase = matchGulAny[1].trim();
+            } else {
+                frase = texto.trim();
+            }
+        }
         frase = frase.replace(/^[«"'\s]+|[»"'\s]+$/g, "");
 
-        // 5. Localiza a primeira ocorrência de ___ (com eventual dica entre parênteses)
         const regexLacuna = /_{2,}\s*(?:\([^)]*\))?/;
         const matchLacuna = frase.match(regexLacuna);
 
@@ -1604,18 +2462,12 @@
         return { textoFormatado: frase, posicaoCursor: frase.length };
     }
 
-    function autoAjustarAlturaTextarea(el) {
-        if (!el) return;
-        el.style.height = "auto";
-        el.style.height = Math.max(68, el.scrollHeight) + "px";
-    }
-
     // Modalidade 3: Completar Sentença (Lacuna)
     function sincronizarRespostaLacuna() {
         const lacunaInput = document.getElementById("respostaLacunaInput");
         const respostaReal = document.getElementById("resposta_aluno");
         if (lacunaInput) {
-            autoAjustarAlturaTextarea(lacunaInput);
+            autoAjustarAlturaTextarea(lacunaInput, 76);
             if (respostaReal) {
                 respostaReal.value = lacunaInput.value;
             }
@@ -1624,19 +2476,54 @@
 
     // Adaptador Visual da Seção de Resposta conforme a Modalidade Selecionada
     function aplicarAjustesModalidadeUI(tipo, textoExercicio, opcoes = null) {
+        if (typeof ocultarFeedbackAnterior === "function") {
+            ocultarFeedbackAnterior();
+        } else {
+            const rc = document.getElementById("resultContainer");
+            if (rc) rc.classList.add("hidden");
+        }
+        if (typeof pararDitadoVozForcado === "function") {
+            pararDitadoVozForcado();
+        }
+        pararDitadoAudioPlayer();
+        limparAudioOralGravado();
+
+        const perguntaEl = document.getElementById("pergunta");
+        const btnAudioPergunta = document.getElementById("btnAudioPergunta");
+        const ditadoPlayerBox = document.getElementById("ditadoPlayerBox");
         const vfContainer = document.getElementById("respostaVFContainer");
         const mcContainer = document.getElementById("respostaMCContainer");
         const lacunaContainer = document.getElementById("respostaLacunaContainer");
+        const oralContainer = document.getElementById("respostaOralContainer");
         const textoContainer = document.getElementById("respostaTextoContainer");
         const toolbar = document.getElementById("frenchCharsToolbar");
+        const hintBar = document.getElementById("resposta-hint");
         const respostaReal = document.getElementById("resposta_aluno");
         const lacunaInput = document.getElementById("respostaLacunaInput");
 
-        // Oculta todos inicialmente
+        // Oculta todos os blocos dinâmicos inicialmente
         if (vfContainer) vfContainer.style.display = "none";
         if (mcContainer) mcContainer.style.display = "none";
         if (lacunaContainer) lacunaContainer.style.display = "none";
+        if (oralContainer) oralContainer.style.display = "none";
         if (textoContainer) textoContainer.style.display = "none";
+        if (hintBar) hintBar.style.display = "none";
+        if (respostaReal) respostaReal.required = false;
+
+        // Em Compreensão Auditiva (Ditado), oculta o texto da pergunta e exibe o Player destacado
+        if (tipo === "ditado") {
+            if (perguntaEl) perguntaEl.style.display = "none";
+            if (btnAudioPergunta) btnAudioPergunta.style.display = "none";
+            if (ditadoPlayerBox) ditadoPlayerBox.style.display = "flex";
+            resetarEstadoDitadoUI(textoExercicio);
+        } else {
+            if (ditadoPlayerBox) ditadoPlayerBox.style.display = "none";
+            if (perguntaEl) {
+                perguntaEl.style.display = "block";
+                autoAjustarAlturaTextarea(perguntaEl, 76);
+            }
+            if (btnAudioPergunta) btnAudioPergunta.style.display = "inline-flex";
+        }
 
         if (tipo === "vf") {
             if (vfContainer) vfContainer.style.display = "block";
@@ -1647,9 +2534,12 @@
             if (btnVrai) btnVrai.classList.remove("active");
             if (btnFaux) btnFaux.classList.remove("active");
             if (vfWrap) vfWrap.style.display = "none";
-            if (vfInput) vfInput.value = "";
+            if (vfInput) {
+                vfInput.value = "";
+                autoAjustarAlturaTextarea(vfInput, 76);
+            }
             if (respostaReal) respostaReal.value = "";
-            if (toolbar) toolbar.style.display = "flex";
+            if (toolbar) toolbar.style.display = "none";
 
         } else if (tipo === "multipla_escolha") {
             if (mcContainer) mcContainer.style.display = "block";
@@ -1700,7 +2590,7 @@
             if (lacunaInput) {
                 const info = extrairFraseComLacuna(textoExercicio);
                 lacunaInput.value = info.textoFormatado;
-                autoAjustarAlturaTextarea(lacunaInput);
+                autoAjustarAlturaTextarea(lacunaInput, 76);
                 if (respostaReal) respostaReal.value = info.textoFormatado;
                 setTimeout(() => {
                     lacunaInput.focus();
@@ -1710,22 +2600,32 @@
                 }, 60);
             }
             if (toolbar) toolbar.style.display = "flex";
+            if (hintBar) hintBar.style.display = "flex";
+
+        } else if (tipo === "expressao_oral") {
+            if (oralContainer) oralContainer.style.display = "block";
+            if (textoContainer) textoContainer.style.display = "none";
+            if (toolbar) toolbar.style.display = "none";
+            if (hintBar) hintBar.style.display = "none";
+            if (respostaReal) {
+                respostaReal.required = false;
+                respostaReal.value = "";
+            }
 
         } else {
-            // As demais: Ditado, Expressão Oral, Produção Escrita
+            // Ditado, Produção Escrita
             if (textoContainer) textoContainer.style.display = "block";
             if (respostaReal) {
                 respostaReal.value = "";
+                autoAjustarAlturaPorTextoReferencia(respostaReal, textoExercicio, tipo === "producao_escrita" ? 104 : 88);
                 if (tipo === "ditado") {
-                    respostaReal.placeholder = "Ouça o áudio e transcreva o texto em francês aqui...";
-                } else if (tipo === "expressao_oral") {
-                    respostaReal.placeholder = "Clique no botão 'Falar' (microfone) abaixo e pronuncie a frase em francês...";
+                    respostaReal.placeholder = "Ouça o áudio acima (usando Pausar, Voltar ou Ritmo Calmo) e transcreva ou dite com 'Falar'...";
                 } else {
-                    respostaReal.placeholder = "Escreva sua resposta ou produção textual em francês aqui...";
+                    respostaReal.placeholder = "Escreva ou dite sua resposta completa em francês aqui (use 'Falar' e clique em 'Parar' só ao terminar)...";
                 }
-                respostaReal.focus();
             }
             if (toolbar) toolbar.style.display = "flex";
+            if (hintBar) hintBar.style.display = "flex";
         }
     }
 

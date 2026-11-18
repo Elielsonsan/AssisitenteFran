@@ -1314,6 +1314,44 @@ def api_professor_enviar_mensagem():
         return jsonify({"status": "erro", "mensagem": str(e)}), 500
 
 
+@professor_bp.route("/api/professor/recados_enviados", methods=["GET"])
+@login_required_prof
+def api_listar_recados_enviados():
+    """Lista os últimos recados enviados aos alunos com status de leitura e respostas."""
+    conn = get_db()
+    try:
+        cols = [r["name"] for r in conn.execute("PRAGMA table_info(mensagens_inbox)").fetchall()]
+        alterou = False
+        if "resposta_aluno" not in cols:
+            conn.execute("ALTER TABLE mensagens_inbox ADD COLUMN resposta_aluno TEXT")
+            alterou = True
+        if "data_resposta" not in cols:
+            conn.execute("ALTER TABLE mensagens_inbox ADD COLUMN data_resposta TEXT")
+            alterou = True
+        if alterou:
+            conn.commit()
+
+        rows = conn.execute(
+            """
+            SELECT m.id, m.destinatario_id as aluno_id, m.assunto, m.corpo, m.data_envio,
+                   COALESCE(m.lida_status, 0) as lida_status,
+                   m.resposta_aluno, m.data_resposta,
+                   a.nome_completo as aluno_nome,
+                   t.nome as turma_nome
+            FROM mensagens_inbox m
+            LEFT JOIN alunos a ON m.destinatario_id = a.id
+            LEFT JOIN turmas t ON a.turma_id = t.id
+            ORDER BY m.id DESC
+            LIMIT 15
+            """
+        ).fetchall()
+        return jsonify({"status": "sucesso", "recados": [dict(r) for r in rows]})
+    except Exception as e:
+        return jsonify({"status": "erro", "mensagem": str(e)}), 500
+    finally:
+        conn.close()
+
+
 # ===================== PLANOS DE AULA & SEQUÊNCIAS DIDÁTICAS =====================
 
 @professor_bp.route("/professor/planos-aula", methods=["GET"])
@@ -1501,6 +1539,7 @@ def api_cadastrar_plano():
     except Exception as e:
         conn.close()
         return jsonify({"status": "erro", "mensagem": str(e)}), 500
+
 
 @professor_bp.route("/api/planos-aula/gerar-ia", methods=["POST"])
 @login_required_prof

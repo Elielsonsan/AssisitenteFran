@@ -1,6 +1,14 @@
 import os
 import sqlite3
 import re
+import unicodedata
+import difflib
+import subprocess
+import tempfile
+import wave
+import struct
+import math
+import shutil
 from functools import wraps
 from flask import request, jsonify, redirect, url_for, session, g, has_app_context
 
@@ -101,6 +109,13 @@ def init_schema_migrations(conn):
         cursor.execute("UPDATE reforcos_individuais SET status = 'Pendente' WHERE LOWER(status) = 'pendente' AND status != 'Pendente'")
         cursor.execute("UPDATE reforcos_individuais SET status = 'Concluido' WHERE LOWER(status) = 'concluido' AND status != 'Concluido'")
 
+    cols_msg = [r[1] for r in cursor.execute("PRAGMA table_info(mensagens_inbox)").fetchall()]
+    if cols_msg:
+        if "resposta_aluno" not in cols_msg:
+            cursor.execute("ALTER TABLE mensagens_inbox ADD COLUMN resposta_aluno TEXT")
+        if "data_resposta" not in cols_msg:
+            cursor.execute("ALTER TABLE mensagens_inbox ADD COLUMN data_resposta TEXT")
+
     # Tabela de Diário de Classe / Controle de Frequência vinculada aos Planos de Aula
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS presencas_aula (
@@ -119,6 +134,13 @@ def init_schema_migrations(conn):
     """)
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_presencas_plano_id ON presencas_aula(plano_id);")
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_presencas_aluno_id ON presencas_aula(aluno_id);")
+
+    cols_sub = [r[1] for r in cursor.execute("PRAGMA table_info(submissoes)").fetchall()]
+    if cols_sub and "origem_submissao" not in cols_sub:
+        cursor.execute("ALTER TABLE submissoes ADD COLUMN origem_submissao TEXT DEFAULT 'curso'")
+        cursor.execute(
+            "UPDATE submissoes SET origem_submissao = 'curso' WHERE origem_submissao IS NULL"
+        )
 
     conn.commit()
 
@@ -170,9 +192,9 @@ def login_required_prof(f):
 
 
 def parse_retorno_gemini_frances(texto):
-    texto = texto.strip()
+    texto = (texto or "").strip()
     status = "Parcialmente Correto"
-    match_status = re.search(r"\*\*Status:\*\*\s*(Correto|Parcialmente Correto|Incorreto)", texto, re.IGNORECASE)
+    match_status = re.search(r"\*{0,2}Status:?\*{0,2}\s*(Parcialmente Correto|Incorreto|Correto)", texto, re.IGNORECASE)
     if match_status:
         status_raw = match_status.group(1).strip().title()
         if "Parcial" in status_raw:
@@ -184,7 +206,7 @@ def parse_retorno_gemini_frances(texto):
 
     analise_professor = "Análise registrada pelo professor virtual."
     match_analise = re.search(
-        r"\*\*Análise do Professor:\*\*\s*(.*?)(?=\n- \*\*Feedback|\n\*\*Feedback|$)",
+        r"\*\*Análise do Professor:\*\*\s*(.*?)(?=\n-\s*\*\*Feedback|\n\*\*Feedback|$)",
         texto,
         re.DOTALL | re.IGNORECASE
     )
@@ -203,35 +225,1069 @@ def parse_retorno_gemini_frances(texto):
     return status, analise_professor, feedback_aluno
 
 
-def gerar_feedback_frances(tema, exercicio, resposta_aluno, tentativa=1, dica_anterior="", nivel_cefr="A2"):
+def _remover_acentos_fr(texto: str) -> str:
+    nfkd = unicodedata.normalize("NFKD", texto or "")
+    return "".join(ch for ch in nfkd if not unicodedata.combining(ch))
+
+
+def _norm_fr(texto: str, manter_acentos: bool = True) -> str:
+    s = (texto or "").replace("’", "'").replace("‘", "'").replace("«", " ").replace("»", " ")
+    s = s.replace('"', " ").replace("—", " ")
+    s = re.sub(r"[.,!?;:()\[\]{}\-]", " ", s)
+    s = re.sub(r"\s+", " ", s).strip().lower()
+    if not manter_acentos:
+        s = _remover_acentos_fr(s)
+    return s
+
+
+def _extrair_trecho_entre_aspas(texto: str) -> str:
+    txt = (texto or "").strip()
+    if not txt:
+        return ""
+
+    # Em enunciados com múltiplas linhas (ex.: V/F e Expressão Oral), a frase-alvo fica no último bloco
+    blocos = [b.strip() for b in re.split(r"\n{2,}", txt) if b.strip()]
+    alvo = blocos[-1] if len(blocos) > 1 else txt
+
+    # Caso o último bloco seja delimitado por « ... » (mesmo com « tema » interno)
+    m_gul_outer = re.search(r"«(.*)»\s*$", alvo)
+    if m_gul_outer and m_gul_outer.group(1).strip():
+        return m_gul_outer.group(1).strip()
+
+    # Aspas simples após dois-pontos no formato: "Instrução s'appeler: 'Frase em francês.'"
+    m_colon_single = re.search(r":\s*'([^'\n]*_{2,}[^'\n]*|[^'\n]+)'\s*$", alvo)
+    if m_colon_single and m_colon_single.group(1).strip():
+        return m_colon_single.group(1).strip()
+
+    # Aspas simples após dois-pontos contendo apóstrofos franceses dentro (ex.: : 'Il n'y a pas ___ sucre.')
+    m_colon_full = re.search(r":\s*'(.+)'\s*$", alvo)
+    if m_colon_full and m_colon_full.group(1).strip():
+        return m_colon_full.group(1).strip()
+
+    for padrao in (r"«([^»]+)»", r'"([^"\n]+)"'):
+        m = re.search(padrao, alvo)
+        if m and m.group(1).strip():
+            return m.group(1).strip()
+        m2 = re.search(padrao, txt)
+        if m2 and m2.group(1).strip():
+            return m2.group(1).strip()
+    return txt
+
+
+_ORTOGRAFIA_FLE_MAP = {
+    "coment": ("comment", "falta dobrar a consoante **m** (`comment`)"),
+    "francais": ("français", "falta a cedilha em **ç** (`français`)"),
+    "francaise": ("française", "falta a cedilha em **ç** (`française`)"),
+    "bresilien": ("brésilien", "falta o acento agudo em **é** (`brésilien`)"),
+    "bresilienne": ("brésilienne", "falta o acento agudo em **é** (`brésilienne`)"),
+    "etudiant": ("étudiant", "falta o acento agudo em **é** (`étudiant`)"),
+    "etudiants": ("étudiants", "falta o acento agudo em **é** (`étudiants`)"),
+    "etudiante": ("étudiante", "falta o acento agudo em **é** (`étudiante`)"),
+    "tres": ("très", "falta o acento grave em **è** (`très`)"),
+    "etre": ("être", "falta o acento circunflexo em **ê** (`être`)"),
+    "eleve": ("élève", "faltam os acentos gráficos (`élève`)"),
+    "eleves": ("élèves", "faltam os acentos gráficos (`élèves`)"),
+    "cafe": ("café", "falta o acento agudo em **é** (`café`)"),
+    "cinema": ("cinéma", "falta o acento agudo em **é** (`cinéma`)"),
+    "theatre": ("théâtre", "faltam os acentos gráficos (`théâtre`)"),
+    "television": ("télévision", "faltam os acentos agudos (`télévision`)"),
+    "etais": ("étais", "falta o acento agudo em **é** (`étais`)"),
+    "etait": ("était", "falta o acento agudo em **é** (`était`)"),
+    "etions": ("étions", "falta o acento agudo em **é** (`étions`)"),
+    "etiez": ("étiez", "falta o acento agudo em **é** (`étiez`)"),
+    "etaient": ("étaient", "falta o acento agudo em **é** (`étaient`)"),
+    "etudions": ("étudions", "falta o acento agudo em **é** (`étudions`)"),
+    "etudient": ("étudient", "falta o acento agudo em **é** (`étudient`)"),
+    "ecrit": ("écrit", "falta o acento agudo em **é** (`écrit`)"),
+    "ecrite": ("écrite", "falta o acento agudo em **é** (`écrite`)"),
+    "ecrites": ("écrites", "falta o acento agudo em **é** (`écrites`)"),
+    "delicieuse": ("délicieuse", "falta o acento agudo em **é** (`délicieuse`)"),
+    "bonjour": None,
+    "bonjur": ("bonjour", "grafia incorreta (`bonjour` escreve-se com **ou**)"),
+    "bonjor": ("bonjour", "grafia incorreta (`bonjour` escreve-se com **ou**)"),
+    "mersi": ("merci", "grafia incorreta (`merci` escreve-se com **c**)"),
+    "profesieur": ("professeur", "faltam dois **s** (`professeur`)"),
+    "profeseur": ("professeur", "faltam dois **s** (`professeur`)"),
+    "diferent": ("différent", "dobrar **ff** e acentuar **é** (`différent`)"),
+    "different": ("différent", "falta o acento agudo em **é** (`différent`)"),
+    "addresse": ("adresse", "em francês `adresse` tem apenas um **d** e dois **s**"),
+    "adrese": ("adresse", "faltam dois **s** (`adresse`)"),
+    "restorant": ("restaurant", "grafia correta com **au** (`restaurant`)"),
+    "aujourdhui": ("aujourd'hui", "falta o apóstrofo em `aujourd'hui`"),
+    "toujour": ("toujours", "falta o **s** final (`toujours`)"),
+    "jamai": ("jamais", "falta o **s** final (`jamais`)"),
+    "baucoup": ("beaucoup", "grafia correta com **eau** (`beaucoup`)"),
+    "beacoup": ("beaucoup", "grafia correta com **eau** (`beaucoup`)"),
+    "deman": ("demain", "grafia correta com **ai** (`demain`)"),
+    "exersice": ("exercice", "grafia correta com **c** (`exercice`)"),
+}
+
+
+def _verificar_desvios_ortograficos_fr(texto: str):
+    """Detecta erros de consoantes duplas (ex.: m'apele/s'apelle), acentuação e grafia em francês."""
+    desvios = []
+    vistas = set()
+    s = (texto or "").replace("’", "'").replace("‘", "'")
+
+    # 1. Regra específica para o verbo appeler / s'appeler (pp + ll diante de 'e' mudo)
+    for m in re.finditer(r"\b(?:([mtsj])')?(ap{1,2}el{1,2}e?s?)\b", s, re.IGNORECASE):
+        pron = (m.group(1) or "").lower()
+        rad = m.group(2).lower()
+        forma_orig = m.group(0)
+        esperado = None
+        dica_regra = ""
+
+        if pron in ("m", "s"):
+            esperado_rad = "appelle"
+            if rad != esperado_rad:
+                esperado = f"{pron}'{esperado_rad}"
+                dica_regra = f"o verbo *s'appeler* no presente dobra tanto o **p** (**pp**) quanto o **l** (**ll**) -> **`{esperado}`**"
+        elif pron == "t":
+            esperado_rad = "appelles"
+            if rad != esperado_rad:
+                esperado = f"{pron}'{esperado_rad}"
+                dica_regra = f"com *tu*, dobra **pp** e **ll** e recebe **-es** -> **`{esperado}`**"
+        elif rad in ("apele", "apelle", "appele", "apeles", "apelles", "appeles"):
+            esperado = "appelle"
+            dica_regra = "o verbo *appeler* no singular dobra **p** e **l** -> **`appelle`**"
+
+        if esperado and forma_orig.lower() not in vistas:
+            vistas.add(forma_orig.lower())
+            desvios.append((forma_orig, esperado, dica_regra))
+
+    # 2. Demais termos comuns com desvio ortográfico ou falta de acento
+    for m in re.finditer(r"\b[a-zàâäéèêëïîôùûüç']+\b", s, re.IGNORECASE):
+        token = m.group(0)
+        low = token.lower()
+        if low in vistas:
+            continue
+        reg = _ORTOGRAFIA_FLE_MAP.get(low)
+        if reg is not None:
+            esperado, motivo = reg
+            vistas.add(low)
+            desvios.append((token, esperado, motivo))
+
+    return desvios
+
+
+def _detectar_modalidade_avaliacao(exercicio: str, tipo_atividade: str = "") -> str:
+    t = (tipo_atividade or "").strip().lower()
+    if t in ("lacunas", "vf", "multipla_escolha", "ditado", "expressao_oral", "producao_escrita"):
+        return t
+    ex_low = (exercicio or "").lower()
+    if "vrai" in ex_low and "faux" in ex_low:
+        return "vf"
+    if re.search(r"(?:^|\n)\s*(?:\(?[a-d]\)|[A-D]\))", exercicio or ""):
+        return "multipla_escolha"
+    if "___" in (exercicio or ""):
+        return "lacunas"
+    if any(k in ex_low for k in ("traduza", "elabore", "produção textual", "redigir")):
+        return "producao_escrita"
+    if any(k in ex_low for k in ("pronuncie", "voz alta")):
+        return "expressao_oral"
+    return "lacunas"
+
+
+_ERROS_VF_PADROES = [
+    (r"\bont\s+arriv[ée]e?s?\b", "Com o verbo 'arriver' (Maison d'Être), o auxiliar deve ser **être** (*sont arrivées*), nunca *avoir* (*ont*)."),
+    (r"\ba\s+parti(?:e|s)?\b", "O verbo 'partir' exige o auxiliar **être** (*est partie*), e não *avoir* (*a parti*)."),
+    (r"\b(?:avons|avez|ont|as|a)\s+aller\b", "O verbo 'aller' exige o auxiliar **être** e particípio passado (*sommes allés*), nunca o infinitivo com *avoir*."),
+    (r"\ba\s+all[ée]e?s?\b", "O verbo 'aller' conjuga com **être** (*est allée*), não com *avoir*."),
+    (r"\b(?:avons|avez|ont)\s+rest[ée]s?\b", "O verbo 'rester' pertence à Maison d'Être e exige auxiliar **être** (*sommes restés*)."),
+    (r"quand\s+j'[ée]tais[^.!?]*\bnous\s+allons\b", "Quando se descreve um hábito no passado (*Quand j'étais enfant*), o verbo principal deve estar no **Imparfait** (*nous allions*), não no presente."),
+    (r"\bne\s+(?:\w+\s+)?pas\s+(?:du|des|de\s+la)\s+(?:caf[ée]|fromage|sucre|amis|viande)\b", "Em frases negativas absolutas, os artigos partitivos/indefinidos mudam para **de / d'** (*pas de café*, *pas de sucre*, *pas d'amis*)."),
+    (r"\b(?:des|de\s+la|du)\s+fruits\b[^.!?]*\bj'y\s+mange\b", "Quando substituímos um complemento partitivo ou de quantidade (*des fruits*), usamos o pronome **en** (*j'en mange*), não *y*."),
+    (r"\bt[ée]l[ée]phone\s+[àa]\b[^.!?]*\bles\s+t[ée]l[ée]phone\b", "O verbo *téléphoner à* pede pronome indireto (COI: *lui* ou *leur*), e não direto (*les*). Correto: *je leur téléphone*."),
+    (r"\b(?:il\s+est\s+n[ée]cessaire|il\s+faut|exige|souhaite)\s+que\s+tu\s+prends\b", "Após expressões de necessidade como *il faut que / il est nécessaire que*, deve-se empregar o **Subjonctif** (*que tu prennes*), não o indicativo."),
+    (r"\b(?:marie\s+et\s+sophie|elles)\s+sont\s+arriv[ée]\b(?!e?s)", "Falta a concordância feminino plural no particípio passado com **être**: *sont arrivées*."),
+]
+
+
+def _analisar_erro_frase_vf(frase: str):
+    f_low = (frase or "").lower()
+    for padrao, explicacao in _ERROS_VF_PADROES:
+        if re.search(padrao, f_low):
+            return explicacao
+    return None
+
+
+def _avaliar_multipla_escolha(exercicio: str, resposta: str):
+    opcoes = {}
+    for line in (exercicio or "").splitlines():
+        m = re.match(r"^\s*\(?([A-Da-d])[\)\.\-]\s*(.+)$", line.strip())
+        if m:
+            opcoes[m.group(1).upper()] = m.group(2).strip()
+
+    if not opcoes:
+        return None
+
+    resp_trim = (resposta or "").strip()
+    letra_escolhida = None
+    m_letra = re.match(r"^\(?([A-Da-d])(?:[\)\.\-\s]|$)", resp_trim)
+    if m_letra:
+        letra_escolhida = m_letra.group(1).upper()
+    else:
+        resp_norm = _norm_fr(resp_trim, manter_acentos=False)
+        for letra, texto_op in opcoes.items():
+            if resp_norm == _norm_fr(texto_op, manter_acentos=False):
+                letra_escolhida = letra
+                break
+
+    if not letra_escolhida or letra_escolhida not in opcoes:
+        return (
+            "Incorreto",
+            "A resposta enviada não corresponde a uma das alternativas (A, B, C ou D).",
+            "### *Attention !*\n\nSua resposta não corresponde às alternativas propostas. Selecione ou informe a letra **A**, **B**, **C** ou **D** (ex.: `B`).\n\n**Dica:** Analise atentamente o verbo, auxiliar ou pronome pedido antes de escolher."
+        )
+
+    ex_norm = _norm_fr(exercicio, manter_acentos=False)
+    letra_correta = None
+    explicacao = "Revise a concordância verbal, o auxiliar e a regência da frase."
+
+    gabaritos_mc = [
+        ("marie et sophie", "sont arrivees", "Com *Marie et Sophie* (feminino plural) e o verbo *arriver* (Maison d'Être), o correto é o auxiliar **être** com acordo **-ées**: *sont arrivées*."),
+        ("mes amis", "sont arrives", "Com *mes amis* (masculino plural) e *arriver*, utiliza-se **être** com acordo plural: *sont arrivés*."),
+        ("mes soeurs", "sont", "Na Maison d'Être (*naître*), com *mes sœurs* (3ª pessoa plural), o auxiliar é **être**: *sont* (*Mes sœurs sont nées*)."),
+        ("elle ___ nées", "sont", "O correto é utilizar o auxiliar *être*."),
+        ("autrefois", "habitaient", "O marcador temporal *autrefois* pede o **Imparfait** na 3ª pessoa do plural (*ils habitaient*)."),
+        ("ne prends pas", "de", "Na frase negativa absoluta, o artigo partitivo muda para **de**: *Je ne prends pas de sucre*."),
+        ("d'amis", "je n'ai pas d'amis", "Em negação absoluta, *des* vira **d'** diante de vogal: *Je n'ai pas d'amis à Lyon*."),
+        ("a lyon", "j'y vais demain", "Substituindo um complemento de lugar introduzido por *à* (*à Lyon*), emprega-se o pronome **y**: *J'y vais demain*."),
+        ("a sophie", "je lui parle", "Com o verbo *parler à* + pessoa singular (*à Sophie*), usa-se o pronome COI **lui**: *Je lui parle*."),
+        ("a l'heure", "soyons", "Após *exige que* / *il est important que*, é obrigatório o **Subjonctif Présent** de *être* com *nous*: *soyons*."),
+        ("les etudiants", "finissent", "Com *les étudiants* (3ª pessoa do plural), o verbo *finir* (2º grupo) conjuga **finissent**."),
+        ("manger", "mangeons", "Com *nous*, verbos terminados em *-ger* mantêm o **e** antes de *-ons* para preservar o som: *mangeons*."),
+        ("sorbonne", "etudient", "Com *elles* (3ª pessoa plural), o verbo *étudier* recebe a terminação **-ent**: *étudient*."),
+        ("eau minerale", "de l'", "*Eau* começa por vogal, exigindo o partitivo **de l'**."),
+        ("mon pere est", "tante", "A irmã do meu pai é minha **tante** (*Tante*)."),
+        ("frere de votre mere", "l'oncle", "O irmão da sua mãe é **L'oncle**."),
+    ]
+    for chave_enunc, alvo_op, exp in gabaritos_mc:
+        if chave_enunc in ex_norm:
+            for l_cand, t_cand in opcoes.items():
+                if alvo_op in _norm_fr(t_cand, manter_acentos=False):
+                    letra_correta = l_cand
+                    explicacao = exp
+                    break
+            if letra_correta:
+                break
+
+    if not letra_correta:
+        # Heurística gramatical caso a questão venha da IA com opções inéditas
+        for l_cand, t_cand in opcoes.items():
+            t_low = t_cand.lower()
+            if not _analisar_erro_frase_vf(t_low) and not re.search(r"\b(ont arrivé|sont arrivé\b|a allée|prendre.*tu prends|pas du)\b", t_low):
+                # Preferir formas completas em opções longas
+                pass
+        # Se não identificou com certeza, checa explicitamente se a alternativa escolhida tem erro conhecido
+        erro_na_escolha = _analisar_erro_frase_vf(opcoes[letra_escolhida])
+        if erro_na_escolha:
+            return (
+                "Incorreto",
+                f"Alternativa {letra_escolhida} incorreta: {erro_na_escolha}",
+                f"### *Pas tout à fait !*\n\nA alternativa **{letra_escolhida}) {opcoes[letra_escolhida]}** não está correta.\n\n**Dica:** {erro_na_escolha}"
+            )
+        return (
+            "Correto",
+            f"Alternativa {letra_escolhida} selecionada ({opcoes[letra_escolhida]}).",
+            f"### *Très bien !*\n\nVocê escolheu **{letra_escolhida}) {opcoes[letra_escolhida]}**, que atende adequadamente à estrutura pedida na questão."
+        )
+
+    if letra_escolhida == letra_correta:
+        return (
+            "Correto",
+            f"O aluno escolheu corretamente a alternativa {letra_correta}) {opcoes[letra_correta]}.",
+            f"### *Très bien !*\n\nAlternativa correta: **{letra_correta}) {opcoes[letra_correta]}**.\n\n{explicacao}"
+        )
+
+    return (
+        "Incorreto",
+        f"O aluno marcou {letra_escolhida}) {opcoes[letra_escolhida]}, mas a correta era {letra_correta}) {opcoes[letra_correta]}.",
+        f"### *Attention !*\n\nVocê marcou **{letra_escolhida}) {opcoes[letra_escolhida]}**, porém essa opção apresenta um desvio gramatical.\n\n**Dica:** {explicacao}"
+    )
+
+
+def _avaliar_vf(exercicio: str, resposta: str):
+    resp_trim = (resposta or "").strip()
+    m_vf = re.match(r"^(vrai|faux)\b(?:\s*[—\-:]\s*(.*))?$", resp_trim, re.IGNORECASE | re.DOTALL)
+    if not m_vf:
+        return (
+            "Incorreto",
+            "Não foi informado o julgamento 'Vrai' ou 'Faux'.",
+            "### *Attention !*\n\nPara essa modalidade, indique primeiro se a frase é **Vrai** (verdadeira) ou **Faux** (falsa) e, se for falsa, reescreva a correção.\n\n**Dica:** Observe com cuidado o auxiliar (*être/avoir*), a concordância e as preposições."
+        )
+
+    julgamento = m_vf.group(1).title()
+    reescrita = (m_vf.group(2) or "").strip()
+    frase_proposta = _extrair_trecho_entre_aspas(exercicio)
+    erro_frase = _analisar_erro_frase_vf(frase_proposta)
+
+    if erro_frase:
+        # A frase proposta É FALSA
+        if julgamento == "Vrai":
+            return (
+                "Incorreto",
+                f"O aluno julgou a frase como Vrai, mas ela contém erro: {erro_frase}",
+                f"### *Pas tout à fait !*\n\nNa verdade, a frase proposta contém uma incorreção gramatical (**Faux**).\n\n**Dica:** {erro_frase}"
+            )
+        # Julgou Faux! Verificar se reescreveu corretamente
+        if not reescrita or _norm_fr(reescrita, False) == _norm_fr(frase_proposta, False):
+            return (
+                "Parcialmente Correto",
+                f"O aluno identificou corretamente que a frase é Faux, mas não apresentou a frase corrigida.",
+                f"### *Presque !*\n\nVocê acertou ao identificar que a frase é **Faux**! Para completar a pontuação máxima, reescreva a frase corrigida no campo abaixo.\n\n**Dica:** {erro_frase}"
+            )
+        erro_reescrita = _analisar_erro_frase_vf(reescrita)
+        if erro_reescrita:
+            return (
+                "Parcialmente Correto",
+                f"O aluno julgou Faux corretamente, mas a reescrita ainda mantém incorreção: {erro_reescrita}",
+                f"### *Presque !*\n\nVocê acertou ao marcar **Faux**, porém sua reescrita (*« {reescrita} »*) ainda precisa de ajuste.\n\n**Dica:** {erro_reescrita}"
+            )
+        sim = difflib.SequenceMatcher(None, _norm_fr(reescrita, False), _norm_fr(frase_proposta, False)).ratio()
+        if sim < 0.45:
+            return (
+                "Parcialmente Correto",
+                "O julgamento Faux está correto, mas a reescrita fugiu muito da frase original.",
+                "### *Presque !*\n\nVocê marcou **Faux** corretamente, mas tente manter a mesma estrutura da frase original corrigindo apenas o verbo/elemento incorreto."
+            )
+        desvios_vf = _verificar_desvios_ortograficos_fr(reescrita)
+        if desvios_vf:
+            return _formatar_feedback_ortografia(desvios_vf, contexto=" na reescrita de Vrai ou Faux")
+        return (
+            "Correto",
+            "O aluno identificou corretamente Faux e reescreveu a frase aplicando a norma culta do francês.",
+            f"### *Très bien !*\n\nExcelente! Você identificou corretamente que a sentença era **Faux** e fez a correção adequada (*« {reescrita} »*)."
+        )
+
+    # A frase proposta É VERDADEIRA
+    if julgamento == "Vrai":
+        return (
+            "Correto",
+            "O aluno identificou corretamente que a sentença é Vrai.",
+            f"### *Très bien !*\n\nCorreto! A frase *« {frase_proposta} »* está gramaticalmente bem construída (**Vrai**)."
+        )
+    return (
+        "Incorreto",
+        "A frase proposta está gramaticalmente correta (Vrai), mas o aluno a classificou como Faux.",
+        f"### *Attention !*\n\nNa verdade, a frase *« {frase_proposta} »* já está **correta (Vrai)** — os verbos, auxiliares e concordâncias estão em conformidade com o francês padrão.\n\n**Dica:** Releia o auxiliar e o particípio ou pronome da frase original: não há erro oculto nela."
+    )
+
+
+def _avaliar_ditado_ou_oral(exercicio: str, resposta: str, modalidade: str):
+    alvo = _extrair_trecho_entre_aspas(exercicio)
+    alvo_norm = re.sub(r"'\s+", "'", _norm_fr(alvo, manter_acentos=True))
+    resp_norm = re.sub(r"'\s+", "'", _norm_fr(resposta, manter_acentos=True))
+
+    alvo_sem = re.sub(r"'\s+", "'", _norm_fr(alvo, manter_acentos=False))
+    resp_sem = re.sub(r"'\s+", "'", _norm_fr(resposta, manter_acentos=False))
+
+    if not resp_sem or len(resp_sem) < 2:
+        msg_vazio = (
+            "### *Attention !*\n\nNão foi possível identificar palavras em francês na gravação. Clique em **\"Tentar Novamente com a Dica\"** para gravar novamente falando perto do microfone."
+            if modalidade == "expressao_oral"
+            else "### *Attention !*\n\nDigite ou dite a frase completa em francês antes de enviar."
+        )
+        return ("Incorreto", "Resposta vazia ou insuficiente.", msg_vazio)
+
+    if modalidade == "expressao_oral":
+        if resp_sem == alvo_sem:
+            return (
+                "Correto",
+                f"Pronúncia transcrita corresponde integralmente à frase proposta: '{alvo}'.",
+                f"### *Excellent !*\n\nPronúncia clara e fiel à sentença proposta: *« {alvo} »*."
+            )
+
+        ratio_oral = difflib.SequenceMatcher(None, resp_sem, alvo_sem).ratio()
+        palavras_alvo_l = alvo_sem.split()
+        palavras_resp_l = resp_sem.split()
+        faltantes = [w for w in palavras_alvo_l if w not in palavras_resp_l]
+        trocadas = [w for w in palavras_resp_l if w not in palavras_alvo_l]
+
+        detalhes = []
+        if trocadas:
+            detalhes.append(f"compreendido como `{', '.join(trocadas[:4])}`")
+        if faltantes:
+            detalhes.append(f"esperado `{', '.join(faltantes[:4])}`")
+        resumo_dif = (" (" + " → ".join(detalhes) + ")") if detalhes else ""
+
+        if ratio_oral >= 0.72:
+            return (
+                "Parcialmente Correto",
+                f"Expressão oral com correspondência parcial ({round(ratio_oral * 100)}%){resumo_dif}.",
+                f"### *Presque !*\n\nA maior parte da sua pronúncia foi reconhecida, mas houve pequenas diferenças nas palavras captadas{resumo_dif}.\n\n"
+                f"**Dica:** Ouça a pronúncia modelo no botão **Ouvir** do exercício (frase-alvo: *« {alvo} »*) e clique em **\"Tentar Novamente com a Dica\"** para gravar novamente."
+            )
+
+        return (
+            "Incorreto",
+            f"Baixa correspondência oral com a frase esperada ({round(ratio_oral * 100)}%){resumo_dif}.",
+            f"### *Attention !*\n\nO que foi compreendido no áudio divergiu bastante da frase proposta (*« {alvo} »*){resumo_dif}.\n\n"
+            f"**Dica:** Ouça o enunciado no botão **Ouvir**, articule cada sílaba em francês com calma e clique em **\"Tentar Novamente com a Dica\"** para regravar."
+        )
+
+    # Modalidade: Compreensão Auditiva (Ditado) — rigor ortográfico total
+    desvios_ort = _verificar_desvios_ortograficos_fr(resposta)
+
+    if resp_norm == alvo_norm:
+        if desvios_ort:
+            return _formatar_feedback_ortografia(desvios_ort, contexto=f" em {modalidade}")
+        return (
+            "Correto",
+            f"Transcrição exata: '{alvo}'.",
+            f"### *Excellent !*\n\nTranscrição exata! Você reproduziu com precisão a frase: *« {alvo} »*."
+        )
+
+    if desvios_ort and difflib.SequenceMatcher(None, resp_sem, alvo_sem).ratio() >= 0.75:
+        return _formatar_feedback_ortografia(desvios_ort, contexto=f" em {modalidade}")
+
+    if resp_sem == alvo_sem:
+        palavras_alvo = alvo_norm.split()
+        palavras_resp = resp_norm.split()
+        faltando_acento = [pa for pa, pr in zip(palavras_alvo, palavras_resp) if pa != pr]
+        detalhe = f" ({', '.join(faltando_acento[:4])})" if faltando_acento else ""
+        return (
+            "Parcialmente Correto",
+            f"A estrutura lexical está correta, porém faltaram/divergiram acentos franceses{detalhe}.",
+            f"### *Presque parfait !*\n\nVocê acertou todas as palavras da frase! Fique atento apenas à acentuação em francês{detalhe}.\n\n**Dica:** Utilize a barra de caracteres especiais (`é`, `è`, `ê`, `à`, `ç`) para revisar os acentos."
+        )
+
+    ratio = difflib.SequenceMatcher(None, resp_sem, alvo_sem).ratio()
+    palavras_alvo_l = alvo_sem.split()
+    palavras_resp_l = resp_sem.split()
+    faltantes = [w for w in palavras_alvo_l if w not in palavras_resp_l]
+
+    if ratio >= 0.78:
+        dica_falta = f" Revise especialmente os trechos com: `{', '.join(faltantes[:4])}`." if faltantes else ""
+        return (
+            "Parcialmente Correto",
+            f"Similaridade de {round(ratio * 100)}% com a frase esperada.",
+            f"### *Bien essayé, presque !*\n\nVocê compreendeu a maior parte da frase, mas houve pequenas diferenças na grafia ou omissão de palavras.{dica_falta}\n\n**Dica:** Ouça novamente em ritmo calmo prestando atenção às terminações e artigos."
+        )
+
+    return (
+        "Incorreto",
+        f"Baixa correspondência com o texto-alvo ({round(ratio * 100)}%).",
+        f"### *Attention !*\n\nSua resposta ainda está distante da frase proposta ({len(palavras_resp_l)} palavras registradas contra {len(palavras_alvo_l)} no áudio).\n\n**Dica:** Utilize os botões de **Voltar trecho** e **Ritmo Calmo** no player para ouvir palavra por palavra com calma."
+    )
+
+
+def _obter_gabaritos_lacuna(exercicio: str, tema: str):
+    """Retorna lista de preenchimentos aceitos para a lacuna com base no exercício."""
+    ex_norm = _norm_fr(exercicio, manter_acentos=False)
+    respostas_map = [
+        ("hier, nous ___ (aller) au cinema", ["sommes allés"]),
+        ("marie et sophie ___ (arriver)", ["sont arrivées"]),
+        ("nous ___ (aller) au cinema", ["sommes allés"]),
+        ("sophie ___ (partir) de la maison", ["est partie"]),
+        ("elle ___ (partir) tres tot", ["est partie"]),
+        ("ils ___ (choisir) un bon restaurant", ["ont choisi"]),
+        ("ont ___ (finir) leur travail", ["fini"]),
+        ("au petit-dejeuner, je bois ___ cafe", ["du"]),
+        ("elles ___ (arriver) a paris", ["sont arrivées"]),
+        ("elles ___ (partir) en vacances", ["sont parties"]),
+        ("quand j'etais enfant, nous ___ (aller)", ["allions"]),
+        ("cafe, mais je ne mets pas ___ sucre", ["du", "de"]),
+        ("il n'y a pas ___ sucre", ["de"]),
+        ("je prends ___ cafe", ["du"]),
+        ("tu prends du cafe", ["en"]),
+        ("combien", ["en"]),
+        ("je ___ ecris chaque semaine", ["leur"]),
+        ("je ___ telephone tous les dimanches", ["leur"]),
+        ("oui, je ___ ai envoyee ce matin", ["la lui", "l'"]),
+        ("vous ___ (faire) attention", ["fassiez"]),
+        ("il est imperatif que vous ___ (faire)", ["fassiez"]),
+        ("qu'elle ne ___ (venir) pas", ["vienne"]),
+        ("nous ___ (habiter) a lyon", ["habitons"]),
+        ("vous ___ (parler) tres bien", ["parlez"]),
+        ("nous ___ (parler) couramment", ["parlons"]),
+        ("ils ecout___", ["ent"]),
+        ("tu ___ (habiter)", ["habites"]),
+        ("vous ___ (aimer)", ["aimez"]),
+        ("vous ___ (commencer)", ["commencez"]),
+        ("nous ___ (etudier)", ["étudions"]),
+        ("nous ___ (choisir)", ["choisissons"]),
+        ("les lettres que j'ai ___ (ecrire)", ["écrites"]),
+        ("elles sont ___ (partir)", ["parties"]),
+        ("tu l'as ___ (entendre)", ["entendue"]),
+        ("nous les avons ___ (manger)", ["mangées"]),
+        ("marc ___ (perdre) ses cles", ["a perdu"]),
+        ("le musee est ___ (en face de / a cote)", ["en face de", "à côté de", "a cote de"]),
+        ("elle ___ boit ___ de cafe", ["ne ... pas", "ne pas", "ne", "n'"]),
+        ("le pere de mon pere est mon ___", ["grand-père", "grand père"]),
+        ("j'adore ___ (mon/ma/mes) grand-mere", ["ma"]),
+        ("la fille de ma tante est ma ___", ["cousine"]),
+        ("vous ___ (etre) etudiants a paris", ["étiez"]),
+        ("le telephone ___ (sonner)", ["a sonné"]),
+        ("je ___ regarde ce soir", ["le"]),
+        ("j'___ vais souvent", ["y"]),
+        ("j'___ mange tous les jours", ["en"]),
+        ("je ___ (vouloir) reserver", ["voudrais"]),
+        ("nous ___ (vouloir) reserver", ["voudrions"]),
+        ("je ___ (voyager) a travers", ["voyagerais"]),
+        ("qu'il ___ (venir)", ["vienne"]),
+        ("m'___ (appeler)", ["appelle"]),
+        ("je suis ___ (bresilien / bresilienne)", ["brésilien", "brésilienne"]),
+        ("nous ___ (regarder) un documentaire", ["avons regardé"]),
+        ("les enfants ___ (dormir)", ["ont dormi"]),
+    ]
+    for chave, cands in respostas_map:
+        if _norm_fr(chave, manter_acentos=False) in ex_norm:
+            return cands
+
+    # Fallback inteligente via sujeito + verbo entre parênteses quando existir "(verbo)"
+    m_verb = re.search(r"([a-zàâäéèêëïîôùûüç']+)\s+___\s*\(([^)]+)\)", exercicio or "", re.IGNORECASE)
+    if m_verb:
+        suj = m_verb.group(1).lower()
+        verbo = m_verb.group(2).strip().lower()
+        t_low = (tema or "").lower()
+        eh_passe = "passé" in t_low or "passe" in t_low or "hier" in ex_norm
+        eh_imparf = "imparfait" in t_low or "quand j'etais" in ex_norm
+        eh_subj = "subjonctif" in t_low or "il faut que" in ex_norm
+        if verbo == "étudier" and suj == "nous":
+            return ["étudions"]
+        if verbo == "aller" and eh_passe:
+            if suj in ("nous", "vous"):
+                return ["sommes allés" if suj == "nous" else "êtes allés"]
+        if verbo == "aller" and eh_imparf and suj == "nous":
+            return ["allions"]
+        if verbo == "faire" and eh_subj and suj == "vous":
+            return ["fassiez"]
+        # Presente regular 1o grupo
+        if verbo.endswith("er") and not eh_passe and not eh_imparf and not eh_subj:
+            rad = verbo[:-2]
+            termin = {"je": "e", "tu": "es", "il": "e", "elle": "e", "on": "e", "nous": "ons", "vous": "ez", "ils": "ent", "elles": "ent"}.get(suj)
+            if termin:
+                return [rad + termin]
+    return []
+
+
+def _formatar_feedback_ortografia(desvios_ort, contexto=""):
+    itens = [f"- **`{orig}`** → **`{esp}`** ({motivo})" for orig, esp, motivo in desvios_ort]
+    analise = f"Estrutura/ideia adequada{contexto}, porém com desvio(s) ortográfico(s): " + "; ".join(f"{o} -> {e}" for o, e, _ in desvios_ort) + "."
+    feedback = (
+        "### *Presque ! Atenção à ortografia*\n\n"
+        "Sua frase está bem encaminhada na estrutura gramatical, mas encontramos detalhes ortográficos para ajustar antes de atingir 100%:\n\n"
+        + "\n".join(itens)
+        + "\n\n**Dica:** Revise as consoantes duplas e os acentos franceses e tente novamente!"
+    )
+    return "Parcialmente Correto", analise, feedback
+
+
+def _avaliar_multiplas_lacunas_ou_transformacao(exercicio: str, resposta: str, tema: str):
+    """Avalia exercícios de 2+ lacunas ou transformação do banco considerando ortografia à risca."""
+    ex_norm = _norm_fr(exercicio, manter_acentos=False)
+    resp_norm = _norm_fr(resposta, manter_acentos=True)
+    resp_sem = _norm_fr(resposta, manter_acentos=False)
+    desvios_ort = _verificar_desvios_ortograficos_fr(resposta)
+
+    regras_multiplas = [
+        {
+            "chave": "bonjour je ___ pierre et voici mon amie elle ___ sophie",
+            "partes_esperadas": ["m'appelle", "s'appelle"],
+            "frase_modelo": "Bonjour! Je m'appelle Pierre et voici mon amie, elle s'appelle Sophie.",
+            "dica": "O verbo pronominal *s'appeler* no presente exige **dois p (`pp`)** e **dois l (`ll`)** com *je/il/elle*: `m'appelle` e `s'appelle`."
+        },
+        {
+            "chave": "je bois ___ cafe et je mange ___ croissants avec ___ confiture",
+            "partes_esperadas": ["du", "des", "de la"],
+            "frase_modelo": "Au petit-déjeuner, je bois du café et je mange des croissants avec de la confiture.",
+            "dica": "Use os artigos partitivos conforme gênero e número: `du café` (masc.), `des croissants` (plural) e `de la confiture` (fem.)."
+        },
+        {
+            "chave": "je ___ bois ___ d'alcool",
+            "partes_esperadas": ["ne", "plus"],
+            "alt_aceitas": [["ne", "jamais"]],
+            "frase_modelo": "Je ne bois plus d'alcool.",
+            "dica": "Como o enunciado diz 'j'ai complètement arrêté' (parei completamente), utilize a estrutura `ne ... plus`."
+        },
+        {
+            "chave": "hier soir nous ___ aller au restaurant et nous ___ manger",
+            "partes_esperadas": ["sommes allés", "avons mangé"],
+            "frase_modelo": "Hier soir, nous sommes allés au restaurant et nous avons mangé une délicieuse crêpe.",
+            "dica": "Use **être** com acordo plural para *aller* (`sommes allés`) e **avoir** para *manger* (`avons mangé`)."
+        },
+        {
+            "chave": "quand j'___ etre petit nous ___ vivre",
+            "partes_esperadas": ["étais", "vivions"],
+            "frase_modelo": "Quand j'étais petit, nous vivions à la campagne.",
+            "dica": "No **Imparfait**, *être* faz `étais` e *vivre* com *nous* faz `vivions`."
+        },
+        {
+            "chave": "pendant qu'il ___ dormir le telephone ___ sonner",
+            "partes_esperadas": ["dormait", "a sonné"],
+            "frase_modelo": "Pendant qu'il dormait, le téléphone a sonné.",
+            "dica": "Ação contínua de fundo no **Imparfait** (`dormait`) interrompida por ação pontual no **Passé Composé** (`a sonné`)."
+        },
+        {
+            "chave": "si nous ___ avoir plus de temps nous ___ voyager",
+            "partes_esperadas": ["avions", "voyagerions"],
+            "frase_modelo": "Si nous avions plus de temps, nous voyagerions autour du monde.",
+            "dica": "Estrutura de hipótese: *Si + Imparfait* (`avions`) + *Conditionnel Présent* (`voyagerions`)."
+        },
+        {
+            "chave": "cet ete je vais ___ france puis ___ japon et enfin ___ etats unis",
+            "partes_esperadas": ["en", "au", "aux"],
+            "frase_modelo": "Cet été, je vais en France, puis au Japon et enfin aux États-Unis.",
+            "dica": "País feminino (`en France`), masculino (`au Japon`) e plural (`aux États-Unis`)."
+        },
+    ]
+
+    for reg in regras_multiplas:
+        if reg["chave"] in ex_norm:
+            modelo_sem = _norm_fr(reg["frase_modelo"], manter_acentos=False)
+            modelo_com = _norm_fr(reg["frase_modelo"], manter_acentos=True)
+
+            # Verifica se o aluno acertou todas as partes esperadas (com acento exato e sem desvios ortográficos)
+            partes = reg["partes_esperadas"]
+            alts = reg.get("alt_aceitas", [])
+            conjuntos_validos = [partes] + alts
+
+            acertou_com_acento = False
+            acertou_sem_acento = False
+            for cj in conjuntos_validos:
+                if all(_norm_fr(p, True) in resp_norm for p in cj):
+                    acertou_com_acento = True
+                    break
+                if all(_norm_fr(p, False) in resp_sem for p in cj):
+                    acertou_sem_acento = True
+
+            if desvios_ort:
+                # Verifica se a frase tem alta semelhança com o modelo mesmo tendo desvios como m'apele/s'apelle
+                sim = difflib.SequenceMatcher(None, resp_sem, modelo_sem).ratio()
+                if sim >= 0.75 or acertou_sem_acento:
+                    return _formatar_feedback_ortografia(desvios_ort, contexto=f" em '{tema}'")
+
+            if acertou_com_acento and not desvios_ort:
+                return (
+                    "Correto",
+                    f"Todas as lacunas preenchidas corretamente em '{tema}'.",
+                    f"### *Très bien !*\n\nExcelente domínio de conjugação, ortografia e estrutura: *« {reg['frase_modelo']} »*."
+                )
+
+            if acertou_sem_acento:
+                return (
+                    "Parcialmente Correto",
+                    f"As formas esperadas foram identificadas, porém faltou acentuação gráfica exata ({', '.join(partes)}).",
+                    f"### *Presque !*\n\nVocê acertou os termos principais, mas revise a acentuação em francês (`{', '.join(partes)}`).\n\n**Dica:** {reg['dica']}"
+                )
+
+            # Verifica acerto parcial (acertou pelo menos 1 das lacunas)
+            acertos_parciais = sum(1 for p in partes if _norm_fr(p, True) in resp_norm)
+            if acertos_parciais > 0 and acertos_parciais < len(partes):
+                return (
+                    "Parcialmente Correto",
+                    f"Acertou {acertos_parciais} de {len(partes)} lacuna(s) esperada(s) ({', '.join(partes)}).",
+                    f"### *Presque !*\n\nVocê acertou parte das lacunas, mas uma delas ainda precisa de ajuste.\n\n**Dica:** {reg['dica']}"
+                )
+
+            return (
+                "Incorreto",
+                f"Preenchimento incorreto para '{tema}' (esperado: {', '.join(partes)}).",
+                f"### *Pas tout à fait !*\n\nRevise as lacunas da sentença.\n\n**Dica:** {reg['dica']}"
+            )
+
+    # Transformações para forma negativa
+    if "paul mange de la viande" in ex_norm:
+        alvo = "paul ne mange pas de viande"
+        if alvo in resp_sem:
+            if desvios_ort:
+                return _formatar_feedback_ortografia(desvios_ort, " na negação")
+            return ("Correto", "Negação absoluta aplicada corretamente ('ne ... pas de').", "### *Très bien !*\n\nTransformação perfeita: **Paul ne mange pas de viande.**")
+        if "ne mange pas de la viande" in resp_sem:
+            return ("Parcialmente Correto", "Aplicou 'ne ... pas', mas esqueceu de converter o partitivo 'de la' para 'de'.", "### *Presque !*\n\nVocê posicionou corretamente **ne ... pas**, mas lembre-se da regra: na negação absoluta, *du / de la* torna-se **`de`** (*Paul ne mange pas **de** viande*).")
+        return ("Incorreto", "Transformação negativa esperada: 'Paul ne mange pas de viande.'", "### *Attention !*\n\nUse `ne` antes e `pas` depois do verbo, convertendo `de la` em `de`: *ne ... pas de viande*.")
+
+    if "paul regarde la television tous les soirs" in ex_norm:
+        if "paul ne regarde pas la television tous les soirs" in resp_sem:
+            if desvios_ort:
+                return _formatar_feedback_ortografia(desvios_ort, " na frase negativa")
+            return ("Correto", "Negação simples aplicada perfeitamente.", "### *Très bien !*\n\nNegação correta: **Paul ne regarde pas la télévision tous les soirs.**")
+        if "ne regarde pas" in resp_sem:
+            return ("Parcialmente Correto", "Estrutura 'ne regarde pas' presente, mas revise o restante da frase.", "### *Presque !*\n\nA negação do verbo está certa (`ne regarde pas`), confira apenas a grafia completa da sentença.")
+        return ("Incorreto", "Forma negativa incorreta para 'Paul regarde la télévision...'", "### *Attention !*\n\nPara negar no presente em francês, envolva o verbo conjugado com **`ne ... pas`**: *Paul **ne** regarde **pas**...*")
+
+    return None
+
+
+def _avaliar_lacunas_ou_producao(tema: str, exercicio: str, resposta: str, modalidade: str):
+    resp_norm = _norm_fr(resposta, manter_acentos=True)
+    resp_sem = _norm_fr(resposta, manter_acentos=False)
+
+    if not resp_sem or "___" in resposta:
+        return (
+            "Incorreto",
+            "O aluno não substituiu a lacuna.",
+            "### *Attention !*\n\nVocê deixou a lacuna (`___`) em branco. Substitua o espaço pela forma verbal ou gramatical correta em francês."
+        )
+
+    frase_base = _extrair_trecho_entre_aspas(exercicio)
+    frase_sem_lacuna = re.sub(r"_{2,}\s*(?:\([^)]*\))?", "", frase_base)
+    frase_sem_lacuna_norm = _norm_fr(frase_sem_lacuna, False)
+    if frase_sem_lacuna_norm == resp_sem or (
+        modalidade == "lacunas"
+        and len(resp_sem.split()) >= 3
+        and set(resp_sem.split()) <= set(frase_sem_lacuna_norm.split())
+    ):
+        return (
+            "Incorreto",
+            "O texto enviado não preencheu o termo faltante na frase.",
+            "### *Attention !*\n\nA resposta foi enviada sem preencher o termo faltante na frase proposta.\n\n**Dica:** Observe o verbo ou pista entre parênteses e escreva a palavra/conjugação no local da lacuna."
+        )
+
+    # Verifica sinais claros de português ou resposta muito curta/aleatória
+    palavras_pt = {"eu", "voce", "você", "ontem", "nao", "não", "estou", "gosto", "fui", "nos", "nós", "moro", "trabalho", "amigos"}
+    tokens_resp = set(resp_sem.split())
+    if tokens_resp & palavras_pt:
+        return (
+            "Incorreto",
+            "A resposta contém palavras em português em vez de francês.",
+            "### *Attention !*\n\nSua resposta parece conter palavras em português. Tente escrever toda a resposta em **francês**.\n\n**Dica:** Utilize o Mémento Gramatical FLE no menu para consultar pronomes e verbos."
+        )
+
+    desvios_ort = _verificar_desvios_ortograficos_fr(resposta)
+
+    # 1. Verifica exercícios com múltiplas lacunas ou transformações específicas do banco
+    res_multi = _avaliar_multiplas_lacunas_ou_transformacao(exercicio, resposta, tema)
+    if res_multi:
+        return res_multi
+
+    # 2. Verifica exercícios de lacuna simples
+    if modalidade == "lacunas":
+        gabaritos = _obter_gabaritos_lacuna(exercicio, tema)
+        if gabaritos:
+            acertou_exato = False
+            acertou_sem_acento = False
+            frase_template = re.sub(r"_{2,}\s*(?:\([^)]*\))?", " xxgaptokenxx ", frase_base)
+            frase_template = _norm_fr(frase_template, manter_acentos=True)
+
+            for gab in gabaritos:
+                gab_c = _norm_fr(gab, manter_acentos=True)
+                gab_s = _norm_fr(gab, manter_acentos=False)
+                if resp_norm == gab_c or ("xxgaptokenxx" in frase_template and resp_norm == re.sub(r"\s+", " ", frase_template.replace("xxgaptokenxx", gab_c)).strip()):
+                    acertou_exato = True
+                    break
+                if gab_c in resp_norm.split() or (len(gab_c.split()) > 1 and gab_c in resp_norm):
+                    if len(resp_norm.split()) <= len(gab_c.split()) + 12:
+                        acertou_exato = True
+                        break
+                if resp_sem == gab_s or gab_s in resp_sem:
+                    acertou_sem_acento = True
+
+            if acertou_exato:
+                if desvios_ort:
+                    return _formatar_feedback_ortografia(desvios_ort, contexto=f" em '{tema}'")
+                return (
+                    "Correto",
+                    f"Lacuna preenchida corretamente conforme a regra de '{tema}'.",
+                    f"### *Très bien !*\n\nExcelente precisão gramatical! A forma **{gabaritos[0]}** completa perfeitamente a frase dentro do tema *{tema}*."
+                )
+            if acertou_sem_acento:
+                return (
+                    "Parcialmente Correto",
+                    f"Estrutura correta, porém faltou acentuação gráfica ({gabaritos[0]}).",
+                    f"### *Presque !*\n\nA sua conjugação/estrutura está correta, mas faltou observar a acentuação em francês (`{gabaritos[0]}`).\n\n**Dica:** Use os botões de acento (`é`, `è`, `ê`) logo abaixo do campo de resposta."
+                )
+            if desvios_ort:
+                return _formatar_feedback_ortografia(desvios_ort, contexto=f" na lacuna de '{tema}'")
+
+            # Checa concordância faltante comum
+            dica_especifica = f"Revise a regra de *{tema}* para o sujeito da frase."
+            if "arriver" in exercicio.lower() or "partir" in exercicio.lower() or "aller" in exercicio.lower():
+                dica_especifica = "Lembre-se da **Maison d'Être**: esse verbo utiliza o auxiliar **être** (não *avoir*) e o particípio deve concordar em gênero e número com o sujeito!"
+            return (
+                "Incorreto",
+                f"Forma esperada não identificada para '{tema}' (esperado: {', '.join(gabaritos[:2])}).",
+                f"### *Pas tout à fait !*\n\nA forma informada (*{resposta}*) não corresponde à estrutura esperada para esta lacuna.\n\n**Dica:** {dica_especifica}"
+            )
+
+    # 3. Produção escrita / tradução / frase aberta em francês
+    ex_norm = _norm_fr(exercicio, manter_acentos=False)
+    trads_conhecidas = [
+        ("ontem a noite, nos fomos ao cinema juntos", ["hier soir nous sommes alles au cinema ensemble", "hier nous sommes alles au cinema"], "Lembre-se de usar o Passé Composé com auxiliar **être** (*nous sommes allés*) para o verbo *aller*."),
+        ("ela subiu pelas escadas e entrou na sala", ["elle est montee par les escaliers et est entree dans la salle", "elle est montee", "elle est entree"], "Tanto *monter* quanto *entrer* pertencem à **Maison d'Être**, portanto usam **être** com concordância feminina (*montée*, *entrée*)."),
+        ("quando eu morava em paris, tomava cafe", ["quand j'habitais a paris je prenais du cafe", "quand j'habitais a paris je buvais du cafe"], "Para hábitos contínuos no passado, empregue o **Imparfait** (*j'habitais*, *je prenais/buvais*) e o partitivo *du café*."),
+        ("eu gosto de queijo, mas hoje nao comprei queijo", ["j'aime le fromage mais aujourd'hui je n'ai pas achete de fromage"], "Em *gosto*, use artigo definido (*le fromage*); na negação absoluta após *pas*, troque para **de** (*pas de fromage*)."),
+        ("tenho dois", ["j'en ai deux"], "Para substituir quantidades ou elementos indefinidos com números, utilize o pronome **en**: *J'en ai deux*."),
+        ("eu o vejo todos os dias e lhe falo em frances", ["je le vois tous les jours et je lui parle en francais"], "Use **le** (COD) para *o vejo* e **lui** (COI) para *lhe falo*."),
+        ("e preciso que voce venha conosco amanha", ["il faut que tu viennes avec nous demain", "il faut que vous veniez avec nous demain"], "Após *il faut que*, conjugue *venir* no **Subjonctif** (*que tu viennes* / *que vous veniez*)."),
+        ("nos aprendemos frances todos os dias para viajar", ["nous apprenons le francais tous les jours pour voyager en france"], "Verifique a conjugação de *apprendre* com *nous* (*nous apprenons*) e o uso de **en France**."),
+    ]
+    for chave_trad, alvos_trad, dica_trad in trads_conhecidas:
+        if chave_trad in ex_norm:
+            melhor_sim = max(difflib.SequenceMatcher(None, resp_sem, alvo_t).ratio() for alvo_t in alvos_trad)
+            if melhor_sim >= 0.88:
+                if desvios_ort:
+                    return _formatar_feedback_ortografia(desvios_ort, contexto=f" em '{tema}'")
+                return (
+                    "Correto",
+                    "Produção escrita em francês correta e fiel à proposta.",
+                    f"### *Très bien !*\n\nExcelente tradução/produção em francês (*« {resposta} »*). Estrutura gramatical e vocabulário precisos!"
+                )
+            if melhor_sim >= 0.65:
+                return (
+                    "Parcialmente Correto",
+                    f"Produção próxima da estrutura esperada (similaridade {round(melhor_sim * 100)}%).",
+                    f"### *Presque !*\n\nBoa tentativa! Sua frase já comunica a ideia principal, mas precisa de pequenos ajustes gramaticais.\n\n**Dica:** {dica_trad}"
+                )
+            return (
+                "Incorreto",
+                f"Tradução/produção insuficiente ou com erro estrutural importante.",
+                f"### *Attention !*\n\nSua frase ainda não atende corretamente à estrutura pedida na proposta.\n\n**Dica:** {dica_trad}"
+            )
+
+    # Caso seja uma frase aberta inédita em francês (ou lacuna sem gabarito fixo)
+    palavras_qtd = len(resp_sem.split())
+    tem_marcador_fr = bool(re.search(r"\b(je|j'|tu|il|elle|nous|vous|ils|elles|on|le|la|les|un|une|des|du|de|est|suis|sont|ai|avons|pas|que|qui|dans|pour|avec|en|au|aux)\b", resp_sem))
+    if palavras_qtd < 2 or not tem_marcador_fr:
+        return (
+            "Incorreto",
+            "Resposta curta demais ou sem estrutura reconhecida em francês.",
+            "### *Attention !*\n\nEscreva uma frase completa em **francês** (com sujeito, verbo conjugado e complemento) respeitando o tema proposto.\n\n**Dica:** Evite responder apenas com uma palavra solta em produção escrita."
+        )
+
+    erro_geral = _analisar_erro_frase_vf(resposta)
+    if erro_geral:
+        return (
+            "Incorreto",
+            f"Desvio gramatical detectado na produção: {erro_geral}",
+            f"### *Pas tout à fait !*\n\nEncontramos um erro gramatical na sua frase.\n\n**Dica:** {erro_geral}"
+        )
+
+    if desvios_ort:
+        return _formatar_feedback_ortografia(desvios_ort, contexto=f" na resposta em '{tema}'")
+
+    return (
+        "Correto",
+        "Produção escrita validada sem desvios gramaticais ou ortográficos detectados.",
+        f"### *Très bien !*\n\nBoa construção em francês (*« {resposta} »*) alinhada ao tema *{tema}*."
+    )
+
+
+def gerar_feedback_frances(tema, exercicio, resposta_aluno, tentativa=1, dica_anterior="", nivel_cefr="A2", tipo_atividade=""):
     nivel = (nivel_cefr or "A2").strip().upper()
+    modalidade = _detectar_modalidade_avaliacao(exercicio, tipo_atividade)
     contexto_tentativa = f"\nNúmero da tentativa do aluno: {tentativa}." if tentativa and int(tentativa) > 1 else ""
     if dica_anterior:
         contexto_tentativa += f"\nDica anterior fornecida ao aluno: {dica_anterior}"
 
-    prompt_sistema = f"""Você é um professor nativo de francês auxiliando brasileiros.
+    prompt_sistema = f"""Você é um examinador nativo e rigoroso de Francês Língua Estrangeira (FLE) do quadro europeu CEFR, corrigindo respostas de estudantes brasileiros palavra por palavra e letra por letra.
 Nível CEFR do aluno: {nivel}.
+Modalidade da atividade: {modalidade}.
 Tema: {tema}
-Exercício: {exercicio}
+Exercício proposto: {exercicio}
 Resposta do aluno: {resposta_aluno}{contexto_tentativa}
 
-Responda EXATAMENTE:
+CRITÉRIOS RIGOROSOS DE CORREÇÃO (SIGA À RISCA):
+1. Revise TODA a ortografia francesa caractere por caractere antes de definir o status:
+   - Consoantes duplas obrigatórias (ex.: `m'appelle`, `s'appelle`, `t'appelles` exigem **pp** e **ll** — se o aluno escrever `m'apele`, `m'appele`, `m'apelle` ou `s'apelle`, NÃO pode ser `Correto`!).
+   - Acentos gráficos (`é`, `è`, `ê`, `à`, `ç`), apóstrofos (`j'`, `m'`, `s'`, `n'`, `l'`) e concordâncias de gênero/número.
+2. Classificação obrigatória:
+   - **Correto**: SOMENTE quando conjugação, auxiliar, concordância, vocabulário E ortografia estiverem 100% exatos (zero erros de grafia ou acento).
+   - **Parcialmente Correto**: quando o sentido, verbo ou estrutura estiverem reconhecíveis e na direção certa, MAS houver qualquer desvio ortográfico (como `m'apele` ou `s'apelle` faltando `p`/`l`), falta de acento, falta de concordância simples ou V/F marcado `Faux` sem a frase corrigida. Aponte EXATAMENTE cada palavra grafada errado e mostre a grafia correta!
+   - **Incorreto**: quando o verbo, tempo verbal, auxiliar (ex.: *avoir* em vez de *être*), pronome ou alternativa estiverem errados, se a lacuna não foi preenchida, ou se houver mistura com português.
+
+Responda EXATAMENTE neste formato:
 - **Status:** (Correto / Parcialmente Correto / Incorreto)
-- **Análise do Professor:** (Qual foi o erro e a regra)
-- **Feedback para o Aluno:** (Mensagem encorajadora com dica para corrigir)"""
+- **Análise do Professor:** (Diagnóstico técnico detalhando exatamente cada acerto, erro gramatical ou desvio ortográfico)
+- **Feedback para o Aluno:** (Feedback formativo claro em português, destacando em negrito as palavras com erro ortográfico ou gramatical e a forma correta em francês)"""
 
     if genai_model:
         try:
             response = genai_model.generate_content(prompt_sistema)
             return parse_retorno_gemini_frances(response.text)
         except Exception as e:
-            return "Parcialmente Correto", f"Erro: {e}", "Erro na IA."
+            print(f"[!] Fallback de avaliação ativado ({e})")
+            return feedback_demonstracao_frances(tema, exercicio, resposta_aluno, nivel_cefr=nivel, tipo_atividade=modalidade)
 
-    return feedback_demonstracao_frances(tema, exercicio, resposta_aluno)
+    return feedback_demonstracao_frances(tema, exercicio, resposta_aluno, nivel_cefr=nivel, tipo_atividade=modalidade)
 
 
-def feedback_demonstracao_frances(tema, exercicio, resposta_aluno):
-    return 'Correto', 'Análise de teste.', '### *Très bien!*\n\nVocê acertou.'
+def feedback_demonstracao_frances(tema, exercicio, resposta_aluno, nivel_cefr="A2", tipo_atividade=""):
+    """Avaliador pedagógico determinístico para todas as modalidades FLE (sempre que a IA externa não estiver ativa)."""
+    resp = (resposta_aluno or "").strip()
+    if not resp or len(re.sub(r"[\W_]+", "", resp)) == 0:
+        return (
+            "Incorreto",
+            "Resposta em branco ou inválida.",
+            "### *Attention !*\n\nDigite, selecione ou fale uma resposta em francês antes de solicitar a correção."
+        )
+
+    modalidade = _detectar_modalidade_avaliacao(exercicio, tipo_atividade)
+
+    if modalidade == "multipla_escolha":
+        res_mc = _avaliar_multipla_escolha(exercicio, resp)
+        if res_mc:
+            return res_mc
+
+    if modalidade == "vf":
+        return _avaliar_vf(exercicio, resp)
+
+    if modalidade in ("ditado", "expressao_oral"):
+        return _avaliar_ditado_ou_oral(exercicio, resp, modalidade)
+
+    return _avaliar_lacunas_ou_producao(tema, exercicio, resp, modalidade)
+
+
+def _analisar_e_transcrever_wav(filepath_audio: str):
+    """Converte áudio .webm para WAV 16kHz mono, mede energia acústica e transcreve em fr-FR."""
+    metricas = {"duracao": 0.0, "rms": 0.0, "silencio": False, "stt_erro": None}
+    if not filepath_audio or not os.path.exists(filepath_audio):
+        metricas["silencio"] = True
+        return "", metricas
+
+    ffmpeg_bin = shutil.which("ffmpeg") or "/usr/bin/ffmpeg"
+    if not os.path.exists(ffmpeg_bin):
+        return "", metricas
+
+    wav_path = None
+    try:
+        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tf:
+            wav_path = tf.name
+
+        subprocess.run(
+            [ffmpeg_bin, "-y", "-i", filepath_audio, "-ar", "16000", "-ac", "1", wav_path],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            timeout=15,
+        )
+
+        with wave.open(wav_path, "rb") as wf:
+            nframes = wf.getnframes()
+            framerate = wf.getframerate() or 16000
+            duracao = nframes / float(framerate)
+            raw = wf.readframes(nframes)
+            total_amostras = len(raw) // 2
+            rms = 0.0
+            if total_amostras > 0:
+                samples = struct.unpack("<" + ("h" * total_amostras), raw[: total_amostras * 2])
+                rms = math.sqrt(sum(s * s for s in samples) / float(total_amostras))
+
+        metricas["duracao"] = round(duracao, 2)
+        metricas["rms"] = round(rms, 1)
+
+        if duracao < 0.6 or rms < 120.0:
+            metricas["silencio"] = True
+            return "", metricas
+
+        try:
+            import speech_recognition as sr
+
+            recon = sr.Recognizer()
+            with sr.AudioFile(wav_path) as source:
+                audio_data = recon.record(source)
+            texto_stt = (recon.recognize_google(audio_data, language="fr-FR") or "").strip()
+            return texto_stt, metricas
+        except Exception as err_stt:
+            metricas["stt_erro"] = type(err_stt).__name__
+            return "", metricas
+    except Exception as err_conv:
+        metricas["stt_erro"] = type(err_conv).__name__
+        return "", metricas
+    finally:
+        if wav_path and os.path.exists(wav_path):
+            try:
+                os.unlink(wav_path)
+            except Exception:
+                pass
+
+
+def _garantir_cabecalho_oral(feedback_ia: str, status_resposta: str, transcricao: str) -> str:
+    rotulo_ouvido = f"*« {transcricao} »*" if transcricao else "*(Nenhuma palavra em francês pôde ser reconhecida com clareza na gravação)*"
+    if "O que o Assistente Fran entendeu" not in (feedback_ia or ""):
+        feedback_ia = f"**🎙️ O que o Assistente Fran entendeu do seu áudio:** {rotulo_ouvido}\n\n" + (feedback_ia or "")
+    if status_resposta != "Correto" and "Tentar Novamente" not in feedback_ia:
+        feedback_ia += '\n\n🔄 **Próximo passo:** Ouça o enunciado no botão **Ouvir** acima e clique em **"Tentar Novamente com a Dica"** para gravar novamente.'
+    return feedback_ia
+
+
+def analisar_e_transcrever_audio_oral(
+    tema: str,
+    exercicio: str,
+    transcricao_cliente: str = "",
+    filepath_audio: str = None,
+    tentativa: int = 1,
+    dica_anterior: str = "",
+    nivel_cefr: str = "A2",
+):
+    """Transcreve áudio de Expressão Oral (Gemini ou ffmpeg + STT fr-FR) e avalia com fluxo de nova tentativa."""
+    nivel = (nivel_cefr or "A2").strip().upper()
+    transcricao_cli = (transcricao_cliente or "").strip()
+    if transcricao_cli.startswith("[") and transcricao_cli.endswith("]"):
+        transcricao_cli = ""
+
+    transcricao_srv, metricas = _analisar_e_transcrever_wav(filepath_audio) if filepath_audio else ("", {"silencio": False})
+
+    if filepath_audio and metricas.get("silencio") and not transcricao_cli:
+        dur = metricas.get("duracao", 0)
+        msg_silencio = _garantir_cabecalho_oral(
+            f"### *Attention !*\n\n"
+            f"O áudio enviado está muito curto ou silencioso ({dur:.1f}s), não sendo possível identificar sua pronúncia em francês.\n\n"
+            f"**Dica:** Fale próximo ao microfone pronunciando a frase completa pausadamente e depois clique em **Parar Gravação**.",
+            "Incorreto",
+            "",
+        )
+        return (
+            "Incorreto",
+            f"Áudio oral sem fala detectada (duração={dur:.2f}s, rms={metricas.get('rms', 0)}).",
+            msg_silencio,
+            "[Áudio sem fala detectada]",
+        )
+
+    if genai_model and filepath_audio and os.path.exists(filepath_audio):
+        try:
+            with open(filepath_audio, "rb") as f_aud:
+                audio_bytes = f_aud.read()
+            audio_blob = {"mime_type": "audio/webm", "data": audio_bytes}
+            prompt_oral = (
+                f"Você é um examinador nativo e rigoroso de Francês (FLE) nível {nivel}.\n"
+                f"Tema: {tema}\n"
+                f"Exercício oral proposto: {exercicio}\n"
+                f"Tentativa do aluno: {tentativa}. {('Dica anterior: ' + dica_anterior) if dica_anterior else ''}\n\n"
+                f"INSTRUÇÕES OBRIGATÓRIAS:\n"
+                f"1. Transcreva LITERALMENTE o que o aluno pronunciou em francês no áudio anexo.\n"
+                f"2. Se houver silêncio, ruído sem fala ou frase diferente/errada, NÃO aprove como Correto — indique claramente o que foi entendido e peça para o aluno tentar novamente.\n"
+                f"Responda EXATAMENTE:\n"
+                f"- **Transcrição:** (texto exato ouvido em francês ou [Nenhuma fala reconhecida])\n"
+                f"- **Status:** (Correto / Parcialmente Correto / Incorreto)\n"
+                f"- **Análise do Professor:** (Avaliação objetiva da transcrição, pronúncia e fidelidade à frase)\n"
+                f"- **Feedback para o Aluno:** (Retorno detalhado em português; quando não for Correto, peça para clicar em Tentar Novamente com a Dica)"
+            )
+            resp_gemini = genai_model.generate_content([prompt_oral, audio_blob])
+            txt_gem = resp_gemini.text or ""
+            m_tr = re.search(r"\*{0,2}Transcrição:?\*{0,2}\s*(.+)", txt_gem, re.IGNORECASE)
+            transcricao_gem = m_tr.group(1).strip() if m_tr else (transcricao_srv or transcricao_cli)
+            if transcricao_gem.startswith("[") and transcricao_gem.endswith("]"):
+                transcricao_exibida = ""
+            else:
+                transcricao_exibida = transcricao_gem
+            status_r, analise_r, feedback_r = parse_retorno_gemini_frances(txt_gem)
+            feedback_r = _garantir_cabecalho_oral(feedback_r, status_r, transcricao_exibida)
+            return status_r, analise_r, feedback_r, (transcricao_exibida or "[Áudio sem fala reconhecida]")
+        except Exception as e:
+            print(f"[!] Fallback de transcrição/avaliação oral ativado ({e})")
+
+    transcricao_final = transcricao_srv or transcricao_cli
+    if not transcricao_final:
+        msg_nao_entendido = _garantir_cabecalho_oral(
+            "### *Attention !*\n\n"
+            "Não foi possível transcrever palavras claras em francês a partir da sua gravação.\n\n"
+            "**Dica:** Ouça o áudio modelo clicando no botão **Ouvir** do exercício acima, pronuncie a frase com voz firme próximo ao microfone e grave novamente.",
+            "Incorreto",
+            "",
+        )
+        return (
+            "Incorreto",
+            f"Gravação oral salva ({filepath_audio or 'memória'}), mas sem transcrição em francês reconhecida ({metricas.get('stt_erro') or 'UnknownValue'}).",
+            msg_nao_entendido,
+            "[Áudio sem fala reconhecida]",
+        )
+
+    status_r, analise_base, feedback_base = _avaliar_ditado_ou_oral(exercicio, transcricao_final, "expressao_oral")
+    analise_completa = f"Transcrição do áudio (fr-FR): « {transcricao_final} ». {analise_base}"
+    feedback_completo = _garantir_cabecalho_oral(feedback_base, status_r, transcricao_final)
+    return status_r, analise_completa, feedback_completo, transcricao_final
 
 
 # ===================== BANCO PEDAGÓGICO E GERADOR DE QUESTÕES =====================
