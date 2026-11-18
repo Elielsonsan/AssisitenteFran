@@ -6,6 +6,7 @@ from blueprints.extensions import (
     get_db, login_required, login_required_prof, parse_retorno_gemini_frances,
     genai_model, BASE_DIR, GEMINI_MODEL_NAME, gerar_feedback_frances,
     feedback_demonstracao_frances, analisar_e_transcrever_audio_oral,
+    obter_resposta_esperada_exercicio, obter_pista_exercicio,
     validar_magic_bytes_imagem,
     BANCO_PEDAGOGICO_TEMAS, mapear_chave_tema, gerar_questoes_pedagogicas_completas,
     eh_questao_valida, sanitizar_questoes_geradas
@@ -78,6 +79,11 @@ def index():
             ex_row = cursor.fetchone()
         if ex_row:
             exercicio_inicial = dict(ex_row)
+            exercicio_inicial["pista_gramatical"] = obter_pista_exercicio(
+                exercicio_inicial.get("nome_tema", ""),
+                exercicio_inicial.get("enunciado", ""),
+                "lacunas",
+            )
     
     conn.close()
     return render_template(
@@ -561,7 +567,8 @@ Retorne EXATAMENTE um JSON válido com as chaves:
             "opcoes": opcoes,
             "nivel_cefr": nivel,
             "tipo_atividade": tipo_atividade,
-            "dica_inicial": dica_inicial
+            "dica_inicial": dica_inicial,
+            "pista_gramatical": obter_pista_exercicio(tema_nome, exercicio_gerado, tipo_atividade)
         })
     except Exception as e:
         conn.close()
@@ -766,6 +773,8 @@ def avaliar():
         if stats_curso:
             xp_curso = ((stats_curso["acertos"] or 0) * 10) + ((stats_curso["parciais"] or 0) * 5)
 
+    resposta_esperada = obter_resposta_esperada_exercicio(tema, exercicio, tipo_atividade)
+
     conn.close()
 
     return jsonify({
@@ -774,6 +783,7 @@ def avaliar():
         "tema": tema,
         "exercicio": exercicio,
         "resposta_aluno": resposta,
+        "resposta_esperada": resposta_esperada,
         "transcricao_audio": resposta if (arquivo_audio_path or tipo_atividade == "expressao_oral") else None,
         "status_resposta": status_resposta,
         "feedback_ia": feedback_ia,

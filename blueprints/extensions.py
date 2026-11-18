@@ -411,13 +411,72 @@ def _analisar_erro_frase_vf(frase: str):
     return None
 
 
-def _avaliar_multipla_escolha(exercicio: str, resposta: str):
+_CORRECOES_VF_PADROES = [
+    (re.compile(r"\bont\s+arriv[ée]e?s?\b", re.IGNORECASE), "sont arrivées"),
+    (re.compile(r"\ba\s+parti(?:e|s)?\b", re.IGNORECASE), "est partie"),
+    (re.compile(r"\bavons\s+aller\b", re.IGNORECASE), "sommes allés"),
+    (re.compile(r"\bont\s+aller\b", re.IGNORECASE), "sont allés"),
+    (re.compile(r"\ba\s+all[ée]e?s?\b", re.IGNORECASE), "est allée"),
+    (re.compile(r"\bavons\s+rest[ée]s?\b", re.IGNORECASE), "sommes restés"),
+    (re.compile(r"\bnous\s+allons\b", re.IGNORECASE), "nous allions"),
+    (re.compile(r"\bpas\s+(?:du|des|de\s+la)\s+(caf[ée]|fromage|sucre|viande)\b", re.IGNORECASE), r"pas de \1"),
+    (re.compile(r"\bpas\s+des\s+(amis)\b", re.IGNORECASE), r"pas d'\1"),
+    (re.compile(r"\bj'y\s+mange\b", re.IGNORECASE), "j'en mange"),
+    (re.compile(r"\bles\s+t[ée]l[ée]phone\b", re.IGNORECASE), "leur téléphone"),
+    (re.compile(r"\bque\s+tu\s+prends\b", re.IGNORECASE), "que tu prennes"),
+]
+
+
+def _corrigir_frase_vf_modelo(frase: str) -> str:
+    txt = (frase or "").strip()
+    if not txt:
+        return ""
+    corrigida = txt
+    for padrao_rx, subst in _CORRECOES_VF_PADROES:
+        corrigida = padrao_rx.sub(subst, corrigida)
+    return corrigida if corrigida != txt else ""
+
+
+_GABARITOS_MC = [
+    ("marie et sophie", "sont arrivees", "Com *Marie et Sophie* (feminino plural) e o verbo *arriver* (Maison d'Être), o correto é o auxiliar **être** com acordo **-ées**: *sont arrivées*."),
+    ("mes amis", "sont arrives", "Com *mes amis* (masculino plural) e *arriver*, utiliza-se **être** com acordo plural: *sont arrivés*."),
+    ("mes soeurs", "sont", "Na Maison d'Être (*naître*), com *mes sœurs* (3ª pessoa plural), o auxiliar é **être**: *sont* (*Mes sœurs sont nées*)."),
+    ("elle ___ nées", "sont", "O correto é utilizar o auxiliar *être*."),
+    ("autrefois", "habitaient", "O marcador temporal *autrefois* pede o **Imparfait** na 3ª pessoa do plural (*ils habitaient*)."),
+    ("ne prends pas", "de", "Na frase negativa absoluta, o artigo partitivo muda para **de**: *Je ne prends pas de sucre*."),
+    ("d'amis", "je n'ai pas d'amis", "Em negação absoluta, *des* vira **d'** diante de vogal: *Je n'ai pas d'amis à Lyon*."),
+    ("a lyon", "j'y vais demain", "Substituindo um complemento de lugar introduzido por *à* (*à Lyon*), emprega-se o pronome **y**: *J'y vais demain*."),
+    ("a sophie", "je lui parle", "Com o verbo *parler à* + pessoa singular (*à Sophie*), usa-se o pronome COI **lui**: *Je lui parle*."),
+    ("a l'heure", "soyons", "Após *exige que* / *il est important que*, é obrigatório o **Subjonctif Présent** de *être* com *nous*: *soyons*."),
+    ("les etudiants", "finissent", "Com *les étudiants* (3ª pessoa do plural), o verbo *finir* (2º grupo) conjuga **finissent**."),
+    ("manger", "mangeons", "Com *nous*, verbos terminados em *-ger* mantêm o **e** antes de *-ons* para preservar o som: *mangeons*."),
+    ("sorbonne", "etudient", "Com *elles* (3ª pessoa plural), o verbo *étudier* recebe a terminação **-ent**: *étudient*."),
+    ("eau minerale", "de l'", "*Eau* começa por vogal, exigindo o partitivo **de l'**."),
+    ("mon pere est", "tante", "A irmã do meu pai é minha **tante** (*Tante*)."),
+    ("frere de votre mere", "l'oncle", "O irmão da sua mãe é **L'oncle**."),
+]
+
+
+def _extrair_opcoes_e_correta_mc(exercicio: str):
     opcoes = {}
     for line in (exercicio or "").splitlines():
         m = re.match(r"^\s*\(?([A-Da-d])[\)\.\-]\s*(.+)$", line.strip())
         if m:
             opcoes[m.group(1).upper()] = m.group(2).strip()
+    if not opcoes:
+        return {}, None, ""
 
+    ex_norm = _norm_fr(exercicio, manter_acentos=False)
+    for chave_enunc, alvo_op, exp in _GABARITOS_MC:
+        if chave_enunc in ex_norm:
+            for l_cand, t_cand in opcoes.items():
+                if alvo_op in _norm_fr(t_cand, manter_acentos=False):
+                    return opcoes, l_cand, exp
+    return opcoes, None, "Revise a concordância verbal, o auxiliar e a regência da frase."
+
+
+def _avaliar_multipla_escolha(exercicio: str, resposta: str):
+    opcoes, letra_correta, explicacao = _extrair_opcoes_e_correta_mc(exercicio)
     if not opcoes:
         return None
 
@@ -440,46 +499,8 @@ def _avaliar_multipla_escolha(exercicio: str, resposta: str):
             "### *Attention !*\n\nSua resposta não corresponde às alternativas propostas. Selecione ou informe a letra **A**, **B**, **C** ou **D** (ex.: `B`).\n\n**Dica:** Analise atentamente o verbo, auxiliar ou pronome pedido antes de escolher."
         )
 
-    ex_norm = _norm_fr(exercicio, manter_acentos=False)
-    letra_correta = None
-    explicacao = "Revise a concordância verbal, o auxiliar e a regência da frase."
-
-    gabaritos_mc = [
-        ("marie et sophie", "sont arrivees", "Com *Marie et Sophie* (feminino plural) e o verbo *arriver* (Maison d'Être), o correto é o auxiliar **être** com acordo **-ées**: *sont arrivées*."),
-        ("mes amis", "sont arrives", "Com *mes amis* (masculino plural) e *arriver*, utiliza-se **être** com acordo plural: *sont arrivés*."),
-        ("mes soeurs", "sont", "Na Maison d'Être (*naître*), com *mes sœurs* (3ª pessoa plural), o auxiliar é **être**: *sont* (*Mes sœurs sont nées*)."),
-        ("elle ___ nées", "sont", "O correto é utilizar o auxiliar *être*."),
-        ("autrefois", "habitaient", "O marcador temporal *autrefois* pede o **Imparfait** na 3ª pessoa do plural (*ils habitaient*)."),
-        ("ne prends pas", "de", "Na frase negativa absoluta, o artigo partitivo muda para **de**: *Je ne prends pas de sucre*."),
-        ("d'amis", "je n'ai pas d'amis", "Em negação absoluta, *des* vira **d'** diante de vogal: *Je n'ai pas d'amis à Lyon*."),
-        ("a lyon", "j'y vais demain", "Substituindo um complemento de lugar introduzido por *à* (*à Lyon*), emprega-se o pronome **y**: *J'y vais demain*."),
-        ("a sophie", "je lui parle", "Com o verbo *parler à* + pessoa singular (*à Sophie*), usa-se o pronome COI **lui**: *Je lui parle*."),
-        ("a l'heure", "soyons", "Após *exige que* / *il est important que*, é obrigatório o **Subjonctif Présent** de *être* com *nous*: *soyons*."),
-        ("les etudiants", "finissent", "Com *les étudiants* (3ª pessoa do plural), o verbo *finir* (2º grupo) conjuga **finissent**."),
-        ("manger", "mangeons", "Com *nous*, verbos terminados em *-ger* mantêm o **e** antes de *-ons* para preservar o som: *mangeons*."),
-        ("sorbonne", "etudient", "Com *elles* (3ª pessoa plural), o verbo *étudier* recebe a terminação **-ent**: *étudient*."),
-        ("eau minerale", "de l'", "*Eau* começa por vogal, exigindo o partitivo **de l'**."),
-        ("mon pere est", "tante", "A irmã do meu pai é minha **tante** (*Tante*)."),
-        ("frere de votre mere", "l'oncle", "O irmão da sua mãe é **L'oncle**."),
-    ]
-    for chave_enunc, alvo_op, exp in gabaritos_mc:
-        if chave_enunc in ex_norm:
-            for l_cand, t_cand in opcoes.items():
-                if alvo_op in _norm_fr(t_cand, manter_acentos=False):
-                    letra_correta = l_cand
-                    explicacao = exp
-                    break
-            if letra_correta:
-                break
-
     if not letra_correta:
         # Heurística gramatical caso a questão venha da IA com opções inéditas
-        for l_cand, t_cand in opcoes.items():
-            t_low = t_cand.lower()
-            if not _analisar_erro_frase_vf(t_low) and not re.search(r"\b(ont arrivé|sont arrivé\b|a allée|prendre.*tu prends|pas du)\b", t_low):
-                # Preferir formas completas em opções longas
-                pass
-        # Se não identificou com certeza, checa explicitamente se a alternativa escolhida tem erro conhecido
         erro_na_escolha = _analisar_erro_frase_vf(opcoes[letra_escolhida])
         if erro_na_escolha:
             return (
@@ -774,6 +795,65 @@ def _formatar_feedback_ortografia(desvios_ort, contexto=""):
     return "Parcialmente Correto", analise, feedback
 
 
+_REGRAS_MULTIPLAS_LACUNAS = [
+    {
+        "chave": "bonjour je ___ pierre et voici mon amie elle ___ sophie",
+        "partes_esperadas": ["m'appelle", "s'appelle"],
+        "frase_modelo": "Bonjour! Je m'appelle Pierre et voici mon amie, elle s'appelle Sophie.",
+        "dica": "O verbo pronominal *s'appeler* no presente exige **dois p (`pp`)** e **dois l (`ll`)** com *je/il/elle*: `m'appelle` e `s'appelle`."
+    },
+    {
+        "chave": "je bois ___ cafe et je mange ___ croissants avec ___ confiture",
+        "partes_esperadas": ["du", "des", "de la"],
+        "frase_modelo": "Au petit-déjeuner, je bois du café et je mange des croissants avec de la confiture.",
+        "dica": "Use os artigos partitivos conforme gênero e número: `du café` (masc.), `des croissants` (plural) e `de la confiture` (fem.)."
+    },
+    {
+        "chave": "je ___ bois ___ d'alcool",
+        "partes_esperadas": ["ne", "plus"],
+        "alt_aceitas": [["ne", "jamais"]],
+        "frase_modelo": "Je ne bois plus d'alcool.",
+        "dica": "Como o enunciado diz 'j'ai complètement arrêté' (parei completamente), utilize a estrutura `ne ... plus`."
+    },
+    {
+        "chave": "hier soir nous ___ aller au restaurant et nous ___ manger",
+        "partes_esperadas": ["sommes allés", "avons mangé"],
+        "frase_modelo": "Hier soir, nous sommes allés au restaurant et nous avons mangé une délicieuse crêpe.",
+        "dica": "Use **être** com acordo plural para *aller* (`sommes allés`) e **avoir** para *manger* (`avons mangé`)."
+    },
+    {
+        "chave": "quand j'___ etre petit nous ___ vivre",
+        "partes_esperadas": ["étais", "vivions"],
+        "frase_modelo": "Quand j'étais petit, nous vivions à la campagne.",
+        "dica": "No **Imparfait**, *être* faz `étais` e *vivre* com *nous* faz `vivions`."
+    },
+    {
+        "chave": "pendant qu'il ___ dormir le telephone ___ sonner",
+        "partes_esperadas": ["dormait", "a sonné"],
+        "frase_modelo": "Pendant qu'il dormait, le téléphone a sonné.",
+        "dica": "Ação contínua de fundo no **Imparfait** (`dormait`) interrompida por ação pontual no **Passé Composé** (`a sonné`)."
+    },
+    {
+        "chave": "si nous ___ avoir plus de temps nous ___ voyager",
+        "partes_esperadas": ["avions", "voyagerions"],
+        "frase_modelo": "Si nous avions plus de temps, nous voyagerions autour du monde.",
+        "dica": "Estrutura de hipótese: *Si + Imparfait* (`avions`) + *Conditionnel Présent* (`voyagerions`)."
+    },
+    {
+        "chave": "cet ete je vais ___ france puis ___ japon et enfin ___ etats unis",
+        "partes_esperadas": ["en", "au", "aux"],
+        "frase_modelo": "Cet été, je vais en France, puis au Japon et enfin aux États-Unis.",
+        "dica": "País feminino (`en France`), masculino (`au Japon`) e plural (`aux États-Unis`)."
+    },
+    {
+        "chave": "le matin je prends ___ cafe mais je ne mets pas ___ sucre",
+        "partes_esperadas": ["du", "de"],
+        "frase_modelo": "Le matin, je prends du café, mais je ne mets pas de sucre.",
+        "dica": "Na frase afirmativa usa-se o partitivo **du** (`du café`), e na negativa absoluta substitui-se por **de** (`pas de sucre`)."
+    },
+]
+
+
 def _avaliar_multiplas_lacunas_ou_transformacao(exercicio: str, resposta: str, tema: str):
     """Avalia exercícios de 2+ lacunas ou transformação do banco considerando ortografia à risca."""
     ex_norm = _norm_fr(exercicio, manter_acentos=False)
@@ -781,59 +861,7 @@ def _avaliar_multiplas_lacunas_ou_transformacao(exercicio: str, resposta: str, t
     resp_sem = _norm_fr(resposta, manter_acentos=False)
     desvios_ort = _verificar_desvios_ortograficos_fr(resposta)
 
-    regras_multiplas = [
-        {
-            "chave": "bonjour je ___ pierre et voici mon amie elle ___ sophie",
-            "partes_esperadas": ["m'appelle", "s'appelle"],
-            "frase_modelo": "Bonjour! Je m'appelle Pierre et voici mon amie, elle s'appelle Sophie.",
-            "dica": "O verbo pronominal *s'appeler* no presente exige **dois p (`pp`)** e **dois l (`ll`)** com *je/il/elle*: `m'appelle` e `s'appelle`."
-        },
-        {
-            "chave": "je bois ___ cafe et je mange ___ croissants avec ___ confiture",
-            "partes_esperadas": ["du", "des", "de la"],
-            "frase_modelo": "Au petit-déjeuner, je bois du café et je mange des croissants avec de la confiture.",
-            "dica": "Use os artigos partitivos conforme gênero e número: `du café` (masc.), `des croissants` (plural) e `de la confiture` (fem.)."
-        },
-        {
-            "chave": "je ___ bois ___ d'alcool",
-            "partes_esperadas": ["ne", "plus"],
-            "alt_aceitas": [["ne", "jamais"]],
-            "frase_modelo": "Je ne bois plus d'alcool.",
-            "dica": "Como o enunciado diz 'j'ai complètement arrêté' (parei completamente), utilize a estrutura `ne ... plus`."
-        },
-        {
-            "chave": "hier soir nous ___ aller au restaurant et nous ___ manger",
-            "partes_esperadas": ["sommes allés", "avons mangé"],
-            "frase_modelo": "Hier soir, nous sommes allés au restaurant et nous avons mangé une délicieuse crêpe.",
-            "dica": "Use **être** com acordo plural para *aller* (`sommes allés`) e **avoir** para *manger* (`avons mangé`)."
-        },
-        {
-            "chave": "quand j'___ etre petit nous ___ vivre",
-            "partes_esperadas": ["étais", "vivions"],
-            "frase_modelo": "Quand j'étais petit, nous vivions à la campagne.",
-            "dica": "No **Imparfait**, *être* faz `étais` e *vivre* com *nous* faz `vivions`."
-        },
-        {
-            "chave": "pendant qu'il ___ dormir le telephone ___ sonner",
-            "partes_esperadas": ["dormait", "a sonné"],
-            "frase_modelo": "Pendant qu'il dormait, le téléphone a sonné.",
-            "dica": "Ação contínua de fundo no **Imparfait** (`dormait`) interrompida por ação pontual no **Passé Composé** (`a sonné`)."
-        },
-        {
-            "chave": "si nous ___ avoir plus de temps nous ___ voyager",
-            "partes_esperadas": ["avions", "voyagerions"],
-            "frase_modelo": "Si nous avions plus de temps, nous voyagerions autour du monde.",
-            "dica": "Estrutura de hipótese: *Si + Imparfait* (`avions`) + *Conditionnel Présent* (`voyagerions`)."
-        },
-        {
-            "chave": "cet ete je vais ___ france puis ___ japon et enfin ___ etats unis",
-            "partes_esperadas": ["en", "au", "aux"],
-            "frase_modelo": "Cet été, je vais en France, puis au Japon et enfin aux États-Unis.",
-            "dica": "País feminino (`en France`), masculino (`au Japon`) e plural (`aux États-Unis`)."
-        },
-    ]
-
-    for reg in regras_multiplas:
+    for reg in _REGRAS_MULTIPLAS_LACUNAS:
         if reg["chave"] in ex_norm:
             modelo_sem = _norm_fr(reg["frase_modelo"], manter_acentos=False)
             modelo_com = _norm_fr(reg["frase_modelo"], manter_acentos=True)
@@ -908,6 +936,18 @@ def _avaliar_multiplas_lacunas_ou_transformacao(exercicio: str, resposta: str, t
         return ("Incorreto", "Forma negativa incorreta para 'Paul regarde la télévision...'", "### *Attention !*\n\nPara negar no presente em francês, envolva o verbo conjugado com **`ne ... pas`**: *Paul **ne** regarde **pas**...*")
 
     return None
+
+
+_TRADS_CONHECIDAS = [
+    ("ontem a noite, nos fomos ao cinema juntos", ["hier soir nous sommes alles au cinema ensemble", "hier nous sommes alles au cinema"], "Hier soir, nous sommes allés au cinéma ensemble.", "Lembre-se de usar o Passé Composé com auxiliar **être** (*nous sommes allés*) para o verbo *aller*."),
+    ("ela subiu pelas escadas e entrou na sala", ["elle est montee par les escaliers et est entree dans la salle", "elle est montee", "elle est entree"], "Elle est montée par les escaliers et est entrée dans la salle.", "Tanto *monter* quanto *entrer* pertencem à **Maison d'Être**, portanto usam **être** com concordância feminina (*montée*, *entrée*)."),
+    ("quando eu morava em paris, tomava cafe", ["quand j'habitais a paris je prenais du cafe", "quand j'habitais a paris je buvais du cafe"], "Quand j'habitais à Paris, je prenais du café à la boulangerie tous les matins.", "Para hábitos contínuos no passado, empregue o **Imparfait** (*j'habitais*, *je prenais/buvais*) e o partitivo *du café*."),
+    ("eu gosto de queijo, mas hoje nao comprei queijo", ["j'aime le fromage mais aujourd'hui je n'ai pas achete de fromage"], "J'aime le fromage, mais aujourd'hui je n'ai pas acheté de fromage.", "Em *gosto*, use artigo definido (*le fromage*); na negação absoluta após *pas*, troque para **de** (*pas de fromage*)."),
+    ("tenho dois", ["j'en ai deux"], "J'en ai deux.", "Para substituir quantidades ou elementos indefinidos com números, utilize o pronome **en**: *J'en ai deux*."),
+    ("eu o vejo todos os dias e lhe falo em frances", ["je le vois tous les jours et je lui parle en francais"], "Je le vois tous les jours et je lui parle en français.", "Use **le** (COD) para *o vejo* e **lui** (COI) para *lhe falo*."),
+    ("e preciso que voce venha conosco amanha", ["il faut que tu viennes avec nous demain", "il faut que vous veniez avec nous demain"], "Il faut que vous veniez avec nous demain.", "Após *il faut que*, conjugue *venir* no **Subjonctif** (*que tu viennes* / *que vous veniez*)."),
+    ("nos aprendemos frances todos os dias para viajar", ["nous apprenons le francais tous les jours pour voyager en france"], "Nous apprenons le français tous les jours pour voyager en France.", "Verifique a conjugação de *apprendre* com *nous* (*nous apprenons*) e o uso de **en France**."),
+]
 
 
 def _avaliar_lacunas_ou_producao(tema: str, exercicio: str, resposta: str, modalidade: str):
@@ -1003,17 +1043,7 @@ def _avaliar_lacunas_ou_producao(tema: str, exercicio: str, resposta: str, modal
 
     # 3. Produção escrita / tradução / frase aberta em francês
     ex_norm = _norm_fr(exercicio, manter_acentos=False)
-    trads_conhecidas = [
-        ("ontem a noite, nos fomos ao cinema juntos", ["hier soir nous sommes alles au cinema ensemble", "hier nous sommes alles au cinema"], "Lembre-se de usar o Passé Composé com auxiliar **être** (*nous sommes allés*) para o verbo *aller*."),
-        ("ela subiu pelas escadas e entrou na sala", ["elle est montee par les escaliers et est entree dans la salle", "elle est montee", "elle est entree"], "Tanto *monter* quanto *entrer* pertencem à **Maison d'Être**, portanto usam **être** com concordância feminina (*montée*, *entrée*)."),
-        ("quando eu morava em paris, tomava cafe", ["quand j'habitais a paris je prenais du cafe", "quand j'habitais a paris je buvais du cafe"], "Para hábitos contínuos no passado, empregue o **Imparfait** (*j'habitais*, *je prenais/buvais*) e o partitivo *du café*."),
-        ("eu gosto de queijo, mas hoje nao comprei queijo", ["j'aime le fromage mais aujourd'hui je n'ai pas achete de fromage"], "Em *gosto*, use artigo definido (*le fromage*); na negação absoluta após *pas*, troque para **de** (*pas de fromage*)."),
-        ("tenho dois", ["j'en ai deux"], "Para substituir quantidades ou elementos indefinidos com números, utilize o pronome **en**: *J'en ai deux*."),
-        ("eu o vejo todos os dias e lhe falo em frances", ["je le vois tous les jours et je lui parle en francais"], "Use **le** (COD) para *o vejo* e **lui** (COI) para *lhe falo*."),
-        ("e preciso que voce venha conosco amanha", ["il faut que tu viennes avec nous demain", "il faut que vous veniez avec nous demain"], "Após *il faut que*, conjugue *venir* no **Subjonctif** (*que tu viennes* / *que vous veniez*)."),
-        ("nos aprendemos frances todos os dias para viajar", ["nous apprenons le francais tous les jours pour voyager en france"], "Verifique a conjugação de *apprendre* com *nous* (*nous apprenons*) e o uso de **en France**."),
-    ]
-    for chave_trad, alvos_trad, dica_trad in trads_conhecidas:
+    for chave_trad, alvos_trad, _modelo_trad, dica_trad in _TRADS_CONHECIDAS:
         if chave_trad in ex_norm:
             melhor_sim = max(difflib.SequenceMatcher(None, resp_sem, alvo_t).ratio() for alvo_t in alvos_trad)
             if melhor_sim >= 0.88:
@@ -1127,6 +1157,86 @@ def feedback_demonstracao_frances(tema, exercicio, resposta_aluno, nivel_cefr="A
         return _avaliar_ditado_ou_oral(exercicio, resp, modalidade)
 
     return _avaliar_lacunas_ou_producao(tema, exercicio, resp, modalidade)
+
+
+def obter_resposta_esperada_exercicio(tema: str, exercicio: str, tipo_atividade: str = "") -> str:
+    """Retorna a forma/frase modelo esperada em francês para comparação formativa no feedback."""
+    modalidade = _detectar_modalidade_avaliacao(exercicio, tipo_atividade)
+    ex_norm = _norm_fr(exercicio, manter_acentos=False)
+
+    if modalidade == "multipla_escolha":
+        opcoes, letra_correta, _ = _extrair_opcoes_e_correta_mc(exercicio)
+        if letra_correta and letra_correta in opcoes:
+            return f"{letra_correta}) {opcoes[letra_correta]}"
+        return ""
+
+    if modalidade == "vf":
+        frase = _extrair_trecho_entre_aspas(exercicio)
+        if not frase:
+            return ""
+        erro = _analisar_erro_frase_vf(frase)
+        if not erro:
+            return f"Vrai — {frase}"
+        corrigida = _corrigir_frase_vf_modelo(frase)
+        return f"Faux — {corrigida}" if corrigida else "Faux (corrigir o desvio apontado)"
+
+    if modalidade in ("ditado", "expressao_oral"):
+        return _extrair_trecho_entre_aspas(exercicio)
+
+    # Lacunas, transformações e produção escrita
+    for reg in _REGRAS_MULTIPLAS_LACUNAS:
+        if reg["chave"] in ex_norm:
+            return reg["frase_modelo"]
+
+    if "paul mange de la viande" in ex_norm:
+        return "Paul ne mange pas de viande."
+    if "paul regarde la television tous les soirs" in ex_norm:
+        return "Paul ne regarde pas la télévision tous les soirs."
+
+    if modalidade == "lacunas":
+        gabs = _obter_gabaritos_lacuna(exercicio, tema)
+        if gabs:
+            frase_base = _extrair_trecho_entre_aspas(exercicio)
+            if "___" in frase_base:
+                preenchida = re.sub(r"_{2,}\s*(?:\([^)]*\))?", gabs[0], frase_base, count=1)
+                preenchida = re.sub(r"(['’])\s+", r"\1", preenchida)
+                return preenchida.strip()
+            return gabs[0]
+
+    for chave_trad, _alvos, modelo_trad, _dica in _TRADS_CONHECIDAS:
+        if chave_trad in ex_norm:
+            return modelo_trad
+
+    return ""
+
+
+def obter_pista_exercicio(tema: str, exercicio: str, tipo_atividade: str = "") -> str:
+    """Fornece uma pista pedagógica objetiva sobre a regra envolvida sem entregar a resposta pronta."""
+    modalidade = _detectar_modalidade_avaliacao(exercicio, tipo_atividade)
+    t_low = (tema or "").lower()
+    ex_low = (exercicio or "").lower()
+
+    if modalidade == "ditado":
+        return "Escute primeiro no ritmo normal, depois use o modo **Calmo (0.65x)** ou **Voltar trecho** para conferir terminações mudas e acentos (`é`, `è`, `ê`, `ç`)."
+    if modalidade == "expressao_oral":
+        return "Ouça a frase no botão **🐢 0.65x** antes de gravar, observe as ligações entre palavras (*liaisons*) e pronuncie com clareza."
+    if any(k in t_low or k in ex_low for k in ("maison d'être", "arriver", "partir", "aller", "venir", "monter", "entrer", "rester")):
+        return "Atenção à **Maison d'Être**: verbos de movimento/estado no Passé Composé usam o auxiliar **être** e fazem acordo de gênero e número no particípio."
+    if "passé" in t_low or "passe" in t_low:
+        return "No **Passé Composé**, identifique primeiro se o verbo pede **avoir** ou **être** e verifique o particípio passado."
+    if "imparfait" in t_low:
+        return "O **Imparfait** usa o radical da 1ª pessoa do plural do presente + `-ais, -ais, -ait, -ions, -iez, -aient` (exceção: *être* → `ét-`)."
+    if "négat" in t_low or "negat" in t_low or "negação" in ex_low:
+        return "Envolva o verbo conjugado com `ne ... pas` (ou `n'` antes de vogal). Na negação absoluta, os partitivos `du / de la / des` viram **`de / d'`**."
+    if "article" in t_low or "partitif" in t_low:
+        return "Partitivos: **`du`** (masc. sing.), **`de la`** (fem. sing.), **`de l'`** (vogal/h mudo) e **`des`** (plural); após negação absoluta com *pas*, use **`de / d'`**."
+    if "subjonctif" in t_low or "il faut" in ex_low:
+        return "Após expressões de necessidade/obrigação (*il faut que*, *il est nécessaire que*), o verbo vai para o **Subjonctif Présent**."
+    if "pronom" in t_low or "y " in ex_low or "en " in ex_low or "cod" in t_low or "coi" in t_low:
+        return "Regência pronominal: **`y`** substitui lugar (*à/en + local*); **`en`** substitui *de + coisa/quantidade*; **`lui / leur`** substituem *à + pessoa*."
+    if "salutation" in t_low or "appeler" in ex_low:
+        return "No presente do indicativo, *s'appeler* dobra **`pp`** e **`ll`** com *je / tu / il / elle* (`je m'appelle`, `elle s'appelle`), mas com *nous / vous* mantém apenas 1 **`l`**."
+    return f"Analise o sujeito, o tempo verbal e a ortografia francesa ligados ao tema **{tema or 'Francês FLE'}** antes de enviar."
 
 
 def _analisar_e_transcrever_wav(filepath_audio: str):

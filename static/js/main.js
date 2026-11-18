@@ -8,6 +8,8 @@
 let numeroTentativa = 1;
 let dicaAtual = "";
 let nivelCEFRSelecionado = "A2";
+let streakSessaoAtual = 0;
+let ultimaRespostaEsperada = "";
 
 const CEFR_DESCRICOES = {
     "A1": "A1 • Débutant (explicações simples em português, regras essenciais)",
@@ -16,7 +18,7 @@ const CEFR_DESCRICOES = {
     "B2": "B2 • Avancé (acordos complexos, registro culto, feedback predominantemente em francês)"
 };
 
-function selecionarNivelCEFR(lvl) {
+function selecionarNivelCEFR(lvl, gerarDesafio = false) {
     if (!lvl) return;
     const nivelUpper = lvl.toUpperCase();
     nivelCEFRSelecionado = nivelUpper;
@@ -57,22 +59,29 @@ function selecionarNivelCEFR(lvl) {
     if (typeof anunciarParaLeitorDeTela === "function") {
         anunciarParaLeitorDeTela(`Nível CEFR ${nivelUpper} selecionado: ${CEFR_DESCRICOES[nivelUpper] || nivelUpper}`);
     }
+
+    if (gerarDesafio && typeof gerarNovoDesafioIA === "function") {
+        gerarNovoDesafioIA();
+    }
 }
 
 function ocultarFeedbackAnterior() {
     const resultContainer = document.getElementById("resultContainer");
+    const comparativoBox = document.getElementById("feedbackComparativoBox");
     const analiseProfessorBox = document.getElementById("analiseProfessorBox");
     const btnTentarNovamente = document.getElementById("btnTentarNovamenteDica");
     const arrow = document.getElementById("arrowIcon");
     const feedbackContent = document.getElementById("feedbackContent");
 
     if (resultContainer) resultContainer.classList.add("hidden");
+    if (comparativoBox) comparativoBox.classList.add("hidden");
     if (analiseProfessorBox) analiseProfessorBox.classList.add("hidden");
     if (btnTentarNovamente) btnTentarNovamente.classList.add("hidden");
     if (arrow) arrow.style.transform = "rotate(0deg)";
     if (feedbackContent) feedbackContent.innerHTML = "";
 
     ultimaRespostaSubmetida = "";
+    ultimaRespostaEsperada = "";
     if ("speechSynthesis" in window) {
         try { window.speechSynthesis.cancel(); } catch (e) {}
     }
@@ -138,9 +147,9 @@ async function gerarNovoDesafioIA(temaEscolhido = null, tipoEscolhido = null) {
             respostaInput.focus();
         }
 
-        // Se houver callback para ajustar UI da modalidade (ex: dicas de ditado ou botões rápidos)
+        // Se houver callback para ajustar UI da modalidade (ex: dicas de ditado, pista ou lacuna inline)
         if (typeof aplicarAjustesModalidadeUI === "function") {
-            aplicarAjustesModalidadeUI(tipoParam, data.exercicio, data.opcoes);
+            aplicarAjustesModalidadeUI(tipoParam, data.exercicio, data.opcoes, data.pista_gramatical || "");
         } else if (perguntaInput && typeof autoAjustarAlturaTextarea === "function") {
             autoAjustarAlturaTextarea(perguntaInput, 76);
         }
@@ -172,11 +181,20 @@ async function gerarNovoDesafioIA(temaEscolhido = null, tipoEscolhido = null) {
 }
 
 function obterCampoRespostaAtivo() {
+    const inlineBox = document.getElementById("lacunaInlineBox");
     const lacunaInput = document.getElementById("respostaLacunaInput");
     const vfInput = document.getElementById("vfCorrecaoInput");
     const vfWrap = document.getElementById("vfCorrecaoWrap");
     const textarea = document.getElementById("resposta_aluno");
 
+    if (inlineBox && inlineBox.offsetParent !== null) {
+        const ultimo = window._ultimoInputLacunaInline;
+        if (ultimo && inlineBox.contains(ultimo)) {
+            return ultimo;
+        }
+        const primeiro = inlineBox.querySelector(".lacuna-inline-field");
+        if (primeiro) return primeiro;
+    }
     if (lacunaInput && lacunaInput.offsetParent !== null) {
         return lacunaInput;
     }
@@ -192,6 +210,11 @@ function sincronizarCampoAtivo(target) {
     const vfInput = document.getElementById("vfCorrecaoInput");
     const textarea = document.getElementById("resposta_aluno");
 
+    if (target.classList && target.classList.contains("lacuna-inline-field")) {
+        if (typeof ajustarLarguraCampoInline === "function") ajustarLarguraCampoInline(target);
+        if (typeof reconstruirRespostaLacunasInline === "function") reconstruirRespostaLacunasInline();
+        return;
+    }
     if (typeof autoAjustarAlturaTextarea === "function") {
         autoAjustarAlturaTextarea(target, target === textarea ? 88 : 76);
     }
@@ -257,11 +280,23 @@ document.addEventListener("DOMContentLoaded", () => {
         const tema = document.getElementById("tema_aula").value.trim();
         const pergunta = document.getElementById("pergunta").value.trim();
         const tipoAtiv = (document.getElementById("tipo_atividade")?.value || "lacunas").trim().toLowerCase();
+        const inlineBox = document.getElementById("lacunaInlineBox");
         const lacunaInp = document.getElementById("respostaLacunaInput");
         const vfInp = document.getElementById("vfCorrecaoInput");
         const respostaElem = document.getElementById("resposta_aluno");
 
-        if (lacunaInp && lacunaInp.offsetParent !== null && lacunaInp.value.trim()) {
+        if (tipoAtiv === "lacunas" && inlineBox && inlineBox.offsetParent !== null) {
+            if (typeof reconstruirRespostaLacunasInline === "function") {
+                reconstruirRespostaLacunasInline();
+            }
+            const camposVazios = Array.from(inlineBox.querySelectorAll(".lacuna-inline-field"))
+                .filter(f => !f.value.trim());
+            if (camposVazios.length > 0) {
+                showToast("Por favor, preencha o(s) espaço(s) em branco da frase em francês antes de enviar.", "aviso");
+                camposVazios[0].focus();
+                return;
+            }
+        } else if (lacunaInp && lacunaInp.offsetParent !== null && lacunaInp.value.trim()) {
             respostaElem.value = lacunaInp.value.trim();
         } else if (tipoAtiv === "vf" && vfInp && vfInp.offsetParent !== null && typeof atualizarRespostaVFPeloInput === "function") {
             atualizarRespostaVFPeloInput();
@@ -431,6 +466,17 @@ function exibirFeedback(data) {
         xpTopoValor.textContent = `${data.progresso_xp} XP`;
     }
 
+    // Atualizar indicador de sequência de acertos (Streak da sessão)
+    if (status === "Correto") {
+        streakSessaoAtual++;
+    } else if (status === "Incorreto") {
+        streakSessaoAtual = 0;
+    }
+    const streakValorEl = document.getElementById("streakSessaoValor");
+    if (streakValorEl) {
+        streakValorEl.textContent = String(streakSessaoAtual);
+    }
+
     if (data.conquista_desbloqueada && typeof showToast === "function") {
         showToast(`🏅 Nova insígnia desbloqueada: ${data.conquista_desbloqueada}!`, "sucesso");
     }
@@ -478,7 +524,22 @@ function exibirFeedback(data) {
         });
     });
 
-    // Preencher a análise técnica do professor
+    // Preencher bloco comparativo: Sua resposta vs. Francês esperado
+    const comparativoBox = document.getElementById("feedbackComparativoBox");
+    const compSuaEl = document.getElementById("comparativoSuaResposta");
+    const compEspEl = document.getElementById("comparativoRespostaEsperada");
+    ultimaRespostaEsperada = (data.resposta_esperada || "").trim();
+    if (comparativoBox && compSuaEl && compEspEl) {
+        if (ultimaRespostaEsperada) {
+            compSuaEl.textContent = data.resposta_aluno ? `« ${data.resposta_aluno} »` : "—";
+            compEspEl.textContent = `« ${ultimaRespostaEsperada} »`;
+            comparativoBox.classList.remove("hidden");
+        } else {
+            comparativoBox.classList.add("hidden");
+        }
+    }
+
+    // Preencher a análise técnica do professor (se o bloco estiver presente)
     if (analiseProfessorText) {
         analiseProfessorText.textContent = data.analise_professor || "Análise gramatical registrada.";
     }
@@ -665,9 +726,9 @@ if ('speechSynthesis' in window) {
     carregarVozes();
 }
 
-function falarTextoFrances(texto, btnElement = null) {
+function falarTextoFrances(texto, btnElement = null, opcoes = {}) {
     if (typeof window.falarTextoFrancesBase === "function") {
-        window.falarTextoFrancesBase(texto, btnElement);
+        window.falarTextoFrancesBase(texto, btnElement, opcoes);
         return;
     }
 
@@ -681,7 +742,7 @@ function falarTextoFrances(texto, btnElement = null) {
     if (!textoLimpo) return;
     const utterance = new SpeechSynthesisUtterance(textoLimpo);
     utterance.lang = 'fr-FR';
-    utterance.rate = 0.88;
+    utterance.rate = typeof opcoes.rate === 'number' ? opcoes.rate : 0.88;
     const vozes = window.speechSynthesis.getVoices();
     const vozFrancesa = vozes.find(v => v.lang === 'fr-FR' || v.lang.startsWith('fr') || v.lang.includes('fr'));
     if (vozFrancesa) utterance.voice = vozFrancesa;
@@ -689,8 +750,22 @@ function falarTextoFrances(texto, btnElement = null) {
 }
 
 function ouvirTextoDigitado() {
-    const target = obterCampoRespostaAtivo();
+    const inlineBox = document.getElementById("lacunaInlineBox");
+    const lacunaInput = document.getElementById("respostaLacunaInput");
     const btn = document.getElementById("btnAudioInput");
+    if (inlineBox && inlineBox.offsetParent !== null && lacunaInput) {
+        if (typeof reconstruirRespostaLacunasInline === "function") {
+            reconstruirRespostaLacunasInline();
+        }
+        const textoCompleto = (lacunaInput.value || "").replace(/_{2,}/g, "...").trim();
+        if (!textoCompleto) {
+            showToast("Preencha o espaço em branco para ouvir a frase completa.", "info");
+            return;
+        }
+        falarTextoFrances(textoCompleto, btn);
+        return;
+    }
+    const target = obterCampoRespostaAtivo();
     if (!target || !target.value.trim()) {
         showToast("Digite ou dite uma frase em francês no campo abaixo para ouvir a pronúncia.", "info");
         if (target) target.focus();
@@ -710,6 +785,16 @@ function ouvirRespostaSubmetida() {
     falarTextoFrances(texto, btn);
 }
 
+function ouvirRespostaEsperada() {
+    const btn = document.getElementById("btnOuvirEsperado");
+    if (!ultimaRespostaEsperada) {
+        showToast("Nenhuma frase modelo disponível para reproduzir.", "aviso");
+        return;
+    }
+    const limpo = ultimaRespostaEsperada.replace(/^(?:[A-D]\)|(?:Vrai|Faux)\s*[—\-:])\s*/i, "");
+    falarTextoFrances(limpo, btn);
+}
+
 function ouvirFeedbackFran() {
     const btn = document.getElementById("btnOuvirFeedback");
     const feedbackContent = document.getElementById("feedbackContent");
@@ -720,6 +805,21 @@ function ouvirFeedbackFran() {
     falarTextoFrances(feedbackContent.textContent, btn);
 }
 
+function _textoEnunciadoParaAudio(bruto) {
+    return String(bruto || "").replace(/_{2,}/g, " ... ");
+}
+
+function _restaurarBotaoAudioSeAtivo(btnId) {
+    const outro = document.getElementById(btnId);
+    if (outro && outro.classList.contains("speaking")) {
+        outro.classList.remove("speaking");
+        outro.setAttribute("aria-pressed", "false");
+        if (outro._originalHtmlSalvo) {
+            outro.innerHTML = outro._originalHtmlSalvo;
+        }
+    }
+}
+
 function ouvirEnunciado() {
     const perguntaInput = document.getElementById("pergunta");
     const btn = document.getElementById("btnAudioPergunta");
@@ -727,7 +827,19 @@ function ouvirEnunciado() {
         showToast("Nenhum exercício carregado para ouvir.", 'erro');
         return;
     }
-    falarTextoFrances(perguntaInput.value, btn);
+    _restaurarBotaoAudioSeAtivo("btnAudioPerguntaLento");
+    falarTextoFrances(_textoEnunciadoParaAudio(perguntaInput.value), btn);
+}
+
+function ouvirEnunciadoLento() {
+    const perguntaInput = document.getElementById("pergunta");
+    const btn = document.getElementById("btnAudioPerguntaLento");
+    if (!perguntaInput || !perguntaInput.value.trim()) {
+        showToast("Nenhum exercício carregado para ouvir.", 'erro');
+        return;
+    }
+    _restaurarBotaoAudioSeAtivo("btnAudioPergunta");
+    falarTextoFrances(_textoEnunciadoParaAudio(perguntaInput.value), btn, { rate: 0.62 });
 }
 
 /**

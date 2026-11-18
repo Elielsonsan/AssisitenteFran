@@ -22,10 +22,10 @@
     box-sizing: border-box;
 }
 
-/* 1. Cabeçalho Editorial Aberto (Sem caixa externa, inspirado na 1ª imagem) */
+/* 1. Cabeçalho Editorial Compacto (First-fold amigável) */
 .pratica-hero-header {
     text-align: center;
-    margin-bottom: 2.4rem;
+    margin-bottom: 1.25rem;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -51,12 +51,12 @@
 }
 
 .pratica-editorial-title {
-    font-size: clamp(2rem, 4.2vw, 3.1rem);
+    font-size: clamp(1.75rem, 3.3vw, 2.5rem);
     font-weight: 700;
     line-height: 1.14;
     letter-spacing: -0.03em;
     color: #14213D;
-    margin: 0 0 1rem;
+    margin: 0 0 0.5rem;
 }
 
 [data-theme="dark"] .pratica-editorial-title {
@@ -64,19 +64,19 @@
 }
 
 .pratica-editorial-title .serif-italic {
-    display: block;
+    display: inline;
     font-family: 'Playfair Display', Georgia, serif;
     font-style: italic;
     font-weight: 600;
     letter-spacing: -0.01em;
-    margin-top: 0.1rem;
+    margin-left: 0.2rem;
 }
 
 .pratica-editorial-subtitle {
-    max-width: 630px;
+    max-width: 680px;
     margin: 0 auto;
-    font-size: 0.98rem;
-    line-height: 1.65;
+    font-size: 0.92rem;
+    line-height: 1.5;
     color: rgba(20, 33, 61, 0.72);
     font-weight: 400;
 }
@@ -1232,33 +1232,357 @@
     0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.42); }
     50% { box-shadow: 0 0 0 6px rgba(220, 38, 38, 0); }
 }
+
+/* Seletor CEFR interativo, Streak da Sessão e Link Guia FLE */
+.pratica-cefr-inline-pills {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+.pratica-cefr-inline-pills .cefr-pill {
+    padding: 0.28rem 0.75rem !important;
+    border-radius: 999px !important;
+    font-size: 0.76rem !important;
+    font-weight: 700 !important;
+    border: 1px solid #E5E5E5 !important;
+    background: #FFFFFF !important;
+    color: #14213D !important;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.pratica-cefr-inline-pills .cefr-pill:hover {
+    border-color: #FCA311 !important;
+    background: rgba(252, 163, 17, 0.1) !important;
+}
+
+.pratica-cefr-inline-pills .cefr-pill.active {
+    background: #14213D !important;
+    border-color: #14213D !important;
+    color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .pratica-cefr-inline-pills .cefr-pill {
+    background: rgba(30, 41, 59, 0.85) !important;
+    border-color: rgba(255, 255, 255, 0.14) !important;
+    color: #E2E8F0 !important;
+}
+
+[data-theme="dark"] .pratica-cefr-inline-pills .cefr-pill.active {
+    background: #FCA311 !important;
+    border-color: #FCA311 !important;
+    color: #000000 !important;
+}
+
+.pratica-top-badges-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.pratica-streak-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    color: #065F46;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+[data-theme="dark"] .pratica-streak-pill {
+    background: rgba(16, 185, 129, 0.18);
+    border-color: rgba(52, 211, 153, 0.4);
+    color: #A7F3D0;
+}
+
+.pratica-guia-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0.32rem 0.78rem;
+    border-radius: 999px;
+    background: rgba(20, 33, 61, 0.06);
+    color: #14213D;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.18s ease;
+}
+
+.pratica-guia-link:hover {
+    background: #FCA311;
+    color: #000000;
+}
+
+[data-theme="dark"] .pratica-guia-link {
+    background: rgba(255, 255, 255, 0.1);
+    color: #F8FAFC;
+}
+
+.pratica-row-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.pratica-pista-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0.36rem 0.82rem;
+    border-radius: 999px;
+    background: rgba(252, 163, 17, 0.16);
+    border: 1px solid rgba(252, 163, 17, 0.45);
+    color: #92400E;
+    font-size: 0.76rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.pratica-pista-pill:hover,
+.pratica-pista-pill.active {
+    background: #FCA311;
+    border-color: #FCA311;
+    color: #000000;
+}
+
+[data-theme="dark"] .pratica-pista-pill {
+    background: rgba(252, 163, 17, 0.16);
+    color: #FDE68A;
+}
+
+.pratica-audio-circle-btn.lento {
+    background: #FFFFFF !important;
+    color: #14213D !important;
+    border: 1px solid #D1D5DB !important;
+    box-shadow: none;
+}
+
+.pratica-audio-circle-btn.lento:hover {
+    background: #FCA311 !important;
+    border-color: #FCA311 !important;
+    color: #000000 !important;
+}
+
+[data-theme="dark"] .pratica-audio-circle-btn.lento {
+    background: rgba(30, 41, 59, 0.9) !important;
+    border-color: rgba(255, 255, 255, 0.16) !important;
+    color: #E2E8F0 !important;
+}
+
+.pista-previa-box {
+    margin-top: 0.65rem;
+    padding: 0.65rem 0.95rem;
+    border-radius: 12px;
+    background: rgba(252, 163, 17, 0.11);
+    border: 1px solid rgba(252, 163, 17, 0.38);
+    color: #78350F;
+    font-size: 0.84rem;
+    line-height: 1.48;
+}
+
+[data-theme="dark"] .pista-previa-box {
+    background: rgba(252, 163, 17, 0.14);
+    border-color: rgba(252, 163, 17, 0.4);
+    color: #FEF3C7;
+}
+
+/* Lacuna Inline Interativa para Completar Sentença */
+.lacuna-inline-box {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.38rem 0.42rem;
+    padding: 0.95rem 1.15rem;
+    border: 2px solid #14213D;
+    border-radius: 14px;
+    background: #FFFFFF;
+    color: #14213D;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.9;
+    margin-bottom: 0.35rem;
+}
+
+[data-theme="dark"] .lacuna-inline-box {
+    background: rgba(15, 23, 42, 0.9);
+    border-color: #FCA311;
+    color: #F8FAFC;
+}
+
+.lacuna-inline-field {
+    display: inline-block;
+    min-width: 115px;
+    width: 135px;
+    max-width: 100%;
+    padding: 0.22rem 0.62rem;
+    border: none;
+    border-bottom: 2.5px solid #FCA311;
+    border-radius: 8px 8px 4px 4px;
+    background: rgba(252, 163, 17, 0.11);
+    color: #14213D;
+    font-family: inherit;
+    font-size: 0.98rem;
+    font-weight: 700;
+    outline: none;
+    transition: all 0.16s ease;
+}
+
+.lacuna-inline-field:focus {
+    background: rgba(252, 163, 17, 0.2);
+    border-bottom-color: #14213D;
+    box-shadow: 0 2px 0 0 rgba(20, 33, 61, 0.15);
+}
+
+[data-theme="dark"] .lacuna-inline-field {
+    background: rgba(252, 163, 17, 0.16);
+    color: #FFFFFF;
+}
+
+[data-theme="dark"] .lacuna-inline-field:focus {
+    border-bottom-color: #FFFFFF;
+}
+
+.lacuna-verb-hint {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #6B7280;
+    background: rgba(20, 33, 61, 0.06);
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+}
+
+[data-theme="dark"] .lacuna-verb-hint {
+    background: rgba(255, 255, 255, 0.1);
+    color: #CBD5E1;
+}
+
+/* Bloco Comparativo no Feedback ("Sua resposta" vs "Francês esperado") */
+.feedback-comparativo-box {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding: 0.85rem 1rem;
+    border-radius: 14px;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+}
+
+[data-theme="dark"] .feedback-comparativo-box {
+    background: rgba(15, 23, 42, 0.75);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.comp-col {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.comp-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #64748B;
+}
+
+.comp-text {
+    margin: 0;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #1E293B;
+    line-height: 1.45;
+}
+
+.comp-text.expected {
+    color: #065F46;
+}
+
+[data-theme="dark"] .comp-text {
+    color: #E2E8F0;
+}
+
+[data-theme="dark"] .comp-text.expected {
+    color: #6EE7B7;
+}
+
+.comp-expected-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.btn-audio-mini {
+    border: 1px solid #CBD5E1;
+    background: #FFFFFF;
+    color: #14213D;
+    border-radius: 999px;
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    font-size: 0.82rem;
+    transition: all 0.16s ease;
+}
+
+.btn-audio-mini:hover {
+    background: #FCA311;
+    border-color: #FCA311;
+    color: #000000;
+}
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="pratica-editorial-page">
-    <!-- 1. Cabeçalho Editorial Profissional (Sem a pílula superior) -->
+    <!-- 1. Cabeçalho Editorial Compacto -->
     <header class="pratica-hero-header" id="homeHeroCard">
         <h1 class="pratica-editorial-title">
             Pratique seu Francês com
             <span class="serif-italic">Feedback Inteligente</span>
         </h1>
         <p class="pratica-editorial-subtitle">
-            Submeta suas frases ou exercícios em língua francesa. O <strong>Assistente Fran</strong> realiza diagnósticos gramaticais e sintáticos de alta precisão, oferecendo orientações formativas personalizadas para acelerar sua autonomia e fluência no idioma.
+            Treine gramática, audição e pronúncia com correção rigorosa em tempo real do <strong>Assistente Fran</strong>.
         </p>
     </header>
 
     <!-- 2. Card Principal Clean -->
     <div class="form-wrapper">
         <div class="form-card pratica-main-card" id="formCard">
-            <!-- Topo do Card: Informação à esquerda + XP Pessoal à direita -->
+            <!-- Topo do Card: Seletor CEFR à esquerda + Streak e XP Pessoal à direita -->
             <div class="pratica-card-top-bar" id="examplesContainer">
                 <div class="pratica-top-meta">
-                    <span class="pratica-meta-label">Ambiente de Prática Assistida por IA</span>
-                    <span class="pratica-meta-value">Nível Pedagógico Ativo: CEFR <span id="btnGerarNivel">{{ session.get('nivel_cefr', 'A2') }}</span></span>
+                    <span class="pratica-meta-label">Nível Pedagógico Ativo (CEFR <span id="btnGerarNivel">{{ session.get('nivel_cefr', 'A2') }}</span>)</span>
+                    <div class="pratica-cefr-inline-pills" role="group" aria-label="Selecionar nível CEFR para prática">
+                        {% set nivel_ativo = session.get('nivel_cefr', 'A2') | upper %}
+                        {% for lvl in ['A1', 'A2', 'B1', 'B2'] %}
+                        <button type="button" class="cefr-pill {% if nivel_ativo == lvl %}active{% endif %}" data-level="{{ lvl }}" onclick="selecionarNivelCEFR('{{ lvl }}', true)">{{ lvl }}</button>
+                        {% endfor %}
+                    </div>
                 </div>
-                <div class="pratica-xp-pessoal-pill" id="xpPessoalTopoBadge" title="XP acumulado exclusivamente nas suas práticas autônomas (separado do XP do curso)">
-                    ⚡ XP Pessoal (Prática): <strong id="xpPessoalTopoValor">{{ xp_pessoal|default(0) }} XP</strong>
+                <div class="pratica-top-badges-right">
+                    <div class="pratica-streak-pill" id="streakSessaoBadge" title="Acertos perfeitos consecutivos nesta sessão">
+                        🔥 <strong id="streakSessaoValor">0</strong> seguidos
+                    </div>
+                    <div class="pratica-xp-pessoal-pill" id="xpPessoalTopoBadge" title="XP acumulado exclusivamente nas suas práticas autônomas (separado do XP do curso)">
+                        ⚡ XP Pessoal (Prática): <strong id="xpPessoalTopoValor">{{ xp_pessoal|default(0) }} XP</strong>
+                    </div>
                 </div>
             </div>
 
@@ -1294,9 +1618,9 @@
                             <label for="tema_aula" class="pratica-row-label">
                                 Tema da Atividade
                             </label>
-                            <button type="button" class="pratica-circle-badge" onclick="alternarListaTemas(event)" title="Ver lista de temas disponíveis" aria-label="Abrir lista de temas" style="border: none; cursor: pointer;">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-                            </button>
+                            <a href="/guia-fle" class="pratica-guia-link" title="Consultar conjugações e regras gramaticais no Guia FLE">
+                                📖 Regra no Guia FLE
+                            </a>
                         </div>
 
                         <div class="tema-autocomplete-wrap" id="temaAutocompleteWrap">
@@ -1355,38 +1679,38 @@
                         </div>
                         <input type="hidden" id="tipo_atividade" name="tipo_atividade" value="lacunas">
                         <div class="modalidades-pills-bar" id="modalidadesPillsBar" role="tablist" aria-label="Formato do Exercício">
-                            <button type="button" class="modalidade-pill active" data-tipo="lacunas" onclick="selecionarModalidadeFormato('lacunas')" title="Preencha os espaços em branco com a forma correta">
+                            <button type="button" class="modalidade-pill active" data-tipo="lacunas" onclick="trocarModalidadeAtividade('lacunas')" title="Preencha os espaços em branco com a forma correta">
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
                                 <span>Completar Sentença</span>
                             </button>
-                            <button type="button" class="modalidade-pill" data-tipo="vf" onclick="selecionarModalidadeFormato('vf')" title="Julgue se a frase está gramaticalmente correta ou incorreta">
+                            <button type="button" class="modalidade-pill" data-tipo="vf" onclick="trocarModalidadeAtividade('vf')" title="Julgue se a frase está gramaticalmente correta ou incorreta">
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
                                 <span>Verdadeiro ou Falso</span>
                             </button>
-                            <button type="button" class="modalidade-pill" data-tipo="multipla_escolha" onclick="selecionarModalidadeFormato('multipla_escolha')" title="Escolha a alternativa correta entre as opções">
+                            <button type="button" class="modalidade-pill" data-tipo="multipla_escolha" onclick="trocarModalidadeAtividade('multipla_escolha')" title="Escolha a alternativa correta entre as opções">
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
                                 <span>Múltipla Escolha</span>
                             </button>
-                            <button type="button" class="modalidade-pill" data-tipo="ditado" onclick="selecionarModalidadeFormato('ditado')" title="Ouça o áudio em francês nativo e transcreva exatamente o que ouviu">
+                            <button type="button" class="modalidade-pill" data-tipo="ditado" onclick="trocarModalidadeAtividade('ditado')" title="Ouça o áudio em francês nativo e transcreva exatamente o que ouviu">
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
                                 <span>Compreensão Auditiva (Dictée)</span>
                             </button>
-                            <button type="button" class="modalidade-pill" data-tipo="expressao_oral" onclick="selecionarModalidadeFormato('expressao_oral')" title="Pratique pronúncia falando em francês pelo microfone">
+                            <button type="button" class="modalidade-pill" data-tipo="expressao_oral" onclick="trocarModalidadeAtividade('expressao_oral')" title="Pratique pronúncia falando em francês pelo microfone">
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
                                 <span>Expressão Oral</span>
                             </button>
-                            <button type="button" class="modalidade-pill" data-tipo="producao_escrita" onclick="selecionarModalidadeFormato('producao_escrita')" title="Traduza ou elabore frases completas em francês">
+                            <button type="button" class="modalidade-pill" data-tipo="producao_escrita" onclick="trocarModalidadeAtividade('producao_escrita')" title="Traduza ou elabore frases completas em francês">
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
                                 <span>Produção Escrita</span>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Botão de Gerar Desafio de IA (Logo após tema e atividade) -->
+                    <!-- Botão de Sortear Novo Desafio (Logo após tema e atividade) -->
                     <div class="pratica-gerar-btn-wrapper">
-                        <button type="button" id="btnGerarDesafio" class="btn-gerar-desafio-prominente" onclick="gerarNovoDesafioIA()" title="Gera um desafio inédito de francês adequado ao tema e formato selecionados">
+                        <button type="button" id="btnGerarDesafio" class="btn-gerar-desafio-prominente" onclick="gerarNovoDesafioIA()" title="Sorteia e cria um novo exercício de francês adequado ao tema e formato selecionados">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                            <span>Gerar Desafio com IA</span>
+                            <span>Sortear Novo Desafio</span>
                         </button>
                     </div>
                 </div>
@@ -1397,11 +1721,20 @@
                         <label for="pergunta" class="pratica-row-label" id="exercicioRowLabel">
                             Exercício Proposto
                         </label>
-                        <button type="button" id="btnAudioPergunta" class="pratica-audio-circle-btn" onclick="ouvirEnunciado()" title="Ouvir enunciado em francês com sotaque nativo" aria-label="Ouvir enunciado em francês">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
-                            <span>Ouvir</span>
-                        </button>
+                        <div class="pratica-row-actions">
+                            <button type="button" id="btnPistaExercicio" class="pratica-pista-pill" onclick="alternarPistaExercicio()" title="Ver pista rápida sobre a regra gramatical antes de responder" aria-expanded="false">
+                                <span>💡 Pista</span>
+                            </button>
+                            <button type="button" id="btnAudioPergunta" class="pratica-audio-circle-btn" onclick="ouvirEnunciado()" title="Ouvir enunciado em francês com sotaque nativo" aria-label="Ouvir enunciado em francês">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+                                <span>Ouvir</span>
+                            </button>
+                            <button type="button" id="btnAudioPerguntaLento" class="pratica-audio-circle-btn lento" onclick="ouvirEnunciadoLento()" title="Ouvir enunciado em ritmo pausado (0.65x)" aria-label="Ouvir enunciado em francês lentamente">
+                                <span>🐢 0.65x</span>
+                            </button>
+                        </div>
                     </div>
+                    <div id="pistaPreviaBox" class="pista-previa-box hidden" role="note" aria-live="polite" data-pista="{{ exercicio_inicial.pista_gramatical if exercicio_inicial and exercicio_inicial.pista_gramatical else '' }}"></div>
 
                     <!-- Player Destacado de Compreensão Auditiva (Oculta o texto do ditado) -->
                     <div id="ditadoPlayerBox" class="ditado-player-box" style="display: none;">
@@ -1458,9 +1791,6 @@
                         <label for="resposta_aluno" class="pratica-row-label">
                             Sua Resposta
                         </label>
-                        <span class="pratica-circle-badge" aria-hidden="true">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-                        </span>
                     </div>
 
                     <!-- Banner de Ciclo Formativo de Aprendizagem (Tentativa Ativa com Dica) -->
@@ -1506,9 +1836,10 @@
                         <div class="mc-options-grid" id="mcOptionsGrid"></div>
                     </div>
 
-                    <!-- Opção C: Completar Sentença (Lacuna individual expansível) -->
+                    <!-- Opção C: Completar Sentença (Lacuna inline interativa + fallback expansível) -->
                     <div id="respostaLacunaContainer" class="resposta-dinamica-bloco">
-                        <span class="resposta-opcao-instrucao">Preencha o espaço com o termo correto em francês (ou clique em "Falar" para ditar por voz):</span>
+                        <span class="resposta-opcao-instrucao" id="lacunaInstrucaoLabel">Preencha o(s) espaço(s) em branco com o termo correto em francês (ou clique em "Falar" para ditar por voz):</span>
+                        <div id="lacunaInlineBox" class="lacuna-inline-box" style="display: none;"></div>
                         <textarea 
                             id="respostaLacunaInput" 
                             class="form-textarea lacuna-input-highlight" 
@@ -1665,6 +1996,21 @@
                     </div>
 
                     <div class="result-body">
+                        <!-- Comparativo Formativo: Sua Resposta vs. Francês Esperado -->
+                        <div id="feedbackComparativoBox" class="feedback-comparativo-box hidden" aria-live="polite">
+                            <div class="comp-col">
+                                <span class="comp-label">Sua resposta</span>
+                                <p id="comparativoSuaResposta" class="comp-text" lang="fr"></p>
+                            </div>
+                            <div class="comp-col">
+                                <span class="comp-label">Francês esperado</span>
+                                <div class="comp-expected-row">
+                                    <p id="comparativoRespostaEsperada" class="comp-text expected" lang="fr"></p>
+                                    <button type="button" id="btnOuvirEsperado" class="btn-audio-mini" onclick="ouvirRespostaEsperada()" title="Ouvir a forma esperada em francês" aria-label="Ouvir a forma esperada em francês">🔊</button>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Feedback Amigável para o Aluno -->
                         <div class="feedback-student-box">
                             <h4 class="feedback-heading">
@@ -1674,32 +2020,14 @@
                                 <!-- Inserido dinamicamente via JS/marked -->
                             </div>
                         </div>
-
-                        <!-- Análise Gramatical Técnica do Professor (Expansível) -->
-                        <div class="professor-analysis-toggle-wrap">
-                            <button type="button" class="btn-toggle-analysis" onclick="toggleAnaliseProfessor()">
-                                <span id="toggleIcon"><svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></span>
-                                <span id="toggleText">Ver Análise Gramatical Técnica (Professor)</span>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="arrowIcon">
-                                    <polyline points="6 9 12 15 18 9"></polyline>
-                                </svg>
-                            </button>
-                            <div id="analiseProfessorBox" class="professor-analysis-box hidden">
-                                <span class="box-title" style="display: inline-flex; align-items: center; gap: 4px;"><svg class="line-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>Nota Gramatical (Log do Professor):</span>
-                                <p id="analiseProfessorText" class="analysis-text"></p>
-                            </div>
-                        </div>
                     </div>
 
                     <div class="result-footer">
                         <button type="button" id="btnTentarNovamenteDica" class="btn-primary btn-retry hidden" onclick="tentarNovamenteComDica()">
                             <svg class="line-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>Tentar Novamente com a Dica
                         </button>
-                        <button type="button" id="btnCopiarFeedback" class="btn-secondary" onclick="copiarFeedbackFormativo()" title="Copiar feedback formativo para a área de transferência">
-                            <svg class="line-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>Copiar Feedback
-                        </button>
-                        <button type="button" class="btn-secondary" onclick="novaSubmissao()">
-                            Novo Exercício
+                        <button type="button" id="btnProximoDesafioFooter" class="btn-secondary" onclick="novaSubmissao()">
+                            Próximo Desafio →
                         </button>
                         {% if session.get('prof_id') %}
                         <a href="/dashboard" class="btn-outline">
@@ -1720,7 +2048,7 @@
 
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="{{ url_for('static', filename='js/main.js') }}?v=20261115_oral2"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}?v=20261117_ux1"></script>
 <script>
     let indiceTemaDestacado = -1;
 
@@ -2462,7 +2790,249 @@
         return { textoFormatado: frase, posicaoCursor: frase.length };
     }
 
-    // Modalidade 3: Completar Sentença (Lacuna)
+    // Modalidade 3: Completar Sentença (Lacuna inline interativa + fallback expansível)
+    window._lacunaPartesEstaticas = null;
+    window._ultimoInputLacunaInline = null;
+
+    function gerarPistaFallbackCliente(tema, enunciado, tipo) {
+        const t = (tema || "").toLowerCase();
+        const ex = (enunciado || "").toLowerCase();
+        if (tipo === "ditado") {
+            return "Escute no ritmo normal e use o modo **Calmo (0.65x)** ou **Voltar trecho** para conferir terminações e acentos (`é`, `è`, `ê`, `ç`).";
+        }
+        if (tipo === "expressao_oral") {
+            return "Ouça o áudio modelo em **🐢 0.65x** antes de gravar, observando as ligações (*liaisons*) entre as palavras.";
+        }
+        if (/maison d'être|arriver|partir|aller|venir|monter|entrer|rester/.test(t + " " + ex)) {
+            return "Atenção à **Maison d'Être**: verbos de movimento/estado no Passé Composé usam auxiliar **être** e concordam com o sujeito.";
+        }
+        if (/passé|passe/.test(t)) {
+            return "No **Passé Composé**, identifique se o verbo exige **avoir** ou **être** e confira a terminação do particípio passado.";
+        }
+        if (/imparfait/.test(t)) {
+            return "No **Imparfait**, use o radical de *nous* no presente + `-ais, -ais, -ait, -ions, -iez, -aient` (exceção: *être* → `ét-`).";
+        }
+        if (/négat|negat|negação/.test(t + " " + ex)) {
+            return "Envolva o verbo com `ne ... pas` (ou `n'` diante de vogal). Na negação absoluta, partitivos `du / de la / des` viram `de / d'`.";
+        }
+        if (/article|partitif/.test(t)) {
+            return "Partitivos: `du` (masc.), `de la` (fem.), `de l'` (vogal/h mudo) e `des` (plural); em frase negativa absoluta use `de / d'`.";
+        }
+        if (/subjonctif|il faut/.test(t + " " + ex)) {
+            return "Após expressões de necessidade (*il faut que*, *il est nécessaire que*), conjugue o verbo no **Subjonctif Présent**.";
+        }
+        if (/pronom|y |en |cod|coi/.test(t + " " + ex)) {
+            return "Pronomes: `y` substitui lugar (*à + local*); `en` substitui quantidade/*de*; `lui / leur` substituem *à + pessoa*.";
+        }
+        if (/salutation|appeler/.test(t + " " + ex)) {
+            return "*S'appeler* no presente dobra `pp` e `ll` com *je/tu/il/elle* (`m'appelle`, `s'appelle`), mantendo 1 `l` com *nous/vous*.";
+        }
+        return `Analise o sujeito, o tempo verbal e a acentuação francesa referentes ao tema **${tema || "Francês FLE"}**.`;
+    }
+
+    function atualizarPistaExercicio(textoPista = null) {
+        const box = document.getElementById("pistaPreviaBox");
+        const btn = document.getElementById("btnPistaExercicio");
+        if (box) {
+            if (textoPista !== null) {
+                box.setAttribute("data-pista", textoPista);
+            }
+            box.classList.add("hidden");
+            box.innerHTML = "";
+        }
+        if (btn) {
+            btn.classList.remove("active");
+            btn.setAttribute("aria-expanded", "false");
+        }
+    }
+    window.atualizarPistaExercicio = atualizarPistaExercicio;
+
+    function alternarPistaExercicio() {
+        const box = document.getElementById("pistaPreviaBox");
+        const btn = document.getElementById("btnPistaExercicio");
+        if (!box) return;
+        const abrindo = box.classList.contains("hidden");
+        if (!abrindo) {
+            box.classList.add("hidden");
+            if (btn) {
+                btn.classList.remove("active");
+                btn.setAttribute("aria-expanded", "false");
+            }
+            return;
+        }
+        const tema = document.getElementById("tema_aula")?.value || "";
+        const enunciado = document.getElementById("pergunta")?.value || "";
+        const tipo = document.getElementById("tipo_atividade")?.value || "lacunas";
+        const pista = (box.getAttribute("data-pista") || "").trim() || gerarPistaFallbackCliente(tema, enunciado, tipo);
+        if (typeof marked !== "undefined" && marked.parse) {
+            const rawHtml = marked.parseInline ? marked.parseInline(pista) : marked.parse(pista);
+            box.innerHTML = `<strong>💡 Pista Gramatical:</strong> ` + (typeof sanitizarHtmlMarkdown === "function" ? sanitizarHtmlMarkdown(rawHtml) : rawHtml);
+        } else {
+            box.textContent = "💡 Pista Gramatical: " + pista;
+        }
+        box.classList.remove("hidden");
+        if (btn) {
+            btn.classList.add("active");
+            btn.setAttribute("aria-expanded", "true");
+        }
+    }
+    window.alternarPistaExercicio = alternarPistaExercicio;
+
+    function ajustarLarguraCampoInline(inp) {
+        if (!inp) return;
+        const len = (inp.value || "").length;
+        inp.style.width = `${Math.max(115, Math.min(280, len * 10 + 36))}px`;
+    }
+
+    function reconstruirRespostaLacunasInline() {
+        const inlineBox = document.getElementById("lacunaInlineBox");
+        const lacunaInput = document.getElementById("respostaLacunaInput");
+        const respostaReal = document.getElementById("resposta_aluno");
+        const parts = window._lacunaPartesEstaticas;
+        if (!inlineBox || !Array.isArray(parts) || parts.length === 0) return;
+
+        const fields = Array.from(inlineBox.querySelectorAll(".lacuna-inline-field"));
+        let textoCompleto = parts[0] || "";
+        fields.forEach((inp, idx) => {
+            const val = inp.value.trim();
+            textoCompleto += (val || "___") + (parts[idx + 1] || "");
+        });
+        textoCompleto = textoCompleto.replace(/\s{2,}/g, " ").trim();
+
+        if (lacunaInput) lacunaInput.value = textoCompleto;
+        if (respostaReal) respostaReal.value = textoCompleto;
+    }
+    window.reconstruirRespostaLacunasInline = reconstruirRespostaLacunasInline;
+
+    function montarLacunaInline(textoExercicio) {
+        const inlineBox = document.getElementById("lacunaInlineBox");
+        const lacunaInput = document.getElementById("respostaLacunaInput");
+        const respostaReal = document.getElementById("resposta_aluno");
+        const labelInstr = document.getElementById("lacunaInstrucaoLabel");
+
+        window._lacunaPartesEstaticas = null;
+        window._ultimoInputLacunaInline = null;
+
+        if (!inlineBox || !lacunaInput) return false;
+
+        // Tenta extrair exatamente a frase francesa com ___
+        let frase = "";
+        const mGul = (textoExercicio || "").match(/«([^»]*_{2,}[^»]*)»/);
+        const mDbl = (textoExercicio || "").match(/"([^"\n]*_{2,}[^"\n]*)"/);
+        const mCol = (textoExercicio || "").match(/:\s*'(.+)'\s*$/);
+        const mSgl = (textoExercicio || "").match(/(?:^|[\s:\(])'([^'\n]*_{2,}[^'\n]*)'(?:$|[\s\)\.\?!])/);
+        if (mGul && mGul[1]) {
+            frase = mGul[1].trim();
+        } else if (mDbl && mDbl[1]) {
+            frase = mDbl[1].trim();
+        } else if (mCol && mCol[1] && /_{2,}/.test(mCol[1])) {
+            frase = mCol[1].trim();
+        } else if (mSgl && mSgl[1]) {
+            frase = mSgl[1].trim();
+        } else {
+            const linhas = (textoExercicio || "").split("\n");
+            for (const l of linhas) {
+                if (/_{2,}/.test(l)) {
+                    const partes = l.split(":");
+                    frase = (partes.length > 1 && /_{2,}/.test(partes[1])) ? partes.slice(1).join(":").trim() : l.trim();
+                    break;
+                }
+            }
+        }
+        frase = frase.replace(/^[«"'\s]+|[»"'\s]+$/g, "");
+
+        if (!frase || !/_{2,}/.test(frase)) {
+            inlineBox.style.display = "none";
+            inlineBox.innerHTML = "";
+            lacunaInput.style.display = "block";
+            if (labelInstr) {
+                labelInstr.textContent = "Reescreva ou transforme a sentença completa em francês abaixo (ou clique em \"Falar\"):";
+            }
+            return false;
+        }
+
+        const regex = /_{2,}(?:\s*\(([^)]*)\))?/g;
+        const parts = [];
+        const hints = [];
+        let lastIdx = 0;
+        let match;
+        while ((match = regex.exec(frase)) !== null) {
+            parts.push(frase.slice(lastIdx, match.index));
+            hints.push(match[1] ? match[1].trim() : "");
+            lastIdx = regex.lastIndex;
+        }
+        parts.push(frase.slice(lastIdx));
+
+        window._lacunaPartesEstaticas = parts;
+        inlineBox.innerHTML = "";
+
+        parts.forEach((seg, idx) => {
+            if (seg) {
+                const span = document.createElement("span");
+                span.setAttribute("lang", "fr");
+                span.textContent = seg;
+                inlineBox.appendChild(span);
+            }
+            if (idx < hints.length) {
+                const inp = document.createElement("input");
+                inp.type = "text";
+                inp.className = "lacuna-inline-field";
+                inp.setAttribute("lang", "fr");
+                inp.setAttribute("spellcheck", "true");
+                inp.setAttribute("autocomplete", "off");
+                inp.setAttribute("data-gap-idx", String(idx));
+                inp.setAttribute("aria-label", hints[idx] ? `Preencher lacuna (${hints[idx]})` : `Preencher lacuna ${idx + 1}`);
+                inp.placeholder = hints[idx] ? hints[idx] : "completar...";
+
+                inp.addEventListener("focus", () => {
+                    window._ultimoInputLacunaInline = inp;
+                });
+                inp.addEventListener("input", () => {
+                    window._ultimoInputLacunaInline = inp;
+                    ajustarLarguraCampoInline(inp);
+                    reconstruirRespostaLacunasInline();
+                });
+                inp.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        const allFields = Array.from(inlineBox.querySelectorAll(".lacuna-inline-field"));
+                        if (!(e.ctrlKey || e.metaKey) && idx + 1 < allFields.length) {
+                            allFields[idx + 1].focus();
+                        } else {
+                            const form = document.getElementById("submissionForm");
+                            if (form && typeof form.requestSubmit === "function") form.requestSubmit();
+                        }
+                    }
+                });
+
+                inlineBox.appendChild(inp);
+
+                if (hints[idx]) {
+                    const hSpan = document.createElement("span");
+                    hSpan.className = "lacuna-verb-hint";
+                    hSpan.textContent = `(${hints[idx]})`;
+                    inlineBox.appendChild(hSpan);
+                }
+            }
+        });
+
+        inlineBox.style.display = "flex";
+        lacunaInput.style.display = "none";
+        if (labelInstr) {
+            labelInstr.textContent = hints.length > 1
+                ? "Complete diretamente os espaços em branco da frase (use os botões de acento ou \"Falar\" se precisar):"
+                : "Complete o espaço em branco diretamente na frase (use os botões de acento ou \"Falar\" se precisar):";
+        }
+
+        reconstruirRespostaLacunasInline();
+        const primeiro = inlineBox.querySelector(".lacuna-inline-field");
+        if (primeiro) {
+            window._ultimoInputLacunaInline = primeiro;
+            setTimeout(() => { try { primeiro.focus(); } catch (e) {} }, 60);
+        }
+        return true;
+    }
+
     function sincronizarRespostaLacuna() {
         const lacunaInput = document.getElementById("respostaLacunaInput");
         const respostaReal = document.getElementById("resposta_aluno");
@@ -2475,13 +3045,15 @@
     }
 
     // Adaptador Visual da Seção de Resposta conforme a Modalidade Selecionada
-    function aplicarAjustesModalidadeUI(tipo, textoExercicio, opcoes = null) {
+    function aplicarAjustesModalidadeUI(tipo, textoExercicio, opcoes = null, pistaTexto = null) {
         if (typeof ocultarFeedbackAnterior === "function") {
             ocultarFeedbackAnterior();
         } else {
             const rc = document.getElementById("resultContainer");
             if (rc) rc.classList.add("hidden");
         }
+        atualizarPistaExercicio(pistaTexto);
+
         if (typeof pararDitadoVozForcado === "function") {
             pararDitadoVozForcado();
         }
@@ -2490,10 +3062,12 @@
 
         const perguntaEl = document.getElementById("pergunta");
         const btnAudioPergunta = document.getElementById("btnAudioPergunta");
+        const btnAudioPerguntaLento = document.getElementById("btnAudioPerguntaLento");
         const ditadoPlayerBox = document.getElementById("ditadoPlayerBox");
         const vfContainer = document.getElementById("respostaVFContainer");
         const mcContainer = document.getElementById("respostaMCContainer");
         const lacunaContainer = document.getElementById("respostaLacunaContainer");
+        const inlineBox = document.getElementById("lacunaInlineBox");
         const oralContainer = document.getElementById("respostaOralContainer");
         const textoContainer = document.getElementById("respostaTextoContainer");
         const toolbar = document.getElementById("frenchCharsToolbar");
@@ -2505,6 +3079,7 @@
         if (vfContainer) vfContainer.style.display = "none";
         if (mcContainer) mcContainer.style.display = "none";
         if (lacunaContainer) lacunaContainer.style.display = "none";
+        if (inlineBox) inlineBox.style.display = "none";
         if (oralContainer) oralContainer.style.display = "none";
         if (textoContainer) textoContainer.style.display = "none";
         if (hintBar) hintBar.style.display = "none";
@@ -2514,6 +3089,7 @@
         if (tipo === "ditado") {
             if (perguntaEl) perguntaEl.style.display = "none";
             if (btnAudioPergunta) btnAudioPergunta.style.display = "none";
+            if (btnAudioPerguntaLento) btnAudioPerguntaLento.style.display = "none";
             if (ditadoPlayerBox) ditadoPlayerBox.style.display = "flex";
             resetarEstadoDitadoUI(textoExercicio);
         } else {
@@ -2523,6 +3099,7 @@
                 autoAjustarAlturaTextarea(perguntaEl, 76);
             }
             if (btnAudioPergunta) btnAudioPergunta.style.display = "inline-flex";
+            if (btnAudioPerguntaLento) btnAudioPerguntaLento.style.display = "inline-flex";
         }
 
         if (tipo === "vf") {
@@ -2587,7 +3164,8 @@
 
         } else if (tipo === "lacunas") {
             if (lacunaContainer) lacunaContainer.style.display = "block";
-            if (lacunaInput) {
+            const usouInline = montarLacunaInline(textoExercicio);
+            if (!usouInline && lacunaInput) {
                 const info = extrairFraseComLacuna(textoExercicio);
                 lacunaInput.value = info.textoFormatado;
                 autoAjustarAlturaTextarea(lacunaInput, 76);
