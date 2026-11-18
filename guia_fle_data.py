@@ -223,7 +223,7 @@ VERBOS_CONJUGADOS = {
         },
         "imparfait": {
             "je": "montais", "tu": "montais", "il/elle": "montait",
-            "nous": "montions", "vous": "montiez", "ils/elles": "montoient"
+            "nous": "montions", "vous": "montiez", "ils/elles": "montaient"
         },
         "futur_simple": {
             "je": "monterai", "tu": "monteras", "il/elle": "montera",
@@ -1001,6 +1001,72 @@ VERBOS_CONJUGADOS = {
             {"fr": "J'écris un courriel à mon professeur de français.", "pt": "Estou escrevendo um e-mail para meu professor de francês."},
             {"fr": "Albert Camus a écrit 'L'Étranger' en 1942.", "pt": "Albert Camus escreveu 'O Estrangeiro' em 1942."}
         ]
+    },
+    "se_lever": {
+        "verbo": "Se lever",
+        "traducao": "Levantar-se (Acordar / Ficar de pé)",
+        "auxiliaire": "Être",
+        "participe_passe": "levé (levée, levés, levées)",
+        "grupo": "1º Grupo Pronominal Reflexivo",
+        "dica_uso": "Todos os verbos pronominais usam ÊTRE no Passé Composé e concordam com o sujeito quando reflexivos (Elle s'est levée tôt).",
+        "present": {
+            "je": "me lève", "tu": "te lèves", "il/elle/on": "se lève",
+            "nous": "nous levons", "vous": "vous levez", "ils/elles": "se lèvent"
+        },
+        "passe_compose": {
+            "je": "me suis levé(e)", "tu": "t'es levé(e)", "il/elle": "s'est levé(e)",
+            "nous": "nous sommes levé(e)s", "vous": "vous êtes levé(e)(s)", "ils/elles": "se sont levé(e)s"
+        },
+        "imparfait": {
+            "je": "me levais", "tu": "te levais", "il/elle": "se levait",
+            "nous": "nous levions", "vous": "vous leviez", "ils/elles": "se levaient"
+        },
+        "futur_simple": {
+            "je": "me lèverai", "tu": "te lèveras", "il/elle": "se lèvera",
+            "nous": "nous lèverons", "vous": "vous lèverez", "ils/elles": "se lèveront"
+        },
+        "conditionnel": {
+            "je": "me lèverais", "tu": "te lèverais", "il/elle": "se lèverait",
+            "nous": "nous lèverions", "vous": "vous lèveriez", "ils/elles": "se lèveraient"
+        },
+        "imperatif": ["Lève-toi !", "Levons-nous !", "Levez-vous !"],
+        "exemplos": [
+            {"fr": "Je me lève tous les jours à six heures et demie.", "pt": "Levanto-me todos os dias às seis e meia."},
+            {"fr": "Marie s'est levée tôt pour prendre son train.", "pt": "Marie levantou-se cedo para pegar seu trem."}
+        ]
+    },
+    "sappeler": {
+        "verbo": "S'appeler",
+        "traducao": "Chamar-se",
+        "auxiliaire": "Être",
+        "participe_passe": "appelé (appelée, appelés, appelées)",
+        "grupo": "1º Grupo Pronominal (-eler com duplo L)",
+        "dica_uso": "Dobra o 'l' quando a sílaba final é muda (je m'appelle, ils s'appellent), mas mantém um 'l' em nous e vous (nous nous appelons).",
+        "present": {
+            "je": "m'appelle", "tu": "t'appelles", "il/elle/on": "s'appelle",
+            "nous": "nous appelons", "vous": "vous appelez", "ils/elles": "s'appellent"
+        },
+        "passe_compose": {
+            "je": "me suis appelé(e)", "tu": "t'es appelé(e)", "il/elle": "s'est appelé(e)",
+            "nous": "nous sommes appelé(e)s", "vous": "vous êtes appelé(e)(s)", "ils/elles": "se sont appelé(e)s"
+        },
+        "imparfait": {
+            "je": "m'appelais", "tu": "t'appelais", "il/elle": "s'appelait",
+            "nous": "nous appelions", "vous": "vous appeliez", "ils/elles": "s'appelaient"
+        },
+        "futur_simple": {
+            "je": "m'appellerai", "tu": "t'appelleras", "il/elle": "s'appellera",
+            "nous": "nous appellerons", "vous": "vous appellerez", "ils/elles": "s'appelleront"
+        },
+        "conditionnel": {
+            "je": "m'appellerais", "tu": "t'appellerais", "il/elle": "s'appellerait",
+            "nous": "nous appellerions", "vous": "vous appelleriez", "ils/elles": "s'appelleraient"
+        },
+        "imperatif": ["Appelle-toi !", "Appelons-nous !", "Appelez-vous !"],
+        "exemplos": [
+            {"fr": "Comment vous appelez-vous ? — Je m'appelle Lucas.", "pt": "Como o senhor se chama? — Eu me chamo Lucas."},
+            {"fr": "Cette place s'appelait autrefois la Place Royale.", "pt": "Esta praça se chamava antigamente Place Royale."}
+        ]
     }
 }
 
@@ -1010,6 +1076,8 @@ TEMAS_GUIA_FLE = [
         "id": "maison-etre",
         "icone": "home",
         "titulo": "1. La Maison d'Être",
+        "nivel_cefr": "A1–A2",
+        "cefr_grupo": "A2",
         "subtitulo": "14 Verbos de Movimento e Estado + Verbos Pronominais",
         "descricao": "No Passé Composé, a maioria dos verbos usa o auxiliar AVOIR. No entanto, 14 verbos fundamentais de deslocamento e mudança de estado (e seus compostos) + TODOS os verbos pronominais exigem o auxiliar ÊTRE, concordando obrigatoriamente com o sujeito em gênero (-e) e número (-s).",
         "regra_chave": "Sujeito Feminino: +e | Sujeito Plural: +s | Sujeito Feminino Plural: +es. Ex: Elle est partie, Elles sont parties.",
@@ -1029,10 +1097,12 @@ TEMAS_GUIA_FLE = [
         "id": "conjugacao-verbos",
         "icone": "clock",
         "titulo": "2. Conjugação de Verbos Essenciais",
+        "nivel_cefr": "A1–B2",
+        "cefr_grupo": "A1",
         "subtitulo": "Tabelas e Modelos dos Principais Grupos e Modos",
         "descricao": "O francês divide os verbos em 3 grupos: 1º Grupo (-er, regular e produtivo), 2º Grupo (-ir com terminação -issons no nous, regular) e 3º Grupo (verbos irregulares em -ir, -re, -oir e o verbo aller). Clique em qualquer card de verbo para abrir o conjugador instantâneo.",
         "regra_chave": "Terminações no Presente do Indicativo: 1º Grupo: -e, -es, -e, -ons, -ez, -ent | 2º/3º Grupos regulares: -s, -s, -t/d, -ons, -ez, -ent.",
-        "verbos_ids": ["etre", "avoir", "faire", "prendre", "pouvoir", "vouloir", "devoir", "savoir", "dire", "voir", "parler", "finir", "comprendre", "boire", "mettre", "ecrire"],
+        "verbos_ids": ["etre", "avoir", "faire", "prendre", "pouvoir", "vouloir", "devoir", "savoir", "dire", "voir", "parler", "finir", "comprendre", "boire", "mettre", "ecrire", "se_lever", "sappeler"],
         "exemplos_adicionais": [
             {"titulo": "Parler (1º Grupo Regular)", "fr": "Je parle français avec mes collègues tous les jours.", "pt": "Falo francês com meus colegas todos os dias."},
             {"titulo": "Finir (2º Grupo Regular em -ir)", "fr": "Nous finissons notre rapport avant la réunion de demain.", "pt": "Terminamos nosso relatório antes da reunião de amanhã."},
@@ -1043,6 +1113,8 @@ TEMAS_GUIA_FLE = [
         "id": "articles-partitifs",
         "icone": "coffee",
         "titulo": "3. Articles Partitifs (du, de la, de l', des)",
+        "nivel_cefr": "A1–A2",
+        "cefr_grupo": "A1",
         "subtitulo": "Quantidades Indeterminadas, Bebidas, Alimentos e a Regra do 'DE'",
         "descricao": "Os artigos partitivos indicam uma parte ou porção não contável de uma matéria, alimento ou conceito abstrato. Em português frequentemente omitimos ('Quero café'), mas em francês o partitivo é obrigatório ('Je veux du café').",
         "regra_chave": "Masculino: DU | Feminino: DE LA | Antes de vogal/h mudo: DE L' | Plural: DES. Na NEGAÇÃO absoluta e após expressões de quantidade, todos viram DE ou D'!",
@@ -1083,6 +1155,8 @@ TEMAS_GUIA_FLE = [
         "id": "faux-amis",
         "icone": "alert-triangle",
         "titulo": "4. Faux Amis (Falsos Cognatos Clássicos)",
+        "nivel_cefr": "A1–B2",
+        "cefr_grupo": "A2",
         "subtitulo": "Palavras que parecem português mas possuem significados completamente diferentes",
         "descricao": "Devido à raiz latina comum, muitas palavras francesas se assemelham ao português na grafia ou pronúncia, mas possuem acepções distintas. Dominar os falsos cognatos evita gafes sociais e erros de interpretação em exames DELF/DALF.",
         "regra_chave": "Desconfie de palavras com som idêntico e verifique o contexto sintático!",
@@ -1189,6 +1263,8 @@ TEMAS_GUIA_FLE = [
         "id": "pronoms-y-en",
         "icone": "git-merge",
         "titulo": "5. Pronoms Adverbiaux Y & EN",
+        "nivel_cefr": "A2–B1",
+        "cefr_grupo": "B1",
         "subtitulo": "Substituição Elegante de Lugares, Quantidades e Preposições",
         "descricao": "Os pronomes Y e EN são elementos estilísticos vitais no francês para evitar repetições pesadas. Dominá-los é o maior salto de fluência entre o nível A2 e B1/B2.",
         "regra_chave": "Y substitui: [à / en / dans / chez + LUGAR] ou [à + COISA] | EN substitui: [de / du / de la / des + COISA/LUGAR] ou [QUANTIDADE NUMÉRICA].",
@@ -1226,6 +1302,8 @@ TEMAS_GUIA_FLE = [
         "id": "pronoms-cod-coi",
         "icone": "target",
         "titulo": "6. Pronomes COD & COI",
+        "nivel_cefr": "A2–B1",
+        "cefr_grupo": "B1",
         "subtitulo": "Complément d'Objet Direct (le, la, les) & Indirect (lui, leur)",
         "descricao": "Os pronomes complemento direto (COD) respondem à pergunta 'qui ?' (quem?) ou 'quoi ?' (o quê?), sem preposição. Os pronomes indiretos (COI) respondem à pergunta 'à qui ?' (a quem?), com a preposição 'à'.",
         "regra_chave": "COD: me, te, le/la, nous, vous, les | COI: me, te, LUI, nous, vous, LEUR. Ficam ANTES do verbo conjugado (ex: Je le vois, Je lui parle).",
@@ -1251,6 +1329,8 @@ TEMAS_GUIA_FLE = [
         "id": "negation-complexe",
         "icone": "slash",
         "titulo": "7. Negação Simples & Complexa",
+        "nivel_cefr": "A2–B1",
+        "cefr_grupo": "A2",
         "subtitulo": "Além do 'ne... pas': nuances de tempo, restrição e ausência",
         "descricao": "A estrutura de negação em francês abraça o verbo conjugado: ne + [verbo] + [palavra negativa]. No registro coloquial e oral, os franceses costumam omitir o 'ne' ('J'sais pas'), mas na escrita e em exames o 'ne' é indispensável.",
         "regra_chave": "No Passé Composé: ne + auxiliar + pas/jamais/rien/plus + particípio. EXCEÇÃO: 'personne' e 'nulle part' ficam DEPOIS do particípio! Ex: Je n'ai vu personne.",
@@ -1267,6 +1347,8 @@ TEMAS_GUIA_FLE = [
         "id": "prepositions-lieu",
         "icone": "map-pin",
         "titulo": "8. Prépositions de Lieu & Pays",
+        "nivel_cefr": "A1–A2",
+        "cefr_grupo": "A1",
         "subtitulo": "Cidades, Países Femininos, Masculinos, Plurais e o uso de 'Chez'",
         "descricao": "Em francês, a escolha da preposição que antecede nomes de cidades e países varia estritamente de acordo com o gênero e a terminação do topônimo.",
         "regra_chave": "Cidades: À (à Paris, à São Paulo) | Países femininos (terminados em -e): EN (en France, en Italie) | Países masculinos: AU (au Brésil, au Canada) | Países no plural: AUX (aux États-Unis).",
@@ -1316,6 +1398,8 @@ TEMAS_GUIA_FLE = [
         "id": "courtoisie-quotidien",
         "icone": "message-circle",
         "titulo": "9. Fórmulas de Cortesia & Situações Cotidianas",
+        "nivel_cefr": "A1–A2",
+        "cefr_grupo": "A1",
         "subtitulo": "Padaria, Restaurante, Compras e Polidez Essencial",
         "descricao": "Na cultura francesa, a fórmula de polidez é um rito sagrado. Entrar em uma loja sem dizer 'Bonjour Madame/Monsieur' ou esquecer o 'S'il vous plaît' é considerado indelicado.",
         "regra_chave": "Nunca peça coisas dizendo 'Je veux' (muito brusco). Use sempre o Conditionnel de Polidez: 'Je voudrais...' ou 'Pourriez-vous...'",
@@ -1348,6 +1432,8 @@ TEMAS_GUIA_FLE = [
         "id": "subjonctif-indicatif",
         "icone": "sparkles",
         "titulo": "10. Le Subjonctif Présent",
+        "nivel_cefr": "B1–B2",
+        "cefr_grupo": "B2",
         "subtitulo": "Expressão de Vontade, Necessidade, Dúvida e Emoção",
         "descricao": "O Subjonctif não é um tempo de certeza factual (como o Indicatif), mas o modo da subjetividade, do desejo, da exigência e do sentimento. É quase invariavelmente introduzido pela conjunção 'QUE'.",
         "regra_chave": "Formação regular: raiz da 3ª pessoa plural (ils/elles) no presente + terminações: -e, -es, -e, -ions, -iez, -ent.",

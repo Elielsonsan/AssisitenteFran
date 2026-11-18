@@ -22,131 +22,40 @@
             </p>
         </header>
 
-        <!-- 2. Linha de 4 Mini-KPIs com Ondas Coloridas e Botão Pill Escuro (#18191E) -->
-        <section class="guia-kpis-grid no-print" aria-label="Resumo do Guia Gramatical FLE">
-            <!-- Card 1: Conjugador Interativo -->
-            <article class="guia-kpi-card" onclick="navegarParaTema('conjugacao-verbos')">
-                <div class="guia-kpi-top-row">
-                    <div>
-                        <span class="guia-kpi-label">Verbos Interativos</span>
-                        <div class="guia-kpi-primary">{{ verbos|length }}</div>
+        <!-- 2. Barra Editorial Compacta de Estudo FLE (Progresso, Filtro CEFR, Velocidade de Voz e Quiz Express) -->
+        <section class="guia-study-bar no-print" aria-label="Painel de Estudo e Controles FLE">
+            <div class="guia-study-progress">
+                <div class="guia-study-prog-header">
+                    <span class="guia-study-label">Progresso do Mémento</span>
+                    <div class="guia-study-prog-right">
+                        <strong id="guiaProgressoTexto">0/{{ temas|length }} módulos revisados</strong>
+                        <button type="button" class="guia-reset-prog-btn" onclick="resetarProgressoGuiaFLE()" title="Limpar marcações de módulos revisados">↺ Resetar</button>
                     </div>
-                    <svg class="guia-kpi-wave-svg" viewBox="0 0 120 46" fill="none" aria-hidden="true">
-                        <defs>
-                            <linearGradient id="guiaWaveAmber" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#FCA311" stop-opacity="0.34"/>
-                                <stop offset="100%" stop-color="#FCA311" stop-opacity="0.0"/>
-                            </linearGradient>
-                        </defs>
-                        <path d="M2 36 C 24 32, 38 14, 62 18 C 84 22, 98 8, 118 10 L 118 44 L 2 44 Z" fill="url(#guiaWaveAmber)"/>
-                        <path d="M2 36 C 24 32, 38 14, 62 18 C 84 22, 98 8, 118 10" stroke="#FCA311" stroke-width="2.4" stroke-linecap="round"/>
-                        <circle cx="98" cy="11" r="3.5" fill="#FFFFFF" stroke="#FCA311" stroke-width="2.2"/>
-                    </svg>
                 </div>
-                <div class="guia-kpi-mid-row">
-                    <span class="guia-kpi-subval">6 Tempos Verbais</span>
-                    <span class="guia-kpi-trend">Áudio Nativo ↗</span>
+                <div class="guia-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="{{ temas|length }}" aria-valuenow="0" id="guiaProgressoTrack">
+                    <div class="guia-progress-fill" id="guiaProgressoBarra" style="width: 0%;"></div>
                 </div>
-                <div class="guia-kpi-cta-row">
-                    <button type="button" onclick="event.stopPropagation(); navegarParaTema('conjugacao-verbos')" class="guia-pill-btn">
-                        <span>Explorar Conjugador</span>
-                        <span>→</span>
-                    </button>
-                </div>
-            </article>
+            </div>
 
-            <!-- Card 2: Módulos Gramaticais -->
-            <article class="guia-kpi-card" onclick="navegarParaTema('maison-etre')">
-                <div class="guia-kpi-top-row">
-                    <div>
-                        <span class="guia-kpi-label">Módulos do Mémento</span>
-                        <div class="guia-kpi-primary">{{ temas|length }}</div>
-                    </div>
-                    <svg class="guia-kpi-wave-svg" viewBox="0 0 120 46" fill="none" aria-hidden="true">
-                        <defs>
-                            <linearGradient id="guiaWaveTeal" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#10B981" stop-opacity="0.30"/>
-                                <stop offset="100%" stop-color="#10B981" stop-opacity="0.0"/>
-                            </linearGradient>
-                        </defs>
-                        <path d="M2 34 C 24 22, 46 28, 70 14 C 90 6, 104 16, 118 8 L 118 44 L 2 44 Z" fill="url(#guiaWaveTeal)"/>
-                        <path d="M2 34 C 24 22, 46 28, 70 14 C 90 6, 104 16, 118 8" stroke="#10B981" stroke-width="2.4" stroke-linecap="round"/>
-                        <circle cx="70" cy="14" r="3.5" fill="#FFFFFF" stroke="#10B981" stroke-width="2.2"/>
-                    </svg>
+            <div class="guia-study-controls">
+                <div class="guia-cefr-filter-group" role="group" aria-label="Filtrar módulos por nível CEFR">
+                    <button type="button" class="guia-cefr-btn active" data-cefr="todos" onclick="filtrarPorCefrGuia('todos', this)">Todos</button>
+                    <button type="button" class="guia-cefr-btn" data-cefr="A1" onclick="filtrarPorCefrGuia('A1', this)">A1 Base</button>
+                    <button type="button" class="guia-cefr-btn" data-cefr="A2" onclick="filtrarPorCefrGuia('A2', this)">A2 Intermediário</button>
+                    <button type="button" class="guia-cefr-btn" data-cefr="B1-B2" onclick="filtrarPorCefrGuia('B1-B2', this)">B1–B2 Fluência</button>
                 </div>
-                <div class="guia-kpi-mid-row">
-                    <span class="guia-kpi-subval">Do Nível A1 ao B2</span>
-                    <span class="guia-kpi-trend" style="color: #059669;">14 Verbos Être ✓</span>
-                </div>
-                <div class="guia-kpi-cta-row">
-                    <button type="button" onclick="event.stopPropagation(); navegarParaTema('maison-etre')" class="guia-pill-btn">
-                        <span>Ver Maison d'Être</span>
-                        <span>→</span>
-                    </button>
-                </div>
-            </article>
 
-            <!-- Card 3: Falsos Cognatos & Armadilhas -->
-            <article class="guia-kpi-card" onclick="navegarParaTema('faux-amis')">
-                <div class="guia-kpi-top-row">
-                    <div>
-                        <span class="guia-kpi-label">Faux Amis &amp; Alertas</span>
-                        <div class="guia-kpi-primary">{{ temas[3].itens|length if temas|length > 3 else 12 }}</div>
-                    </div>
-                    <svg class="guia-kpi-wave-svg" viewBox="0 0 120 46" fill="none" aria-hidden="true">
-                        <defs>
-                            <linearGradient id="guiaWaveBlue" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#2563EB" stop-opacity="0.28"/>
-                                <stop offset="100%" stop-color="#2563EB" stop-opacity="0.0"/>
-                            </linearGradient>
-                        </defs>
-                        <path d="M2 35 C 26 26, 46 30, 68 18 C 88 8, 104 14, 118 9 L 118 44 L 2 44 Z" fill="url(#guiaWaveBlue)"/>
-                        <path d="M2 35 C 26 26, 46 30, 68 18 C 88 8, 104 14, 118 9" stroke="#2563EB" stroke-width="2.4" stroke-linecap="round"/>
-                        <circle cx="88" cy="11" r="3.5" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.2"/>
-                    </svg>
+                <div class="guia-tts-controls" role="group" aria-label="Velocidade da pronúncia em francês">
+                    <span class="guia-tts-label">Voz FR:</span>
+                    <button type="button" class="guia-tts-rate-btn" data-rate="0.8" onclick="definirVelocidadeVozGuia(0.8, this)">🐢 0.80x</button>
+                    <button type="button" class="guia-tts-rate-btn active" data-rate="0.9" onclick="definirVelocidadeVozGuia(0.9, this)">🎯 0.90x</button>
+                    <button type="button" class="guia-tts-rate-btn" data-rate="1.05" onclick="definirVelocidadeVozGuia(1.05, this)">⚡ 1.05x</button>
                 </div>
-                <div class="guia-kpi-mid-row">
-                    <span class="guia-kpi-subval">Exames DELF / TCF</span>
-                    <span class="guia-kpi-trend" style="color: #2563EB;">Contraste FR/PT ↗</span>
-                </div>
-                <div class="guia-kpi-cta-row">
-                    <button type="button" onclick="event.stopPropagation(); navegarParaTema('faux-amis')" class="guia-pill-btn">
-                        <span>Revisar Faux Amis</span>
-                        <span>→</span>
-                    </button>
-                </div>
-            </article>
 
-            <!-- Card 4: Pronomes, Sintaxe & Subjonctif -->
-            <article class="guia-kpi-card" onclick="navegarParaTema('pronoms-y-en')">
-                <div class="guia-kpi-top-row">
-                    <div>
-                        <span class="guia-kpi-label">Sintaxe &amp; Fluência</span>
-                        <div class="guia-kpi-primary">6</div>
-                    </div>
-                    <svg class="guia-kpi-wave-svg" viewBox="0 0 120 46" fill="none" aria-hidden="true">
-                        <defs>
-                            <linearGradient id="guiaWavePurple" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#7C3AED" stop-opacity="0.28"/>
-                                <stop offset="100%" stop-color="#7C3AED" stop-opacity="0.0"/>
-                            </linearGradient>
-                        </defs>
-                        <path d="M2 34 C 22 30, 44 16, 66 20 C 88 24, 102 10, 118 8 L 118 44 L 2 44 Z" fill="url(#guiaWavePurple)"/>
-                        <path d="M2 34 C 22 30, 44 16, 66 20 C 88 24, 102 10, 118 8" stroke="#7C3AED" stroke-width="2.4" stroke-linecap="round"/>
-                        <circle cx="102" cy="10" r="3.5" fill="#FFFFFF" stroke="#7C3AED" stroke-width="2.2"/>
-                    </svg>
-                </div>
-                <div class="guia-kpi-mid-row">
-                    <span class="guia-kpi-subval">Y, EN, COD/COI &amp; Subj.</span>
-                    <span class="guia-kpi-trend" style="color: #7C3AED;">Autonomia B1–C1 ↗</span>
-                </div>
-                <div class="guia-kpi-cta-row">
-                    <button type="button" onclick="event.stopPropagation(); navegarParaTema('pronoms-y-en')" class="guia-pill-btn">
-                        <span>Dominar Pronomes</span>
-                        <span>→</span>
-                    </button>
-                </div>
-            </article>
+                <button type="button" class="guia-quiz-trigger-btn" onclick="abrirQuizGuiaFLE()">
+                    <span>🎯 Desafio Rápido FLE</span>
+                </button>
+            </div>
         </section>
 
         <!-- 3. Card Editorial de Busca com Autocomplete + Navegação Completa dos 10 Temas -->
@@ -233,7 +142,7 @@
         <!-- ================================================================= -->
         <!-- TEMA 1: LA MAISON D'ÊTRE -->
         <!-- ================================================================= -->
-        <section class="guia-card-section" id="tema-maison-etre" data-tema="maison-etre">
+        <section class="guia-card-section" id="tema-maison-etre" data-tema="maison-etre" data-cefr="{{ temas[0].cefr_grupo }}">
             <div class="section-header">
                 <div class="section-icon-badge" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -242,7 +151,13 @@
                     </svg>
                 </div>
                 <div class="section-title-wrap">
-                    <span class="section-tag">Passé Composé Fundamental</span>
+                    <div class="section-meta-bar">
+                        <div class="section-meta-left">
+                            <span class="section-tag">Passé Composé Fundamental</span>
+                            <span class="section-cefr-badge">CEFR {{ temas[0].nivel_cefr }}</span>
+                        </div>
+                        <button type="button" class="btn-revisado-modulo no-print" data-modulo-id="{{ temas[0].id }}" onclick="alternarModuloRevisado('{{ temas[0].id }}', this)">✓ Marcar como Revisado</button>
+                    </div>
                     <h2 class="section-title">1. La Maison d'Être (14 Verbos de Movimento e Mudança de Estado)</h2>
                     <p class="section-desc">
                         No <em>Passé Composé</em>, a maioria dos verbos usa o auxiliar <strong>AVOIR</strong>. No entanto, estes <strong>14 verbos essenciais</strong> e todos os <strong>verbos pronominais</strong> (ex: <em>se lever, se réveiller</em>) exigem o auxiliar <strong>ÊTRE</strong>, e seus particípios passados <strong>concordam obrigatoriamente com o sujeito</strong> em gênero (-e) e número (-s).
@@ -285,7 +200,7 @@
                                 Ver conjugação
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
                             </span>
-                            <button type="button" class="btn-ouvir-exemplo small" onclick="event.stopPropagation(); falarTextoFrances('{{ v.verbo }}')" title="Ouvir infinitivo">
+                            <button type="button" class="btn-ouvir-exemplo small no-print" data-tts="{{ v.verbo|e }}" onclick="event.stopPropagation(); ouvirElementoGuia(this)" title="Ouvir infinitivo">
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
                                 <span>Ouvir</span>
                             </button>
@@ -311,7 +226,7 @@
                         </div>
                         <div class="pair-example">
                             <p class="fr-text">{{ p.ex }}</p>
-                            <button type="button" class="btn-ouvir-exemplo" onclick="falarTextoFrances('{{ p.ex }}')" title="Ouvir frase">
+                            <button type="button" class="btn-ouvir-exemplo no-print" data-tts="{{ p.ex|e }}" onclick="ouvirElementoGuia(this)" title="Ouvir frase">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
                                 <span>Ouvir</span>
                             </button>
@@ -338,7 +253,7 @@
         <!-- ================================================================= -->
         <!-- TEMA 2: CONJUGAÇÃO DE VERBOS ESSENCIAIS -->
         <!-- ================================================================= -->
-        <section class="guia-card-section" id="tema-conjugacao-verbos" data-tema="conjugacao-verbos">
+        <section class="guia-card-section" id="tema-conjugacao-verbos" data-tema="conjugacao-verbos" data-cefr="{{ temas[1].cefr_grupo }}">
             <div class="section-header">
                 <div class="section-icon-badge" style="background: rgba(168, 85, 247, 0.15); color: #a855f7;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -347,16 +262,22 @@
                     </svg>
                 </div>
                 <div class="section-title-wrap">
-                    <span class="section-tag">Conjugador Interativo</span>
-                    <h2 class="section-title">2. Conjugação de Verbos Essenciais (Irregulares e Modelos Regulares)</h2>
+                    <div class="section-meta-bar">
+                        <div class="section-meta-left">
+                            <span class="section-tag">Conjugador Interativo</span>
+                            <span class="section-cefr-badge">CEFR {{ temas[1].nivel_cefr }}</span>
+                        </div>
+                        <button type="button" class="btn-revisado-modulo no-print" data-modulo-id="{{ temas[1].id }}" onclick="alternarModuloRevisado('{{ temas[1].id }}', this)">✓ Marcar como Revisado</button>
+                    </div>
+                    <h2 class="section-title">2. Conjugação de Verbos Essenciais (Irregulares, Pronominais e Modelos Regulares)</h2>
                     <p class="section-desc">
-                        Verbos que constituem mais de 80% das conversas do dia a dia. Clique em qualquer verbo para ver a tabela completa de conjugação nos tempos <strong>Présent, Passé Composé, Imparfait, Futur Simple, Conditionnel e Impératif</strong>.
+                        Verbos que constituem mais de 80% das conversas do dia a dia (incluindo verbos pronominais reflexivos). Clique em qualquer verbo para ver a tabela completa de conjugação nos tempos <strong>Présent, Passé Composé, Imparfait, Futur Simple, Conditionnel e Impératif</strong>.
                     </p>
                 </div>
             </div>
 
             <div class="verb-grid-heading">
-                <h3>Verbos Mais Usados da Língua Francesa <span class="badge-count">16 modelos essenciais</span></h3>
+                <h3>Verbos Mais Usados da Língua Francesa <span class="badge-count">{{ temas[1].verbos_ids|length }} modelos essenciais</span></h3>
                 <span class="click-hint">Clique para conjugar em todos os tempos verbais</span>
             </div>
 
@@ -378,7 +299,7 @@
                                 Ver conjugação
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
                             </span>
-                            <button type="button" class="btn-ouvir-exemplo small" onclick="event.stopPropagation(); falarTextoFrances('{{ v.verbo }}')" title="Ouvir infinitivo">
+                            <button type="button" class="btn-ouvir-exemplo small no-print" data-tts="{{ v.verbo|e }}" onclick="event.stopPropagation(); ouvirElementoGuia(this)" title="Ouvir infinitivo">
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
                                 <span>Ouvir</span>
                             </button>
@@ -399,7 +320,7 @@
                     <div class="example-box-card">
                         <div class="example-box-header">
                             <span class="example-title-badge">{{ ex.titulo }}</span>
-                            <button type="button" class="btn-ouvir-exemplo" onclick="falarTextoFrances('{{ ex.fr }}')" title="Ouvir pronúncia">
+                            <button type="button" class="btn-ouvir-exemplo no-print" data-tts="{{ ex.fr|e }}" onclick="ouvirElementoGuia(this)" title="Ouvir pronúncia">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
                                 <span>Ouvir</span>
                             </button>
@@ -415,7 +336,7 @@
         <!-- ================================================================= -->
         <!-- TEMA 3: ARTICLES PARTITIFS -->
         <!-- ================================================================= -->
-        <section class="guia-card-section" id="tema-articles-partitifs" data-tema="articles-partitifs">
+        <section class="guia-card-section" id="tema-articles-partitifs" data-tema="articles-partitifs" data-cefr="{{ temas[2].cefr_grupo }}">
             <div class="section-header">
                 <div class="section-icon-badge" style="background: rgba(234, 179, 8, 0.15); color: #eab308;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -427,7 +348,13 @@
                     </svg>
                 </div>
                 <div class="section-title-wrap">
-                    <span class="section-tag">Alimentos, Bebidas & Quantidades</span>
+                    <div class="section-meta-bar">
+                        <div class="section-meta-left">
+                            <span class="section-tag">Alimentos, Bebidas & Quantidades</span>
+                            <span class="section-cefr-badge">CEFR {{ temas[2].nivel_cefr }}</span>
+                        </div>
+                        <button type="button" class="btn-revisado-modulo no-print" data-modulo-id="{{ temas[2].id }}" onclick="alternarModuloRevisado('{{ temas[2].id }}', this)">✓ Marcar como Revisado</button>
+                    </div>
                     <h2 class="section-title">3. Articles Partitifs (du, de la, de l', des)</h2>
                     <p class="section-desc">
                         Utilizados para designar uma <strong>quantidade indeterminada ou não contável</strong> de algo (uma porção de alimento, bebida ou substância). Em português dizemos apenas "eu bebo café", mas em francês o artigo partitivo é <strong>estritamente obrigatório</strong>: <em>Je bois <strong>du</strong> café</em>.
@@ -454,7 +381,7 @@
                             <td>
                                 <div class="audio-inline-wrap">
                                     <span class="fr-word">« {{ row.ex_fr }} »</span>
-                                    <button type="button" class="btn-ouvir-exemplo small" onclick="falarTextoFrances('{{ row.ex_fr }}')" title="Ouvir frase">
+                                    <button type="button" class="btn-ouvir-exemplo small no-print" data-tts="{{ row.ex_fr|e }}" onclick="ouvirElementoGuia(this)" title="Ouvir frase">
                                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
                                         <span>Ouvir</span>
                                     </button>
@@ -484,7 +411,7 @@
                             <div class="correct-box">
                                 <span class="tag-correct">✅ Correto</span>
                                 <code>{{ a.correto }}</code>
-                                <button type="button" class="btn-ouvir-exemplo small" onclick="falarTextoFrances('{{ a.correto }}')" title="Ouvir pronúncia correta">
+                                <button type="button" class="btn-ouvir-exemplo small no-print" data-tts="{{ a.correto|e }}" onclick="ouvirElementoGuia(this)" title="Ouvir pronúncia correta">
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
                                     <span>Ouvir</span>
                                 </button>
@@ -503,7 +430,7 @@
         <!-- ================================================================= -->
         <!-- TEMA 4: FAUX AMIS -->
         <!-- ================================================================= -->
-        <section class="guia-card-section" id="tema-faux-amis" data-tema="faux-amis">
+        <section class="guia-card-section" id="tema-faux-amis" data-tema="faux-amis" data-cefr="{{ temas[3].cefr_grupo }}">
             <div class="section-header">
                 <div class="section-icon-badge" style="background: rgba(239, 68, 68, 0.15); color: #ef4444;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -513,7 +440,13 @@
                     </svg>
                 </div>
                 <div class="section-title-wrap">
-                    <span class="section-tag">Vocabulário & Interpretação</span>
+                    <div class="section-meta-bar">
+                        <div class="section-meta-left">
+                            <span class="section-tag">Vocabulário & Interpretação</span>
+                            <span class="section-cefr-badge">CEFR {{ temas[3].nivel_cefr }}</span>
+                        </div>
+                        <button type="button" class="btn-revisado-modulo no-print" data-modulo-id="{{ temas[3].id }}" onclick="alternarModuloRevisado('{{ temas[3].id }}', this)">✓ Marcar como Revisado</button>
+                    </div>
                     <h2 class="section-title">4. Faux Amis (Falsos Cognatos Francês-Português)</h2>
                     <p class="section-desc">
                         Palavras que parecem muito com português na grafia ou na sonoridade, mas que <strong>possuem significado completamente diferente</strong>. Conhecê-las evita mal-entendidos e garante pontos preciosos em provas oficiais como DELF/DALF/TCF.
@@ -526,7 +459,7 @@
                 <div class="faux-ami-card" data-word="{{ item.termo|lower }}">
                     <div class="faux-ami-header">
                         <span class="faux-ami-term">{{ item.termo }}</span>
-                        <button type="button" class="btn-ouvir-exemplo" onclick="falarTextoFrances('{{ item.termo }}. {{ item.exemplo_fr }}')" title="Ouvir termo e exemplo">
+                        <button type="button" class="btn-ouvir-exemplo no-print" data-tts="{{ item.termo|e }}. {{ item.exemplo_fr|e }}" onclick="ouvirElementoGuia(this)" title="Ouvir termo e exemplo">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
                             <span>Ouvir</span>
                         </button>
@@ -558,7 +491,7 @@
         <!-- ================================================================= -->
         <!-- TEMA 5: PRONOMS Y & EN -->
         <!-- ================================================================= -->
-        <section class="guia-card-section" id="tema-pronoms-y-en" data-tema="pronoms-y-en">
+        <section class="guia-card-section" id="tema-pronoms-y-en" data-tema="pronoms-y-en" data-cefr="{{ temas[4].cefr_grupo }}">
             <div class="section-header">
                 <div class="section-icon-badge" style="background: rgba(14, 165, 233, 0.15); color: #0ea5e9;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -568,7 +501,13 @@
                     </svg>
                 </div>
                 <div class="section-title-wrap">
-                    <span class="section-tag">Fluência Avançada</span>
+                    <div class="section-meta-bar">
+                        <div class="section-meta-left">
+                            <span class="section-tag">Fluência Avançada</span>
+                            <span class="section-cefr-badge">CEFR {{ temas[4].nivel_cefr }}</span>
+                        </div>
+                        <button type="button" class="btn-revisado-modulo no-print" data-modulo-id="{{ temas[4].id }}" onclick="alternarModuloRevisado('{{ temas[4].id }}', this)">✓ Marcar como Revisado</button>
+                    </div>
                     <h2 class="section-title">5. Pronoms Adverbiaux Y & EN</h2>
                     <p class="section-desc">
                         Os pronomes <strong>Y</strong> e <strong>EN</strong> são ferramentas essenciais para falar francês naturalmente sem repetir palavras desnecessárias. Eles substituem complementos circunstanciais de lugar, quantidades e frases introduzidas pelas preposições <em>À</em> e <em>DE</em>.
@@ -599,7 +538,7 @@
                             </div>
                             <div class="dialogue-actions">
                                 <span class="dialogue-pt">{{ d.pt }}</span>
-                                <button type="button" class="btn-ouvir-exemplo" onclick="falarTextoFrances('{{ d.pergunta }} {{ d.resposta }}')" title="Ouvir diálogo">
+                                <button type="button" class="btn-ouvir-exemplo no-print" data-tts="{{ d.pergunta|e }} {{ d.resposta|e }}" onclick="ouvirElementoGuia(this)" title="Ouvir diálogo">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
                                     <span>Ouvir</span>
                                 </button>
@@ -631,7 +570,7 @@
                             </div>
                             <div class="dialogue-actions">
                                 <span class="dialogue-pt">{{ d.pt }}</span>
-                                <button type="button" class="btn-ouvir-exemplo" onclick="falarTextoFrances('{{ d.pergunta }} {{ d.resposta }}')" title="Ouvir diálogo">
+                                <button type="button" class="btn-ouvir-exemplo no-print" data-tts="{{ d.pergunta|e }} {{ d.resposta|e }}" onclick="ouvirElementoGuia(this)" title="Ouvir diálogo">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
                                     <span>Ouvir</span>
                                 </button>
@@ -646,7 +585,7 @@
         <!-- ================================================================= -->
         <!-- TEMA 6: COD & COI -->
         <!-- ================================================================= -->
-        <section class="guia-card-section" id="tema-pronoms-cod-coi" data-tema="pronoms-cod-coi">
+        <section class="guia-card-section" id="tema-pronoms-cod-coi" data-tema="pronoms-cod-coi" data-cefr="{{ temas[5].cefr_grupo }}">
             <div class="section-header">
                 <div class="section-icon-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -656,7 +595,13 @@
                     </svg>
                 </div>
                 <div class="section-title-wrap">
-                    <span class="section-tag">Sintaxe & Pronomes Complemento</span>
+                    <div class="section-meta-bar">
+                        <div class="section-meta-left">
+                            <span class="section-tag">Sintaxe & Pronomes Complemento</span>
+                            <span class="section-cefr-badge">CEFR {{ temas[5].nivel_cefr }}</span>
+                        </div>
+                        <button type="button" class="btn-revisado-modulo no-print" data-modulo-id="{{ temas[5].id }}" onclick="alternarModuloRevisado('{{ temas[5].id }}', this)">✓ Marcar como Revisado</button>
+                    </div>
                     <h2 class="section-title">6. Pronomes COD & COI</h2>
                     <p class="section-desc">
                         Diferencie facilmente complementos diretos (<em>le, la, l', les</em>) de complementos indiretos com preposição <em>à</em> (<em>lui, leur</em>).
@@ -678,7 +623,7 @@
                         <div class="example-line">
                             <p class="fr-ex">{{ item.ex_fr }}</p>
                             <p class="pt-ex">{{ item.ex_pt }}</p>
-                            <button type="button" class="btn-ouvir-exemplo" onclick="falarTextoFrances('{{ item.ex_fr }}')" title="Ouvir">
+                            <button type="button" class="btn-ouvir-exemplo no-print" data-tts="{{ item.ex_fr|e }}" onclick="ouvirElementoGuia(this)" title="Ouvir">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
                                 <span>Ouvir Frase</span>
                             </button>
@@ -700,7 +645,7 @@
         <!-- ================================================================= -->
         <!-- TEMA 7: NÉGATION COMPLEXE -->
         <!-- ================================================================= -->
-        <section class="guia-card-section" id="tema-negation-complexe" data-tema="negation-complexe">
+        <section class="guia-card-section" id="tema-negation-complexe" data-tema="negation-complexe" data-cefr="{{ temas[6].cefr_grupo }}">
             <div class="section-header">
                 <div class="section-icon-badge" style="background: rgba(244, 63, 94, 0.15); color: #f43f5e;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -709,7 +654,13 @@
                     </svg>
                 </div>
                 <div class="section-title-wrap">
-                    <span class="section-tag">Expressão Negativa</span>
+                    <div class="section-meta-bar">
+                        <div class="section-meta-left">
+                            <span class="section-tag">Expressão Negativa</span>
+                            <span class="section-cefr-badge">CEFR {{ temas[6].nivel_cefr }}</span>
+                        </div>
+                        <button type="button" class="btn-revisado-modulo no-print" data-modulo-id="{{ temas[6].id }}" onclick="alternarModuloRevisado('{{ temas[6].id }}', this)">✓ Marcar como Revisado</button>
+                    </div>
                     <h2 class="section-title">7. Negação Simples & Complexa</h2>
                     <p class="section-desc">
                         Além do básico <em>ne... pas</em>, o francês possui construções de negação ricas para indicar nunca (<em>jamais</em>), não mais (<em>plus</em>), nada (<em>rien</em>), ninguém (<em>personne</em>) e restrição (<em>ne... que</em>).
@@ -732,7 +683,7 @@
                     <div class="neg-ex-box">
                         <div class="neg-ex-fr">« {{ n.ex_fr }} »</div>
                         <div class="neg-ex-pt">{{ n.ex_pt }}</div>
-                        <button type="button" class="btn-ouvir-exemplo" onclick="falarTextoFrances('{{ n.ex_fr }}')" title="Ouvir exemplo">
+                        <button type="button" class="btn-ouvir-exemplo no-print" data-tts="{{ n.ex_fr|e }}" onclick="ouvirElementoGuia(this)" title="Ouvir exemplo">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
                             <span>Ouvir</span>
                         </button>
@@ -745,7 +696,7 @@
         <!-- ================================================================= -->
         <!-- TEMA 8: PRÉPOSITIONS DE LIEU -->
         <!-- ================================================================= -->
-        <section class="guia-card-section" id="tema-prepositions-lieu" data-tema="prepositions-lieu">
+        <section class="guia-card-section" id="tema-prepositions-lieu" data-tema="prepositions-lieu" data-cefr="{{ temas[7].cefr_grupo }}">
             <div class="section-header">
                 <div class="section-icon-badge" style="background: rgba(34, 197, 94, 0.15); color: #22c55e;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -754,7 +705,13 @@
                     </svg>
                 </div>
                 <div class="section-title-wrap">
-                    <span class="section-tag">Geografia & Deslocamento</span>
+                    <div class="section-meta-bar">
+                        <div class="section-meta-left">
+                            <span class="section-tag">Geografia & Deslocamento</span>
+                            <span class="section-cefr-badge">CEFR {{ temas[7].nivel_cefr }}</span>
+                        </div>
+                        <button type="button" class="btn-revisado-modulo no-print" data-modulo-id="{{ temas[7].id }}" onclick="alternarModuloRevisado('{{ temas[7].id }}', this)">✓ Marcar como Revisado</button>
+                    </div>
                     <h2 class="section-title">8. Prépositions de Lieu & Pays</h2>
                     <p class="section-desc">
                         A regra exata de preposições para cidades (<em>à</em>), países femininos (<em>en</em>), países masculinos (<em>au</em>), países plurais (<em>aux</em>) e pessoas/profissionais (<em>chez</em>).
@@ -774,7 +731,7 @@
                         <div class="prep-ex-row">
                             <div class="prep-fr">« {{ ex.fr }} »</div>
                             <div class="prep-pt">{{ ex.pt }}</div>
-                            <button type="button" class="btn-ouvir-exemplo" onclick="falarTextoFrances('{{ ex.fr }}')" title="Ouvir pronúncia">
+                            <button type="button" class="btn-ouvir-exemplo no-print" data-tts="{{ ex.fr|e }}" onclick="ouvirElementoGuia(this)" title="Ouvir pronúncia">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
                                 <span>Ouvir</span>
                             </button>
@@ -789,7 +746,7 @@
         <!-- ================================================================= -->
         <!-- TEMA 9: FÓRMULAS DE CORTESIA -->
         <!-- ================================================================= -->
-        <section class="guia-card-section" id="tema-courtoisie-quotidien" data-tema="courtoisie-quotidien">
+        <section class="guia-card-section" id="tema-courtoisie-quotidien" data-tema="courtoisie-quotidien" data-cefr="{{ temas[8].cefr_grupo }}">
             <div class="section-header">
                 <div class="section-icon-badge" style="background: rgba(249, 115, 22, 0.15); color: #f97316;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -797,7 +754,13 @@
                     </svg>
                 </div>
                 <div class="section-title-wrap">
-                    <span class="section-tag">Comunicação Real & Cultura</span>
+                    <div class="section-meta-bar">
+                        <div class="section-meta-left">
+                            <span class="section-tag">Comunicação Real & Cultura</span>
+                            <span class="section-cefr-badge">CEFR {{ temas[8].nivel_cefr }}</span>
+                        </div>
+                        <button type="button" class="btn-revisado-modulo no-print" data-modulo-id="{{ temas[8].id }}" onclick="alternarModuloRevisado('{{ temas[8].id }}', this)">✓ Marcar como Revisado</button>
+                    </div>
                     <h2 class="section-title">9. Fórmulas de Cortesia & Situações Cotidianas</h2>
                     <p class="section-desc">
                         Como pedir um pão na padaria, fazer pedidos no restaurante, perguntar orientações na rua e usar o francês com a máxima elegância e polidez.
@@ -816,7 +779,7 @@
                         <div class="scenario-line-box">
                             <div class="sc-fr">{{ f.fr }}</div>
                             <div class="sc-pt">{{ f.pt }}</div>
-                            <button type="button" class="btn-ouvir-exemplo" onclick="falarTextoFrances('{{ f.fr }}')" title="Ouvir fala nativa">
+                            <button type="button" class="btn-ouvir-exemplo no-print" data-tts="{{ f.fr|e }}" onclick="ouvirElementoGuia(this)" title="Ouvir fala nativa">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
                                 <span>Ouvir</span>
                             </button>
@@ -831,7 +794,7 @@
         <!-- ================================================================= -->
         <!-- TEMA 10: LE SUBJONCTIF PRÉSENT -->
         <!-- ================================================================= -->
-        <section class="guia-card-section" id="tema-subjonctif-indicatif" data-tema="subjonctif-indicatif">
+        <section class="guia-card-section" id="tema-subjonctif-indicatif" data-tema="subjonctif-indicatif" data-cefr="{{ temas[9].cefr_grupo }}">
             <div class="section-header">
                 <div class="section-icon-badge" style="background: rgba(139, 92, 246, 0.15); color: #8b5cf6;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -839,7 +802,13 @@
                     </svg>
                 </div>
                 <div class="section-title-wrap">
-                    <span class="section-tag">Modo Subjetivo & Desejos</span>
+                    <div class="section-meta-bar">
+                        <div class="section-meta-left">
+                            <span class="section-tag">Modo Subjetivo & Desejos</span>
+                            <span class="section-cefr-badge">CEFR {{ temas[9].nivel_cefr }}</span>
+                        </div>
+                        <button type="button" class="btn-revisado-modulo no-print" data-modulo-id="{{ temas[9].id }}" onclick="alternarModuloRevisado('{{ temas[9].id }}', this)">✓ Marcar como Revisado</button>
+                    </div>
                     <h2 class="section-title">10. Le Subjonctif Présent</h2>
                     <p class="section-desc">
                         O modo da subjetividade, dos sentimentos, obrigações e dúvidas. Entenda as expressões-gatilho que exigem o Subjonctif e aprenda a contrastá-lo com o Indicatif.
@@ -858,7 +827,7 @@
                     <div class="trigger-example">
                         <p class="fr-ex">« {{ g.ex_fr }} »</p>
                         <p class="pt-ex">{{ g.ex_pt }}</p>
-                        <button type="button" class="btn-ouvir-exemplo" onclick="falarTextoFrances('{{ g.ex_fr }}')" title="Ouvir exemplo">
+                        <button type="button" class="btn-ouvir-exemplo no-print" data-tts="{{ g.ex_fr|e }}" onclick="ouvirElementoGuia(this)" title="Ouvir exemplo">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
                             <span>Ouvir</span>
                         </button>
@@ -875,16 +844,29 @@
                         <div class="side-indicatif">
                             <span class="tag-ind">Indicatif (Afirmativo/Certeza)</span>
                             <p>{{ c.indicativo }}</p>
+                            <button type="button" class="btn-ouvir-exemplo small no-print" data-tts="{{ c.indicativo|e }}" onclick="ouvirElementoGuia(this)" title="Ouvir frase no Indicativo">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+                                <span>Ouvir</span>
+                            </button>
                         </div>
                         <div class="side-subjonctif">
                             <span class="tag-subj">Subjonctif (Dúvida/Negação)</span>
                             <p>{{ c.subjuntivo }}</p>
+                            <button type="button" class="btn-ouvir-exemplo small no-print" data-tts="{{ c.subjuntivo|e }}" onclick="ouvirElementoGuia(this)" title="Ouvir frase no Subjuntivo">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+                                <span>Ouvir</span>
+                            </button>
                         </div>
                     </div>
                     {% endfor %}
                 </div>
             </div>
         </section>
+
+        <div id="guiaEstadoVazio" class="guia-empty-state" style="display: none;">
+            <p>Nenhum módulo ou verbo encontrado para esse filtro.</p>
+            <button type="button" class="quick-tag-pill active" onclick="limparBuscaGuia()">Limpar Filtros</button>
+        </div>
 
             </div>
         </div>
@@ -893,9 +875,9 @@
 </div>
 
 <!-- ========================================================================= -->
-<!-- MODAL INTERATIVO DE CONJUGAÇÃO DE VERBOS (POPUP AO CLICAR EM QUALQUER VERBO) -->
+<!-- MODAL INTERATIVO DE CONJUGAÇÃO DE VERBOS (CONJUGADOR 2.0)                 -->
 <!-- ========================================================================= -->
-<div id="modalConjugador" class="modal hidden" onclick="fecharConjugadorSeClicarFora(event)" role="dialog" aria-modal="true" aria-labelledby="modalVerboTitulo">
+<div id="modalConjugador" class="modal hidden" onclick="fecharConjugadorSeClicarFora(event)" role="dialog" aria-modal="true" aria-labelledby="modalVerboNome">
     <div class="modal-dialog modal-xl modal-conjugador-dialog">
         <div class="modal-content glass-card-modal">
             
@@ -916,7 +898,13 @@
                         <span class="meta-chip chip-group" id="modalChipGroup">3º Grupo</span>
                     </div>
                 </div>
-                <button type="button" class="modal-close-btn" onclick="fecharConjugadorVerbo()" aria-label="Fechar">&times;</button>
+                <div class="modal-header-right-actions">
+                    <div class="verb-nav-btns">
+                        <button type="button" class="btn-nav-verbo" id="btnVerboAnterior" onclick="navegarVerboModal(-1)" title="Verbo anterior">← Anterior</button>
+                        <button type="button" class="btn-nav-verbo" id="btnVerboProximo" onclick="navegarVerboModal(1)" title="Próximo verbo">Próximo →</button>
+                    </div>
+                    <button type="button" class="modal-close-btn" onclick="fecharConjugadorVerbo()" aria-label="Fechar">&times;</button>
+                </div>
             </div>
 
             <!-- Corpo do Modal -->
@@ -953,8 +941,18 @@
                 <!-- Painel com a Tabela de Conjugação do Tempo Ativo -->
                 <div class="tense-content-display">
                     <div class="tense-header-info">
-                        <h4 id="tenseActiveTitle">Indicatif Présent</h4>
-                        <span class="tense-desc-hint" id="tenseActiveHint">Tempo do momento atual e hábitos cotidianos</span>
+                        <div>
+                            <h4 id="tenseActiveTitle">Indicatif Présent</h4>
+                            <span class="tense-desc-hint" id="tenseActiveHint">Tempo do momento atual e hábitos cotidianos</span>
+                        </div>
+                        <div class="tense-header-actions">
+                            <button type="button" class="btn-audio-pill" id="btnOuvirTempoCompleto" onclick="ouvirTodasPessoasConjugacao(this)" title="Ouvir todas as pessoas deste tempo verbal em sequência">
+                                <span>🔊 Ouvir Todas as Pessoas</span>
+                            </button>
+                            <button type="button" class="btn-autotest-toggle" id="btnAutoTesteConjugacao" onclick="alternarModoAutoTesteConjugacao(this)" title="Ocultar formas para praticar de memória">
+                                <span>👁️ Modo Auto-Teste</span>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="conjugation-rows-grid" id="conjugationRowsContainer">
@@ -983,6 +981,34 @@
 </div>
 
 <!-- ========================================================================= -->
+<!-- MODAL DE DESAFIO RÁPIDO FLE (QUIZ EXPRESS DU MÉMENTO)                     -->
+<!-- ========================================================================= -->
+<div id="modalQuizGuiaFLE" class="modal hidden no-print" onclick="fecharQuizSeClicarFora(event)" role="dialog" aria-modal="true" aria-labelledby="tituloModalQuizFLE">
+    <div class="modal-dialog modal-conjugador-dialog quiz-fle-dialog">
+        <div class="modal-content glass-card-modal">
+            <div class="modal-header modal-header-conjugador">
+                <div>
+                    <h2 id="tituloModalQuizFLE" class="modal-verb-title" style="font-size: 1.35rem;">🎯 Desafio Rápido du Mémento FLE</h2>
+                    <div class="quiz-fle-meta-row">
+                        <span class="meta-chip" id="quizFleProgressoPill">Questão 1 de 5</span>
+                        <span class="meta-chip" id="quizFleScorePill">0 acertos</span>
+                    </div>
+                </div>
+                <button type="button" class="modal-close-btn" onclick="fecharQuizGuiaFLE()" aria-label="Fechar Desafio">&times;</button>
+            </div>
+
+            <div class="modal-body modal-body-conjugador" id="quizFleBody">
+                <!-- Preenchido dinamicamente via JS -->
+            </div>
+
+            <div class="modal-footer modal-footer-conjugador">
+                <button type="button" class="btn-secondary btn-fechar-conjugador" onclick="fecharQuizGuiaFLE()">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================================= -->
 <!-- DADOS EMBUTIDOS DE CONJUGAÇÃO EM JSON (Para Acesso Instantâneo Sem Latência) -->
 <!-- ========================================================================= -->
 <script id="dadosVerbosJSON" type="application/json">
@@ -1000,8 +1026,17 @@
         console.error("Erro ao carregar banco de verbos:", e);
     }
 
+    const LISTA_IDS_VERBOS = Object.keys(BANCO_VERBOS);
+    const STORAGE_REVISADOS_KEY = 'fran_guia_fle_revisados';
+    const STORAGE_TTS_RATE_KEY = 'fran_tts_rate';
+
+    let verboAtualId = null;
     let verboAtualSelecionado = null;
     let tempoAtualSelecionado = 'present';
+    let modoAutoTesteAtivo = false;
+    let sequenciaAudioAtiva = false;
+    let sequenciaAudioToken = 0;
+    let cefrAtivoGuia = 'todos';
 
     const NOMES_TEMPOS = {
         'present': { nome: 'Indicatif Présent', hint: 'Ações que acontecem no presente e hábitos cotidianos.' },
@@ -1012,18 +1047,128 @@
         'imperatif': { nome: 'Impératif Présent', hint: 'Ordens, conselhos e pedidos diretos.' }
     };
 
+    const BANCO_QUIZ_FLE = [
+        {
+            categoria: "Maison d'Être vs Avoir • Passé Composé",
+            pergunta: "Complete corretamente: « Hier matin, j'___ monté mes valises au troisième étage. »",
+            opcoes: ["ai", "suis", "est", "avons"],
+            correta: 0,
+            audioFr: "Hier matin, j'ai monté mes valises au troisième étage.",
+            explicacao: "Embora 'monter' faça parte da Maison d'Être, aqui há um objeto direto ('mes valises'). Com complemento direto, usa-se obrigatoriamente o auxiliar AVOIR."
+        },
+        {
+            categoria: "Maison d'Être • Concordância",
+            pergunta: "Como fica a concordância com sujeito feminino plural? « Marie et Claire ___ à Paris en train. »",
+            opcoes: ["ont parti", "sont parti", "sont parties", "sont partis"],
+            correta: 2,
+            audioFr: "Marie et Claire sont parties à Paris en train.",
+            explicacao: "O verbo 'partir' usa o auxiliar ÊTRE e concorda em gênero e número com o sujeito feminino plural ('Marie et Claire' -> +es: parties)."
+        },
+        {
+            categoria: "Articles Partitifs • Negação Absoluta",
+            pergunta: "Qual forma completa a frase negativa? « Je ne bois jamais ___ café après vingt heures. »",
+            opcoes: ["du", "de la", "des", "de"],
+            correta: 3,
+            audioFr: "Je ne bois jamais de café après vingt heures.",
+            explicacao: "Na negação absoluta ('ne... pas', 'ne... jamais', 'ne... plus'), os artigos partitivos du / de la / de l' / des transformam-se em 'de' (ou d')."
+        },
+        {
+            categoria: "Articles Partitifs • Preferência",
+            pergunta: "Qual artigo é exigido após o verbo 'adorer'? « En France, j'adore ___ fromage artisanal ! »",
+            opcoes: ["du", "le", "de", "de l'"],
+            correta: 1,
+            audioFr: "En France, j'adore le fromage artisanal !",
+            explicacao: "Verbos de gosto e preferência (aimer, adorer, préférer, détester) exigem artigo definido (le, la, l', les), e não partitivo."
+        },
+        {
+            categoria: "Faux Amis • Falsos Cognatos",
+            pergunta: "Em « J'attends le bus depuis quinze minutes », o verbo 'attendre' significa:",
+            opcoes: ["Atender o motorista", "Esperar / aguardar", "Entender a rota", "Atravessar a rua"],
+            correta: 1,
+            audioFr: "J'attends le bus depuis quinze minutes.",
+            explicacao: "'Attendre' é um falso cognato clássico: significa esperar/aguardar. 'Atender' ao telefone em francês é 'répondre'."
+        },
+        {
+            categoria: "Pronoms Adverbiaux • Y & EN",
+            pergunta: "Substitua 'des dictionnaires' com quantidade: « Tu as des dictionnaires ? — Oui, j'___ trois. »",
+            opcoes: ["y ai", "en ai", "les ai", "lui ai"],
+            correta: 1,
+            audioFr: "Tu as des dictionnaires ? Oui, j'en ai trois.",
+            explicacao: "O pronome EN substitui substantivos precedidos por partitivo/indefinido ou quantidades numéricas, mantendo o número no final da frase."
+        },
+        {
+            categoria: "Prépositions de Lieu & Pays",
+            pergunta: "Complete com as preposições exatas: « J'habite ___ Lyon mais je voyage souvent ___ Brésil. »",
+            opcoes: ["en / en", "à / au", "au / au", "à / en"],
+            correta: 1,
+            audioFr: "J'habite à Lyon mais je voyage souvent au Brésil.",
+            explicacao: "Cidades usam 'à' (à Lyon) e países masculinos que não terminam em -e usam 'au' (au Brésil)."
+        },
+        {
+            categoria: "Le Subjonctif Présent",
+            pergunta: "Após expressão de obrigação, qual forma vai no Subjonctif? « Il faut que tu ___ tes devoirs ce soir. »",
+            opcoes: ["fais", "fera", "fasses", "faites"],
+            correta: 2,
+            audioFr: "Il faut que tu fasses tes devoirs ce soir.",
+            explicacao: "'Il faut que' dispara obrigatoriamente o Subjonctif Présent. O subjuntivo de 'faire' na 2ª pessoa singular é 'que tu fasses'."
+        }
+    ];
+
+    function escapeHtmlGuia(str) {
+        return String(str || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+    }
+
+    function normalizarTextoBuscaGuia(str) {
+        return String(str || "")
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase();
+    }
+
+    /**
+     * Remove marcações gramaticais e notas explicativas em português antes da fala em francês.
+     */
+    function sanitizarTextoParaTTSFrances(texto) {
+        return String(texto || "")
+            .replace(/\(e\)\(s\)|\(e\)s|\(e\)|\(s\)|\(es\)/g, "")
+            .replace(/\([^)]*\)/g, " ")
+            .replace(/\s*->\s*/g, ", ")
+            .replace(/\s+\/\s+/g, ", ")
+            .replace(/[*_#`~>«»\\—]/g, " ")
+            .replace(/,\s*\./g, ".")
+            .replace(/\s+/g, " ")
+            .trim();
+    }
+
+    function ouvirElementoGuia(btn) {
+        if (!btn) return;
+        const texto = btn.getAttribute("data-tts") || "";
+        falarTextoFrances(texto, btn);
+    }
+
     /**
      * Rola suavemente até o tema selecionado e destaca o chip correspondente
      */
     function navegarParaTema(temaId) {
         const secao = document.getElementById(`tema-${temaId}`);
         if (secao) {
+            if (cefrAtivoGuia !== 'todos') {
+                cefrAtivoGuia = 'todos';
+                document.querySelectorAll(".guia-cefr-btn").forEach(b => {
+                    b.classList.toggle("active", b.getAttribute("data-cefr") === "todos");
+                });
+                filtrarGuiaFLE(document.getElementById("guiaSearchInput")?.value || "");
+            }
             secao.style.display = "";
             document.querySelectorAll("#guiaQuickChips .quick-tag-pill").forEach(btn => {
                 btn.classList.toggle("active", btn.getAttribute("data-chip") === temaId);
             });
 
-            // Rola com offset para não esconder sob a navbar superior
             const offset = 90;
             const bodyRect = document.body.getBoundingClientRect().top;
             const elementRect = secao.getBoundingClientRect().top;
@@ -1038,46 +1183,240 @@
     }
 
     /**
-     * Abre o modal do conjugador com todos os dados do verbo
+     * Controle de Progresso de Revisão (Módulos Revisados em localStorage)
      */
+    function obterModulosRevisados() {
+        try {
+            const raw = localStorage.getItem(STORAGE_REVISADOS_KEY);
+            const parsed = JSON.parse(raw || "[]");
+            return Array.isArray(parsed) ? parsed : [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function atualizarUIPainelProgresso() {
+        const revisados = obterModulosRevisados();
+        const total = document.querySelectorAll(".guia-card-section").length || 10;
+        const revisadosUnicos = new Set(revisados);
+
+        const textoEl = document.getElementById("guiaProgressoTexto");
+        const barraEl = document.getElementById("guiaProgressoBarra");
+        const trackEl = document.getElementById("guiaProgressoTrack");
+
+        const qtd = Math.min(revisadosUnicos.size, total);
+        const pct = total > 0 ? Math.round((qtd / total) * 100) : 0;
+
+        if (textoEl) textoEl.textContent = `${qtd}/${total} módulos revisados`;
+        if (barraEl) barraEl.style.width = `${pct}%`;
+        if (trackEl) trackEl.setAttribute("aria-valuenow", String(qtd));
+
+        document.querySelectorAll(".btn-revisado-modulo").forEach(btn => {
+            const modId = btn.getAttribute("data-modulo-id");
+            const ok = revisadosUnicos.has(modId);
+            btn.classList.toggle("is-done", ok);
+            btn.textContent = ok ? "✓ Módulo Revisado" : "✓ Marcar como Revisado";
+        });
+
+        document.querySelectorAll("#guiaQuickChips .quick-tag-pill[data-chip]").forEach(pill => {
+            const chipId = pill.getAttribute("data-chip");
+            if (chipId && chipId !== "todos") {
+                pill.classList.toggle("is-reviewed", revisadosUnicos.has(chipId));
+            }
+        });
+    }
+
+    function alternarModuloRevisado(moduloId, btn) {
+        let lista = obterModulosRevisados();
+        if (lista.includes(moduloId)) {
+            lista = lista.filter(id => id !== moduloId);
+        } else {
+            lista.push(moduloId);
+        }
+        try {
+            localStorage.setItem(STORAGE_REVISADOS_KEY, JSON.stringify(lista));
+        } catch (e) {}
+        atualizarUIPainelProgresso();
+    }
+
+    function resetarProgressoGuiaFLE() {
+        try {
+            localStorage.removeItem(STORAGE_REVISADOS_KEY);
+        } catch (e) {}
+        atualizarUIPainelProgresso();
+        if (typeof window.showToast === 'function') {
+            window.showToast("Marcações de revisão reiniciadas.", "info");
+        }
+    }
+
+    /**
+     * Controle de Velocidade de Voz Francesa (sincronizado com fran_tts_rate global)
+     */
+    function definirVelocidadeVozGuia(rate, btn) {
+        try {
+            localStorage.setItem(STORAGE_TTS_RATE_KEY, String(rate));
+        } catch (e) {}
+        document.querySelectorAll(".guia-tts-rate-btn").forEach(b => {
+            const bRate = parseFloat(b.getAttribute("data-rate") || "0");
+            b.classList.toggle("active", Math.abs(bRate - rate) < 0.03);
+        });
+        falarTextoFrances("Bonjour ! Écoutons la prononciation française.", null, { forcarInicio: true, rate: rate });
+    }
+
+    function carregarVelocidadeSalvaGuia() {
+        try {
+            const saved = parseFloat(localStorage.getItem(STORAGE_TTS_RATE_KEY) || "0.9");
+            if (!Number.isNaN(saved)) {
+                document.querySelectorAll(".guia-tts-rate-btn").forEach(b => {
+                    const bRate = parseFloat(b.getAttribute("data-rate") || "0");
+                    b.classList.toggle("active", Math.abs(bRate - saved) < 0.03);
+                });
+            }
+        } catch (e) {}
+    }
+
+    /**
+     * Conjugador 2.0: Abre modal com navegação, áudio sequencial e auto-teste
+     */
+    function atualizarEstadoBotoesNavVerbo() {
+        const idx = LISTA_IDS_VERBOS.indexOf(verboAtualId);
+        const btnAnt = document.getElementById("btnVerboAnterior");
+        const btnProx = document.getElementById("btnVerboProximo");
+        if (btnAnt) btnAnt.disabled = LISTA_IDS_VERBOS.length <= 1 || idx < 0;
+        if (btnProx) btnProx.disabled = LISTA_IDS_VERBOS.length <= 1 || idx < 0;
+    }
+
+    function navegarVerboModal(delta) {
+        if (!LISTA_IDS_VERBOS.length) return;
+        const idxAtual = Math.max(0, LISTA_IDS_VERBOS.indexOf(verboAtualId));
+        const novoIdx = (idxAtual + delta + LISTA_IDS_VERBOS.length) % LISTA_IDS_VERBOS.length;
+        abrirConjugadorVerbo(LISTA_IDS_VERBOS[novoIdx]);
+    }
+
+    function alternarModoAutoTesteConjugacao(btn) {
+        modoAutoTesteAtivo = !modoAutoTesteAtivo;
+        const alvo = btn || document.getElementById("btnAutoTesteConjugacao");
+        if (alvo) {
+            alvo.classList.toggle("active", modoAutoTesteAtivo);
+            alvo.innerHTML = modoAutoTesteAtivo
+                ? "<span>🔓 Revelar Conjugação</span>"
+                : "<span>👁️ Modo Auto-Teste</span>";
+        }
+        renderizarConjugacaoTempo();
+    }
+
+    function pararSequenciaConjugacao() {
+        sequenciaAudioToken += 1;
+        sequenciaAudioAtiva = false;
+        const btnSeq = document.getElementById("btnOuvirTempoCompleto");
+        if (btnSeq) {
+            btnSeq.classList.remove("speaking");
+            btnSeq.innerHTML = "<span>🔊 Ouvir Todas as Pessoas</span>";
+        }
+        document.querySelectorAll(".conjugation-row-card.is-speaking-row").forEach(r => {
+            r.classList.remove("is-speaking-row");
+        });
+    }
+
+    function ouvirTodasPessoasConjugacao(btn) {
+        if (sequenciaAudioAtiva) {
+            pararSequenciaConjugacao();
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            return;
+        }
+
+        const linhas = Array.from(document.querySelectorAll("#conjugationRowsContainer .conjugation-row-card[data-tts-row]"));
+        if (!linhas.length) return;
+
+        pararSequenciaConjugacao();
+        sequenciaAudioToken += 1;
+        const tokenLocal = sequenciaAudioToken;
+        sequenciaAudioAtiva = true;
+
+        const btnSeq = btn || document.getElementById("btnOuvirTempoCompleto");
+        if (btnSeq) {
+            btnSeq.classList.add("speaking");
+            btnSeq.innerHTML = "<span>⏹ Parar Sequência</span>";
+        }
+
+        const falarProximoIndice = (indice) => {
+            if (!sequenciaAudioAtiva || tokenLocal !== sequenciaAudioToken || indice >= linhas.length) {
+                if (tokenLocal === sequenciaAudioToken) {
+                    pararSequenciaConjugacao();
+                }
+                return;
+            }
+
+            document.querySelectorAll(".conjugation-row-card.is-speaking-row").forEach(r => r.classList.remove("is-speaking-row"));
+            const row = linhas[indice];
+            row.classList.add("is-speaking-row");
+            if (row.classList.contains("is-masked")) {
+                row.classList.remove("is-masked");
+            }
+
+            const textoRow = row.getAttribute("data-tts-row") || "";
+            falarTextoFrances(textoRow, null, {
+                forcarInicio: true,
+                semAlterarBotao: true,
+                manterSequencia: true,
+                onend: () => {
+                    if (!sequenciaAudioAtiva || tokenLocal !== sequenciaAudioToken) return;
+                    setTimeout(() => falarProximoIndice(indice + 1), 220);
+                },
+                onerror: () => {
+                    if (tokenLocal === sequenciaAudioToken) {
+                        pararSequenciaConjugacao();
+                    }
+                }
+            });
+        };
+
+        falarProximoIndice(0);
+    }
+
     function abrirConjugadorVerbo(verbId) {
-        const v = BANCO_VERBOS[verbId.toLowerCase()];
+        const key = String(verbId || "").toLowerCase();
+        const v = BANCO_VERBOS[key];
         if (!v) {
             console.warn("Verbo não encontrado:", verbId);
             return;
         }
 
+        pararSequenciaConjugacao();
+        verboAtualId = key;
         verboAtualSelecionado = v;
         tempoAtualSelecionado = 'present';
 
-        // Preenche cabeçalho
+        document.querySelectorAll(".tense-tab-btn").forEach(b => b.classList.remove("active"));
+        document.getElementById("tabBtn-present")?.classList.add("active");
+
         document.getElementById("modalVerboNome").textContent = v.verbo;
         document.getElementById("modalVerboTraducao").textContent = `(${v.traducao})`;
-        document.getElementById("modalChipAux").innerHTML = `Auxiliar: <strong>${v.auxiliaire}</strong>`;
-        document.getElementById("modalChipPart").innerHTML = `Particípio: <strong>${v.participe_passe}</strong>`;
+        document.getElementById("modalChipAux").innerHTML = `Auxiliar: <strong>${escapeHtmlGuia(v.auxiliaire)}</strong>`;
+        document.getElementById("modalChipPart").innerHTML = `Particípio: <strong>${escapeHtmlGuia(v.participe_passe)}</strong>`;
         document.getElementById("modalChipGroup").textContent = v.grupo || 'Verbo FLE';
-
-        // Dica de uso
         document.getElementById("modalDicaUsoTexto").textContent = v.dica_uso || 'Consulte a conjugação e pratique a pronúncia oral.';
 
-        // Botão de áudio do infinitivo
         const btnAudio = document.getElementById("btnAudioVerboInfinitivo");
         btnAudio.onclick = () => falarTextoFrances(v.verbo, btnAudio);
 
-        // Renderiza conjugação e exemplos
+        atualizarEstadoBotoesNavVerbo();
         renderizarConjugacaoTempo();
         renderizarExemplosVerbo();
 
-        // Abre modal
         const modal = document.getElementById("modalConjugador");
         modal.classList.remove("hidden");
         document.body.style.overflow = "hidden";
     }
 
     function fecharConjugadorVerbo() {
+        pararSequenciaConjugacao();
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
         const modal = document.getElementById("modalConjugador");
-        modal.classList.add("hidden");
-        document.body.style.overflow = "";
+        if (modal) modal.classList.add("hidden");
+        if (document.getElementById("modalQuizGuiaFLE")?.classList.contains("hidden")) {
+            document.body.style.overflow = "";
+        }
     }
 
     function fecharConjugadorSeClicarFora(event) {
@@ -1088,27 +1427,42 @@
 
     document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
-            fecharConjugadorVerbo();
+            if (!document.getElementById("modalQuizGuiaFLE")?.classList.contains("hidden")) {
+                fecharQuizGuiaFLE();
+                return;
+            }
+            if (!document.getElementById("modalConjugador")?.classList.contains("hidden")) {
+                fecharConjugadorVerbo();
+            }
         }
     });
 
-    /**
-     * Troca o tempo verbal selecionado nas abas
-     */
     function trocarTempoConjugacao(tempoKey) {
+        pararSequenciaConjugacao();
         tempoAtualSelecionado = tempoKey;
-        
-        // Atualiza abas visuais
         document.querySelectorAll(".tense-tab-btn").forEach(b => b.classList.remove("active"));
         const btn = document.getElementById(`tabBtn-${tempoKey}`);
         if (btn) btn.classList.add("active");
-
         renderizarConjugacaoTempo();
     }
 
-    /**
-     * Monta as linhas da conjugação do tempo ativo
-     */
+    function criarBotaoOuvirRow(ariaLabel) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "btn-ouvir-exemplo small";
+        btn.title = "Ouvir pronúncia";
+        btn.setAttribute("aria-label", ariaLabel);
+        btn.innerHTML = `
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+            </svg>
+            <span>Ouvir</span>
+        `;
+        return btn;
+    }
+
     function renderizarConjugacaoTempo() {
         if (!verboAtualSelecionado) return;
 
@@ -1120,71 +1474,118 @@
         container.innerHTML = "";
 
         const dadosTempo = verboAtualSelecionado[tempoAtualSelecionado];
+        const btnSeq = document.getElementById("btnOuvirTempoCompleto");
 
         if (tempoAtualSelecionado === 'imperatif') {
-            // Impératif é uma lista [tu, nous, vous]
-            if (Array.isArray(dadosTempo)) {
-                dadosTempo.forEach((forma) => {
+            const labelsImperatif = ["(tu)", "(nous)", "(vous)"];
+            if (Array.isArray(dadosTempo) && dadosTempo.length > 0) {
+                const primeiroInvalido = String(dadosTempo[0] || "").trim().startsWith("(");
+                if (btnSeq) btnSeq.disabled = primeiroInvalido;
+
+                dadosTempo.forEach((forma, idx) => {
+                    const indisponivel = String(forma || "").trim().startsWith("(");
                     const row = document.createElement("div");
-                    row.className = "conjugation-row-card";
-                    row.innerHTML = `
-                        <div class="row-pronoun"><span class="badge-imperatif">Impératif</span></div>
-                        <div class="row-conjugated" lang="fr"><strong>${forma}</strong></div>
-                        <button type="button" class="btn-ouvir-exemplo small" title="Ouvir forma" aria-label="Ouvir conjugação: ${forma}">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-                            </svg>
-                            <span>Ouvir</span>
-                        </button>
-                    `;
-                    const btnRow = row.querySelector("button");
-                    btnRow.onclick = () => falarTextoFrances(forma, btnRow);
+                    row.className = "conjugation-row-card" + (indisponivel ? " is-unavailable" : "");
+                    if (!indisponivel && modoAutoTesteAtivo) {
+                        row.classList.add("is-masked");
+                        row.title = "Clique para revelar esta conjugação";
+                    }
+
+                    const labelPessoa = labelsImperatif[idx] || "Impératif";
+                    const pronDiv = document.createElement("div");
+                    pronDiv.className = "row-pronoun";
+                    pronDiv.innerHTML = `<span class="badge-imperatif">${escapeHtmlGuia(labelPessoa)}</span>`;
+
+                    const conjDiv = document.createElement("div");
+                    conjDiv.className = "row-conjugated";
+                    conjDiv.setAttribute("lang", "fr");
+                    conjDiv.innerHTML = indisponivel
+                        ? `<span class="muted-text">${escapeHtmlGuia(forma)}</span>`
+                        : `<strong>${escapeHtmlGuia(forma)}</strong>`;
+
+                    row.appendChild(pronDiv);
+                    row.appendChild(conjDiv);
+
+                    if (!indisponivel) {
+                        row.setAttribute("data-tts-row", forma);
+                        row.onclick = (e) => {
+                            if (row.classList.contains("is-masked") && !e.target.closest("button")) {
+                                row.classList.remove("is-masked");
+                            }
+                        };
+                        const btnRow = criarBotaoOuvirRow(`Ouvir conjugação: ${forma}`);
+                        btnRow.onclick = (e) => {
+                            e.stopPropagation();
+                            row.classList.remove("is-masked");
+                            falarTextoFrances(forma, btnRow);
+                        };
+                        row.appendChild(btnRow);
+                    }
                     container.appendChild(row);
                 });
             } else {
+                if (btnSeq) btnSeq.disabled = true;
                 container.innerHTML = `<p class="muted-text">Forma imperativa não disponível para este verbo.</p>`;
             }
             return;
         }
 
+        if (btnSeq) btnSeq.disabled = false;
+
         if (dadosTempo && typeof dadosTempo === 'object') {
             const pronomes = ["je", "tu", "il/elle/on", "nous", "vous", "ils/elles"];
             pronomes.forEach(pron => {
                 const forma = dadosTempo[pron] || dadosTempo[pron.split("/")[0]] || "—";
-                
-                // Trata elisão com je: j'ai, j'allais, j'irais
+
                 let pronomeFormatado = pron;
                 if (pron === "je" && /^[aeiouyàéèêëïîôùûh]/i.test(forma)) {
                     pronomeFormatado = "j'";
                 }
 
+                let pronomeFalado = pronomeFormatado;
+                if (pron === "il/elle/on" || pron === "il/elle") pronomeFalado = "il";
+                if (pron === "ils/elles") pronomeFalado = "ils";
+
+                const textoExibido = `${pronomeFormatado} ${forma}`.replace("j' ", "j'");
+                const textoFalado = `${pronomeFalado} ${forma}`.replace("j' ", "j'");
+
                 const row = document.createElement("div");
-                row.className = "conjugation-row-card";
-                const textoCompleto = `${pronomeFormatado} ${forma}`.replace("j' ", "j'");
-                row.innerHTML = `
-                    <div class="row-pronoun">${pronomeFormatado}</div>
-                    <div class="row-conjugated" lang="fr"><strong>${forma}</strong></div>
-                    <button type="button" class="btn-ouvir-exemplo small" title="Ouvir pronúncia" aria-label="Ouvir conjugação: ${textoCompleto}">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-                        </svg>
-                        <span>Ouvir</span>
-                    </button>
-                `;
-                const btnRow = row.querySelector("button");
-                btnRow.onclick = () => falarTextoFrances(textoCompleto, btnRow);
+                row.className = "conjugation-row-card" + (modoAutoTesteAtivo ? " is-masked" : "");
+                if (modoAutoTesteAtivo) {
+                    row.title = "Clique para revelar esta conjugação";
+                }
+                row.setAttribute("data-tts-row", textoFalado);
+
+                const pronDiv = document.createElement("div");
+                pronDiv.className = "row-pronoun";
+                pronDiv.textContent = pronomeFormatado;
+
+                const conjDiv = document.createElement("div");
+                conjDiv.className = "row-conjugated";
+                conjDiv.setAttribute("lang", "fr");
+                conjDiv.innerHTML = `<strong>${escapeHtmlGuia(forma)}</strong>`;
+
+                const btnRow = criarBotaoOuvirRow(`Ouvir conjugação: ${textoExibido}`);
+                btnRow.onclick = (e) => {
+                    e.stopPropagation();
+                    row.classList.remove("is-masked");
+                    falarTextoFrances(textoFalado, btnRow);
+                };
+
+                row.onclick = (e) => {
+                    if (row.classList.contains("is-masked") && !e.target.closest("button")) {
+                        row.classList.remove("is-masked");
+                    }
+                };
+
+                row.appendChild(pronDiv);
+                row.appendChild(conjDiv);
+                row.appendChild(btnRow);
                 container.appendChild(row);
             });
         }
     }
 
-    /**
-     * Renderiza as frases de exemplo contextualizadas do verbo
-     */
     function renderizarExemplosVerbo() {
         const container = document.getElementById("verbExamplesContainer");
         container.innerHTML = "";
@@ -1196,8 +1597,8 @@
             card.className = "verb-example-box";
             card.innerHTML = `
                 <div class="ex-top">
-                    <p class="ex-fr" lang="fr">« ${ex.fr} »</p>
-                    <button type="button" class="btn-ouvir-exemplo" title="Ouvir frase em francês" aria-label="Ouvir exemplo em francês: ${ex.fr}">
+                    <p class="ex-fr" lang="fr">« ${escapeHtmlGuia(ex.fr)} »</p>
+                    <button type="button" class="btn-ouvir-exemplo" title="Ouvir frase em francês">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                             <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
@@ -1206,16 +1607,17 @@
                         <span>Ouvir</span>
                     </button>
                 </div>
-                <p class="ex-pt">${ex.pt}</p>
+                <p class="ex-pt">${escapeHtmlGuia(ex.pt)}</p>
             `;
             const btnEx = card.querySelector("button");
+            btnEx.setAttribute("aria-label", `Ouvir exemplo em francês: ${ex.fr}`);
             btnEx.onclick = () => falarTextoFrances(ex.fr, btnEx);
             container.appendChild(card);
         });
     }
 
     /**
-     * Filtro em tempo real + Autocomplete Inteligente no Guia FLE
+     * Filtro por Nível CEFR + Busca Sem Acentos + Autocomplete Inteligente
      */
     let indiceAutocompleteGuia = -1;
 
@@ -1224,15 +1626,34 @@
     }
 
     function destacarTermoGuia(texto, termo) {
-        if (!termo) return texto;
-        const regex = new RegExp(`(${escapeRegExpGuia(termo)})`, 'gi');
-        return texto.replace(regex, '<mark>$1</mark>');
+        const seguro = escapeHtmlGuia(texto);
+        if (!termo) return seguro;
+        const regex = new RegExp(`(${escapeRegExpGuia(escapeHtmlGuia(termo))})`, 'gi');
+        return seguro.replace(regex, '<mark>$1</mark>');
+    }
+
+    function secaoCorrespondeCefr(sec, filtroCefr) {
+        if (!filtroCefr || filtroCefr === 'todos') return true;
+        const secCefr = (sec.getAttribute('data-cefr') || '').trim();
+        if (filtroCefr === 'B1-B2') {
+            return secCefr === 'B1' || secCefr === 'B2';
+        }
+        return secCefr === filtroCefr;
+    }
+
+    function filtrarPorCefrGuia(nivel, btn) {
+        cefrAtivoGuia = nivel || 'todos';
+        document.querySelectorAll(".guia-cefr-btn").forEach(b => {
+            b.classList.toggle("active", b.getAttribute("data-cefr") === cefrAtivoGuia);
+        });
+        const termo = document.getElementById("guiaSearchInput")?.value || "";
+        filtrarGuiaFLE(termo);
     }
 
     function filtrarGuiaFLE(termo) {
-        const busca = (termo || "").trim().toLowerCase();
+        const busca = normalizarTextoBuscaGuia((termo || "").trim());
         const btnLimpar = document.getElementById("btnLimparBusca");
-        if (btnLimpar) btnLimpar.style.display = busca ? "inline-flex" : "none";
+        if (btnLimpar) btnLimpar.style.display = (busca || cefrAtivoGuia !== 'todos') ? "inline-flex" : "none";
 
         const cardsVerbos = document.querySelectorAll(".verb-card");
         const cardsFauxAmis = document.querySelectorAll(".faux-ami-card");
@@ -1241,28 +1662,38 @@
         if (!busca) {
             cardsVerbos.forEach(c => c.style.display = "");
             cardsFauxAmis.forEach(c => c.style.display = "");
-            secoes.forEach(s => s.style.display = "");
+            let visiveis = 0;
+            secoes.forEach(s => {
+                const mostrar = secaoCorrespondeCefr(s, cefrAtivoGuia);
+                s.style.display = mostrar ? "" : "none";
+                if (mostrar) visiveis += 1;
+            });
+            const vazioEl = document.getElementById("guiaEstadoVazio");
+            if (vazioEl) vazioEl.style.display = visiveis === 0 ? "block" : "none";
             fecharAutocompleteGuia();
             return;
         }
 
-        // Filtra verbos
         cardsVerbos.forEach(c => {
-            const txt = (c.getAttribute("data-verb-name") || "") + " " + c.innerText.toLowerCase();
+            const txt = normalizarTextoBuscaGuia((c.getAttribute("data-verb-name") || "") + " " + c.innerText);
             c.style.display = txt.includes(busca) ? "" : "none";
         });
 
-        // Filtra faux amis
         cardsFauxAmis.forEach(c => {
-            const txt = (c.getAttribute("data-word") || "") + " " + c.innerText.toLowerCase();
+            const txt = normalizarTextoBuscaGuia((c.getAttribute("data-word") || "") + " " + c.innerText);
             c.style.display = txt.includes(busca) ? "" : "none";
         });
 
-        // Destaca ou oculta seções
+        let visiveis = 0;
         secoes.forEach(s => {
-            const txt = s.innerText.toLowerCase();
-            s.style.display = txt.includes(busca) ? "" : "none";
+            const txt = normalizarTextoBuscaGuia(s.innerText);
+            const mostrar = secaoCorrespondeCefr(s, cefrAtivoGuia) && txt.includes(busca);
+            s.style.display = mostrar ? "" : "none";
+            if (mostrar) visiveis += 1;
         });
+
+        const vazioEl = document.getElementById("guiaEstadoVazio");
+        if (vazioEl) vazioEl.style.display = visiveis === 0 ? "block" : "none";
 
         atualizarAutocompleteGuia(termo);
     }
@@ -1271,7 +1702,8 @@
         const dropdown = document.getElementById("autocompleteDropdownGuia");
         if (!dropdown) return;
 
-        const termo = (valor || "").trim().toLowerCase();
+        const termoRaw = (valor || "").trim();
+        const termo = normalizarTextoBuscaGuia(termoRaw);
         if (!termo) {
             fecharAutocompleteGuia();
             return;
@@ -1282,7 +1714,7 @@
         Object.keys(BANCO_VERBOS).forEach(vid => {
             const v = BANCO_VERBOS[vid];
             if (!v || vistosVerbos.has(vid)) return;
-            const matchStr = `${v.verbo} ${v.traducao} ${v.participe_passe}`.toLowerCase();
+            const matchStr = normalizarTextoBuscaGuia(`${v.verbo} ${v.traducao} ${v.participe_passe}`);
             if (matchStr.includes(termo)) {
                 vistosVerbos.add(vid);
                 sugestoesVerbos.push({ vid, verbo: v.verbo, traducao: v.traducao, aux: v.auxiliaire, part: v.participe_passe });
@@ -1296,13 +1728,13 @@
             const tagEl = sec.querySelector(".section-tag");
             const titulo = tituloEl ? tituloEl.textContent.trim() : temaId;
             const tag = tagEl ? tagEl.textContent.trim() : "Módulo FLE";
-            if (sec.innerText.toLowerCase().includes(termo)) {
+            if (normalizarTextoBuscaGuia(sec.innerText).includes(termo)) {
                 sugestoesTemas.push({ temaId, titulo, tag });
             }
         });
 
         if (sugestoesVerbos.length === 0 && sugestoesTemas.length === 0) {
-            dropdown.innerHTML = `<div style="padding: 0.9rem; text-align: center; font-size: 0.84rem; color: #6B7280;">Nenhum verbo ou regra encontrado para "<strong>${valor}</strong>"</div>`;
+            dropdown.innerHTML = `<div style="padding: 0.9rem; text-align: center; font-size: 0.84rem; color: #6B7280;">Nenhum verbo ou regra encontrado para "<strong>${escapeHtmlGuia(termoRaw)}</strong>"</div>`;
             dropdown.classList.add("open");
             indiceAutocompleteGuia = -1;
             return;
@@ -1313,15 +1745,15 @@
             html += `<div class="guia-ac-section-label">Verbos Interativos (${sugestoesVerbos.length})</div>`;
             sugestoesVerbos.slice(0, 5).forEach(item => {
                 html += `
-                    <div class="guia-ac-item" onclick="selecionarVerboAutocompleteGuia('${item.vid}')">
+                    <div class="guia-ac-item" onclick="selecionarVerboAutocompleteGuia('${escapeHtmlGuia(item.vid)}')">
                         <div class="guia-ac-left">
                             <span class="guia-ac-icon">⏱️</span>
                             <div class="guia-ac-text">
-                                <span class="guia-ac-title">${destacarTermoGuia(item.verbo, valor.trim())} <span style="font-weight:500;color:#6B7280;">(${destacarTermoGuia(item.traducao, valor.trim())})</span></span>
-                                <span class="guia-ac-sub">Particípio: ${item.part} • Abrir conjugador completo</span>
+                                <span class="guia-ac-title">${destacarTermoGuia(item.verbo, termoRaw)} <span style="font-weight:500;color:#6B7280;">(${destacarTermoGuia(item.traducao, termoRaw)})</span></span>
+                                <span class="guia-ac-sub">Particípio: ${escapeHtmlGuia(item.part)} • Abrir conjugador completo</span>
                             </div>
                         </div>
-                        <span class="guia-ac-badge">${item.aux}</span>
+                        <span class="guia-ac-badge">${escapeHtmlGuia(item.aux)}</span>
                     </div>
                 `;
             });
@@ -1331,12 +1763,12 @@
             html += `<div class="guia-ac-section-label">Módulos Gramaticais (${sugestoesTemas.length})</div>`;
             sugestoesTemas.slice(0, 4).forEach(item => {
                 html += `
-                    <div class="guia-ac-item" onclick="selecionarTemaAutocompleteGuia('${item.temaId}')">
+                    <div class="guia-ac-item" onclick="selecionarTemaAutocompleteGuia('${escapeHtmlGuia(item.temaId)}')">
                         <div class="guia-ac-left">
                             <span class="guia-ac-icon">📖</span>
                             <div class="guia-ac-text">
-                                <span class="guia-ac-title">${destacarTermoGuia(item.titulo, valor.trim())}</span>
-                                <span class="guia-ac-sub">${item.tag}</span>
+                                <span class="guia-ac-title">${destacarTermoGuia(item.titulo, termoRaw)}</span>
+                                <span class="guia-ac-sub">${escapeHtmlGuia(item.tag)}</span>
                             </div>
                         </div>
                         <span class="guia-ac-badge">Ir ao tema</span>
@@ -1407,6 +1839,10 @@
 
         const inp = document.getElementById("guiaSearchInput");
         if (inp) inp.value = termo || "";
+        cefrAtivoGuia = 'todos';
+        document.querySelectorAll(".guia-cefr-btn").forEach(b => {
+            b.classList.toggle("active", b.getAttribute("data-cefr") === "todos");
+        });
         filtrarGuiaFLE(termo || "");
         fecharAutocompleteGuia();
 
@@ -1426,6 +1862,10 @@
     function limparBuscaGuia() {
         const inp = document.getElementById("guiaSearchInput");
         if (inp) inp.value = "";
+        cefrAtivoGuia = 'todos';
+        document.querySelectorAll(".guia-cefr-btn").forEach(b => {
+            b.classList.toggle("active", b.getAttribute("data-cefr") === "todos");
+        });
         document.querySelectorAll("#guiaQuickChips .quick-tag-pill").forEach(b => {
             b.classList.toggle("active", b.getAttribute("data-chip") === "todos");
         });
@@ -1433,77 +1873,165 @@
         fecharAutocompleteGuia();
     }
 
-    // Pronúncia de áudio nativa em francês com suporte a toggle/stop e acessibilidade
-    function falarTextoFrances(texto, btnElement = null) {
-        if (!('speechSynthesis' in window)) {
-            alert("Seu navegador não possui suporte à síntese de voz nativa.");
-            return;
+    /**
+     * Pronúncia de áudio nativa em francês unificada com base.html e sanitizada para TTS
+     */
+    function falarTextoFrances(texto, btnElement = null, opcoes = {}) {
+        if (!opcoes || !opcoes.manterSequencia) {
+            pararSequenciaConjugacao();
         }
-
-        // Se clicou no botão que já está falando, para a reprodução
-        if (btnElement && btnElement.classList.contains("speaking")) {
-            window.speechSynthesis.cancel();
-            btnElement.classList.remove("speaking");
-            btnElement.setAttribute("aria-pressed", "false");
-            if (btnElement._originalHtmlSalvo) {
-                btnElement.innerHTML = btnElement._originalHtmlSalvo;
-            }
-            return;
+        const textoSanitizado = sanitizarTextoParaTTSFrances(texto);
+        if (typeof window.falarTextoFrancesBase === 'function') {
+            return window.falarTextoFrancesBase(textoSanitizado, btnElement, opcoes);
         }
-
-        if (!texto || !texto.trim()) return;
-
+        if (!('speechSynthesis' in window) || !textoSanitizado) return;
         window.speechSynthesis.cancel();
-        document.querySelectorAll(".btn-ouvir-exemplo.speaking, .btn-audio-pill.speaking").forEach(b => {
-            b.classList.remove("speaking");
-            b.setAttribute("aria-pressed", "false");
-            if (b._originalHtmlSalvo) {
-                b.innerHTML = b._originalHtmlSalvo;
-            }
-        });
-
-        const textoLimpo = texto.replace(/[*_#`~>«»\\]/g, " ").replace(/\s+/g, " ").trim();
-        const utterance = new SpeechSynthesisUtterance(textoLimpo);
+        const utterance = new SpeechSynthesisUtterance(textoSanitizado);
         utterance.lang = 'fr-FR';
-        utterance.rate = 0.88;
-
-        const vozes = window.speechSynthesis.getVoices();
-        const voz = vozes.find(v => v.lang === 'fr-FR' || v.lang.startsWith('fr') || v.lang.includes('fr'));
-        if (voz) utterance.voice = voz;
-
-        if (btnElement) {
-            if (!btnElement._originalHtmlSalvo) {
-                btnElement._originalHtmlSalvo = btnElement.innerHTML;
-            }
-            btnElement.classList.add("speaking");
-            btnElement.setAttribute("aria-pressed", "true");
-            btnElement.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 3px; vertical-align: text-bottom;"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg> <span>Parar</span>`;
-
-            const resetarBtn = () => {
-                btnElement.classList.remove("speaking");
-                btnElement.setAttribute("aria-pressed", "false");
-                if (btnElement._originalHtmlSalvo) {
-                    btnElement.innerHTML = btnElement._originalHtmlSalvo;
-                }
-            };
-            utterance.onend = resetarBtn;
-            utterance.onerror = resetarBtn;
-        }
-
-        setTimeout(() => {
-            try {
-                if (window.speechSynthesis.paused) {
-                    window.speechSynthesis.resume();
-                }
-                window.speechSynthesis.speak(utterance);
-            } catch (e) {
-                console.error("Erro ao falar texto:", e);
-            }
-        }, 40);
+        utterance.rate = typeof opcoes.rate === 'number' ? opcoes.rate : 0.88;
+        window.speechSynthesis.speak(utterance);
     }
 
-    // Inicialização e Acessibilidade (a11y) FLE
+    /**
+     * Desafio Rápido FLE (Quiz Express)
+     */
+    let quizFleSessao = { questoes: [], indice: 0, acertos: 0, respondida: false };
+
+    function abrirQuizGuiaFLE() {
+        iniciarQuizGuiaFLE();
+        const modal = document.getElementById("modalQuizGuiaFLE");
+        if (modal) {
+            modal.classList.remove("hidden");
+            document.body.style.overflow = "hidden";
+        }
+    }
+
+    function fecharQuizGuiaFLE() {
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        const modal = document.getElementById("modalQuizGuiaFLE");
+        if (modal) modal.classList.add("hidden");
+        if (document.getElementById("modalConjugador")?.classList.contains("hidden")) {
+            document.body.style.overflow = "";
+        }
+    }
+
+    function fecharQuizSeClicarFora(event) {
+        if (event.target.id === "modalQuizGuiaFLE") {
+            fecharQuizGuiaFLE();
+        }
+    }
+
+    function iniciarQuizGuiaFLE() {
+        const embaralhadas = [...BANCO_QUIZ_FLE].sort(() => Math.random() - 0.5).slice(0, 5);
+        quizFleSessao = { questoes: embaralhadas, indice: 0, acertos: 0, respondida: false };
+        renderizarPerguntaQuizGuia();
+    }
+
+    function renderizarPerguntaQuizGuia() {
+        const body = document.getElementById("quizFleBody");
+        const progPill = document.getElementById("quizFleProgressoPill");
+        const scorePill = document.getElementById("quizFleScorePill");
+        if (!body) return;
+
+        const total = quizFleSessao.questoes.length;
+        if (scorePill) scorePill.textContent = `${quizFleSessao.acertos} acerto${quizFleSessao.acertos === 1 ? '' : 's'}`;
+
+        if (quizFleSessao.indice >= total) {
+            if (progPill) progPill.textContent = `Concluído (${total}/${total})`;
+            const pct = Math.round((quizFleSessao.acertos / total) * 100);
+            const msgDesempenho = pct >= 80
+                ? "Très bien ! Seu domínio das regras do Mémento FLE está excelente."
+                : "Bon effort ! Revise os módulos com dúvidas usando os cartões e áudios do guia.";
+
+            body.innerHTML = `
+                <div class="quiz-fle-summary">
+                    <div class="quiz-fle-score-circle">${quizFleSessao.acertos}/${total}</div>
+                    <h3>Resultado do Desafio Rápido (${pct}%)</h3>
+                    <p>${msgDesempenho}</p>
+                    <button type="button" class="guia-quiz-trigger-btn" onclick="iniciarQuizGuiaFLE()">↺ Jogar Novo Desafio</button>
+                </div>
+            `;
+            return;
+        }
+
+        const q = quizFleSessao.questoes[quizFleSessao.indice];
+        if (progPill) progPill.textContent = `Questão ${quizFleSessao.indice + 1} de ${total}`;
+
+        body.innerHTML = `
+            <div class="quiz-fle-card">
+                <span class="section-tag">${escapeHtmlGuia(q.categoria)}</span>
+                <p class="quiz-fle-question">${escapeHtmlGuia(q.pergunta)}</p>
+                <div class="quiz-fle-options" id="quizFleOpcoes"></div>
+                <div id="quizFleFeedbackArea" class="quiz-fle-feedback" style="display: none;"></div>
+                <div id="quizFleNextWrap" style="display: none; margin-top: 1rem; justify-content: flex-end;">
+                    <button type="button" class="btn-audio-pill" id="btnAvancarQuizFle">
+                        <span>${quizFleSessao.indice + 1 < total ? 'Próxima Questão →' : 'Ver Resultado →'}</span>
+                    </button>
+                </div>
+            </div>
+        `;
+
+        const opcoesWrap = document.getElementById("quizFleOpcoes");
+        q.opcoes.forEach((opt, i) => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "quiz-fle-option";
+            btn.textContent = opt;
+            btn.onclick = () => responderQuizGuiaFLE(i);
+            opcoesWrap.appendChild(btn);
+        });
+
+        document.getElementById("btnAvancarQuizFle").onclick = () => {
+            quizFleSessao.indice += 1;
+            quizFleSessao.respondida = false;
+            renderizarPerguntaQuizGuia();
+        };
+    }
+
+    function responderQuizGuiaFLE(idxEscolhido) {
+        if (quizFleSessao.respondida) return;
+        quizFleSessao.respondida = true;
+
+        const q = quizFleSessao.questoes[quizFleSessao.indice];
+        const acertou = idxEscolhido === q.correta;
+        if (acertou) quizFleSessao.acertos += 1;
+
+        const scorePill = document.getElementById("quizFleScorePill");
+        if (scorePill) scorePill.textContent = `${quizFleSessao.acertos} acerto${quizFleSessao.acertos === 1 ? '' : 's'}`;
+
+        const botoes = document.querySelectorAll("#quizFleOpcoes .quiz-fle-option");
+        botoes.forEach((b, i) => {
+            b.disabled = true;
+            if (i === q.correta) b.classList.add("is-correct");
+            else if (i === idxEscolhido) b.classList.add("is-wrong");
+        });
+
+        const fb = document.getElementById("quizFleFeedbackArea");
+        if (fb) {
+            fb.style.display = "block";
+            fb.className = `quiz-fle-feedback ${acertou ? 'ok' : 'err'}`;
+            fb.innerHTML = `
+                <div class="quiz-fb-top">
+                    <strong>${acertou ? '✅ Bravo ! Resposta correta.' : '❌ Quase lá! Confira a regra:'}</strong>
+                    <button type="button" class="btn-ouvir-exemplo small" id="btnOuvirQuizCorreto">🔊 Ouvir Frase Correta</button>
+                </div>
+                <p style="margin: 0.45rem 0 0;">${escapeHtmlGuia(q.explicacao)}</p>
+            `;
+            const btnOuvirFb = document.getElementById("btnOuvirQuizCorreto");
+            if (btnOuvirFb) {
+                btnOuvirFb.onclick = () => falarTextoFrances(q.audioFr, btnOuvirFb);
+            }
+        }
+
+        const nextWrap = document.getElementById("quizFleNextWrap");
+        if (nextWrap) nextWrap.style.display = "flex";
+    }
+
+    // Inicialização, Progresso, Velocidade e Acessibilidade (a11y) FLE
     window.addEventListener("DOMContentLoaded", () => {
+        carregarVelocidadeSalvaGuia();
+        atualizarUIPainelProgresso();
+
         const seletoresFrances = [
             '.verb-infinitive',
             '.verb-participle strong',
@@ -1552,7 +2080,7 @@
 
 <style>
 /* ==========================================================================
-   GUIA GRAMATICAL FLE — DESIGN EDITORIAL LIMPO + 4 MINI-KPIS COM ONDAS
+   GUIA GRAMATICAL FLE — DESIGN EDITORIAL LIMPO + CONTROLES FLE
    ========================================================================== */
 
 [data-theme="light"] body:has(.guia-editorial-wrapper) {
@@ -1585,7 +2113,7 @@
 .guia-editorial-wrapper .hero-card-inner,
 .guia-editorial-wrapper .card-moldura-outer,
 .guia-editorial-wrapper .guia-card-section,
-.guia-editorial-wrapper .guia-kpi-card,
+.guia-editorial-wrapper .guia-study-bar,
 .guia-editorial-wrapper .guia-command-card {
     background-image: none !important;
 }
@@ -1597,9 +2125,7 @@
 .guia-editorial-wrapper .card-moldura-outer::before,
 .guia-editorial-wrapper .card-moldura-outer::after,
 .guia-editorial-wrapper .guia-card-section::before,
-.guia-editorial-wrapper .guia-card-section::after,
-.guia-editorial-wrapper .guia-kpi-card::before,
-.guia-editorial-wrapper .guia-kpi-card::after {
+.guia-editorial-wrapper .guia-card-section::after {
     display: none !important;
     content: none !important;
 }
@@ -1607,7 +2133,7 @@
 /* 1. Cabeçalho Editorial Aberto */
 .guia-editorial-hero {
     text-align: center;
-    margin-bottom: 2.1rem;
+    margin-bottom: 1.75rem;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1666,162 +2192,204 @@
     color: #FCA311;
 }
 
-/* 2. Grid dos 4 Mini-KPIs no topo (Ondas Coloridas + Botão Pill #18191E) */
-.guia-kpis-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.1rem;
-    margin-bottom: 1.35rem;
-    width: 100%;
-}
-
-@media (max-width: 1080px) {
-    .guia-kpis-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 600px) {
-    .guia-kpis-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-.guia-kpi-card {
+/* 2. Barra Editorial Compacta de Estudo FLE */
+.guia-study-bar {
     background: #FFFFFF !important;
     border: 1px solid #ECECEC !important;
     border-radius: 26px !important;
-    padding: 1.3rem 1.35rem 1.2rem !important;
+    padding: 1.15rem 1.5rem !important;
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.02) !important;
+    margin-bottom: 1.25rem;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    gap: 0.8rem;
-    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
-    cursor: pointer;
+    gap: 0.95rem;
+    box-sizing: border-box;
 }
 
-.guia-kpi-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 18px 38px rgba(0, 0, 0, 0.065) !important;
-}
-
-[data-theme="dark"] .guia-kpi-card {
+[data-theme="dark"] .guia-study-bar {
     background: #181920 !important;
     border-color: rgba(255, 255, 255, 0.08) !important;
     box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45) !important;
 }
 
-.guia-kpi-top-row {
-    display: grid;
-    grid-template-columns: 1fr 104px;
+.guia-study-prog-header {
+    display: flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.45rem;
 }
 
-.guia-kpi-label {
-    font-size: 0.77rem;
-    font-weight: 600;
+.guia-study-label {
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
     color: #6B7280;
-    display: block;
-    margin-bottom: 2px;
 }
 
-[data-theme="dark"] .guia-kpi-label {
+[data-theme="dark"] .guia-study-label {
     color: #9CA3AF;
 }
 
-.guia-kpi-primary {
-    font-size: 2rem;
-    font-weight: 800;
-    color: #111827;
-    line-height: 1.05;
-    letter-spacing: -0.03em;
+.guia-study-prog-right {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
 }
 
-[data-theme="dark"] .guia-kpi-primary {
+#guiaProgressoTexto {
+    font-size: 0.84rem;
+    color: #14213D;
+}
+
+[data-theme="dark"] #guiaProgressoTexto {
     color: #F9FAFB;
 }
 
-.guia-kpi-wave-svg {
+.guia-reset-prog-btn {
+    background: transparent;
+    border: 1px solid #E5E7EB;
+    color: #6B7280;
+    font-size: 0.72rem;
+    font-weight: 600;
+    border-radius: 999px;
+    padding: 0.2rem 0.65rem;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.guia-reset-prog-btn:hover {
+    background: #F3F4F6;
+    color: #111827;
+}
+
+[data-theme="dark"] .guia-reset-prog-btn {
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #9CA3AF;
+}
+
+[data-theme="dark"] .guia-reset-prog-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #F9FAFB;
+}
+
+.guia-progress-track {
     width: 100%;
-    height: 46px;
-    overflow: visible;
-    display: block;
+    height: 8px;
+    border-radius: 999px;
+    background: #F1F2F4;
+    overflow: hidden;
 }
 
-.guia-kpi-mid-row {
+[data-theme="dark"] .guia-progress-track {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.guia-progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #14213D 0%, #FCA311 100%);
+    transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.guia-study-controls {
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: space-between;
-    gap: 0.45rem;
+    gap: 0.75rem;
+    flex-wrap: wrap;
 }
 
-.guia-kpi-subval {
-    font-size: 0.88rem;
-    font-weight: 700;
-    color: #1F2937;
-}
-
-[data-theme="dark"] .guia-kpi-subval {
-    color: #E5E7EB;
-}
-
-.guia-kpi-trend {
+.guia-cefr-filter-group,
+.guia-tts-controls {
     display: inline-flex;
     align-items: center;
-    gap: 3px;
-    font-size: 0.77rem;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+}
+
+.guia-tts-label {
+    font-size: 0.76rem;
     font-weight: 700;
-    color: #16A34A;
+    color: #6B7280;
+    margin-right: 0.2rem;
+}
+
+.guia-cefr-btn,
+.guia-tts-rate-btn {
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid #E5E7EB;
+    background: #F7F7F8;
+    color: #4B5563;
+    font-size: 0.77rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
     white-space: nowrap;
 }
 
-.guia-kpi-cta-row {
-    display: flex;
-    justify-content: center;
-    padding-top: 0.1rem;
+.guia-cefr-btn:hover,
+.guia-tts-rate-btn:hover {
+    background: #ECECEE;
+    color: #14213D;
 }
 
-.guia-pill-btn {
+.guia-cefr-btn.active,
+.guia-tts-rate-btn.active {
     background: #18191E !important;
     color: #FFFFFF !important;
-    border-radius: 9999px !important;
-    padding: 0.62rem 1rem !important;
-    font-size: 0.78rem !important;
-    font-weight: 600 !important;
-    text-align: center;
-    text-decoration: none !important;
-    display: inline-flex !important;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    box-shadow: 0 4px 12px rgba(24, 25, 30, 0.14) !important;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
-    border: 1px solid #18191E !important;
-    cursor: pointer;
-    width: 100%;
-    box-sizing: border-box;
+    border-color: #18191E !important;
+    font-weight: 700;
 }
 
-.guia-pill-btn:hover {
+[data-theme="dark"] .guia-cefr-btn,
+[data-theme="dark"] .guia-tts-rate-btn {
+    background: #121318;
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #D1D5DB;
+}
+
+[data-theme="dark"] .guia-cefr-btn.active,
+[data-theme="dark"] .guia-tts-rate-btn.active {
+    background: #FCA311 !important;
+    color: #18191E !important;
+    border-color: #FCA311 !important;
+}
+
+.guia-quiz-trigger-btn {
+    background: #18191E !important;
+    color: #FFFFFF !important;
+    border: 1px solid #18191E !important;
+    border-radius: 999px !important;
+    padding: 0.5rem 1.15rem !important;
+    font-size: 0.8rem !important;
+    font-weight: 700 !important;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.guia-quiz-trigger-btn:hover {
     background: #2D2F39 !important;
-    border-color: #2D2F39 !important;
     color: #FCA311 !important;
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(24, 25, 30, 0.22) !important;
 }
 
-[data-theme="dark"] .guia-pill-btn {
-    background: #262833 !important;
-    border-color: rgba(255, 255, 255, 0.12) !important;
-    color: #FFFFFF !important;
-}
-
-[data-theme="dark"] .guia-pill-btn:hover {
+[data-theme="dark"] .guia-quiz-trigger-btn {
     background: #FCA311 !important;
-    color: #000000 !important;
+    color: #18191E !important;
     border-color: #FCA311 !important;
+}
+
+[data-theme="dark"] .guia-quiz-trigger-btn:hover {
+    background: #fbbf24 !important;
+    color: #111827 !important;
 }
 
 /* 3. Card Editorial de Busca, Autocomplete e Índice dos 10 Módulos */
@@ -3284,6 +3852,444 @@
 .btn-fechar-conjugador:hover {
     background: #2D2F39 !important;
     color: #FCA311 !important;
+}
+
+/* Cabeçalhos dos 10 Módulos: CEFR + Botão Revisado */
+.section-title-wrap {
+    flex: 1;
+    min-width: 0;
+}
+
+.section-meta-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.35rem;
+}
+
+.section-meta-left {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.section-meta-left .section-tag {
+    margin-bottom: 0;
+}
+
+.section-cefr-badge {
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 0.18rem 0.58rem;
+    border-radius: 999px;
+    background: rgba(20, 33, 61, 0.08);
+    color: #14213D;
+    letter-spacing: 0.04em;
+}
+
+[data-theme="dark"] .section-cefr-badge {
+    background: rgba(252, 163, 17, 0.16);
+    color: #FCA311;
+}
+
+.btn-revisado-modulo {
+    padding: 0.3rem 0.78rem;
+    border-radius: 999px;
+    border: 1px solid #E5E7EB;
+    background: #F7F7F8;
+    color: #4B5563;
+    font-size: 0.74rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    white-space: nowrap;
+}
+
+.btn-revisado-modulo:hover {
+    border-color: #14213D;
+    color: #14213D;
+}
+
+.btn-revisado-modulo.is-done {
+    background: #ECFDF5 !important;
+    border-color: #10B981 !important;
+    color: #065F46 !important;
+    font-weight: 700;
+}
+
+[data-theme="dark"] .btn-revisado-modulo {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #D1D5DB;
+}
+
+[data-theme="dark"] .btn-revisado-modulo.is-done {
+    background: rgba(16, 185, 129, 0.16) !important;
+    border-color: #10B981 !important;
+    color: #6EE7B7 !important;
+}
+
+.quick-tag-pill.is-reviewed {
+    border-color: #10B981;
+}
+
+.quick-tag-pill.is-reviewed::after {
+    content: " ✓";
+    color: #10B981;
+    font-weight: 800;
+}
+
+.quick-tag-pill.active.is-reviewed::after {
+    color: inherit;
+}
+
+.guia-empty-state {
+    background: #FFFFFF;
+    border: 1px dashed #D1D5DB;
+    border-radius: 26px;
+    padding: 2.25rem 1.5rem;
+    text-align: center;
+    color: #4B5563;
+}
+
+[data-theme="dark"] .guia-empty-state {
+    background: #181920;
+    border-color: rgba(255, 255, 255, 0.14);
+    color: #D1D5DB;
+}
+
+/* Contraste Módulo 10 com botão Ouvir */
+.side-indicatif .btn-ouvir-exemplo,
+.side-subjonctif .btn-ouvir-exemplo {
+    margin-top: 0.4rem;
+}
+
+/* Conjugador 2.0 */
+.modal-header-right-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-shrink: 0;
+}
+
+.verb-nav-btns {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.btn-nav-verbo {
+    padding: 0.38rem 0.78rem;
+    border-radius: 999px;
+    border: 1px solid #E5E7EB;
+    background: #F7F7F8;
+    color: #1F2937;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    white-space: nowrap;
+}
+
+.btn-nav-verbo:hover:not(:disabled) {
+    background: #18191E;
+    color: #FCA311;
+    border-color: #18191E;
+}
+
+.btn-nav-verbo:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+[data-theme="dark"] .btn-nav-verbo {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #E5E7EB;
+}
+
+.tense-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+}
+
+.btn-autotest-toggle {
+    padding: 0.36rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid #D1D5DB;
+    background: #FFFFFF;
+    color: #374151;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.btn-autotest-toggle.active {
+    background: #FEF3C7;
+    border-color: #F59E0B;
+    color: #92400E;
+}
+
+[data-theme="dark"] .btn-autotest-toggle {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.14);
+    color: #E5E7EB;
+}
+
+[data-theme="dark"] .btn-autotest-toggle.active {
+    background: rgba(252, 163, 17, 0.2);
+    border-color: #FCA311;
+    color: #FCA311;
+}
+
+.conjugation-row-card.is-masked {
+    cursor: pointer;
+}
+
+.conjugation-row-card.is-masked .row-conjugated strong {
+    filter: blur(6px);
+    user-select: none;
+    opacity: 0.45;
+    transition: filter 0.2s ease, opacity 0.2s ease;
+}
+
+.conjugation-row-card.is-speaking-row {
+    border-color: #FCA311 !important;
+    background: #FFFBEB !important;
+    box-shadow: 0 0 0 2px rgba(252, 163, 17, 0.25);
+}
+
+[data-theme="dark"] .conjugation-row-card.is-speaking-row {
+    background: rgba(252, 163, 17, 0.12) !important;
+}
+
+.conjugation-row-card.is-unavailable {
+    opacity: 0.72;
+}
+
+.badge-imperatif {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: rgba(20, 33, 61, 0.07);
+    color: #14213D;
+}
+
+[data-theme="dark"] .badge-imperatif {
+    background: rgba(252, 163, 17, 0.16);
+    color: #FCA311;
+}
+
+.muted-text {
+    font-size: 0.85rem;
+    color: #6B7280;
+    font-style: italic;
+}
+
+/* Modal Quiz Express FLE */
+#modalQuizGuiaFLE.modal {
+    padding: 1.5rem !important;
+    padding-top: calc(68px + 1rem) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 100001 !important;
+}
+
+#modalQuizGuiaFLE.modal.hidden {
+    display: none !important;
+}
+
+.quiz-fle-dialog {
+    max-width: 680px !important;
+    width: 96% !important;
+}
+
+.quiz-fle-meta-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.4rem;
+    flex-wrap: wrap;
+}
+
+.quiz-fle-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.quiz-fle-question {
+    font-size: 1.04rem;
+    font-weight: 700;
+    color: #14213D;
+    line-height: 1.5;
+    margin: 0;
+}
+
+[data-theme="dark"] .quiz-fle-question {
+    color: #F9FAFB;
+}
+
+.quiz-fle-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.65rem;
+    margin-top: 0.25rem;
+}
+
+@media (max-width: 580px) {
+    .quiz-fle-options {
+        grid-template-columns: 1fr;
+    }
+}
+
+.quiz-fle-option {
+    padding: 0.78rem 1rem;
+    border-radius: 14px;
+    border: 1px solid #E5E7EB;
+    background: #F9FAFB;
+    color: #111827;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.quiz-fle-option:hover:not(:disabled) {
+    border-color: #14213D;
+    background: #FFFFFF;
+}
+
+.quiz-fle-option.is-correct {
+    background: #ECFDF5 !important;
+    border-color: #10B981 !important;
+    color: #065F46 !important;
+}
+
+.quiz-fle-option.is-wrong {
+    background: #FEF2F2 !important;
+    border-color: #EF4444 !important;
+    color: #991B1B !important;
+}
+
+[data-theme="dark"] .quiz-fle-option {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #F3F4F6;
+}
+
+[data-theme="dark"] .quiz-fle-option.is-correct {
+    background: rgba(16, 185, 129, 0.18) !important;
+    color: #6EE7B7 !important;
+}
+
+[data-theme="dark"] .quiz-fle-option.is-wrong {
+    background: rgba(239, 68, 68, 0.18) !important;
+    color: #FCA5A5 !important;
+}
+
+.quiz-fle-feedback {
+    padding: 0.9rem 1.05rem;
+    border-radius: 14px;
+    font-size: 0.86rem;
+    line-height: 1.5;
+}
+
+.quiz-fle-feedback.ok {
+    background: #ECFDF5;
+    border: 1px solid #A7F3D0;
+    color: #065F46;
+}
+
+.quiz-fle-feedback.err {
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+    color: #991B1B;
+}
+
+[data-theme="dark"] .quiz-fle-feedback.ok {
+    background: rgba(16, 185, 129, 0.12);
+    border-color: rgba(16, 185, 129, 0.35);
+    color: #A7F3D0;
+}
+
+[data-theme="dark"] .quiz-fle-feedback.err {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.35);
+    color: #FECACA;
+}
+
+.quiz-fb-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.quiz-fle-summary {
+    text-align: center;
+    padding: 1.25rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.quiz-fle-score-circle {
+    width: 74px;
+    height: 74px;
+    border-radius: 50%;
+    background: #14213D;
+    color: #FCA311;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    font-weight: 800;
+}
+
+/* Impressão / Exportação em PDF limpa */
+@media print {
+    .no-print,
+    .navbar,
+    .mobile-drawer,
+    .btn-ouvir-exemplo,
+    .btn-audio-pill,
+    .btn-revisado-modulo,
+    .guia-study-bar,
+    .guia-command-card,
+    #modalConjugador,
+    #modalQuizGuiaFLE,
+    #toast-container {
+        display: none !important;
+    }
+
+    body,
+    .guia-editorial-wrapper {
+        background: #FFFFFF !important;
+        color: #111827 !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+    }
+
+    .guia-card-section {
+        display: block !important;
+        box-shadow: none !important;
+        border: 1px solid #D1D5DB !important;
+        border-radius: 12px !important;
+        padding: 1rem 1.25rem !important;
+        margin-bottom: 1rem !important;
+        break-inside: avoid;
+    }
 }
 </style>
 {% endblock %}
