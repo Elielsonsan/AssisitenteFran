@@ -100,113 +100,88 @@
     color: #FCA311;
 }
 
-/* 2. Grid dos 3 Mini-KPIs no topo (Design de Ondas + Botão Pill #18191E) */
-.perfil-kpis-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.15rem;
-    margin-bottom: 1.35rem;
-    width: 100%;
-}
-
-@media (max-width: 900px) {
-    .perfil-kpis-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-.perfil-kpi-card {
+/* 2. Passaporte Linguístico CEFR & Preferências FLE */
+.passeport-fle-banner {
     background: #FFFFFF;
     border: 1px solid #ECECEC;
-    border-radius: 26px;
-    padding: 1.35rem 1.4rem 1.25rem;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.02);
+    border-radius: 24px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.35rem;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.035);
     display: flex;
-    flex-direction: column;
+    align-items: center;
     justify-content: space-between;
-    gap: 0.85rem;
-    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+    gap: 1.15rem;
+    flex-wrap: wrap;
 }
 
-.perfil-kpi-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 18px 38px rgba(0, 0, 0, 0.065);
-}
-
-[data-theme="dark"] .perfil-kpi-card {
+[data-theme="dark"] .passeport-fle-banner {
     background: #181920;
     border-color: rgba(255, 255, 255, 0.08);
     box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
 }
 
-.perfil-kpi-top-row {
-    display: grid;
-    grid-template-columns: 1fr 115px;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.perfil-kpi-label {
-    font-size: 0.78rem;
-    font-weight: 500;
-    color: #6B7280;
-    display: block;
-    margin-bottom: 2px;
-}
-
-[data-theme="dark"] .perfil-kpi-label {
-    color: #9CA3AF;
-}
-
-.perfil-kpi-primary {
-    font-size: 2.1rem;
-    font-weight: 800;
-    color: #111827;
-    line-height: 1.05;
-    letter-spacing: -0.03em;
-}
-
-[data-theme="dark"] .perfil-kpi-primary {
-    color: #F9FAFB;
-}
-
-.perfil-kpi-wave-svg {
-    width: 100%;
-    height: 48px;
-    overflow: visible;
-    display: block;
-}
-
-.perfil-kpi-mid-row {
+.passeport-fle-info {
     display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 0.5rem;
+    flex-direction: column;
+    gap: 5px;
+    max-width: 500px;
 }
 
-.perfil-kpi-subval {
-    font-size: 0.92rem;
-    font-weight: 700;
-    color: #1F2937;
-}
-
-[data-theme="dark"] .perfil-kpi-subval {
-    color: #E5E7EB;
-}
-
-.perfil-kpi-trend {
+.passeport-cefr-badge {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: #16A34A;
+    gap: 6px;
+    width: fit-content;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: #14213D;
+    color: #FCA311;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
 }
 
-.perfil-kpi-cta-row {
+[data-theme="dark"] .passeport-cefr-badge {
+    background: #FCA311;
+    color: #000000;
+}
+
+.passeport-fle-desc {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: #4B5563;
+}
+
+[data-theme="dark"] .passeport-fle-desc {
+    color: #CBD5E1;
+}
+
+.passeport-metrics-row {
     display: flex;
-    justify-content: center;
-    padding-top: 0.15rem;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.passeport-metric-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    color: #14213D;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+[data-theme="dark"] .passeport-metric-pill {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #F8FAFC;
 }
 
 /* Botão Pill Escuro (#18191E) */
@@ -238,243 +213,292 @@
     box-shadow: 0 6px 16px rgba(24, 25, 30, 0.26) !important;
 }
 
-/* 3. Barra de Busca com Autocomplete + Chips Rápidos (Abaixo dos KPIs, 100% da largura) */
-.perfil-search-wrapper {
-    position: relative;
-    width: 100%;
-    max-width: 100%;
-    margin: 0 0 1.65rem 0;
-    z-index: 40;
-    box-sizing: border-box;
-}
-
-.perfil-search-box {
+/* Bio em Francês & Velocidade TTS */
+.bio-fle-box,
+.tts-speed-box {
+    margin-top: 1rem;
+    padding: 0.9rem 1rem;
+    border-radius: 16px;
+    background: #F8FAFC;
+    border: 1px solid #ECECEC;
     display: flex;
-    align-items: center;
-    gap: 12px;
-    width: 100%;
-    box-sizing: border-box;
-    background: #FFFFFF;
-    border: 1px solid #ECECEC;
-    border-radius: 999px;
-    padding: 0.55rem 0.85rem 0.55rem 1.35rem;
-    box-shadow: 0 10px 28px rgba(20, 33, 61, 0.045);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    flex-direction: column;
+    gap: 0.55rem;
 }
 
-.perfil-search-box:focus-within {
-    border-color: #18191E;
-    box-shadow: 0 12px 32px rgba(20, 33, 61, 0.09), 0 0 0 3px rgba(24, 25, 30, 0.06);
-}
-
-[data-theme="dark"] .perfil-search-box {
-    background: #181920;
+[data-theme="dark"] .bio-fle-box,
+[data-theme="dark"] .tts-speed-box {
+    background: rgba(255, 255, 255, 0.04);
     border-color: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
 }
 
-[data-theme="dark"] .perfil-search-box:focus-within {
-    border-color: #FCA311;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 0 0 3px rgba(252, 163, 17, 0.15);
-}
-
-.perfil-search-icon {
-    color: #6B7280;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-}
-
-.perfil-search-box input[type="text"].perfil-search-input,
-#inputBuscaMensagensPerfil {
-    flex: 1;
-    border: 0 !important;
-    border-color: transparent !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    outline: none !important;
-    box-shadow: none !important;
-    font-size: 0.94rem !important;
-    font-weight: 500;
-    color: #111827 !important;
-    padding: 0.3rem 0 !important;
-    margin: 0 !important;
-    width: 100%;
-}
-
-.perfil-search-input::placeholder {
-    color: #9CA3AF !important;
-    font-weight: 400;
-}
-
-[data-theme="dark"] .perfil-search-box input[type="text"].perfil-search-input,
-[data-theme="dark"] #inputBuscaMensagensPerfil {
-    color: #F9FAFB !important;
-}
-
-.perfil-search-clear {
-    display: none;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    border: none;
-    background: #F3F4F6;
-    color: #4B5563;
-    font-size: 1rem;
-    line-height: 1;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    flex-shrink: 0;
-}
-
-.perfil-search-clear:hover {
-    background: #E5E7EB;
-    color: #111827;
-}
-
-/* Chips Rápidos abaixo da Busca (100% da largura dos Cards) */
-.perfil-filter-chips {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
-    width: 100%;
-    margin-top: 0.85rem;
-}
-
-@media (max-width: 820px) {
-    .perfil-filter-chips {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-@media (max-width: 520px) {
-    .perfil-filter-chips {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-.perfil-chip-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    width: 100%;
-    padding: 8px 12px;
-    border-radius: 999px;
-    background: #FFFFFF;
-    border: 1px solid #ECECEC;
-    color: #4B5563;
-    font-size: 0.79rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.18s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.025);
-    box-sizing: border-box;
-    white-space: nowrap;
-}
-
-.perfil-chip-btn:hover {
-    border-color: #18191E;
-    color: #111827;
-    transform: translateY(-1px);
-}
-
-.perfil-chip-btn.active {
-    background: #18191E;
-    color: #FFFFFF;
-    border-color: #18191E;
-    box-shadow: 0 4px 12px rgba(24, 25, 30, 0.18);
-}
-
-[data-theme="dark"] .perfil-chip-btn {
-    background: #181920;
-    border-color: rgba(255, 255, 255, 0.1);
-    color: #D1D5DB;
-}
-
-[data-theme="dark"] .perfil-chip-btn.active {
-    background: #FCA311;
-    color: #000000;
-    border-color: #FCA311;
-}
-
-/* Dropdown de Autocomplete do Perfil */
-.perfil-autocomplete-dropdown {
-    position: absolute;
-    top: 52px;
-    left: 0;
-    right: 0;
-    background: #FFFFFF;
-    border: 1px solid #ECECEC;
-    border-radius: 20px;
-    box-shadow: 0 18px 45px rgba(20, 33, 61, 0.12), 0 4px 12px rgba(0, 0, 0, 0.04);
-    padding: 0.5rem;
-    max-height: 320px;
-    overflow-y: auto;
-    display: none;
-    text-align: left;
-    z-index: 100;
-}
-
-.perfil-autocomplete-dropdown.open {
-    display: block;
-    animation: fadePerfilAutocompleteIn 0.16s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes fadePerfilAutocompleteIn {
-    from { opacity: 0; transform: translateY(-6px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-[data-theme="dark"] .perfil-autocomplete-dropdown {
-    background: #181920;
-    border-color: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-}
-
-.perfil-ac-item {
+.bio-fle-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
-    padding: 0.65rem 0.85rem;
-    border-radius: 14px;
+    gap: 8px;
+}
+
+.bio-fle-title,
+.tts-speed-title {
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #14213D;
+}
+
+[data-theme="dark"] .bio-fle-title,
+[data-theme="dark"] .tts-speed-title {
+    color: #FCA311;
+}
+
+.bio-fle-goal {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #0F766E;
+}
+
+[data-theme="dark"] .bio-fle-goal {
+    color: #5EEAD4;
+}
+
+.bio-fle-quote {
+    margin: 0;
+    font-size: 0.84rem;
+    line-height: 1.5;
+    color: #1E293B;
+    font-style: italic;
+}
+
+[data-theme="dark"] .bio-fle-quote {
+    color: #E2E8F0;
+}
+
+.tts-speed-pills {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.tts-speed-btn {
+    padding: 5px 10px;
+    border-radius: 999px;
+    border: 1px solid #E2E8F0;
+    background: #FFFFFF;
+    color: #334155;
+    font-size: 0.74rem;
+    font-weight: 700;
     cursor: pointer;
-    transition: background 0.15s ease;
+    transition: all 0.16s ease;
 }
 
-.perfil-ac-item:hover,
-.perfil-ac-item.is-active {
-    background: #F7F7F8;
+.tts-speed-btn.active {
+    background: #14213D;
+    border-color: #14213D;
+    color: #FFFFFF;
 }
 
-[data-theme="dark"] .perfil-ac-item:hover,
-[data-theme="dark"] .perfil-ac-item.is-active {
-    background: rgba(255, 255, 255, 0.06);
+[data-theme="dark"] .tts-speed-btn {
+    background: rgba(15, 23, 42, 0.75);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #CBD5E1;
 }
 
-.perfil-ac-title {
+[data-theme="dark"] .tts-speed-btn.active {
+    background: #FCA311;
+    border-color: #FCA311;
+    color: #000000;
+}
+
+.perfil-btn-ouvir-mini {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 11px;
+    border-radius: 999px;
+    border: 1px solid #CBD5E1;
+    background: #FFFFFF;
+    color: #14213D;
+    font-size: 0.74rem;
+    font-weight: 700;
+    cursor: pointer;
+    width: fit-content;
+    transition: all 0.16s ease;
+}
+
+.perfil-btn-ouvir-mini:hover {
+    background: #FCA311;
+    border-color: #FCA311;
+    color: #000000;
+}
+
+[data-theme="dark"] .perfil-btn-ouvir-mini {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.14);
+    color: #F8FAFC;
+}
+
+.perfil-section-heading {
+    margin: 0;
+    font-size: 1.18rem;
+    font-weight: 800;
+    color: #14213D;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+[data-theme="dark"] .perfil-section-heading,
+[data-theme="dark"] .perfil-empty-title,
+[data-theme="dark"] .perfil-modal-photo-title {
+    color: #F8FAFC !important;
+}
+
+.perfil-count-badge {
+    font-size: 0.76rem;
+    font-weight: 700;
+    background: rgba(20, 33, 61, 0.07);
+    color: #14213D;
+    padding: 4px 12px;
+    border-radius: 9999px;
+}
+
+[data-theme="dark"] .perfil-count-badge {
+    background: rgba(252, 163, 17, 0.16);
+    color: #FCA311;
+}
+
+.perfil-empty-box {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    color: #6B7280;
+}
+
+.perfil-empty-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(20, 33, 61, 0.06);
+    color: #14213D;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+}
+
+[data-theme="dark"] .perfil-empty-icon {
+    background: rgba(255, 255, 255, 0.08);
+    color: #FCA311;
+}
+
+.perfil-empty-title {
+    font-size: 1.08rem;
+    font-weight: 800;
+    margin: 0 0 6px 0;
+    color: #111827;
+}
+
+.perfil-empty-desc {
+    margin: 0 auto;
+    max-width: 360px;
     font-size: 0.88rem;
+    line-height: 1.55;
+    color: #6B7280;
+}
+
+[data-theme="dark"] .perfil-empty-box,
+[data-theme="dark"] .perfil-empty-desc,
+[data-theme="dark"] .perfil-modal-photo-sub {
+    color: #94A3B8 !important;
+}
+
+.perfil-modal-photo-title {
+    font-size: 0.84rem;
     font-weight: 700;
     color: #111827;
 }
 
-[data-theme="dark"] .perfil-ac-title {
-    color: #F9FAFB;
-}
-
-.perfil-ac-title mark {
-    background: rgba(252, 163, 17, 0.28);
-    color: inherit;
-    padding: 0 2px;
-    border-radius: 4px;
-}
-
-.perfil-ac-sub {
-    font-size: 0.75rem;
+.perfil-modal-photo-sub {
+    font-size: 0.76rem;
     color: #6B7280;
+}
+
+.perfil-modal-cancel-btn {
+    background: #F3F4F6;
+    color: #374151;
+    border: 1px solid #E5E7EB;
+    border-radius: 999px;
+    padding: 9px 18px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+[data-theme="dark"] .perfil-modal-cancel-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.14);
+    color: #F8FAFC;
+}
+
+.perfil-msg-search-wrap {
+    margin-bottom: 0.9rem;
+}
+
+.perfil-msg-search-input {
+    width: 100%;
+    padding: 0.58rem 0.95rem;
+    border-radius: 999px;
+    border: 1px solid #E2E8F0;
+    background: #F8FAFC;
+    color: #111827;
+    font-size: 0.84rem;
+    font-weight: 500;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.perfil-msg-search-input:focus {
+    border-color: #14213D;
+    background: #FFFFFF;
+}
+
+[data-theme="dark"] .perfil-msg-search-input {
+    background: rgba(15, 23, 42, 0.75);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #F8FAFC;
+}
+
+.perfil-french-mini-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 0.45rem;
+}
+
+.perfil-char-mini-btn {
+    min-width: 26px;
+    height: 24px;
+    padding: 0 5px;
+    border-radius: 6px;
+    border: 1px solid #CBD5E1;
+    background: #F8FAFC;
+    color: #14213D;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.perfil-char-mini-btn:hover {
+    background: #FCA311;
+    border-color: #FCA311;
+    color: #000000;
+}
+
+[data-theme="dark"] .perfil-char-mini-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.14);
+    color: #F8FAFC;
 }
 
 /* 4. Quadro Dividido: Dados Acadêmicos + Caixa de Mensagens */
@@ -1163,9 +1187,31 @@
                 <span class="serif-italic">Mon Espace &amp; Messagerie FLE</span>
             </h1>
             <p class="perfil-editorial-subtitle">
-                Consulte suas informações acadêmicas, evolução no quadro <strong>CEFR</strong> e os comunicados pedagógicos enviados pelos seus professores.
+                Consulte seu passaporte linguístico <strong>CEFR</strong>, personalize sua apresentação em francês e responda aos recados pedagógicos dos professores.
             </p>
         </header>
+
+        <!-- 1.5 Passaporte Linguístico CEFR -->
+        <section class="passeport-fle-banner" aria-label="Passaporte Linguístico CEFR">
+            <div class="passeport-fle-info">
+                <span class="passeport-cefr-badge">🎓 Nível {{ passeport_fle.nivel_cefr }} • {{ passeport_fle.titulo_cefr }}</span>
+                <p class="passeport-fle-desc">{{ passeport_fle.descricao_cefr }}</p>
+            </div>
+            <div class="passeport-metrics-row">
+                <span class="passeport-metric-pill" title="XP acumulado nas atividades do curso">
+                    🎓 XP Curso: {{ passeport_fle.xp_curso }} XP
+                </span>
+                <span class="passeport-metric-pill" title="XP acumulado na Prática Livre">
+                    ⚡ XP Prática: {{ passeport_fle.xp_pessoal }} XP
+                </span>
+                <span class="passeport-metric-pill" title="Frequência registrada no Diário de Classe">
+                    📅 Frequência: {{ passeport_fle.taxa_frequencia }}%
+                </span>
+                <span class="passeport-metric-pill" title="Medalhas FLE desbloqueadas">
+                    🏆 Conquistas: {{ passeport_fle.conquistas_desbloqueadas }}/6
+                </span>
+            </div>
+        </section>
 
         <!-- 2. Quadro Dividido do Perfil -->
         <div class="perfil-box-outer" id="perfilBoxOuter">
@@ -1258,6 +1304,38 @@
                             </div>
                         </div>
 
+                        <!-- Minha Apresentação em Francês & Objetivo FLE -->
+                        <div class="bio-fle-box">
+                            <div class="bio-fle-header">
+                                <span class="bio-fle-title">🇫🇷 Ma Présentation en Français</span>
+                                <button type="button" class="perfil-btn-ouvir-mini" onclick="abrirModalEditarPerfil()">✎ Personalizar</button>
+                            </div>
+                            <span class="bio-fle-goal">🎯 Objetivo: {{ aluno.objetivo_fle or 'Conversação & Fluência' }}</span>
+                            <p class="bio-fle-quote" id="bioFleQuoteText">« {{ aluno.bio_frances or passeport_fle.sugestao_bio_frances }} »</p>
+                            <button type="button"
+                                    class="perfil-btn-ouvir-mini"
+                                    data-texto="{{ (aluno.bio_frances or passeport_fle.sugestao_bio_frances)|e }}"
+                                    onclick="ouvirTextoPerfil(this)">
+                                🔊 Ouvir Apresentação
+                            </button>
+                        </div>
+
+                        <!-- Preferência Global de Velocidade da Voz Francesa (TTS) -->
+                        <div class="tts-speed-box">
+                            <span class="tts-speed-title">🔊 Velocidade da Voz Francesa (TTS)</span>
+                            <div class="tts-speed-pills" role="group" aria-label="Velocidade da voz em francês">
+                                <button type="button" class="tts-speed-btn" data-rate="0.8" onclick="definirVelocidadeVozFrances(0.8, this)">🐢 0.80x</button>
+                                <button type="button" class="tts-speed-btn active" data-rate="0.9" onclick="definirVelocidadeVozFrances(0.9, this)">🎯 0.90x</button>
+                                <button type="button" class="tts-speed-btn" data-rate="1.05" onclick="definirVelocidadeVozFrances(1.05, this)">⚡ 1.05x</button>
+                                <button type="button"
+                                        class="perfil-btn-ouvir-mini"
+                                        data-texto="Bonjour ! C'est un plaisir de pratiquer le français aujourd'hui."
+                                        onclick="ouvirTextoPerfil(this)">
+                                    🔊 Testar
+                                </button>
+                            </div>
+                        </div>
+
                         <div class="perfil-card-divider"></div>
 
                         <!-- Ações de Perfil e Sessão -->
@@ -1281,22 +1359,25 @@
                     </div>
 
                     <!-- COLUNA 2: RECADOS E COMUNICADOS DOS PROFESSORES -->
-                    {% set ns_msg = namespace(nao_lidas=0) %}
+                    {% set ns_msg = namespace(nao_lidas=0, respondidas=0) %}
                     {% for m in mensagens %}
                         {% if not m.lida_status %}
                             {% set ns_msg.nao_lidas = ns_msg.nao_lidas + 1 %}
                         {% endif %}
+                        {% if m.resposta_aluno %}
+                            {% set ns_msg.respondidas = ns_msg.respondidas + 1 %}
+                        {% endif %}
                     {% endfor %}
                     <div class="perfil-card-box perfil-mensagens-card" id="secaoMensagensPerfil">
                         <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;">
-                            <h3 style="margin: 0; font-size: 1.18rem; font-weight: 800; color: #14213D; display: flex; align-items: center; gap: 8px;">
+                            <h3 class="perfil-section-heading">
                                 <svg class="line-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                                     <polyline points="22,6 12,13 2,6"></polyline>
                                 </svg>
                                 <span>Recados dos Professores</span>
                             </h3>
-                            <span id="badgeCountMensagensPerfil" style="font-size: 0.76rem; font-weight: 700; background: rgba(20, 33, 61, 0.07); color: #14213D; padding: 4px 12px; border-radius: 9999px;">
+                            <span id="badgeCountMensagensPerfil" class="perfil-count-badge">
                                 {{ mensagens|length }} {{ 'mensagem' if mensagens|length == 1 else 'mensagens' }}
                             </span>
                         </div>
@@ -1312,10 +1393,22 @@
                                 <button type="button" class="perfil-msg-filter-btn" data-filtro-msg="nao_lidas" onclick="filtrarRecadosPorStatus('nao_lidas', this)">
                                     Não Lidas (<span id="countMsgNaoLidas">{{ ns_msg.nao_lidas }}</span>)
                                 </button>
+                                <button type="button" class="perfil-msg-filter-btn" data-filtro-msg="respondidas" onclick="filtrarRecadosPorStatus('respondidas', this)">
+                                    Respondidas (<span id="countMsgRespondidas">{{ ns_msg.respondidas }}</span>)
+                                </button>
                             </div>
                             <button type="button" id="btnMarcarTodasLidas" class="perfil-msg-markall-btn" onclick="marcarTodasMensagensLidas()" {% if ns_msg.nao_lidas == 0 %}style="display: none;"{% endif %}>
                                 ✓ Marcar todas como lidas
                             </button>
+                        </div>
+
+                        <div class="perfil-msg-search-wrap no-print">
+                            <input type="text"
+                                   id="inputBuscaRecadosPerfil"
+                                   class="perfil-msg-search-input"
+                                   placeholder="Buscar recado por assunto, conteúdo ou professor..."
+                                   oninput="filtrarRecadosPerfil()"
+                                   aria-label="Buscar recados dos professores">
                         </div>
 
                         <div class="perfil-msg-list" id="listaMensagensPerfil">
@@ -1323,7 +1416,9 @@
                             <div class="perfil-msg-item {% if not m.lida_status %}msg-nao-lida{% endif %}"
                                  id="msgItem_{{ m.id }}"
                                  data-id="{{ m.id }}"
-                                 data-lida="{{ 1 if m.lida_status else 0 }}">
+                                 data-lida="{{ 1 if m.lida_status else 0 }}"
+                                 data-respondida="{{ 1 if m.resposta_aluno else 0 }}"
+                                 data-busca="{{ (m.assunto ~ ' ' ~ (m.remetente_nome or '') ~ ' ' ~ m.corpo)|lower|e }}">
                                 <div class="perfil-msg-header">
                                     <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                                         <span class="perfil-msg-subject">{{ m.assunto }}</span>
@@ -1333,7 +1428,7 @@
                                     </div>
                                     <span style="font-size: 0.76rem; color: #6B7280; display: inline-flex; align-items: center; gap: 4px; font-weight: 500;">
                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                                        {{ m.data_envio }}
+                                        {{ m.data_envio|data_hora_br }}
                                     </span>
                                 </div>
                                 <div class="perfil-msg-meta">
@@ -1358,15 +1453,29 @@
                                     <button type="button" class="perfil-msg-action-btn" onclick="alternarBoxRespostaMensagem({{ m.id }})">
                                         ↩ Responder / Tirar Dúvida
                                     </button>
+                                    <button type="button"
+                                            class="perfil-btn-ouvir-mini"
+                                            data-texto="{{ (m.assunto ~ '. ' ~ m.corpo)|e }}"
+                                            onclick="ouvirTextoPerfil(this)"
+                                            title="Ouvir recado com voz francesa">
+                                        🔊 Ouvir Recado
+                                    </button>
                                 </div>
 
                                 <div id="boxRespostaMsg_{{ m.id }}" class="perfil-msg-reply-form no-print" style="display: none;">
                                     <div class="perfil-msg-quick-chips">
+                                        <button type="button" class="perfil-msg-quick-chip" onclick="preencherChipRespostaMsg({{ m.id }}, 'Merci beaucoup, professeur ! C\'est noté.')">Merci ! C'est noté</button>
+                                        <button type="button" class="perfil-msg-quick-chip" onclick="preencherChipRespostaMsg({{ m.id }}, 'D\'accord, je vais réviser ce sujet !')">Je vais réviser</button>
+                                        <button type="button" class="perfil-msg-quick-chip" onclick="preencherChipRespostaMsg({{ m.id }}, 'Bonjour professeur, j\'ai une question : ')">J'ai une question</button>
                                         <button type="button" class="perfil-msg-quick-chip" onclick="preencherChipRespostaMsg({{ m.id }}, 'Ciente, obrigado(a) professor(a)!')">Ciente, obrigado(a)!</button>
-                                        <button type="button" class="perfil-msg-quick-chip" onclick="preencherChipRespostaMsg({{ m.id }}, 'Confirmado! Revisarei o conteúdo indicado.')">Revisarei o conteúdo</button>
-                                        <button type="button" class="perfil-msg-quick-chip" onclick="preencherChipRespostaMsg({{ m.id }}, 'Professor(a), fiquei com uma dúvida sobre este recado: ')">Tirar dúvida</button>
                                     </div>
-                                    <textarea id="inputRespostaMsg_{{ m.id }}" class="perfil-msg-reply-textarea" rows="2" maxlength="1000" placeholder="Escreva uma confirmação ou dúvida rápida para o professor..."></textarea>
+                                    <textarea id="inputRespostaMsg_{{ m.id }}" class="perfil-msg-reply-textarea" rows="2" maxlength="1000" placeholder="Escreva uma confirmação ou dúvida em francês ou português..."></textarea>
+                                    <div class="perfil-french-mini-bar" role="toolbar" aria-label="Acentos franceses">
+                                        <span class="perfil-modal-photo-sub">Acentos FR:</span>
+                                        {% for ch in ['é','è','ê','ë','à','â','ç','ù','û','î','ï','ô','œ'] %}
+                                        <button type="button" class="perfil-char-mini-btn" data-char="{{ ch }}" onclick="inserirAcentoRespostaRecado({{ m.id }}, this)" lang="fr">{{ ch }}</button>
+                                        {% endfor %}
+                                    </div>
                                     <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 0.55rem;">
                                         <button type="button" class="perfil-msg-action-btn" onclick="alternarBoxRespostaMensagem({{ m.id }})">Cancelar</button>
                                         <button type="button" id="btnEnviarRespMsg_{{ m.id }}" class="perfil-msg-action-btn confirm" onclick="enviarRespostaMensagem({{ m.id }})">Enviar Resposta</button>
@@ -1376,20 +1485,20 @@
                             {% endfor %}
                         </div>
 
-                        <div id="emptyFiltroMensagensPerfil" style="display: none; text-align: center; padding: 2.25rem 1.25rem; color: #6B7280;">
-                            <p style="margin: 0 0 0.85rem; font-size: 0.92rem; font-weight: 600;">Nenhum recado não lido no momento. Tudo em dia!</p>
-                            <button type="button" class="perfil-pill-btn" onclick="filtrarRecadosPorStatus('todas', document.querySelector('[data-filtro-msg=&quot;todas&quot;]'))" style="width: auto;">Mostrar Todas</button>
+                        <div id="emptyFiltroMensagensPerfil" class="perfil-empty-box" style="display: none; padding: 2.25rem 1.25rem;">
+                            <p style="margin: 0 0 0.85rem; font-size: 0.92rem; font-weight: 600;">Nenhum recado corresponde ao filtro ou busca atual.</p>
+                            <button type="button" class="perfil-pill-btn" onclick="limparFiltrosRecadosPerfil()" style="width: auto;">Mostrar Todos</button>
                         </div>
                         {% else %}
-                        <div style="text-align: center; padding: 3rem 1.5rem; color: #6B7280;">
-                            <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(20, 33, 61, 0.06); color: #14213D; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                        <div class="perfil-empty-box">
+                            <div class="perfil-empty-icon">
                                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                                     <polyline points="22,6 12,13 2,6"></polyline>
                                 </svg>
                             </div>
-                            <h4 style="font-size: 1.08rem; font-weight: 800; margin: 0 0 6px 0; color: #111827;">Nenhum recado pendente</h4>
-                            <p style="margin: 0 auto; max-width: 360px; font-size: 0.88rem; line-height: 1.55;">
+                            <h4 class="perfil-empty-title">Nenhum recado pendente</h4>
+                            <p class="perfil-empty-desc">
                                 Seus professores publicarão comunicados, avisos de avaliação e orientações pedagógicas por aqui.
                             </p>
                         </div>
@@ -1405,8 +1514,8 @@
             <div class="perfil-modal-dialog">
                 <div class="perfil-modal-header">
                     <div>
-                        <h3 id="tituloModalEditarPerfil" class="perfil-modal-title">Editar Meus Dados &amp; Foto</h3>
-                        <p style="margin: 3px 0 0; font-size: 0.82rem; color: #6B7280;">Atualize suas informações pessoais e foto de identificação no portal.</p>
+                        <h3 id="tituloModalEditarPerfil" class="perfil-modal-title">Editar Meus Dados &amp; Passaporte FLE</h3>
+                        <p class="perfil-modal-photo-sub" style="margin: 3px 0 0;">Atualize seus dados pessoais, foto e sua apresentação em francês.</p>
                     </div>
                     <button type="button" class="perfil-modal-close" onclick="fecharModalEditarPerfil()" aria-label="Fechar modal">&times;</button>
                 </div>
@@ -1424,8 +1533,8 @@
                             {% endif %}
                         </div>
                         <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
-                            <span style="font-size: 0.84rem; font-weight: 700; color: #111827;">Foto do Perfil</span>
-                            <span style="font-size: 0.76rem; color: #6B7280;">Formatos aceitos: PNG, JPG ou WEBP.</span>
+                            <span class="perfil-modal-photo-title">Foto do Perfil</span>
+                            <span class="perfil-modal-photo-sub">Formatos aceitos: PNG, JPG ou WEBP.</span>
                             <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 2px;">
                                 <label for="inputFotoPerfilAluno" class="perfil-pill-btn" style="width: auto; padding: 6px 14px !important; font-size: 0.76rem !important; cursor: pointer;">
                                     📷 Escolher Imagem
@@ -1440,11 +1549,30 @@
                         </div>
                     </div>
 
-                    <!-- Campos de Dados Pessoais -->
+                    <!-- Campos de Dados Pessoais & Identidade FLE -->
                     <div class="perfil-form-grid">
                         <div class="perfil-form-group full-span">
                             <label class="perfil-form-label" for="inputNomePerfil">Nome Completo *</label>
                             <input type="text" id="inputNomePerfil" name="nome_completo" class="perfil-form-input" value="{{ nome_exibicao }}" required>
+                        </div>
+
+                        <div class="perfil-form-group full-span">
+                            <label class="perfil-form-label" for="selectObjetivoFleModal">Objetivo com o Francês (FLE)</label>
+                            <select id="selectObjetivoFleModal" name="objetivo_fle" class="perfil-form-select">
+                                {% set obj_atual = aluno.objetivo_fle or 'Conversação & Fluência' %}
+                                {% for opt_obj in ['Conversação & Fluência', 'Viagem & Francofonia', 'Exame DELF / DALF', 'Carreira & Estudos', 'Cultura, Cinema & Literatura'] %}
+                                <option value="{{ opt_obj }}" {{ 'selected' if obj_atual == opt_obj else '' }}>{{ opt_obj }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="perfil-form-group full-span">
+                            <label class="perfil-form-label" for="inputBioFrancesModal">Minha Apresentação em Francês (Ma Bio FLE)</label>
+                            <textarea id="inputBioFrancesModal" name="bio_frances" class="perfil-form-input" rows="2" maxlength="400" placeholder="{{ passeport_fle.sugestao_bio_frances }}" style="resize: vertical;">{{ aluno.bio_frances or '' }}</textarea>
+                            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
+                                <button type="button" class="perfil-msg-quick-chip" data-sugestao="{{ passeport_fle.sugestao_bio_frances|e }}" onclick="aplicarSugestaoBioPerfil(this)">✨ Usar modelo sugerido</button>
+                                <button type="button" class="perfil-btn-ouvir-mini" onclick="ouvirBioModalPreview(this)">🔊 Ouvir Prévia</button>
+                            </div>
                         </div>
 
                         <div class="perfil-form-group">
@@ -1487,7 +1615,7 @@
                     <div id="feedbackSalvarPerfilAluno" style="display: none; margin-top: 0.9rem; padding: 0.65rem 0.9rem; border-radius: 12px; font-size: 0.84rem; font-weight: 600;"></div>
 
                     <div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 1.35rem;">
-                        <button type="button" onclick="fecharModalEditarPerfil()" style="background: #F3F4F6; color: #374151; border: 1px solid #E5E7EB; border-radius: 999px; padding: 9px 18px; font-size: 0.82rem; font-weight: 600; cursor: pointer;">
+                        <button type="button" class="perfil-modal-cancel-btn" onclick="fecharModalEditarPerfil()">
                             Cancelar
                         </button>
                         <button type="submit" id="btnSubmitSalvarPerfil" class="perfil-pill-btn" style="width: auto; padding: 9px 24px !important;">
@@ -1506,14 +1634,71 @@
 <script>
 let filtroStatusRecadosAtual = 'todas';
 
+function obterCsrfTokenPerfil() {
+    return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+}
+
+function ouvirTextoPerfil(btn) {
+    if (!btn) return;
+    const texto = btn.getAttribute('data-texto') || '';
+    if (texto && typeof window.falarTextoFrancesBase === 'function') {
+        window.falarTextoFrancesBase(texto, btn, { status: 'Correto' });
+    }
+}
+
+function ouvirBioModalPreview(btn) {
+    const bioEl = document.getElementById('inputBioFrancesModal');
+    const texto = (bioEl?.value || bioEl?.placeholder || '').trim();
+    if (texto && typeof window.falarTextoFrancesBase === 'function') {
+        window.falarTextoFrancesBase(texto, btn, { status: 'Correto' });
+    }
+}
+
+function aplicarSugestaoBioPerfil(btn) {
+    const bioEl = document.getElementById('inputBioFrancesModal');
+    const texto = btn?.getAttribute('data-sugestao') || '';
+    if (bioEl && texto) {
+        bioEl.value = texto;
+        bioEl.focus();
+    }
+}
+
+function definirVelocidadeVozFrances(rate, btn) {
+    const val = Math.min(1.25, Math.max(0.65, Number(rate) || 0.9));
+    try { localStorage.setItem('fran_tts_rate', String(val)); } catch (e) {}
+    document.querySelectorAll('.tts-speed-btn').forEach(b => {
+        const bRate = parseFloat(b.getAttribute('data-rate') || '0');
+        b.classList.toggle('active', b === btn || Math.abs(bRate - val) < 0.03);
+    });
+    if (typeof window.showToast === 'function') {
+        window.showToast(`Velocidade da voz ajustada para ${val.toFixed(2)}x.`, 'sucesso');
+    }
+}
+
+function inserirAcentoRespostaRecado(msgId, btn) {
+    const ta = document.getElementById(`inputRespostaMsg_${msgId}`);
+    const ch = btn?.getAttribute('data-char') || '';
+    if (!ta || !ch) return;
+    const start = ta.selectionStart ?? ta.value.length;
+    const end = ta.selectionEnd ?? ta.value.length;
+    ta.value = ta.value.slice(0, start) + ch + ta.value.slice(end);
+    const pos = start + ch.length;
+    ta.focus();
+    ta.setSelectionRange(pos, pos);
+}
+
 function atualizarContadoresLeituraPerfil(naoLidasOverride = null) {
     const itens = Array.from(document.querySelectorAll('.perfil-msg-item'));
     const naoLidas = naoLidasOverride !== null
         ? naoLidasOverride
         : itens.filter(el => el.getAttribute('data-lida') !== '1').length;
+    const respondidas = itens.filter(el => el.getAttribute('data-respondida') === '1').length;
 
     const spanNaoLidas = document.getElementById('countMsgNaoLidas');
     if (spanNaoLidas) spanNaoLidas.textContent = String(naoLidas);
+
+    const spanRespondidas = document.getElementById('countMsgRespondidas');
+    if (spanRespondidas) spanRespondidas.textContent = String(respondidas);
 
     const btnMarcarTodas = document.getElementById('btnMarcarTodasLidas');
     if (btnMarcarTodas) {
@@ -1530,18 +1715,24 @@ function atualizarContadoresLeituraPerfil(naoLidasOverride = null) {
     });
 }
 
-function filtrarRecadosPorStatus(filtro, btn) {
-    filtroStatusRecadosAtual = filtro === 'nao_lidas' ? 'nao_lidas' : 'todas';
-    document.querySelectorAll('.perfil-msg-filter-btn').forEach(b => {
-        b.classList.toggle('active', b.getAttribute('data-filtro-msg') === filtroStatusRecadosAtual);
-    });
-    if (btn) btn.classList.add('active');
-
+function filtrarRecadosPerfil() {
+    const termo = (document.getElementById('inputBuscaRecadosPerfil')?.value || '').trim().toLowerCase();
     const itens = document.querySelectorAll('.perfil-msg-item');
     let visiveis = 0;
+
     itens.forEach(item => {
         const lida = item.getAttribute('data-lida') === '1';
-        const mostrar = filtroStatusRecadosAtual === 'todas' || !lida;
+        const respondida = item.getAttribute('data-respondida') === '1';
+        const buscaTexto = item.getAttribute('data-busca') || '';
+
+        const matchStatus = (
+            filtroStatusRecadosAtual === 'todas'
+            || (filtroStatusRecadosAtual === 'nao_lidas' && !lida)
+            || (filtroStatusRecadosAtual === 'respondidas' && respondida)
+        );
+        const matchBusca = !termo || buscaTexto.includes(termo);
+        const mostrar = matchStatus && matchBusca;
+
         item.style.display = mostrar ? 'block' : 'none';
         if (mostrar) visiveis++;
     });
@@ -1555,6 +1746,25 @@ function filtrarRecadosPorStatus(filtro, btn) {
     if (emptyBox && itens.length > 0) {
         emptyBox.style.display = visiveis === 0 ? 'block' : 'none';
     }
+}
+
+function filtrarRecadosPorStatus(filtro, btn) {
+    if (filtro === 'nao_lidas' || filtro === 'respondidas') {
+        filtroStatusRecadosAtual = filtro;
+    } else {
+        filtroStatusRecadosAtual = 'todas';
+    }
+    document.querySelectorAll('.perfil-msg-filter-btn').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-filtro-msg') === filtroStatusRecadosAtual);
+    });
+    if (btn) btn.classList.add('active');
+    filtrarRecadosPerfil();
+}
+
+function limparFiltrosRecadosPerfil() {
+    const inp = document.getElementById('inputBuscaRecadosPerfil');
+    if (inp) inp.value = '';
+    filtrarRecadosPorStatus('todas', document.querySelector('[data-filtro-msg="todas"]'));
 }
 
 function marcarItemComoLidoNoDOM(msgId) {
@@ -1581,7 +1791,10 @@ async function confirmarLeituraMensagem(msgId) {
     try {
         const resp = await fetch('/api/aluno/mensagem/marcar_lida', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': obterCsrfTokenPerfil()
+            },
             body: JSON.stringify({ mensagem_id: msgId })
         });
         const data = await resp.json();
@@ -1590,14 +1803,14 @@ async function confirmarLeituraMensagem(msgId) {
         }
         marcarItemComoLidoNoDOM(msgId);
         atualizarContadoresLeituraPerfil(data.nao_lidas);
-        filtrarRecadosPorStatus(filtroStatusRecadosAtual);
+        filtrarRecadosPerfil();
         if (typeof window.showToast === 'function') {
-            window.showToast('Leitura do recado confirmada.', 'success');
+            window.showToast('Leitura do recado confirmada.', 'sucesso');
         }
     } catch (err) {
         if (btn) btn.disabled = false;
         if (typeof window.showToast === 'function') {
-            window.showToast(err.message || 'Erro ao confirmar leitura.', 'error');
+            window.showToast(err.message || 'Erro ao confirmar leitura.', 'erro');
         }
     }
 }
@@ -1608,7 +1821,10 @@ async function marcarTodasMensagensLidas() {
     try {
         const resp = await fetch('/api/aluno/mensagem/marcar_lida', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': obterCsrfTokenPerfil()
+            },
             body: JSON.stringify({ todas: true })
         });
         const data = await resp.json();
@@ -1620,14 +1836,14 @@ async function marcarTodasMensagensLidas() {
             if (id) marcarItemComoLidoNoDOM(id);
         });
         atualizarContadoresLeituraPerfil(0);
-        filtrarRecadosPorStatus(filtroStatusRecadosAtual);
+        filtrarRecadosPerfil();
         if (typeof window.showToast === 'function') {
-            window.showToast('Todos os recados foram marcados como lidos.', 'success');
+            window.showToast('Todos os recados foram marcados como lidos.', 'sucesso');
         }
     } catch (err) {
         if (btn) btn.disabled = false;
         if (typeof window.showToast === 'function') {
-            window.showToast(err.message || 'Erro ao atualizar recados.', 'error');
+            window.showToast(err.message || 'Erro ao atualizar recados.', 'erro');
         }
     }
 }
@@ -1655,7 +1871,7 @@ async function enviarRespostaMensagem(msgId) {
     const resposta = (textarea?.value || '').trim();
     if (!resposta) {
         if (typeof window.showToast === 'function') {
-            window.showToast('Escreva uma resposta ou selecione um atalho antes de enviar.', 'warning');
+            window.showToast('Escreva uma resposta ou selecione um atalho antes de enviar.', 'aviso');
         }
         textarea?.focus();
         return;
@@ -1668,13 +1884,19 @@ async function enviarRespostaMensagem(msgId) {
     try {
         const resp = await fetch('/api/aluno/mensagem/responder', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': obterCsrfTokenPerfil()
+            },
             body: JSON.stringify({ mensagem_id: msgId, resposta: resposta })
         });
         const data = await resp.json();
         if (!resp.ok || data.status !== 'sucesso') {
             throw new Error(data.mensagem || 'Não foi possível enviar a resposta.');
         }
+
+        const item = document.getElementById(`msgItem_${msgId}`);
+        if (item) item.setAttribute('data-respondida', '1');
 
         const wrap = document.getElementById(`respostaEnviadaWrap_${msgId}`);
         const textoEl = document.getElementById(`respostaTextoMsg_${msgId}`);
@@ -1689,14 +1911,14 @@ async function enviarRespostaMensagem(msgId) {
 
         marcarItemComoLidoNoDOM(msgId);
         atualizarContadoresLeituraPerfil(data.nao_lidas);
-        filtrarRecadosPorStatus(filtroStatusRecadosAtual);
+        filtrarRecadosPerfil();
 
         if (typeof window.showToast === 'function') {
-            window.showToast(data.mensagem || 'Resposta enviada ao professor!', 'success');
+            window.showToast(data.mensagem || 'Resposta enviada ao professor!', 'sucesso');
         }
     } catch (err) {
         if (typeof window.showToast === 'function') {
-            window.showToast(err.message || 'Erro ao enviar resposta.', 'error');
+            window.showToast(err.message || 'Erro ao enviar resposta.', 'erro');
         }
     } finally {
         if (btn) {
@@ -1764,12 +1986,15 @@ async function salvarEdicaoPerfilAluno(event) {
     try {
         const resp = await fetch('/api/aluno/atualizar_perfil', {
             method: 'POST',
+            headers: {
+                'X-CSRFToken': obterCsrfTokenPerfil()
+            },
             body: formData
         });
         const data = await resp.json();
 
-        if (!resp.ok || data.erro) {
-            throw new Error(data.erro || 'Não foi possível atualizar o perfil.');
+        if (!resp.ok || data.status === 'erro' || data.erro) {
+            throw new Error(data.mensagem || data.erro || 'Não foi possível atualizar o perfil.');
         }
 
         if (feedback) {
@@ -1797,6 +2022,18 @@ async function salvarEdicaoPerfilAluno(event) {
         }
     }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        const savedRate = parseFloat(localStorage.getItem('fran_tts_rate') || '0.9');
+        if (!Number.isNaN(savedRate)) {
+            document.querySelectorAll('.tts-speed-btn').forEach(b => {
+                const bRate = parseFloat(b.getAttribute('data-rate') || '0');
+                b.classList.toggle('active', Math.abs(bRate - savedRate) < 0.03);
+            });
+        }
+    } catch (e) {}
+});
 
 document.addEventListener('click', (e) => {
     const modal = document.getElementById('modalEditarPerfil');

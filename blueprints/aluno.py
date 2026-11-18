@@ -1105,6 +1105,30 @@ def _garantir_colunas_resposta_inbox(cursor, conn=None):
         conn.commit()
 
 
+def _garantir_colunas_perfil_fle(cursor, conn=None):
+    """Garante colunas de perfil completo e identidade linguística FLE na tabela alunos."""
+    cols_al = [r[1] for r in cursor.execute("PRAGMA table_info(alunos)").fetchall()]
+    alterou = False
+    if cols_al:
+        if "data_nascimento" not in cols_al:
+            cursor.execute("ALTER TABLE alunos ADD COLUMN data_nascimento TEXT")
+            alterou = True
+        if "endereco" not in cols_al:
+            cursor.execute("ALTER TABLE alunos ADD COLUMN endereco TEXT")
+            alterou = True
+        if "foto_url" not in cols_al:
+            cursor.execute("ALTER TABLE alunos ADD COLUMN foto_url TEXT")
+            alterou = True
+        if "bio_frances" not in cols_al:
+            cursor.execute("ALTER TABLE alunos ADD COLUMN bio_frances TEXT")
+            alterou = True
+        if "objetivo_fle" not in cols_al:
+            cursor.execute("ALTER TABLE alunos ADD COLUMN objetivo_fle TEXT DEFAULT 'Conversação & Fluência'")
+            alterou = True
+    if alterou and conn is not None:
+        conn.commit()
+
+
 @aluno_bp.route("/aluno/perfil", methods=["GET"])
 @login_required
 def aluno_perfil():
@@ -1113,11 +1137,13 @@ def aluno_perfil():
     cursor = conn.cursor()
 
     _garantir_colunas_resposta_inbox(cursor, conn)
+    _garantir_colunas_perfil_fle(cursor, conn)
+    _garantir_coluna_origem_submissao(cursor, conn)
 
     cursor.execute("""
         SELECT a.id, a.nome_completo, a.nome_completo as nome, a.matricula,
                a.nivel_cefr, a.turno, a.email, a.telefone, a.data_nascimento,
-               a.endereco, a.foto_url, t.nome as turma_nome
+               a.endereco, a.foto_url, a.bio_frances, a.objetivo_fle, t.nome as turma_nome
         FROM alunos a
         LEFT JOIN turmas t ON a.turma_id = t.id
         WHERE a.id = ?
@@ -1144,8 +1170,81 @@ def aluno_perfil():
     sub_row = cursor.fetchone()
     total_submissoes = sub_row["total"] if sub_row else 0
 
+    # Métricas do Passaporte Linguístico CEFR
+    cursor.execute("""
+        SELECT
+            SUM(CASE WHEN COALESCE(origem_submissao, 'curso') != 'pratica_pessoal' THEN 1 ELSE 0 END) as total_curso,
+            SUM(CASE WHEN COALESCE(origem_submissao, 'curso') != 'pratica_pessoal' AND status_resposta = 'Correto' THEN 1 ELSE 0 END) as acertos_curso,
+            SUM(CASE WHEN COALESCE(origem_submissao, 'curso') != 'pratica_pessoal' AND status_resposta = 'Parcialmente Correto' THEN 1 ELSE 0 END) as parciais_curso,
+            SUM(CASE WHEN origem_submissao = 'pratica_pessoal' AND status_resposta = 'Correto' THEN 1 ELSE 0 END) as acertos_pessoal,
+            SUM(CASE WHEN origem_submissao = 'pratica_pessoal' AND status_resposta = 'Parcialmente Correto' THEN 1 ELSE 0 END) as parciais_pessoal,
+            SUM(CASE WHEN status_resposta = 'Correto' THEN 1 ELSE 0 END) as acertos_geral,
+            SUM(CASE WHEN arquivo_audio_path IS NOT NULL AND arquivo_audio_path != '' THEN 1 ELSE 0 END) as total_audio
+        FROM submissoes
+        WHERE aluno_id = ?
+    """, (aluno_id,))
+    st_sub = cursor.fetchone()
+    xp_curso = (((st_sub["acertos_curso"] or 0) * 10) + ((st_sub["parciais_curso"] or 0) * 5)) if st_sub else 0
+    xp_pessoal = (((st_sub["acertos_pessoal"] or 0) * 10) + ((st_sub["parciais_pessoal"] or 0) * 5)) if st_sub else 0
+    acertos_geral = (st_sub["acertos_geral"] or 0) if st_sub else 0
+    tem_audio = ((st_sub["total_audio"] or 0) > 0) if st_sub else False
+
+    cursor.execute("""
+        SELECT COUNT(*) as total_aulas,
+               SUM(CASE WHEN status IN ('Presente', 'Justificado') THEN 1 ELSE 0 END) as presencas
+        FROM presencas_aula
+        WHERE aluno_id = ?
+    """, (aluno_id,))
+    freq_row = cursor.fetchone()
+    total_aulas = (freq_row["total_aulas"] or 0) if freq_row else 0
+    presencas = (freq_row["presencas"] or 0) if freq_row else 0
+    taxa_frequencia = round((presencas / total_aulas) * 100) if total_aulas > 0 else 100
+
+    cursor.execute("SELECT COUNT(*) as c FROM reforcos_individuais WHERE aluno_id = ? AND LOWER(status) = 'concluido'", (aluno_id,))
+    ref_row = cursor.fetchone()
+    tem_reforco = ((ref_row["c"] or 0) > 0) if ref_row else False
+
+    nivel_cefr = aluno.get("nivel_cefr") or session.get("nivel_cefr", "A2")
+    cefr_meta = {
+        "A1": ("Découverte", "Compreende e utiliza expressões cotidianas familiares e apresentações simples."),
+        "A2": ("Survie", "Comunica-se em situações simples do dia a dia e descreve rotinas e experiências."),
+        "B1": ("Seuil", "Sustenta conversas sobre interesses pessoais, viagens e justifica opiniões em francês."),
+        "B2": ("Avancé", "Argumenta com fluidez, compreende textos complexos e interage com espontaneidade."),
+        "C1": ("Autonome", "Expressa ideias complexas com precisão estilística e domínio gramatical avançado."),
+        "C2": ("Maîtrise", "Compreende praticamente tudo com facilidade e se expressa com rigor próximo ao nativo."),
+    }
+    titulo_cefr, descricao_cefr = cefr_meta.get(nivel_cefr, cefr_meta["A2"])
+    conquistas_desbloqueadas = sum([
+        total_submissoes >= 1,
+        acertos_geral >= 5,
+        total_submissoes >= 10,
+        tem_audio,
+        nivel_cefr in ["B1", "B2", "C1", "C2"],
+        tem_reforco,
+    ])
+    primeiro_nome = ((aluno.get("nome_completo") or session.get("aluno_nome") or "Étudiant").strip().split()[0])
+    sugestao_bio_frances = f"Bonjour ! Je m'appelle {primeiro_nome}. J'étudie le français (niveau {nivel_cefr}) pour progresser à l'oral et à l'écrit."
+
+    passeport_fle = {
+        "nivel_cefr": nivel_cefr,
+        "titulo_cefr": titulo_cefr,
+        "descricao_cefr": descricao_cefr,
+        "xp_curso": xp_curso,
+        "xp_pessoal": xp_pessoal,
+        "taxa_frequencia": taxa_frequencia,
+        "conquistas_desbloqueadas": conquistas_desbloqueadas,
+        "sugestao_bio_frances": sugestao_bio_frances,
+    }
+
     conn.close()
-    return render_template("aluno_perfil.html", aluno=aluno, mensagens=mensagens, total_submissoes=total_submissoes, active_page="aluno_perfil")
+    return render_template(
+        "aluno_perfil.html",
+        aluno=aluno,
+        mensagens=mensagens,
+        total_submissoes=total_submissoes,
+        passeport_fle=passeport_fle,
+        active_page="aluno_perfil"
+    )
 
 
 @aluno_bp.route("/api/aluno/atualizar_perfil", methods=["POST"])
@@ -1154,8 +1253,12 @@ def api_atualizar_perfil():
     aluno_id = session.get("aluno_id")
     conn = get_db()
     cursor = conn.cursor()
+    _garantir_colunas_perfil_fle(cursor, conn)
 
-    cursor.execute("SELECT nome_completo, email, telefone, data_nascimento, endereco, turno, foto_url FROM alunos WHERE id = ?", (aluno_id,))
+    cursor.execute("""
+        SELECT nome_completo, email, telefone, data_nascimento, endereco, turno, foto_url, bio_frances, objetivo_fle
+        FROM alunos WHERE id = ?
+    """, (aluno_id,))
     atual = cursor.fetchone()
     if not atual:
         conn.close()
@@ -1173,6 +1276,8 @@ def api_atualizar_perfil():
     data_nascimento = (dados.get("data_nascimento") if "data_nascimento" in dados else (atual["data_nascimento"] or "")).strip()
     endereco = (dados.get("endereco") if "endereco" in dados else (atual["endereco"] or "")).strip()
     turno = (dados.get("turno") if "turno" in dados else (atual["turno"] or "Matutino")).strip() or "Matutino"
+    bio_frances = (dados.get("bio_frances") if "bio_frances" in dados else (atual["bio_frances"] or "")).strip()[:400]
+    objetivo_fle = (dados.get("objetivo_fle") if "objetivo_fle" in dados else (atual["objetivo_fle"] or "Conversação & Fluência")).strip()[:120] or "Conversação & Fluência"
     nova_senha = (dados.get("nova_senha") or "").strip()
     remover_foto = str(dados.get("remover_foto") or "0").strip() == "1"
 
@@ -1203,16 +1308,16 @@ def api_atualizar_perfil():
             cursor.execute("""
                 UPDATE alunos
                 SET nome_completo = ?, email = ?, telefone = ?, data_nascimento = ?,
-                    endereco = ?, turno = ?, foto_url = ?, senha_hash = ?
+                    endereco = ?, turno = ?, foto_url = ?, bio_frances = ?, objetivo_fle = ?, senha_hash = ?
                 WHERE id = ?
-            """, (nome_completo, email, telefone, data_nascimento, endereco, turno, foto_url, senha_hash, aluno_id))
+            """, (nome_completo, email, telefone, data_nascimento, endereco, turno, foto_url, bio_frances, objetivo_fle, senha_hash, aluno_id))
         else:
             cursor.execute("""
                 UPDATE alunos
                 SET nome_completo = ?, email = ?, telefone = ?, data_nascimento = ?,
-                    endereco = ?, turno = ?, foto_url = ?
+                    endereco = ?, turno = ?, foto_url = ?, bio_frances = ?, objetivo_fle = ?
                 WHERE id = ?
-            """, (nome_completo, email, telefone, data_nascimento, endereco, turno, foto_url, aluno_id))
+            """, (nome_completo, email, telefone, data_nascimento, endereco, turno, foto_url, bio_frances, objetivo_fle, aluno_id))
 
         conn.commit()
         conn.close()
@@ -1224,7 +1329,9 @@ def api_atualizar_perfil():
             "status": "sucesso",
             "mensagem": "Dados do perfil atualizados com sucesso!",
             "nome": nome_completo,
-            "foto_url": foto_url
+            "foto_url": foto_url,
+            "bio_frances": bio_frances,
+            "objetivo_fle": objetivo_fle
         })
     except Exception as e:
         conn.close()

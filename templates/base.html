@@ -616,7 +616,14 @@
 
             const utterance = new SpeechSynthesisUtterance(textoLimpo);
             utterance.lang = 'fr-FR';
-            utterance.rate = typeof opcoes.rate === 'number' ? opcoes.rate : 0.88;
+            let ratePadrao = 0.88;
+            try {
+                const savedRate = parseFloat(localStorage.getItem('fran_tts_rate') || '');
+                if (!Number.isNaN(savedRate) && savedRate >= 0.65 && savedRate <= 1.25) {
+                    ratePadrao = savedRate;
+                }
+            } catch (e) {}
+            utterance.rate = typeof opcoes.rate === 'number' ? opcoes.rate : ratePadrao;
             utterance.pitch = 1.0;
 
             const vozes = window.speechSynthesis.getVoices();
