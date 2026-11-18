@@ -1020,9 +1020,404 @@
 [data-theme="dark"] .desempenho-modal-card {
     background: #0f172a !important;
     border-color: rgba(255, 255, 255, 0.15) !important;
+    color: #F8FAFC !important;
+}
+
+/* Trilha CEFR Visual (A1 -> C2) */
+.cefr-roadmap-strip {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 1.35rem;
+    padding: 0.75rem 0.9rem;
+    border-radius: 18px;
+    background: #F8FAFC;
+    border: 1px solid #ECECEC;
+}
+
+[data-theme="dark"] .cefr-roadmap-strip {
+    background: rgba(15, 23, 42, 0.65);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.cefr-step-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 3px;
+    padding: 0.5rem 0.4rem;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.cefr-step-code {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #64748B;
+}
+
+.cefr-step-name {
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: #94A3B8;
+}
+
+.cefr-step-node.completed {
+    background: rgba(42, 157, 143, 0.12);
+    border-color: rgba(42, 157, 143, 0.28);
+}
+
+.cefr-step-node.completed .cefr-step-code {
+    color: #0F766E;
+}
+
+.cefr-step-node.completed .cefr-step-name {
+    color: #2A9D8F;
+}
+
+.cefr-step-node.current {
+    background: #14213D;
+    border-color: #14213D;
+    box-shadow: 0 6px 16px rgba(20, 33, 61, 0.18);
+}
+
+.cefr-step-node.current .cefr-step-code {
+    color: #FCA311;
+}
+
+.cefr-step-node.current .cefr-step-name {
+    color: #FFFFFF;
+}
+
+[data-theme="dark"] .cefr-step-node.completed .cefr-step-code {
+    color: #5EEAD4;
+}
+
+[data-theme="dark"] .cefr-step-node.current {
+    background: #FCA311;
+    border-color: #FCA311;
+}
+
+[data-theme="dark"] .cefr-step-node.current .cefr-step-code,
+[data-theme="dark"] .cefr-step-node.current .cefr-step-name {
+    color: #000000;
+}
+
+/* Alternador de Escopo dos Gráficos */
+.charts-scope-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.9rem;
+}
+
+.charts-scope-pills {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px;
+    border-radius: 999px;
+    background: #F1F5F9;
+    border: 1px solid #E2E8F0;
+    flex-wrap: wrap;
+}
+
+[data-theme="dark"] .charts-scope-pills {
+    background: rgba(15, 23, 42, 0.75);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.scope-pill {
+    padding: 0.36rem 0.9rem;
+    border-radius: 999px;
+    border: none;
+    background: transparent;
+    color: #475569;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.scope-pill:hover {
+    color: #14213D;
+}
+
+.scope-pill.active {
+    background: #14213D;
+    color: #FFFFFF;
+    box-shadow: 0 3px 10px rgba(20, 33, 61, 0.18);
+}
+
+[data-theme="dark"] .scope-pill {
+    color: #94A3B8;
+}
+
+[data-theme="dark"] .scope-pill.active {
+    background: #FCA311;
+    color: #000000;
+}
+
+/* Seção FLE: Domínio por Tópico + Caderno de Revisão Rápida */
+.fle-insights-split-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.fle-subpanel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.fle-subpanel-heading {
+    margin: 0;
+    font-size: 0.96rem;
+    font-weight: 700;
+    color: #14213D;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+[data-theme="dark"] .fle-subpanel-heading {
+    color: #F8FAFC;
+}
+
+.fle-topic-item,
+.fle-revisao-item {
+    padding: 0.85rem 1rem;
+    border-radius: 16px;
+    background: #F8FAFC;
+    border: 1px solid #ECECEC;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+[data-theme="dark"] .fle-topic-item,
+[data-theme="dark"] .fle-revisao-item {
+    background: rgba(15, 23, 42, 0.75);
+    border-color: rgba(255, 255, 255, 0.09);
+}
+
+.fle-topic-top,
+.fle-revisao-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.fle-topic-name {
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: #14213D;
+}
+
+[data-theme="dark"] .fle-topic-name {
+    color: #F8FAFC;
+}
+
+.fle-status-chip {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: 999px;
+}
+
+.fle-status-chip.dominado {
+    background: rgba(16, 185, 129, 0.14);
+    color: #047857;
+}
+
+.fle-status-chip.evolucao {
+    background: rgba(245, 158, 11, 0.16);
+    color: #B45309;
+}
+
+.fle-status-chip.revisar {
+    background: rgba(239, 68, 68, 0.14);
+    color: #B91C1C;
+}
+
+[data-theme="dark"] .fle-status-chip.dominado { color: #6EE7B7; }
+[data-theme="dark"] .fle-status-chip.evolucao { color: #FCD34D; }
+[data-theme="dark"] .fle-status-chip.revisar { color: #FCA5A5; }
+
+.fle-topic-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.fle-topic-meta {
+    font-size: 0.75rem;
+    color: #64748B;
+}
+
+[data-theme="dark"] .fle-topic-meta {
+    color: #94A3B8;
+}
+
+.fle-topic-cta {
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: #14213D;
+    text-decoration: none;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    transition: all 0.16s ease;
+    white-space: nowrap;
+}
+
+.fle-topic-cta:hover {
+    background: #FCA311;
+    border-color: #FCA311;
+    color: #000000;
+}
+
+[data-theme="dark"] .fle-topic-cta {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.14);
+    color: #F8FAFC;
+}
+
+.fle-revisao-quote {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1E293B;
+    line-height: 1.45;
+}
+
+[data-theme="dark"] .fle-revisao-quote {
+    color: #E2E8F0;
+}
+
+.fle-revisao-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.btn-audio-mini {
+    border: 1px solid #CBD5E1;
+    background: #FFFFFF;
+    color: #14213D;
+    border-radius: 999px;
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.btn-audio-mini:hover {
+    background: #FCA311;
+    border-color: #FCA311;
+    color: #000000;
+}
+
+/* Correção Dark Mode em Medalhas, Banner do Tutor e Barra de Progresso de Conquistas */
+.desempenho-badge-title {
+    margin: 0;
+    font-size: 0.96rem;
+    font-weight: 700;
+    color: #14213D;
+}
+
+[data-theme="dark"] .desempenho-badge-title {
+    color: #F8FAFC;
+}
+
+.desempenho-badge-desc {
+    margin: 0;
+    font-size: 0.8rem;
+    color: rgba(20, 33, 61, 0.7);
+    line-height: 1.4;
+}
+
+[data-theme="dark"] .desempenho-badge-desc {
+    color: rgba(226, 232, 240, 0.78);
+}
+
+.badge-progress-wrap {
+    margin-top: 0.55rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.badge-progress-track {
+    flex: 1;
+    height: 6px;
+    border-radius: 999px;
+    background: #E2E8F0;
+    overflow: hidden;
+}
+
+[data-theme="dark"] .badge-progress-track {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.badge-progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: #2A9D8F;
+    transition: width 0.5s ease;
+}
+
+.badge-progress-count {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #64748B;
+    white-space: nowrap;
+}
+
+[data-theme="dark"] .badge-progress-count {
+    color: #94A3B8;
+}
+
+.desempenho-tutor-title {
+    margin: 2px 0 4px 0;
+    font-size: 1.05rem;
+    color: #14213D;
+}
+
+.desempenho-tutor-msg {
+    margin: 0;
+    font-size: 0.84rem;
+    color: rgba(20, 33, 61, 0.75);
+    max-width: 650px;
+}
+
+[data-theme="dark"] .desempenho-tutor-title {
+    color: #F8FAFC;
+}
+
+[data-theme="dark"] .desempenho-tutor-msg {
+    color: rgba(226, 232, 240, 0.8);
 }
 
 @media (max-width: 768px) {
+    .cefr-roadmap-strip {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
     .desempenho-editorial-card {
         padding: 1.4rem 1.15rem 1.6rem !important;
         border-radius: 20px !important;
@@ -1047,89 +1442,6 @@
 
 {% block content %}
 <div class="desempenho-editorial-page">
-    <!-- Barra Lateral Flutuante Glassmorphic (Navegação do Aluno) -->
-    <aside class="dash-sidebar no-print" id="dashSidebar" aria-label="Menu do Estudante">
-        <div class="dash-sidebar-inner">
-            <div class="sidebar-nav-list">
-                <!-- 1. Minhas Atividades & Avaliações -->
-                <div class="sidebar-item-wrap">
-                    <a href="/aluno/atividades" class="sidebar-btn" title="Minhas Atividades & Avaliações">
-                        <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                            <path d="m9 14 2 2 4-4"></path>
-                        </svg>
-                        <span class="sidebar-text">Atividades</span>
-                    </a>
-                </div>
-
-                <!-- 2. Prática Livre com a Fran -->
-                <div class="sidebar-item-wrap">
-                    <a href="/pratica" class="sidebar-btn" title="Prática Livre com a Fran">
-                        <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"></path>
-                        </svg>
-                        <span class="sidebar-text">Prática Livre</span>
-                    </a>
-                </div>
-
-                <!-- 3. Rolar para Nível & XP -->
-                <div class="sidebar-item-wrap">
-                    <button type="button" class="sidebar-btn" onclick="scrollToSection('secaoNivelXP')" title="Meu Nível e XP">
-                        <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-                            <polyline points="17 6 23 6 23 12"></polyline>
-                        </svg>
-                        <span class="sidebar-text">Nível & XP</span>
-                    </button>
-                </div>
-
-                <!-- 4. Rolar para Conquistas FLE -->
-                <div class="sidebar-item-wrap">
-                    <button type="button" class="sidebar-btn" onclick="scrollToSection('secaoConquistas')" title="Minhas Conquistas FLE">
-                        <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="8" r="7"></circle>
-                            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
-                        </svg>
-                        <span class="sidebar-text">Conquistas</span>
-                    </button>
-                </div>
-
-                <!-- 5. Fórum de Dúvidas -->
-                <div class="sidebar-item-wrap">
-                    <a href="/forum" class="sidebar-btn" title="Fórum de Dúvidas">
-                        <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                        </svg>
-                        <span class="sidebar-text">Fórum</span>
-                    </a>
-                </div>
-
-                <!-- 6. Meu Perfil -->
-                <div class="sidebar-item-wrap">
-                    <a href="/aluno/perfil" class="sidebar-btn" title="Meu Perfil">
-                        <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                        <span class="sidebar-text">Meu Perfil</span>
-                    </a>
-                </div>
-
-                <!-- 7. Guia Rápido Gramatical FLE -->
-                <div class="sidebar-item-wrap">
-                    <a href="/guia-fle" class="sidebar-btn" title="Guia Gramatical FLE">
-                        <svg class="sidebar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                        </svg>
-                        <span class="sidebar-text">Guia FLE</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </aside>
-
     <!-- 1. Cabeçalho Editorial Superior (Hero) -->
     <header class="desempenho-hero-header" id="desempenhoHeroCard">
         <div class="desempenho-hero-content">
@@ -1173,182 +1485,112 @@
                 </div>
             </div>
             <div class="desempenho-header-right" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                <span class="hero-pill-item pill-precision" title="Frequência em aulas registradas no Diário de Classe">
-                    📅 Frequência: {{ taxa_frequencia|default(100) }}%
-                </span>
-                <span class="hero-pill-item pill-precision">
-                    🎯 Precisão: {{ ((acertos / total_atividades) * 100)|round|int if total_atividades > 0 else 0 }}%
-                </span>
-                <span class="hero-pill-item pill-activities">
-                    📚 {{ total_atividades }} Atividades do Curso
-                </span>
-                <span class="hero-pill-item pill-activities" title="XP pessoal ganho na Prática Guiada autônoma (separado do aprendizado do curso)">
-                    ⚡ XP Prática Pessoal: {{ xp_pessoal|default(0) }} XP
+                <span class="hero-pill-item pill-activities" title="Total de atividades e treinos acumulados na plataforma">
+                    ✨ {{ total_geral|default(total_atividades) }} Atividades Totais
                 </span>
             </div>
         </div>
 
+        <!-- Trilha CEFR Visual (A1 -> C2) -->
+        {% set cefr_nomes = {'A1': 'Découverte', 'A2': 'Survie', 'B1': 'Seuil', 'B2': 'Avancé', 'C1': 'Autonome', 'C2': 'Maîtrise'} %}
+        <div class="cefr-roadmap-strip" aria-label="Trilha de Proficiência CEFR">
+            {% for nv in niveis_cefr %}
+            <div class="cefr-step-node {% if loop.index0 < cefr_idx %}completed{% elif loop.index0 == cefr_idx %}current{% endif %}"
+                 title="Nível {{ nv }} — {{ cefr_nomes.get(nv, '') }}{% if loop.index0 == cefr_idx %} (Seu nível atual){% elif loop.index0 < cefr_idx %} (Concluído){% endif %}">
+                <span class="cefr-step-code">{% if loop.index0 < cefr_idx %}✓ {% endif %}{{ nv }}</span>
+                <span class="cefr-step-name">{{ cefr_nomes.get(nv, '') }}</span>
+            </div>
+            {% endfor %}
+        </div>
+
         <!-- 4 Cards de KPIs -->
         <div class="desempenho-kpis-grid">
-            <!-- KPI 1: Nível Atual (Design Específico com Onda Gradiente, Indicador de Tendência e Botão Pill) -->
+            <!-- KPI 1: Nível Atual & XP do Curso -->
             <div class="desempenho-kpi-card kpi-card-nivel-ref">
-                <!-- Linha 1: Métrica Principal + Sparkline Ondulado -->
                 <div class="kpi-design-top-row">
                     <div class="kpi-design-col-metric">
                         <span class="kpi-design-label">Nível Atual</span>
                         <div class="kpi-design-primary">{{ aluno_nivel }}</div>
                     </div>
-                    <div class="kpi-design-col-sparkline" aria-hidden="true">
-                        <svg class="kpi-design-wave-svg" viewBox="0 0 130 55" preserveAspectRatio="none">
-                            <defs>
-                                <linearGradient id="kpiWaveGradient" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stop-color="#4B5563" stop-opacity="0.38" class="wave-stop-top" />
-                                    <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.0" class="wave-stop-bot" />
-                                </linearGradient>
-                            </defs>
-                            <path class="kpi-wave-area" d="M 0 44 C 15 44, 25 38, 38 35 C 46 33, 50 40, 60 38 C 72 35, 78 24, 90 22 C 98 20, 102 27, 112 21 C 120 16, 126 8, 130 5 L 130 55 L 0 55 Z" fill="url(#kpiWaveGradient)" />
-                            <path class="kpi-wave-line" d="M 0 44 C 15 44, 25 38, 38 35 C 46 33, 50 40, 60 38 C 72 35, 78 24, 90 22 C 98 20, 102 27, 112 21 C 120 16, 126 8, 130 5" fill="none" stroke="#4B5563" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                    </div>
+                    <span class="hero-pill-item pill-activities" style="font-size: 0.72rem;">
+                        {% if proximo_nivel == 'Fluência (Concluído)' %}Ciclo Máximo{% else %}Meta: {{ proximo_nivel }}{% endif %}
+                    </span>
                 </div>
 
-                <!-- Linha 2: Submétrica (Progresso XP do Curso vs XP Pessoal) + Badge de Tendência com Triângulo Verde -->
                 <div class="kpi-design-mid-row">
                     <div class="kpi-design-col-submetric">
                         <span class="kpi-design-sublabel">XP do Curso (Separado)</span>
                         <div class="kpi-design-subvalue">{{ xp_curso|default(0) }} XP</div>
                     </div>
                     <div class="kpi-design-trend" title="Progresso rumo ao próximo nível do curso">
-                        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true">
-                            <path d="M5 1.5L9 8.5H1L5 1.5Z"/>
-                        </svg>
                         <span>{{ progresso_xp }}%</span>
                     </div>
                 </div>
 
-                <!-- Linha 3: Botão de Ação Estilo Pill Escuro Centralizado -->
-                <div class="kpi-design-bottom-row">
-                    <a href="/aluno/atividades" class="kpi-design-btn" title="Ir para atividades e avançar de nível">
-                        {% if proximo_nivel == 'Fluência (Concluído)' %}
-                            Fluência Completa
-                        {% else %}
-                            Rumo ao {{ proximo_nivel }}
-                        {% endif %}
-                    </a>
+                <div class="badge-progress-wrap" style="margin-top: auto;">
+                    <div class="badge-progress-track" title="{{ progresso_xp }}% rumo a {{ proximo_nivel }}">
+                        <div class="badge-progress-fill" style="width: {{ progresso_xp }}%; background: #FCA311;"></div>
+                    </div>
+                    <span class="badge-progress-count">{{ progresso_xp }}%</span>
                 </div>
             </div>
 
-            <!-- KPI 2: Total de Atividades Realizadas -->
+            <!-- KPI 2: Atividades do Curso & Frequência -->
             <div class="desempenho-kpi-card kpi-card-nivel-ref">
-                <!-- Linha 1: Métrica Principal + Sparkline Ondulado -->
                 <div class="kpi-design-top-row">
                     <div class="kpi-design-col-metric">
-                        <span class="kpi-design-label">Atividades</span>
+                        <span class="kpi-design-label">Atividades do Curso</span>
                         <div class="kpi-design-primary">{{ total_atividades }}</div>
                     </div>
-                    <div class="kpi-design-col-sparkline" aria-hidden="true">
-                        <svg class="kpi-design-wave-svg" viewBox="0 0 130 55" preserveAspectRatio="none">
-                            <defs>
-                                <linearGradient id="kpiWaveGradAtiv" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stop-color="#4B5563" stop-opacity="0.38" class="wave-stop-top" />
-                                    <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.0" class="wave-stop-bot" />
-                                </linearGradient>
-                            </defs>
-                            <path class="kpi-wave-area" d="M 0 46 C 18 45, 26 36, 40 34 C 50 32, 54 42, 66 36 C 78 30, 84 26, 96 20 C 106 15, 116 18, 130 8 L 130 55 L 0 55 Z" fill="url(#kpiWaveGradAtiv)" />
-                            <path class="kpi-wave-line" d="M 0 46 C 18 45, 26 36, 40 34 C 50 32, 54 42, 66 36 C 78 30, 84 26, 96 20 C 106 15, 116 18, 130 8" fill="none" stroke="#4B5563" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                    </div>
                 </div>
 
-                <!-- Linha 2: Submétrica + Badge de Tendência -->
                 <div class="kpi-design-mid-row">
                     <div class="kpi-design-col-submetric">
-                        <span class="kpi-design-sublabel">Assertividade</span>
-                        <div class="kpi-design-subvalue">{{ acertos }} acertos</div>
-                    </div>
-                    <div class="kpi-design-trend" title="Taxa de acertos em atividades">
-                        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true">
-                            <path d="M5 1.5L9 8.5H1L5 1.5Z"/>
-                        </svg>
-                        <span>{{ ((acertos / total_atividades) * 100)|round|int if total_atividades > 0 else 0 }}%</span>
+                        <span class="kpi-design-sublabel">Desempenho Formativo</span>
+                        <div class="kpi-design-subvalue" style="font-size: 1rem;">{{ acertos }} acertos • {{ parciais }} parciais</div>
                     </div>
                 </div>
 
-                <!-- Linha 3: Botão de Ação Estilo Pill Escuro Centralizado -->
-                <div class="kpi-design-bottom-row">
-                    <a href="/aluno/atividades" class="kpi-design-btn" title="Ver todas as tarefas e exercícios">
-                        Ver Atividades &rarr;
-                    </a>
+                <div style="margin-top: auto; padding-top: 0.55rem; border-top: 1px solid rgba(148, 163, 184, 0.2); display: flex; justify-content: space-between; align-items: center;">
+                    <span class="fle-topic-meta" title="{% if total_aulas_chamada|default(0) > 0 %}{{ presencas_count|default(0) }} presenças em {{ total_aulas_chamada }} aulas registradas{% else %}Nenhuma aula registrada no Diário ainda{% endif %}">
+                        📅 Frequência: {{ taxa_frequencia|default(100) }}%
+                    </span>
                 </div>
             </div>
 
-            <!-- KPI 3: Taxa de Precisão e Acertos -->
+            <!-- KPI 3: Prática Pessoal (Prática Guiada Autônoma) -->
             <div class="desempenho-kpi-card kpi-card-nivel-ref">
-                <!-- Linha 1: Métrica Principal + Sparkline Ondulado -->
                 <div class="kpi-design-top-row">
                     <div class="kpi-design-col-metric">
-                        <span class="kpi-design-label">Precisão Geral</span>
-                        <div class="kpi-design-primary">{{ ((acertos / total_atividades) * 100)|round|int if total_atividades > 0 else 0 }}%</div>
-                    </div>
-                    <div class="kpi-design-col-sparkline" aria-hidden="true">
-                        <svg class="kpi-design-wave-svg" viewBox="0 0 130 55" preserveAspectRatio="none">
-                            <defs>
-                                <linearGradient id="kpiWaveGradPrec" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stop-color="#4B5563" stop-opacity="0.38" class="wave-stop-top" />
-                                    <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.0" class="wave-stop-bot" />
-                                </linearGradient>
-                            </defs>
-                            <path class="kpi-wave-area" d="M 0 42 C 20 40, 30 32, 45 30 C 56 28, 62 36, 75 32 C 88 28, 98 18, 110 14 C 118 11, 124 10, 130 6 L 130 55 L 0 55 Z" fill="url(#kpiWaveGradPrec)" />
-                            <path class="kpi-wave-line" d="M 0 42 C 20 40, 30 32, 45 30 C 56 28, 62 36, 75 32 C 88 28, 98 18, 110 14 C 118 11, 124 10, 130 6" fill="none" stroke="#4B5563" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
+                        <span class="kpi-design-label">Prática Pessoal</span>
+                        <div class="kpi-design-primary">{{ xp_pessoal|default(0) }} XP</div>
                     </div>
                 </div>
 
-                <!-- Linha 2: Submétrica + Badge de Tendência -->
                 <div class="kpi-design-mid-row">
                     <div class="kpi-design-col-submetric">
-                        <span class="kpi-design-sublabel">Acertos / Total</span>
-                        <div class="kpi-design-subvalue">{{ acertos }} de {{ total_atividades }}</div>
-                    </div>
-                    <div class="kpi-design-trend" title="Total de acertos positivos">
-                        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true">
-                            <path d="M5 1.5L9 8.5H1L5 1.5Z"/>
-                        </svg>
-                        <span>✓ {{ acertos }}</span>
+                        <span class="kpi-design-sublabel">Treinos Autônomos</span>
+                        <div class="kpi-design-subvalue" style="font-size: 1rem;">{{ total_pratica_pessoal|default(0) }} treinos ({{ acertos_pratica_pessoal|default(0) }} acertos)</div>
                     </div>
                 </div>
 
-                <!-- Linha 3: Botão de Ação Estilo Pill Escuro Centralizado -->
-                <div class="kpi-design-bottom-row">
-                    <a href="/pratica" class="kpi-design-btn" title="Treinar para aumentar a precisão">
-                        Treinar Precisão
-                    </a>
+                <div style="margin-top: auto; padding-top: 0.55rem; border-top: 1px solid rgba(148, 163, 184, 0.2); display: flex; justify-content: space-between; align-items: center; gap: 6px;">
+                    <span class="fle-topic-meta" title="XP pessoal ganho na Prática Guiada autônoma (separado do aprendizado do curso)">
+                        ⚡ XP Prática Pessoal: {{ xp_pessoal|default(0) }} XP
+                    </span>
+                    <a href="/pratica" class="fle-topic-cta">Praticar &rarr;</a>
                 </div>
             </div>
 
             <!-- KPI 4: Correio do Tutor / Reforço -->
             <div class="desempenho-kpi-card kpi-card-nivel-ref">
-                <!-- Linha 1: Métrica Principal + Sparkline Ondulado -->
                 <div class="kpi-design-top-row">
                     <div class="kpi-design-col-metric">
                         <span class="kpi-design-label">Correio do Tutor</span>
                         <div class="kpi-design-primary">{% if reforco %}1 Nova{% else %}Em Dia{% endif %}</div>
                     </div>
-                    <div class="kpi-design-col-sparkline" aria-hidden="true">
-                        <svg class="kpi-design-wave-svg" viewBox="0 0 130 55" preserveAspectRatio="none">
-                            <defs>
-                                <linearGradient id="kpiWaveGradTutor" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stop-color="#4B5563" stop-opacity="0.38" class="wave-stop-top" />
-                                    <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.0" class="wave-stop-bot" />
-                                </linearGradient>
-                            </defs>
-                            <path class="kpi-wave-area" d="M 0 45 C 16 45, 28 39, 42 36 C 54 34, 60 41, 72 37 C 84 33, 92 23, 104 20 C 114 17, 122 12, 130 7 L 130 55 L 0 55 Z" fill="url(#kpiWaveGradTutor)" />
-                            <path class="kpi-wave-line" d="M 0 45 C 16 45, 28 39, 42 36 C 54 34, 60 41, 72 37 C 84 33, 92 23, 104 20 C 114 17, 122 12, 130 7" fill="none" stroke="#4B5563" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                    </div>
                 </div>
 
-                <!-- Linha 2: Submétrica + Badge de Tendência -->
                 <div class="kpi-design-mid-row">
                     <div class="kpi-design-col-submetric">
                         <span class="kpi-design-sublabel">Status de Apoio</span>
@@ -1361,52 +1603,48 @@
                         </span>
                         {% else %}
                         <div class="kpi-design-trend" title="Sem pendências no momento">
-                            <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true">
-                                <path d="M5 1.5L9 8.5H1L5 1.5Z"/>
-                            </svg>
-                            <span>100%</span>
+                            <span>✓ 100%</span>
                         </div>
                         {% endif %}
                     </div>
                 </div>
 
-                <!-- Linha 3: Botão de Ação Estilo Pill Escuro Centralizado -->
+                {% if reforco %}
                 <div class="kpi-design-bottom-row">
-                    {% if reforco %}
                     <button type="button" class="kpi-design-btn" onclick="abrirMissaoModal({{ reforco['id'] }})" title="Abrir missão de reforço do tutor">
                         Abrir Missão &rarr;
                     </button>
-                    {% else %}
-                    <a href="/pratica" class="kpi-design-btn" title="Praticar conversação com a Fran">
-                        Treinar com a Fran
-                    </a>
-                    {% endif %}
                 </div>
+                {% else %}
+                <div style="margin-top: auto; padding-top: 0.55rem; border-top: 1px solid rgba(148, 163, 184, 0.2);">
+                    <span class="fle-topic-meta">Nenhuma missão pendente no momento.</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Alternador de Escopo dos Gráficos -->
+        <div class="charts-scope-header" id="filtroEscopoGraficos">
+            <div>
+                <h3 class="desempenho-chart-title">Panorama Analítico</h3>
+                <p class="desempenho-chart-subtitle">Alterne entre suas métricas combinadas, atividades do curso ou prática pessoal</p>
+            </div>
+            <div class="charts-scope-pills" role="group" aria-label="Filtro de escopo dos gráficos">
+                <button type="button" class="scope-pill active" data-scope="geral" onclick="alternarEscopoGraficos('geral', this)">Visão Geral</button>
+                <button type="button" class="scope-pill" data-scope="curso" onclick="alternarEscopoGraficos('curso', this)">Curso</button>
+                <button type="button" class="scope-pill" data-scope="pratica" onclick="alternarEscopoGraficos('pratica', this)">Prática Pessoal</button>
             </div>
         </div>
 
         <!-- 2 Gráficos Analíticos -->
         <div class="desempenho-charts-grid">
-            <!-- Gráfico 1: Eficácia nas Missões (Design da Referência + Gauge) -->
+            <!-- Gráfico 1: Eficácia nas Missões (Gauge Circular) -->
             <div class="desempenho-chart-card kpi-card-nivel-ref">
-                <!-- Linha 1: Métrica Principal + Sparkline Ondulado -->
                 <div class="kpi-design-top-row">
                     <div class="kpi-design-col-metric">
-                        <span class="kpi-design-label">Eficácia nas Missões</span>
-                        <div class="kpi-design-primary">{{ ((acertos / total_atividades) * 100)|round|int if total_atividades > 0 else 0 }}%</div>
-                        <span style="font-size: 0.76rem; color: #6B7280; margin-top: 3px;">Distribuição entre acertos, parciais e revisões</span>
-                    </div>
-                    <div class="kpi-design-col-sparkline" aria-hidden="true">
-                        <svg class="kpi-design-wave-svg" viewBox="0 0 130 55" preserveAspectRatio="none">
-                            <defs>
-                                <linearGradient id="kpiWaveGradEfic" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stop-color="#4B5563" stop-opacity="0.38" class="wave-stop-top" />
-                                    <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.0" class="wave-stop-bot" />
-                                </linearGradient>
-                            </defs>
-                            <path class="kpi-wave-area" d="M 0 43 C 18 42, 28 34, 42 32 C 52 30, 58 38, 70 34 C 82 30, 90 20, 102 16 C 112 13, 120 11, 130 6 L 130 55 L 0 55 Z" fill="url(#kpiWaveGradEfic)" />
-                            <path class="kpi-wave-line" d="M 0 43 C 18 42, 28 34, 42 32 C 52 30, 58 38, 70 34 C 82 30, 90 20, 102 16 C 112 13, 120 11, 130 6" fill="none" stroke="#4B5563" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
+                        <span class="kpi-design-label">Eficácia nas Atividades</span>
+                        <div class="kpi-design-primary" id="efficacyHeaderVal">{{ ((acertos_geral / total_geral) * 100)|round|int if total_geral > 0 else 0 }}%</div>
+                        <span class="fle-topic-meta" id="efficacySubtitleVal" style="margin-top: 3px;">Distribuição entre acertos, parciais e revisões (Visão Geral)</span>
                     </div>
                 </div>
 
@@ -1428,95 +1666,50 @@
                         <span class="gauge-pip" style="transform: rotate(330deg);"></span>
                     </div>
                     <div class="gauge-canvas-wrapper">
-                        <canvas id="desempenhoChart" role="img" aria-label="Gráfico de rosca: Eficácia nas missões ({{ acertos }} acertos, {{ parciais }} parciais e {{ erros }} a revisar)"></canvas>
+                        <canvas id="desempenhoChart" role="img" aria-label="Gráfico de rosca: Eficácia nas atividades"></canvas>
                     </div>
                     <div class="gauge-floating-center">
-                        <span class="gauge-percent-val" style="color: #111827;">{{ ((acertos / total_atividades) * 100)|round|int if total_atividades > 0 else 0 }}%</span>
-                        <span class="gauge-fraction-val">{{ acertos }}/{{ total_atividades }} Acertos</span>
+                        <span class="gauge-percent-val" id="gaugePercentVal">{{ ((acertos_geral / total_geral) * 100)|round|int if total_geral > 0 else 0 }}%</span>
+                        <span class="gauge-fraction-val" id="gaugeFractionVal">{{ acertos_geral }}/{{ total_geral }} Acertos</span>
                     </div>
                 </div>
 
-                <div style="display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; margin: 0.4rem 0 0.85rem 0;">
-                    <span class="chart-pill-stat correto">
-                        ✓ {{ acertos }} Acertos ({{ ((acertos / total_atividades) * 100)|round|int if total_atividades else 0 }}%)
+                <div style="display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; margin: 0.4rem 0 0.25rem 0;">
+                    <span class="chart-pill-stat correto" id="pillStatCorreto">
+                        ✓ {{ acertos_geral }} Acertos ({{ ((acertos_geral / total_geral) * 100)|round|int if total_geral else 0 }}%)
                     </span>
-                    <span class="chart-pill-stat parcial">
-                        ⚠ {{ parciais }} Parciais ({{ ((parciais / total_atividades) * 100)|round|int if total_atividades else 0 }}%)
+                    <span class="chart-pill-stat parcial" id="pillStatParcial">
+                        ⚠ {{ parciais_geral }} Parciais ({{ ((parciais_geral / total_geral) * 100)|round|int if total_geral else 0 }}%)
                     </span>
-                    <span class="chart-pill-stat incorreto">
-                        ✗ {{ erros }} A revisar ({{ ((erros / total_atividades) * 100)|round|int if total_atividades else 0 }}%)
+                    <span class="chart-pill-stat incorreto" id="pillStatIncorreto">
+                        ✗ {{ erros_geral }} A revisar ({{ ((erros_geral / total_geral) * 100)|round|int if total_geral else 0 }}%)
                     </span>
-                </div>
-
-                <!-- Linha 2: Submétrica + Badge de Tendência com Triângulo Verde -->
-                <div class="kpi-design-mid-row" style="padding-top: 0.75rem; border-top: 1px solid #ECECEC;">
-                    <div class="kpi-design-col-submetric">
-                        <span class="kpi-design-sublabel">Taxa de Sucesso</span>
-                        <div class="kpi-design-subvalue">{{ acertos }} de {{ total_atividades }} missões</div>
-                    </div>
-                    <div class="kpi-design-trend" title="Índice positivo de eficácia">
-                        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true">
-                            <path d="M5 1.5L9 8.5H1L5 1.5Z"/>
-                        </svg>
-                        <span>{{ ((acertos / total_atividades) * 100)|round|int if total_atividades > 0 else 0 }}%</span>
-                    </div>
-                </div>
-
-                <!-- Linha 3: Botão de Ação Estilo Pill Escuro Centralizado -->
-                <div class="kpi-design-bottom-row">
-                    <a href="/aluno/atividades" class="kpi-design-btn" title="Ir para atividades e revisar missões">
-                        Revisar Missões &rarr;
-                    </a>
                 </div>
             </div>
 
-            <!-- Gráfico 2: Participação Semanal (Design da Referência + Barras) -->
+            <!-- Gráfico 2: Ritmo de Prática (Últimos 5 Dias) -->
             <div class="desempenho-chart-card kpi-card-nivel-ref">
-                <!-- Linha 1: Métrica Principal + Sparkline Ondulado -->
                 <div class="kpi-design-top-row">
                     <div class="kpi-design-col-metric">
-                        <span class="kpi-design-label">Participação Semanal</span>
-                        <div class="kpi-design-primary">{{ participacao_semanal|sum }}</div>
-                        <span style="font-size: 0.76rem; color: #6B7280; margin-top: 3px;">Volume diário de exercícios entregues (Seg - Sex)</span>
-                    </div>
-                    <div class="kpi-design-col-sparkline" aria-hidden="true">
-                        <svg class="kpi-design-wave-svg" viewBox="0 0 130 55" preserveAspectRatio="none">
-                            <defs>
-                                <linearGradient id="kpiWaveGradPart" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stop-color="#4B5563" stop-opacity="0.38" class="wave-stop-top" />
-                                    <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.0" class="wave-stop-bot" />
-                                </linearGradient>
-                            </defs>
-                            <path class="kpi-wave-area" d="M 0 45 C 16 44, 26 36, 40 34 C 52 32, 58 40, 70 35 C 82 30, 92 22, 104 18 C 114 14, 122 10, 130 6 L 130 55 L 0 55 Z" fill="url(#kpiWaveGradPart)" />
-                            <path class="kpi-wave-line" d="M 0 45 C 16 44, 26 36, 40 34 C 52 32, 58 40, 70 35 C 82 30, 92 22, 104 18 C 114 14, 122 10, 130 6" fill="none" stroke="#4B5563" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
+                        <span class="kpi-design-label">Ritmo de Prática (Últimos 5 Dias)</span>
+                        <div class="kpi-design-primary" id="chartParticipacaoTotalVal">{{ participacao_semanal_geral|sum }}</div>
+                        <span class="fle-topic-meta" style="margin-top: 3px;">Volume diário de exercícios ({{ dias_semana_labels[0] }} – {{ dias_semana_labels[-1] }})</span>
                     </div>
                 </div>
 
                 <!-- Corpo Central: Gráfico de Barras -->
                 <div class="desempenho-chart-canvas-wrap" style="margin: 0.5rem 0 0.85rem 0;">
-                    <canvas id="participacaoChart" role="img" aria-label="Gráfico de barras: Volume de exercícios entregues de segunda a sexta-feira, total de {{ participacao_semanal|sum }} atividades"></canvas>
+                    <canvas id="participacaoChart" role="img" aria-label="Gráfico de barras: Volume de exercícios nos últimos 5 dias"></canvas>
                 </div>
 
-                <!-- Linha 2: Submétrica + Badge de Tendência com Triângulo Verde -->
-                <div class="kpi-design-mid-row" style="padding-top: 0.75rem; border-top: 1px solid #ECECEC;">
+                <div class="kpi-design-mid-row" style="padding-top: 0.75rem; border-top: 1px solid rgba(148, 163, 184, 0.2); margin-bottom: 0;">
                     <div class="kpi-design-col-submetric">
-                        <span class="kpi-design-sublabel">Média por Dia Útil</span>
-                        <div class="kpi-design-subvalue">{{ ((participacao_semanal|sum) / 5)|round(1) }} / dia</div>
+                        <span class="kpi-design-sublabel">Média Diária (5 dias)</span>
+                        <div class="kpi-design-subvalue" id="chartParticipacaoMediaVal">{{ ((participacao_semanal_geral|sum) / 5)|round(1) }} / dia</div>
                     </div>
-                    <div class="kpi-design-trend" title="Total entregue na semana">
-                        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true">
-                            <path d="M5 1.5L9 8.5H1L5 1.5Z"/>
-                        </svg>
-                        <span>+{{ participacao_semanal|sum }} ativ.</span>
+                    <div class="kpi-design-trend" title="Total entregue nos últimos 5 dias">
+                        <span id="chartParticipacaoPillVal">+{{ participacao_semanal_geral|sum }} ativ.</span>
                     </div>
-                </div>
-
-                <!-- Linha 3: Botão de Ação Estilo Pill Escuro Centralizado -->
-                <div class="kpi-design-bottom-row">
-                    <a href="/pratica" class="kpi-design-btn" title="Iniciar prática livre com a Fran">
-                        Praticar Agora &rarr;
-                    </a>
                 </div>
             </div>
         </div>
@@ -1532,8 +1725,8 @@
                 </div>
                 <div>
                     <span style="font-size: 0.73rem; font-weight: 700; text-transform: uppercase; color: #2A9D8F; letter-spacing: 0.5px;">Orientação Individual do Tutor</span>
-                    <h3 style="margin: 2px 0 4px 0; font-size: 1.05rem; color: #14213D;">Missão de Foco Pedagógico</h3>
-                    <p style="margin: 0; font-size: 0.84rem; color: rgba(20, 33, 61, 0.75); max-width: 650px;">
+                    <h3 class="desempenho-tutor-title">Missão de Foco Pedagógico</h3>
+                    <p class="desempenho-tutor-msg">
                         "{{ reforco['mensagem_tutor'] }}"
                     </p>
                 </div>
@@ -1545,7 +1738,99 @@
         {% endif %}
     </div>
 
-    <!-- 3. Quadro 2: Conquistas & Insígnias FLE -->
+    <!-- 3. Quadro FLE: Domínio Gramatical & Caderno de Revisão Rápida -->
+    <div class="desempenho-editorial-card" id="secaoDominioFLE">
+        <div class="desempenho-card-header">
+            <div class="desempenho-header-left">
+                <span class="desempenho-circle-badge" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                </span>
+                <div>
+                    <h2 class="desempenho-section-title">Domínio Gramatical FLE &amp; Revisão Ativa</h2>
+                    <p class="desempenho-section-subtitle">Veja seus pontos fortes no idioma, tópicos prioritários para treinar e frases recentes para aperfeiçoar</p>
+                </div>
+            </div>
+            <div>
+                <a href="/guia-fle" class="fle-topic-cta">📘 Abrir Guia Gramatical FLE &rarr;</a>
+            </div>
+        </div>
+
+        <div class="fle-insights-split-grid">
+            <!-- Coluna 1: Domínio por Tópico Gramatical -->
+            <div class="fle-subpanel">
+                <h3 class="fle-subpanel-heading">
+                    <span>🎯 Mapa de Domínio por Tópico</span>
+                    <span class="fle-topic-meta">{{ dominio_temas|length }} tema(s) praticado(s)</span>
+                </h3>
+                {% if dominio_temas %}
+                    {% for t in dominio_temas[:6] %}
+                    <div class="fle-topic-item">
+                        <div class="fle-topic-top">
+                            <span class="fle-topic-name">{{ t.nome_tema }}</span>
+                            <span class="fle-status-chip {{ t.cor_classe }}">{{ t.status }} • {{ t.precisao }}%</span>
+                        </div>
+                        <div class="badge-progress-track">
+                            <div class="badge-progress-fill" style="width: {{ t.precisao }}%; background: {% if t.cor_classe == 'dominado' %}#10B981{% elif t.cor_classe == 'evolucao' %}#F59E0B{% else %}#EF4444{% endif %};"></div>
+                        </div>
+                        <div class="fle-topic-bottom">
+                            <span class="fle-topic-meta">{{ t.acertos }}/{{ t.total }} acerto(s){% if t.parciais %} • {{ t.parciais }} parcial(is){% endif %}</span>
+                            <a href="/pratica?tema={{ t.nome_tema | urlencode }}" class="fle-topic-cta">Praticar &rarr;</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="fle-topic-item">
+                        <p class="fle-revisao-quote">Você ainda não registrou treinos vinculados a temas gramaticais.</p>
+                        <div class="fle-topic-bottom">
+                            <span class="fle-topic-meta">Pratique tópicos do CEFR na Prática Guiada para mapear seu domínio.</span>
+                            <a href="/pratica" class="fle-topic-cta">Começar &rarr;</a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Coluna 2: Caderno de Revisão Rápida -->
+            <div class="fle-subpanel">
+                <h3 class="fle-subpanel-heading">
+                    <span>🗣️ Caderno de Revisão Rápida</span>
+                    <span class="fle-topic-meta">Últimos desvios para consolidar</span>
+                </h3>
+                {% if revisoes_recentes %}
+                    {% for r in revisoes_recentes %}
+                    <div class="fle-revisao-item">
+                        <div class="fle-revisao-top">
+                            <span class="fle-topic-name">{{ r.tema }}</span>
+                            <span class="fle-status-chip {% if r.status_resposta == 'Incorreto' %}revisar{% else %}evolucao{% endif %}">{{ r.status_resposta }}</span>
+                        </div>
+                        <p class="fle-revisao-quote">« {{ r.resposta_aluno|truncate(120) }} »</p>
+                        {% if r.enunciado %}
+                        <span class="fle-topic-meta">Enunciado: {{ r.enunciado|truncate(90) }}</span>
+                        {% endif %}
+                        <div class="fle-revisao-actions">
+                            <button type="button" class="btn-audio-mini" data-texto="{{ r.resposta_aluno|e }}" onclick="falarRevisaoFrances(this)" title="Ouvir em francês" aria-label="Ouvir pronúncia da frase em francês">
+                                🔊
+                            </button>
+                            <a href="/pratica?tema={{ r.tema | urlencode }}" class="fle-topic-cta">Revisar Tema &rarr;</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="fle-revisao-item">
+                        <p class="fle-revisao-quote">Félicitations ! Nenhum erro ou resposta parcial pendente de revisão.</p>
+                        <div class="fle-revisao-actions">
+                            <span class="fle-topic-meta">Continue praticando novos tempos verbais e construções com a Fran.</span>
+                            <a href="/pratica" class="fle-topic-cta">Novo Desafio &rarr;</a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Quadro 2: Conquistas & Insígnias FLE -->
     <div class="desempenho-editorial-card" id="secaoConquistas">
         <div class="desempenho-card-header">
             <div class="desempenho-header-left">
@@ -1556,12 +1841,12 @@
                     </svg>
                 </span>
                 <div>
-                    <h2 class="desempenho-section-title">Minhas Conquistas & Insígnias FLE</h2>
+                    <h2 class="desempenho-section-title">Minhas Conquistas &amp; Insígnias FLE</h2>
                     <p class="desempenho-section-subtitle">Desbloqueie medalhas exclusivas à medida que pratica sua escrita, vocabulário e pronúncia</p>
                 </div>
             </div>
             <div>
-                <span style="font-size: 0.82rem; font-weight: 700; color: #14213D; background: rgba(252, 163, 17, 0.16); border: 1px solid #FCA311; border-radius: 999px; padding: 5px 14px; display: inline-flex; align-items: center; gap: 5px;">
+                <span class="desempenho-badge-title" style="font-size: 0.82rem; background: rgba(252, 163, 17, 0.16); border: 1px solid #FCA311; border-radius: 999px; padding: 5px 14px; display: inline-flex; align-items: center; gap: 5px;">
                     🏆 {{ (badges|selectattr('desbloqueado', 'equalto', true)|list)|length }} de {{ badges|length }} Desbloqueadas
                 </span>
             </div>
@@ -1589,7 +1874,7 @@
                 </div>
                 <div style="flex: 1;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; gap: 6px;">
-                        <h4 style="margin: 0; font-size: 0.96rem; font-weight: 700; color: #14213D;">{{ b.nome }}</h4>
+                        <h4 class="desempenho-badge-title">{{ b.nome }}</h4>
                         {% if b.desbloqueado %}
                         <span class="badge-status-tag unlocked">CONQUISTADA</span>
                         {% else %}
@@ -1598,9 +1883,15 @@
                         </span>
                         {% endif %}
                     </div>
-                    <p style="margin: 0; font-size: 0.8rem; color: rgba(20, 33, 61, 0.7); line-height: 1.4;">
+                    <p class="desempenho-badge-desc">
                         {{ b.descricao }}
                     </p>
+                    <div class="badge-progress-wrap" title="{{ b.atual }} de {{ b.meta }}">
+                        <div class="badge-progress-track">
+                            <div class="badge-progress-fill" style="width: {{ b.progresso_pct }}%;"></div>
+                        </div>
+                        <span class="badge-progress-count">{{ b.atual }}/{{ b.meta }}</span>
+                    </div>
                 </div>
             </div>
             {% endfor %}
@@ -1614,30 +1905,30 @@
 {% if reforco %}
 <div id="missaoModal" class="modal-overlay" style="display: none;" onclick="if(event.target === this) fecharMissaoModal();">
     <div class="desempenho-modal-card modal-content" style="max-width: 580px; width: 92%; margin: auto; position: relative; padding: 2rem;">
-        <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E5E5E5; padding-bottom: 1rem;">
+        <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(148, 163, 184, 0.25); padding-bottom: 1rem;">
             <div style="display: flex; align-items: center; gap: 8px;">
                 <span class="desempenho-circle-badge" style="width: 32px; height: 32px;">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                     </svg>
                 </span>
-                <h2 style="margin: 0; font-size: 1.2rem; color: #14213D; font-weight: 700;">Missão de Foco (Reforço Pedagógico)</h2>
+                <h2 class="desempenho-tutor-title" style="margin: 0; font-size: 1.2rem; font-weight: 700;">Missão de Foco (Reforço Pedagógico)</h2>
             </div>
-            <button type="button" class="close-modal" onclick="fecharMissaoModal()" style="background: transparent; border: none; color: rgba(20,33,61,0.5); cursor: pointer; font-size: 1.5rem; line-height: 1;" aria-label="Fechar modal">
+            <button type="button" class="close-modal" onclick="fecharMissaoModal()" style="background: transparent; border: none; color: inherit; opacity: 0.65; cursor: pointer; font-size: 1.5rem; line-height: 1;" aria-label="Fechar modal">
                 &times;
             </button>
         </div>
         <div class="modal-body" style="margin-top: 1.25rem;">
-            <div style="background: rgba(168, 218, 220, 0.2); border-left: 4px solid #2A9D8F; padding: 1rem 1.15rem; border-radius: 10px; margin-bottom: 1.25rem;">
-                <strong style="color: #14213D; font-size: 0.88rem;">Orientação do Tutor:</strong><br>
-                <p style="margin: 4px 0 0 0; color: rgba(20, 33, 61, 0.8); font-size: 0.88rem; line-height: 1.5;">
+            <div style="background: rgba(168, 218, 220, 0.16); border-left: 4px solid #2A9D8F; padding: 1rem 1.15rem; border-radius: 10px; margin-bottom: 1.25rem;">
+                <strong class="desempenho-tutor-title" style="font-size: 0.88rem;">Orientação do Tutor:</strong><br>
+                <p class="desempenho-tutor-msg" style="margin: 4px 0 0 0; font-size: 0.88rem; line-height: 1.5;">
                     {{ reforco['mensagem_tutor'] }}
                 </p>
                 
                 {% if reforco['exercicios_lista'] %}
                 <div style="margin-top: 0.85rem; border-top: 1px dashed rgba(42, 157, 143, 0.25); padding-top: 0.65rem;">
-                    <strong style="color: #14213D; font-size: 0.82rem;">Exercícios Recomendados:</strong>
-                    <ul style="margin: 0.35rem 0 0 0; padding-left: 1.25rem; font-size: 0.84rem; color: rgba(20, 33, 61, 0.85);">
+                    <strong class="desempenho-tutor-title" style="font-size: 0.82rem;">Exercícios Recomendados:</strong>
+                    <ul class="desempenho-tutor-msg" style="margin: 0.35rem 0 0 0; padding-left: 1.25rem; font-size: 0.84rem;">
                         {% for ex in reforco['exercicios_lista'] %}
                         <li style="margin-bottom: 0.35rem;">{{ ex }}</li>
                         {% endfor %}
@@ -1649,18 +1940,18 @@
             <form id="formMissao">
                 <input type="hidden" id="reforco_id" value="{{ reforco['id'] }}">
                 <div class="form-group" style="margin-bottom: 1.1rem;">
-                    <label for="respostaMissao" style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.86rem; color: #14213D;">
+                    <label for="respostaMissao" class="desempenho-tutor-title" style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.86rem;">
                         Sua Resposta em Francês para o Exercício Recomendado:
                     </label>
-                    <textarea id="respostaMissao" rows="3" class="form-textarea" style="width: 100%; border: 1px solid #E5E5E5; border-radius: 12px; padding: 0.75rem 1rem; font-size: 0.94rem; box-sizing: border-box; resize: vertical;" placeholder="Écrivez votre réponse ici en français..." required></textarea>
+                    <textarea id="respostaMissao" rows="3" class="form-textarea" style="width: 100%; border: 1px solid rgba(148, 163, 184, 0.35); border-radius: 12px; padding: 0.75rem 1rem; font-size: 0.94rem; box-sizing: border-box; resize: vertical;" placeholder="Écrivez votre réponse ici en français..." required></textarea>
                 </div>
-                <div id="feedbackMissaoBox" style="display: none; margin-bottom: 1.15rem; padding: 1rem 1.15rem; border-radius: 12px; background: rgba(22, 163, 74, 0.08); border: 1px solid rgba(22, 163, 74, 0.3); font-size: 0.88rem; color: #14213D;"></div>
+                <div id="feedbackMissaoBox" class="desempenho-tutor-title" style="display: none; margin-bottom: 1.15rem; padding: 1rem 1.15rem; border-radius: 12px; background: rgba(22, 163, 74, 0.08); border: 1px solid rgba(22, 163, 74, 0.3); font-size: 0.88rem;"></div>
                 <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;">
                     <a href="/pratica" class="btn-desempenho-secondary" style="font-size: 0.82rem; padding: 0.55rem 1rem;">
                         Abrir na Sala de Prática &rarr;
                     </a>
                     <div style="display: flex; gap: 8px;">
-                        <button type="button" class="btn-desempenho-secondary" onclick="fecharMissaoModal()" style="background: transparent; color: #14213D; border-color: #E5E5E5;">
+                        <button type="button" class="btn-desempenho-secondary" onclick="fecharMissaoModal()">
                             Fechar
                         </button>
                         <button type="submit" class="btn-desempenho-cta" id="btnEnviarMissao">
@@ -1692,32 +1983,61 @@
             textColor: isLight ? '#111827' : '#f8fafc',
             mutedColor: isLight ? '#6B7280' : '#9CA3AF',
             gridColor: isLight ? '#ECECEC' : 'rgba(255, 255, 255, 0.08)',
-            doughnutBorder: isLight ? '#FFFFFF' : '#111827'
+            doughnutBorder: isLight ? '#FFFFFF' : '#111827',
+            barBg: isLight ? '#18191E' : '#FCA311',
+            erroSegment: isLight ? '#18191E' : '#64748B',
+            emptyTrack: isLight ? '#E5E7EB' : 'rgba(255, 255, 255, 0.14)'
         };
     }
 
-    const themeColors = getChartThemeColors();
+    const DADOS_ESCOPO_DASHBOARD = {
+        labelsDias: {{ dias_semana_labels | tojson }},
+        geral: {
+            nome: 'Visão Geral',
+            total: {{ total_geral | tojson }},
+            acertos: {{ acertos_geral | tojson }},
+            parciais: {{ parciais_geral | tojson }},
+            erros: {{ erros_geral | tojson }},
+            serie: {{ participacao_semanal_geral | tojson }}
+        },
+        curso: {
+            nome: 'Curso',
+            total: {{ total_atividades | tojson }},
+            acertos: {{ acertos | tojson }},
+            parciais: {{ parciais | tojson }},
+            erros: {{ erros | tojson }},
+            serie: {{ participacao_semanal | tojson }}
+        },
+        pratica: {
+            nome: 'Prática Pessoal',
+            total: {{ total_pratica_pessoal | tojson }},
+            acertos: {{ acertos_pratica_pessoal | tojson }},
+            parciais: {{ parciais_pratica_pessoal | tojson }},
+            erros: {{ erros_pratica_pessoal | tojson }},
+            serie: {{ participacao_semanal_pratica | tojson }}
+        }
+    };
 
-    // Gráfico de Desempenho (Doughnut Gauge) com a Paleta da Referência:
-    // #16A34A (Acertos - Verde) / #6B7280 (Parciais - Grafite) / #18191E (A revisar - Escuro)
+    let escopoAtualGraficos = 'geral';
+    let themeColors = getChartThemeColors();
+
+    // Gráfico de Desempenho (Doughnut Gauge)
     const ctx = document.getElementById('desempenhoChart');
     let chartDesempenho = null;
     if (ctx) {
-        const total = {{ total_atividades }};
-        const acertos = {{ acertos }};
-        const parciais = {{ parciais }};
-        const erros = {{ erros }};
-
-        const chartData = (total === 0) ? [1] : [acertos, parciais, erros];
-        const chartBg = (total === 0) ? ['#E5E7EB'] : ['#16A34A', '#6B7280', '#18191E'];
+        const initDados = DADOS_ESCOPO_DASHBOARD[escopoAtualGraficos] || DADOS_ESCOPO_DASHBOARD.geral;
+        const total = Number(initDados.total) || 0;
+        const acertos = Number(initDados.acertos) || 0;
+        const parciais = Number(initDados.parciais) || 0;
+        const erros = Number(initDados.erros) || 0;
 
         chartDesempenho = new Chart(ctx, {
             type: 'doughnut',
             data: {
                 labels: (total === 0) ? ['Sem atividades'] : ['Correto', 'Parcial', 'Incorreto'],
                 datasets: [{
-                    data: chartData,
-                    backgroundColor: chartBg,
+                    data: (total === 0) ? [1] : [acertos, parciais, erros],
+                    backgroundColor: (total === 0) ? [themeColors.emptyTrack] : ['#16A34A', '#6B7280', themeColors.erroSegment],
                     borderWidth: 0,
                     borderRadius: (total === 0) ? 0 : 8,
                     spacing: (total === 0) ? 0 : 3,
@@ -1740,21 +2060,24 @@
         });
     }
 
-    // Gráfico de Participação Semanal (Bar) com a Paleta da Referência:
-    // #18191E (Escuro) nas barras com hover #16A34A (Verde)
+    // Gráfico de Participação (Últimos 5 Dias)
     const ctxBar = document.getElementById('participacaoChart');
     let chartParticipacao = null;
     if (ctxBar) {
+        const initDadosBar = DADOS_ESCOPO_DASHBOARD[escopoAtualGraficos] || DADOS_ESCOPO_DASHBOARD.geral;
+        const serieInit = Array.isArray(initDadosBar.serie) ? initDadosBar.serie : [0, 0, 0, 0, 0];
+        const labelsInit = Array.isArray(DADOS_ESCOPO_DASHBOARD.labelsDias) ? DADOS_ESCOPO_DASHBOARD.labelsDias : ['D-4', 'D-3', 'D-2', 'Ontem', 'Hoje'];
+
         chartParticipacao = new Chart(ctxBar, {
             type: 'bar',
             data: {
-                labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'],
+                labels: labelsInit,
                 datasets: [{
                     label: 'Atividades',
-                    data: {{ participacao_semanal | tojson }},
-                    backgroundColor: '#18191E',
+                    data: serieInit,
+                    backgroundColor: themeColors.barBg,
                     hoverBackgroundColor: '#16A34A',
-                    borderColor: '#18191E',
+                    borderColor: themeColors.barBg,
                     borderWidth: 1,
                     borderRadius: 8
                 }]
@@ -1763,14 +2086,14 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
-                    y: { 
-                        beginAtZero: true, 
-                        grid: { color: themeColors.gridColor }, 
-                        ticks: { color: themeColors.mutedColor, precision: 0, font: { family: 'Plus Jakarta Sans', size: 11 } } 
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: themeColors.gridColor },
+                        ticks: { color: themeColors.mutedColor, precision: 0, font: { family: 'Plus Jakarta Sans', size: 11 } }
                     },
-                    x: { 
-                        grid: { display: false }, 
-                        ticks: { color: themeColors.mutedColor, font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' } } 
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: themeColors.mutedColor, font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' } }
                     }
                 },
                 plugins: {
@@ -1780,16 +2103,93 @@
         });
     }
 
+    function alternarEscopoGraficos(escopo, btn) {
+        const d = DADOS_ESCOPO_DASHBOARD[escopo];
+        if (!d) return;
+        escopoAtualGraficos = escopo;
+
+        document.querySelectorAll('#filtroEscopoGraficos .scope-pill').forEach(pill => {
+            pill.classList.toggle('active', pill === btn || pill.getAttribute('data-scope') === escopo);
+        });
+
+        const updatedTheme = getChartThemeColors();
+        const total = Number(d.total) || 0;
+        const acertos = Number(d.acertos) || 0;
+        const parciais = Number(d.parciais) || 0;
+        const erros = Number(d.erros) || 0;
+        const pctAcerto = total > 0 ? Math.round((acertos / total) * 100) : 0;
+        const pctParcial = total > 0 ? Math.round((parciais / total) * 100) : 0;
+        const pctErro = total > 0 ? Math.round((erros / total) * 100) : 0;
+
+        const elHeaderVal = document.getElementById('efficacyHeaderVal');
+        const elSubtitleVal = document.getElementById('efficacySubtitleVal');
+        const elGaugePct = document.getElementById('gaugePercentVal');
+        const elGaugeFrac = document.getElementById('gaugeFractionVal');
+        const elPillCor = document.getElementById('pillStatCorreto');
+        const elPillPar = document.getElementById('pillStatParcial');
+        const elPillInc = document.getElementById('pillStatIncorreto');
+
+        if (elHeaderVal) elHeaderVal.textContent = `${pctAcerto}%`;
+        if (elSubtitleVal) elSubtitleVal.textContent = `Distribuição entre acertos, parciais e revisões (${d.nome})`;
+        if (elGaugePct) elGaugePct.textContent = `${pctAcerto}%`;
+        if (elGaugeFrac) elGaugeFrac.textContent = `${acertos}/${total} Acertos`;
+        if (elPillCor) elPillCor.textContent = `✓ ${acertos} Acertos (${pctAcerto}%)`;
+        if (elPillPar) elPillPar.textContent = `⚠ ${parciais} Parciais (${pctParcial}%)`;
+        if (elPillInc) elPillInc.textContent = `✗ ${erros} A revisar (${pctErro}%)`;
+
+        if (chartDesempenho) {
+            chartDesempenho.data.labels = (total === 0) ? ['Sem atividades'] : ['Correto', 'Parcial', 'Incorreto'];
+            chartDesempenho.data.datasets[0].data = (total === 0) ? [1] : [acertos, parciais, erros];
+            chartDesempenho.data.datasets[0].backgroundColor = (total === 0) ? [updatedTheme.emptyTrack] : ['#16A34A', '#6B7280', updatedTheme.erroSegment];
+            chartDesempenho.data.datasets[0].borderRadius = (total === 0) ? 0 : 8;
+            chartDesempenho.data.datasets[0].spacing = (total === 0) ? 0 : 3;
+            chartDesempenho.options.plugins.tooltip.enabled = (total > 0);
+            chartDesempenho.update();
+        }
+
+        const serie = Array.isArray(d.serie) ? d.serie : [0, 0, 0, 0, 0];
+        const somaSemana = serie.reduce((acc, v) => acc + (Number(v) || 0), 0);
+        const mediaSemana = (somaSemana / 5).toFixed(1);
+
+        const elPartTotal = document.getElementById('chartParticipacaoTotalVal');
+        const elPartMedia = document.getElementById('chartParticipacaoMediaVal');
+        const elPartPill = document.getElementById('chartParticipacaoPillVal');
+        if (elPartTotal) elPartTotal.textContent = `${somaSemana}`;
+        if (elPartMedia) elPartMedia.textContent = `${mediaSemana} / dia`;
+        if (elPartPill) elPartPill.textContent = `+${somaSemana} ativ.`;
+
+        if (chartParticipacao) {
+            chartParticipacao.data.datasets[0].data = serie;
+            chartParticipacao.update();
+        }
+    }
+
+    function falarRevisaoFrances(btn) {
+        if (!btn) return;
+        const texto = btn.getAttribute('data-texto') || '';
+        if (texto && typeof window.falarTextoFrancesBase === 'function') {
+            window.falarTextoFrancesBase(texto, btn, { status: 'Parcialmente Correto' });
+        }
+    }
+
     // Observer para atualizar cores dos gráficos ao alternar tema claro/escuro
     const themeObserver = new MutationObserver(() => {
         const updatedTheme = getChartThemeColors();
+        const currentScopeData = DADOS_ESCOPO_DASHBOARD[escopoAtualGraficos] || DADOS_ESCOPO_DASHBOARD.geral;
+        const total = Number(currentScopeData.total) || 0;
+
         if (chartDesempenho) {
+            chartDesempenho.data.datasets[0].backgroundColor = (total === 0)
+                ? [updatedTheme.emptyTrack]
+                : ['#16A34A', '#6B7280', updatedTheme.erroSegment];
             if (chartDesempenho.options.plugins && chartDesempenho.options.plugins.legend && chartDesempenho.options.plugins.legend.labels) {
                 chartDesempenho.options.plugins.legend.labels.color = updatedTheme.textColor;
             }
             chartDesempenho.update();
         }
         if (chartParticipacao) {
+            chartParticipacao.data.datasets[0].backgroundColor = updatedTheme.barBg;
+            chartParticipacao.data.datasets[0].borderColor = updatedTheme.barBg;
             chartParticipacao.options.scales.y.grid.color = updatedTheme.gridColor;
             chartParticipacao.options.scales.y.ticks.color = updatedTheme.mutedColor;
             chartParticipacao.options.scales.x.ticks.color = updatedTheme.mutedColor;

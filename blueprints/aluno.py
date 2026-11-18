@@ -56,18 +56,31 @@ def index():
     xp_pessoal = ((stats_pratica["acertos"] or 0) * 10 + (stats_pratica["parciais"] or 0) * 5) if stats_pratica else 0
     total_pratica_pessoal = (stats_pratica["total"] or 0) if stats_pratica else 0
 
-    # Exercício inicial recomendado automático de acordo com o nível do aluno
+    # Exercício inicial recomendado automático de acordo com o nível ou tema selecionado
+    tema_param = (request.args.get("tema") or "").strip()
     exercicio_inicial = None
     if not reforco:
-        cursor.execute("""
-            SELECT e.id, e.enunciado, t.nome_tema
-            FROM exercicios e
-            JOIN temas t ON e.tema_id = t.id
-            WHERE e.nivel_exigido = ?
-            ORDER BY RANDOM()
-            LIMIT 1;
-        """, (nivel_aluno,))
-        ex_row = cursor.fetchone()
+        ex_row = None
+        if tema_param:
+            cursor.execute("""
+                SELECT e.id, e.enunciado, t.nome_tema
+                FROM exercicios e
+                JOIN temas t ON e.tema_id = t.id
+                WHERE LOWER(t.nome_tema) = LOWER(?)
+                ORDER BY RANDOM()
+                LIMIT 1;
+            """, (tema_param,))
+            ex_row = cursor.fetchone()
+        if not ex_row:
+            cursor.execute("""
+                SELECT e.id, e.enunciado, t.nome_tema
+                FROM exercicios e
+                JOIN temas t ON e.tema_id = t.id
+                WHERE e.nivel_exigido = ?
+                ORDER BY RANDOM()
+                LIMIT 1;
+            """, (nivel_aluno,))
+            ex_row = cursor.fetchone()
         if not ex_row:
             cursor.execute("""
                 SELECT e.id, e.enunciado, t.nome_tema
@@ -98,6 +111,29 @@ def index():
     )
 
 # ===================== ROTAS DE ALUNO (GERAR E AVALIAR) =====================
+
+def _calcular_serie_5_dias(cursor, aluno_id, filtro_sql, total_ref, dias_iso):
+    cursor.execute(f"""
+        SELECT substr(data_hora, 1, 10) as dia, COUNT(*) as qtd
+        FROM submissoes
+        WHERE aluno_id = ? AND ({filtro_sql}) AND substr(data_hora, 1, 10) >= ?
+        GROUP BY dia
+    """, (aluno_id, dias_iso[0]))
+    mapa = {r["dia"]: r["qtd"] for r in cursor.fetchall()}
+    serie = [mapa.get(d, 0) for d in dias_iso]
+    if sum(serie) == 0 and total_ref > 0:
+        cursor.execute(f"""
+            SELECT substr(data_hora, 1, 10) as dia, COUNT(*) as qtd
+            FROM submissoes
+            WHERE aluno_id = ? AND ({filtro_sql})
+            GROUP BY dia
+            ORDER BY dia DESC
+            LIMIT 5
+        """, (aluno_id,))
+        ultimos = [r["qtd"] for r in cursor.fetchall()][::-1]
+        serie = ([0] * (5 - len(ultimos))) + ultimos
+    return serie
+
 
 @aluno_bp.route("/aluno/dashboard", methods=["GET"])
 @login_required
@@ -139,7 +175,8 @@ def aluno_dashboard():
         SELECT
             COUNT(*) as total_pratica,
             SUM(CASE WHEN status_resposta = 'Correto' THEN 1 ELSE 0 END) as acertos_pratica,
-            SUM(CASE WHEN status_resposta = 'Parcialmente Correto' THEN 1 ELSE 0 END) as parciais_pratica
+            SUM(CASE WHEN status_resposta = 'Parcialmente Correto' THEN 1 ELSE 0 END) as parciais_pratica,
+            SUM(CASE WHEN status_resposta = 'Incorreto' THEN 1 ELSE 0 END) as erros_pratica
         FROM submissoes
         WHERE aluno_id = ? AND origem_submissao = 'pratica_pessoal'
     """, (aluno_id,))
@@ -147,30 +184,28 @@ def aluno_dashboard():
     total_pratica_pessoal = (stats_pessoal["total_pratica"] or 0) if stats_pessoal else 0
     acertos_pratica_pessoal = (stats_pessoal["acertos_pratica"] or 0) if stats_pessoal else 0
     parciais_pratica_pessoal = (stats_pessoal["parciais_pratica"] or 0) if stats_pessoal else 0
+    erros_pratica_pessoal = (stats_pessoal["erros_pratica"] or 0) if stats_pessoal else 0
     xp_pessoal = (acertos_pratica_pessoal * 10) + (parciais_pratica_pessoal * 5)
+
+    total_geral = total + total_pratica_pessoal
+    acertos_geral = acertos + acertos_pratica_pessoal
+    parciais_geral = parciais + parciais_pratica_pessoal
+    erros_geral = erros + erros_pratica_pessoal
     
-    # Participação semanal calculada a partir das submissões do curso nos últimos 5 dias
+    # Participação semanal (últimos 5 dias) para Curso, Prática Pessoal e Geral
     hoje = datetime.date.today()
-    dias_iso = [(hoje - datetime.timedelta(days=i)).strftime("%Y-%m-%d") for i in range(4, -1, -1)]
-    cursor.execute("""
-        SELECT substr(data_hora, 1, 10) as dia, COUNT(*) as qtd
-        FROM submissoes
-        WHERE aluno_id = ? AND COALESCE(origem_submissao, 'curso') != 'pratica_pessoal' AND substr(data_hora, 1, 10) >= ?
-        GROUP BY dia
-    """, (aluno_id, dias_iso[0]))
-    mapa_dias = {r["dia"]: r["qtd"] for r in cursor.fetchall()}
-    participacao_semanal = [mapa_dias.get(d, 0) for d in dias_iso]
-    if sum(participacao_semanal) == 0 and total > 0:
-        cursor.execute("""
-            SELECT substr(data_hora, 1, 10) as dia, COUNT(*) as qtd
-            FROM submissoes
-            WHERE aluno_id = ? AND COALESCE(origem_submissao, 'curso') != 'pratica_pessoal'
-            GROUP BY dia
-            ORDER BY dia DESC
-            LIMIT 5
-        """, (aluno_id,))
-        ultimos = [r["qtd"] for r in cursor.fetchall()][::-1]
-        participacao_semanal = ([0] * (5 - len(ultimos))) + ultimos
+    dias_objs = [hoje - datetime.timedelta(days=i) for i in range(4, -1, -1)]
+    dias_iso = [d.strftime("%Y-%m-%d") for d in dias_objs]
+    nomes_semana = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"]
+    dias_semana_labels = [nomes_semana[d.weekday()] for d in dias_objs]
+
+    participacao_semanal = _calcular_serie_5_dias(
+        cursor, aluno_id, "COALESCE(origem_submissao, 'curso') != 'pratica_pessoal'", total, dias_iso
+    )
+    participacao_semanal_pratica = _calcular_serie_5_dias(
+        cursor, aluno_id, "origem_submissao = 'pratica_pessoal'", total_pratica_pessoal, dias_iso
+    )
+    participacao_semanal_geral = [c + p for c, p in zip(participacao_semanal, participacao_semanal_pratica)]
     
     # Buscar Missão de Foco pendente (reforço)
     cursor.execute("SELECT * FROM reforcos_individuais WHERE aluno_id = ? AND LOWER(status) = 'pendente' ORDER BY id DESC LIMIT 1", (aluno_id,))
@@ -208,52 +243,120 @@ def aluno_dashboard():
     faltas_count = (freq_row["faltas"] or 0) if freq_row else 0
     taxa_frequencia = round((presencas_count / total_aulas_chamada) * 100) if total_aulas_chamada > 0 else 100
 
-    total_geral = total + total_pratica_pessoal
-    acertos_geral = acertos + acertos_pratica_pessoal
+    # Domínio por Tema Gramatical Francês (Mapa de Tópicos FLE)
+    cursor.execute("""
+        SELECT t.nome_tema as nome_tema,
+               COUNT(*) as total,
+               SUM(CASE WHEN s.status_resposta = 'Correto' THEN 1 ELSE 0 END) as acertos,
+               SUM(CASE WHEN s.status_resposta = 'Parcialmente Correto' THEN 1 ELSE 0 END) as parciais
+        FROM submissoes s
+        JOIN exercicios e ON s.exercicio_id = e.id
+        JOIN temas t ON e.tema_id = t.id
+        WHERE s.aluno_id = ?
+        GROUP BY t.id, t.nome_tema
+    """, (aluno_id,))
+    dominio_temas = []
+    for rt in cursor.fetchall():
+        t_qtd = rt["total"] or 0
+        if t_qtd <= 0:
+            continue
+        t_ac = rt["acertos"] or 0
+        t_pa = rt["parciais"] or 0
+        precisao_tema = min(100, round(((t_ac + t_pa * 0.5) / t_qtd) * 100))
+        if precisao_tema >= 75:
+            status_tema, cor_classe = "Dominado", "dominado"
+        elif precisao_tema >= 50:
+            status_tema, cor_classe = "Em evolução", "evolucao"
+        else:
+            status_tema, cor_classe = "Revisar", "revisar"
+        dominio_temas.append({
+            "nome_tema": rt["nome_tema"],
+            "total": t_qtd,
+            "acertos": t_ac,
+            "parciais": t_pa,
+            "precisao": precisao_tema,
+            "status": status_tema,
+            "cor_classe": cor_classe,
+        })
+    dominio_temas.sort(key=lambda item: (item["precisao"], -item["total"], item["nome_tema"]))
 
-    # Sistema de Medalhas Gamificadas (Badges FLE)
+    # Caderno de Revisão Rápida (últimas 4 respostas com desvio/revisão)
+    cursor.execute("""
+        SELECT s.id, s.resposta_aluno, s.status_resposta, s.data_hora,
+               COALESCE(e.enunciado, pq.enunciado, '') as enunciado,
+               COALESCE(t.nome_tema, a.titulo, 'Prática de Francês') as tema
+        FROM submissoes s
+        LEFT JOIN exercicios e ON s.exercicio_id = e.id
+        LEFT JOIN temas t ON e.tema_id = t.id
+        LEFT JOIN prova_questoes pq ON s.prova_questao_id = pq.id
+        LEFT JOIN avaliacoes a ON pq.avaliacao_id = a.id
+        WHERE s.aluno_id = ? AND s.status_resposta IN ('Parcialmente Correto', 'Incorreto')
+        ORDER BY s.id DESC
+        LIMIT 4
+    """, (aluno_id,))
+    revisoes_recentes = [dict(r) for r in cursor.fetchall()]
+
+    # Sistema de Medalhas Gamificadas (Badges FLE) com barra de evolução
     badges = [
         {
             "id": "premier_pas",
             "nome": "Premier Pas",
             "icone": "star",
             "descricao": "Concluiu sua primeira atividade de francês.",
-            "desbloqueado": total_geral >= 1
+            "desbloqueado": total_geral >= 1,
+            "atual": min(total_geral, 1),
+            "meta": 1,
+            "progresso_pct": 100 if total_geral >= 1 else 0
         },
         {
             "id": "tir_precis",
             "nome": "Tir Précis",
             "icone": "target",
             "descricao": "Alcançou 5 acertos perfeitos nas atividades.",
-            "desbloqueado": acertos_geral >= 5
+            "desbloqueado": acertos_geral >= 5,
+            "atual": min(acertos_geral, 5),
+            "meta": 5,
+            "progresso_pct": min(100, round((acertos_geral / 5) * 100))
         },
         {
             "id": "erudit_fle",
             "nome": "Érudit du FLE",
             "icone": "book",
             "descricao": "Praticou pelo menos 10 exercícios na plataforma.",
-            "desbloqueado": total_geral >= 10
+            "desbloqueado": total_geral >= 10,
+            "atual": min(total_geral, 10),
+            "meta": 10,
+            "progresso_pct": min(100, round((total_geral / 10) * 100))
         },
         {
             "id": "voix_paris",
             "nome": "Voix de Paris",
             "icone": "mic",
             "descricao": "Gravou e enviou áudio em uma avaliação ou expressão oral.",
-            "desbloqueado": tem_audio
+            "desbloqueado": tem_audio,
+            "atual": 1 if tem_audio else 0,
+            "meta": 1,
+            "progresso_pct": 100 if tem_audio else 0
         },
         {
             "id": "niveau_avance",
             "nome": "Niveau Avancé",
             "icone": "award",
             "descricao": "Alcançou o nível intermediário B1 ou superior.",
-            "desbloqueado": aluno_nivel in ["B1", "B2", "C1", "C2"]
+            "desbloqueado": aluno_nivel in ["B1", "B2", "C1", "C2"],
+            "atual": min(idx + 1, 3),
+            "meta": 3,
+            "progresso_pct": 100 if aluno_nivel in ["B1", "B2", "C1", "C2"] else min(95, round(((idx + 1) / 3) * 100))
         },
         {
             "id": "perseverance",
             "nome": "Persévérance",
             "icone": "shield",
             "descricao": "Concluiu uma missão de reforço guiada pelo tutor.",
-            "desbloqueado": tem_reforco
+            "desbloqueado": tem_reforco,
+            "atual": 1 if tem_reforco else 0,
+            "meta": 1,
+            "progresso_pct": 100 if tem_reforco else 0
         }
     ]
     
@@ -263,19 +366,32 @@ def aluno_dashboard():
         "aluno_dashboard.html",
         active_page="aluno_dashboard",
         aluno_nivel=aluno_nivel,
+        niveis_cefr=niveis,
+        cefr_idx=idx,
         proximo_nivel=proximo_nivel,
         progresso_xp=progresso_xp,
         xp_curso=xp_curso,
         xp_pessoal=xp_pessoal,
         total_pratica_pessoal=total_pratica_pessoal,
         acertos_pratica_pessoal=acertos_pratica_pessoal,
+        parciais_pratica_pessoal=parciais_pratica_pessoal,
+        erros_pratica_pessoal=erros_pratica_pessoal,
         total_atividades=total,
         acertos=acertos,
         parciais=parciais,
         erros=erros,
+        total_geral=total_geral,
+        acertos_geral=acertos_geral,
+        parciais_geral=parciais_geral,
+        erros_geral=erros_geral,
         participacao_semanal=participacao_semanal,
+        participacao_semanal_pratica=participacao_semanal_pratica,
+        participacao_semanal_geral=participacao_semanal_geral,
+        dias_semana_labels=dias_semana_labels,
         reforco=reforco,
         badges=badges,
+        dominio_temas=dominio_temas,
+        revisoes_recentes=revisoes_recentes,
         taxa_frequencia=taxa_frequencia,
         total_aulas_chamada=total_aulas_chamada,
         presencas_count=presencas_count,
