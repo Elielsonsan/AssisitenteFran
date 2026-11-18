@@ -1036,6 +1036,7 @@ def prof_avaliacoes():
                (SELECT COUNT(*) FROM alunos al WHERE al.turma_id = a.turma_id) as total_alunos_turma,
                (SELECT COUNT(*) FROM prova_questoes pq WHERE pq.avaliacao_id = a.id) as total_questoes,
                (SELECT COUNT(*) FROM submissoes s JOIN prova_questoes pq ON s.prova_questao_id = pq.id WHERE pq.avaliacao_id = a.id) as total_submissoes,
+               (SELECT COUNT(*) FROM submissoes s JOIN prova_questoes pq ON s.prova_questao_id = pq.id WHERE pq.avaliacao_id = a.id AND s.status_resposta = 'Correto') as total_corretas,
                (SELECT COUNT(DISTINCT s.aluno_id) FROM submissoes s JOIN prova_questoes pq ON s.prova_questao_id = pq.id WHERE pq.avaliacao_id = a.id) as alunos_participantes
         FROM avaliacoes a
         JOIN turmas t ON a.turma_id = t.id
@@ -1050,6 +1051,9 @@ def prof_avaliacoes():
         tot_al = item.get("total_alunos_turma") or 0
         part = item.get("alunos_participantes") or 0
         item["taxa_entrega_pct"] = int(round((part / tot_al) * 100)) if tot_al > 0 else 0
+        tot_sub = item.get("total_submissoes") or 0
+        corretas = item.get("total_corretas") or 0
+        item["taxa_acerto_pct"] = int(round((corretas / tot_sub) * 100)) if tot_sub > 0 else None
         avaliacoes.append(item)
 
     cursor.execute("SELECT id, nome FROM turmas ORDER BY nome ASC")
@@ -2395,6 +2399,22 @@ def api_avaliacao_editar(avaliacao_id):
         if isinstance(questoes, list) and len(questoes) > 0:
             cursor.execute("SELECT id FROM prova_questoes WHERE avaliacao_id = ? ORDER BY id ASC", (avaliacao_id,))
             existing_ids = [r["id"] for r in cursor.fetchall()]
+            kept_ids = set()
+
+            for q in questoes:
+                q_id = q.get("id")
+                if q_id is not None and str(q_id).strip() != "":
+                    try:
+                        q_id_int = int(q_id)
+                        if q_id_int in existing_ids:
+                            kept_ids.add(q_id_int)
+                    except (TypeError, ValueError):
+                        pass
+
+            has_explicit_ids = any(
+                q.get("id") is not None and str(q.get("id")).strip() != ""
+                for q in questoes
+            )
 
             for idx, q in enumerate(questoes):
                 tipo_q = q.get("tipo_questao", "multipla_escolha")
@@ -2402,24 +2422,38 @@ def api_avaliacao_editar(avaliacao_id):
                 texto_referencia = q.get("texto_referencia", "")
                 pontuacao = float(q.get("pontuacao_maxima", 2.5))
                 q_id = q.get("id")
+                q_id_int = None
+                if q_id is not None and str(q_id).strip() != "":
+                    try:
+                        q_id_int = int(q_id)
+                    except (TypeError, ValueError):
+                        q_id_int = None
 
-                if q_id and int(q_id) in existing_ids:
+                if q_id_int and q_id_int in existing_ids:
                     cursor.execute("""
                         UPDATE prova_questoes
                         SET tipo_questao = ?, enunciado = ?, texto_referencia = ?, pontuacao_maxima = ?
                         WHERE id = ? AND avaliacao_id = ?
-                    """, (tipo_q, enunciado, texto_referencia, pontuacao, int(q_id), avaliacao_id))
-                elif idx < len(existing_ids) and not q_id:
+                    """, (tipo_q, enunciado, texto_referencia, pontuacao, q_id_int, avaliacao_id))
+                    kept_ids.add(q_id_int)
+                elif not has_explicit_ids and idx < len(existing_ids) and existing_ids[idx] not in kept_ids:
+                    target_id = existing_ids[idx]
                     cursor.execute("""
                         UPDATE prova_questoes
                         SET tipo_questao = ?, enunciado = ?, texto_referencia = ?, pontuacao_maxima = ?
                         WHERE id = ? AND avaliacao_id = ?
-                    """, (tipo_q, enunciado, texto_referencia, pontuacao, existing_ids[idx], avaliacao_id))
+                    """, (tipo_q, enunciado, texto_referencia, pontuacao, target_id, avaliacao_id))
+                    kept_ids.add(target_id)
                 else:
                     cursor.execute("""
                         INSERT INTO prova_questoes (avaliacao_id, tipo_questao, enunciado, texto_referencia, pontuacao_maxima)
                         VALUES (?, ?, ?, ?, ?)
                     """, (avaliacao_id, tipo_q, enunciado, texto_referencia, pontuacao))
+
+            removed_ids = [eid for eid in existing_ids if eid not in kept_ids]
+            for rem_id in removed_ids:
+                cursor.execute("DELETE FROM submissoes WHERE prova_questao_id = ?", (rem_id,))
+                cursor.execute("DELETE FROM prova_questoes WHERE id = ? AND avaliacao_id = ?", (rem_id, avaliacao_id))
 
         conn.commit()
         return jsonify({"status": "sucesso", "id": avaliacao_id})

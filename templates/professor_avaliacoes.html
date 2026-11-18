@@ -426,7 +426,7 @@
 /* Barra Inline de Filtros (Substitui a antiga sidebar) */
 .docente-inline-filters {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr auto;
+    grid-template-columns: 1fr 1fr 1fr 1fr auto;
     gap: 0.75rem;
     align-items: end;
     padding-top: 0.95rem;
@@ -1044,6 +1044,90 @@
     cursor: not-allowed;
     pointer-events: none;
 }
+
+.fle-char-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 8px 12px;
+    background: #F7F7F8;
+    border: 1px solid #ECECEC;
+    border-radius: 14px;
+    margin-top: 6px;
+}
+
+[data-theme="dark"] .fle-char-toolbar {
+    background: #121318;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.fle-char-btn {
+    border: 1px solid #E5E7EB;
+    background: #FFFFFF;
+    color: #14213D;
+    border-radius: 8px;
+    padding: 3px 9px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.14s ease;
+}
+
+.fle-char-btn:hover {
+    background: #18191E;
+    color: #FCA311;
+    border-color: #18191E;
+}
+
+[data-theme="dark"] .fle-char-btn {
+    background: #1E202B;
+    border-color: rgba(255, 255, 255, 0.14);
+    color: #F9FAFB;
+}
+
+[data-theme="dark"] .fle-char-btn:hover {
+    background: #FCA311;
+    color: #000000;
+    border-color: #FCA311;
+}
+
+.fle-feedback-chip {
+    border: 1px solid #E5E7EB;
+    background: #FFFFFF;
+    color: #374151;
+    border-radius: 999px;
+    padding: 4px 11px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.14s ease;
+}
+
+.fle-feedback-chip:hover {
+    border-color: #14213D;
+    background: #14213D;
+    color: #FFFFFF;
+}
+
+[data-theme="dark"] .fle-feedback-chip {
+    background: #22242E;
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #E5E7EB;
+}
+
+.cr-ia-box {
+    background: rgba(20, 33, 61, 0.04);
+    border: 1px solid rgba(20, 33, 61, 0.12);
+    border-left: 3px solid #FCA311;
+    border-radius: 14px;
+    padding: 10px 14px;
+}
+
+[data-theme="dark"] .cr-ia-box {
+    background: rgba(252, 163, 17, 0.08);
+    border-color: rgba(252, 163, 17, 0.25);
+}
 </style>
 {% endblock %}
 
@@ -1080,36 +1164,19 @@
             </p>
         </header>
 
-        <!-- 2. Grid dos 4 Mini-KPIs no Topo (Design de Ondas + Botão Pill #18191E) -->
+        <!-- 2. Grid dos 4 Mini-KPIs no Topo -->
         <section class="docente-kpis-grid no-print" aria-label="Indicadores de Avaliações">
             <!-- Card 1: Total de Avaliações -->
             <article class="docente-kpi-card" onclick="filtrarPorChipRapido('todos')">
                 <div class="docente-kpi-top-row">
                     <div>
                         <span class="docente-kpi-label">Avaliações Publicadas</span>
-                        <div class="docente-kpi-primary">{{ avaliacoes|length if avaliacoes else 0 }}</div>
+                        <div class="docente-kpi-primary" id="kpiTotalAvaliacoes">{{ avaliacoes|length if avaliacoes else 0 }}</div>
                     </div>
-                    <svg class="docente-kpi-wave-svg" viewBox="0 0 120 46" fill="none" aria-hidden="true">
-                        <defs>
-                            <linearGradient id="avWaveAmber" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#FCA311" stop-opacity="0.34"/>
-                                <stop offset="100%" stop-color="#FCA311" stop-opacity="0.0"/>
-                            </linearGradient>
-                        </defs>
-                        <path d="M2 36 C 24 32, 38 14, 62 18 C 84 22, 98 8, 118 10 L 118 44 L 2 44 Z" fill="url(#avWaveAmber)"/>
-                        <path d="M2 36 C 24 32, 38 14, 62 18 C 84 22, 98 8, 118 10" stroke="#FCA311" stroke-width="2.4" stroke-linecap="round"/>
-                        <circle cx="98" cy="11" r="3.5" fill="#FFFFFF" stroke="#FCA311" stroke-width="2.2"/>
-                    </svg>
                 </div>
                 <div class="docente-kpi-mid-row">
                     <span class="docente-kpi-subval">{{ turmas|length if turmas else 0 }} turmas atendidas</span>
                     <span class="docente-kpi-trend">Ativas ↗</span>
-                </div>
-                <div class="docente-kpi-cta-row">
-                    <button type="button" class="docente-pill-btn" onclick="event.stopPropagation(); filtrarPorChipRapido('todos')">
-                        <span>Ver Todas as Avaliações</span>
-                        <span>→</span>
-                    </button>
                 </div>
             </article>
 
@@ -1118,31 +1185,14 @@
                 <div class="docente-kpi-top-row">
                     <div>
                         <span class="docente-kpi-label">Revisão Manual (Oral)</span>
-                        <div class="docente-kpi-primary">{{ pendentes|length if pendentes else 0 }}</div>
+                        <div class="docente-kpi-primary" id="kpiRevisoesOrais">{{ pendentes|length if pendentes else 0 }}</div>
                     </div>
-                    <svg class="docente-kpi-wave-svg" viewBox="0 0 120 46" fill="none" aria-hidden="true">
-                        <defs>
-                            <linearGradient id="avWaveCoral" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#E11D48" stop-opacity="0.28"/>
-                                <stop offset="100%" stop-color="#E11D48" stop-opacity="0.0"/>
-                            </linearGradient>
-                        </defs>
-                        <path d="M2 34 C 24 22, 46 28, 70 14 C 90 6, 104 16, 118 8 L 118 44 L 2 44 Z" fill="url(#avWaveCoral)"/>
-                        <path d="M2 34 C 24 22, 46 28, 70 14 C 90 6, 104 16, 118 8" stroke="#E11D48" stroke-width="2.4" stroke-linecap="round"/>
-                        <circle cx="70" cy="14" r="3.5" fill="#FFFFFF" stroke="#E11D48" stroke-width="2.2"/>
-                    </svg>
                 </div>
                 <div class="docente-kpi-mid-row">
                     <span class="docente-kpi-subval">Provas de fala / áudio</span>
-                    <span class="docente-kpi-trend" style="color: {% if pendentes and pendentes|length > 0 %}#E11D48{% else %}#16A34A{% endif %};">
+                    <span class="docente-kpi-trend" id="kpiRevisoesOraisTrend" style="color: {% if pendentes and pendentes|length > 0 %}#E11D48{% else %}#16A34A{% endif %};">
                         {% if pendentes and pendentes|length > 0 %}Pendentes !{% else %}Em dia ✓{% endif %}
                     </span>
-                </div>
-                <div class="docente-kpi-cta-row">
-                    <button type="button" class="docente-pill-btn" onclick="event.stopPropagation(); rolarParaPendentes()">
-                        <span>Revisar Provas Orais</span>
-                        <span>→</span>
-                    </button>
                 </div>
             </article>
 
@@ -1151,29 +1201,12 @@
                 <div class="docente-kpi-top-row">
                     <div>
                         <span class="docente-kpi-label">Provas &amp; Testes</span>
-                        <div class="docente-kpi-primary">{{ ns.provas + ns.testes }}</div>
+                        <div class="docente-kpi-primary" id="kpiProvasTestes">{{ ns.provas + ns.testes }}</div>
                     </div>
-                    <svg class="docente-kpi-wave-svg" viewBox="0 0 120 46" fill="none" aria-hidden="true">
-                        <defs>
-                            <linearGradient id="avWaveNavy" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#14213D" stop-opacity="0.28"/>
-                                <stop offset="100%" stop-color="#14213D" stop-opacity="0.0"/>
-                            </linearGradient>
-                        </defs>
-                        <path d="M2 35 C 26 26, 46 30, 68 18 C 88 8, 104 14, 118 9 L 118 44 L 2 44 Z" fill="url(#avWaveNavy)"/>
-                        <path d="M2 35 C 26 26, 46 30, 68 18 C 88 8, 104 14, 118 9" stroke="#14213D" stroke-width="2.4" stroke-linecap="round"/>
-                        <circle cx="88" cy="11" r="3.5" fill="#FFFFFF" stroke="#14213D" stroke-width="2.2"/>
-                    </svg>
                 </div>
                 <div class="docente-kpi-mid-row">
-                    <span class="docente-kpi-subval">{{ ns.provas }} provas • {{ ns.testes }} testes</span>
+                    <span class="docente-kpi-subval" id="kpiProvasTestesSub">{{ ns.provas }} provas • {{ ns.testes }} testes</span>
                     <span class="docente-kpi-trend">Multimodal ↗</span>
-                </div>
-                <div class="docente-kpi-cta-row">
-                    <button type="button" class="docente-pill-btn" onclick="event.stopPropagation(); filtrarPorChipRapido('Prova')">
-                        <span>Filtrar Provas</span>
-                        <span>→</span>
-                    </button>
                 </div>
             </article>
 
@@ -1182,34 +1215,17 @@
                 <div class="docente-kpi-top-row">
                     <div>
                         <span class="docente-kpi-label">Listas de Exercícios</span>
-                        <div class="docente-kpi-primary">{{ ns.exercicios }}</div>
+                        <div class="docente-kpi-primary" id="kpiListasExercicios">{{ ns.exercicios }}</div>
                     </div>
-                    <svg class="docente-kpi-wave-svg" viewBox="0 0 120 46" fill="none" aria-hidden="true">
-                        <defs>
-                            <linearGradient id="avWaveTeal" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#2A9D8F" stop-opacity="0.32"/>
-                                <stop offset="100%" stop-color="#2A9D8F" stop-opacity="0.0"/>
-                            </linearGradient>
-                        </defs>
-                        <path d="M2 34 C 22 30, 44 16, 66 20 C 88 24, 102 10, 118 8 L 118 44 L 2 44 Z" fill="url(#avWaveTeal)"/>
-                        <path d="M2 34 C 22 30, 44 16, 66 20 C 88 24, 102 10, 118 8" stroke="#2A9D8F" stroke-width="2.4" stroke-linecap="round"/>
-                        <circle cx="102" cy="10" r="3.5" fill="#FFFFFF" stroke="#2A9D8F" stroke-width="2.2"/>
-                    </svg>
                 </div>
                 <div class="docente-kpi-mid-row">
                     <span class="docente-kpi-subval">{{ temas|length if temas else 0 }} tópicos FLE</span>
                     <span class="docente-kpi-trend" style="color: #2A9D8F;">IA Pronta ↗</span>
                 </div>
-                <div class="docente-kpi-cta-row">
-                    <button type="button" class="docente-pill-btn" onclick="event.stopPropagation(); abrirModalNovaAvaliacao()">
-                        <span>+ Nova Avaliação</span>
-                        <span>→</span>
-                    </button>
-                </div>
             </article>
         </section>
 
-        <!-- 3. Card Editorial de Busca, Filtros Inline e Ações Rápidas (Substitui a antiga sidebar) -->
+        <!-- 3. Card Editorial de Busca, Filtros Inline e Ações Rápidas -->
         <section class="docente-command-card no-print" id="avaliacoesCommandCard" aria-label="Busca, filtros e criação de avaliações">
             <div class="docente-command-top">
                 <div class="docente-search-box">
@@ -1221,7 +1237,7 @@
                         type="search"
                         id="filtroBusca"
                         class="docente-search-input"
-                        placeholder="Buscar avaliação por título, tema gramatical ou turma..."
+                        placeholder="Buscar avaliação ou revisão oral por título, aluno, tema ou turma..."
                         autocomplete="off"
                         oninput="aoDigitarBuscaAvaliacoes(this.value)"
                     >
@@ -1270,6 +1286,16 @@
                     </select>
                 </div>
 
+                <div class="docente-filter-field">
+                    <label for="ordenacaoAvaliacoes">Ordenar por</label>
+                    <select id="ordenacaoAvaliacoes" class="docente-filter-select" onchange="aplicarOrdenacaoDropdown()">
+                        <option value="padrao">Padrão (Mais recentes)</option>
+                        <option value="prazo_asc">Prazo mais próximo</option>
+                        <option value="entregas_desc">Maior nº de entregas</option>
+                        <option value="acerto_asc">Menor taxa de acerto</option>
+                    </select>
+                </div>
+
                 <div class="docente-actions-row" style="justify-content: flex-end;">
                     <button type="button" class="docente-chip-btn primary-dark" onclick="aplicarFiltrosAvaliacoes()">
                         <span>Aplicar</span>
@@ -1282,25 +1308,25 @@
 
             <!-- Chips Rápidos de 1 Clique -->
             <div class="docente-actions-row" id="avaliacoesQuickChips">
-                <button type="button" class="docente-chip-btn active" data-chip-tipo="todos" onclick="filtrarPorChipRapido('todos')">
+                <button type="button" class="docente-chip-btn active" id="chipTodasAvaliacoes" data-chip-tipo="todos" onclick="filtrarPorChipRapido('todos')">
                     Todas ({{ avaliacoes|length if avaliacoes else 0 }})
                 </button>
-                <button type="button" class="docente-chip-btn" data-chip-tipo="Prova" onclick="filtrarPorChipRapido('Prova')">
+                <button type="button" class="docente-chip-btn" id="chipProvasAvaliacoes" data-chip-tipo="Prova" onclick="filtrarPorChipRapido('Prova')">
                     Provas ({{ ns.provas }})
                 </button>
-                <button type="button" class="docente-chip-btn" data-chip-tipo="Exercícios" onclick="filtrarPorChipRapido('Exercícios')">
+                <button type="button" class="docente-chip-btn" id="chipExerciciosAvaliacoes" data-chip-tipo="Exercícios" onclick="filtrarPorChipRapido('Exercícios')">
                     Exercícios ({{ ns.exercicios }})
                 </button>
-                <button type="button" class="docente-chip-btn" data-chip-tipo="Teste" onclick="filtrarPorChipRapido('Teste')">
+                <button type="button" class="docente-chip-btn" id="chipTestesAvaliacoes" data-chip-tipo="Teste" onclick="filtrarPorChipRapido('Teste')">
                     Testes ({{ ns.testes }})
                 </button>
-                <button type="button" class="docente-chip-btn" data-chip-prazo="aberto" onclick="filtrarPorStatusPrazoRapido('aberto')">
+                <button type="button" class="docente-chip-btn" id="chipAbertasAvaliacoes" data-chip-prazo="aberto" onclick="filtrarPorStatusPrazoRapido('aberto')">
                     🟢 Em aberto ({{ ns.abertas }})
                 </button>
-                <button type="button" class="docente-chip-btn" data-chip-prazo="encerrado" onclick="filtrarPorStatusPrazoRapido('encerrado')">
+                <button type="button" class="docente-chip-btn" id="chipEncerradasAvaliacoes" data-chip-prazo="encerrado" onclick="filtrarPorStatusPrazoRapido('encerrado')">
                     🔴 Encerradas ({{ ns.encerradas }})
                 </button>
-                <button type="button" class="docente-chip-btn" onclick="rolarParaPendentes()">
+                <button type="button" class="docente-chip-btn" id="chipRevisoesManuais" onclick="rolarParaPendentes()">
                     ⏳ Revisão Manual ({{ pendentes|length if pendentes else 0 }})
                 </button>
             </div>
@@ -1316,7 +1342,7 @@
                         </span>
                         <h3 class="table-title" style="margin: 0;">Aguardando Revisão Manual (Provas Orais)</h3>
                     </div>
-                    <span class="badge-count" style="font-size: 0.78rem; padding: 4px 12px; border-radius: 999px; background: #F3F4F6; color: #374151; font-weight: 700;">
+                    <span class="badge-count" id="badgePendentesOraisCount" style="font-size: 0.78rem; padding: 4px 12px; border-radius: 999px; background: #F3F4F6; color: #374151; font-weight: 700;">
                         {{ pendentes|length if pendentes else 0 }} pendência{{ 's' if (pendentes|length if pendentes else 0) != 1 else '' }}
                     </span>
                 </div>
@@ -1335,7 +1361,11 @@
                         </thead>
                         <tbody>
                             {% for p in pendentes %}
-                            <tr class="zebra-row linha-pendente-oral" id="linhaPendenteOral-{{ p.id }}" data-aluno="{{ p.aluno_nome|lower }}" data-avaliacao="{{ p.avaliacao_nome|lower }}">
+                            <tr class="zebra-row linha-pendente-oral" id="linhaPendenteOral-{{ p.id }}"
+                                data-aluno="{{ p.aluno_nome|e }}"
+                                data-avaliacao="{{ p.avaliacao_nome|e }}"
+                                data-enunciado="{{ (p.enunciado or '')|e }}"
+                                data-referencia="{{ (p.texto_referencia or '')|e }}">
                                 <td style="font-weight: 700;">
                                     {{ p.aluno_nome }}
                                     {% if p.data_hora %}
@@ -1386,11 +1416,10 @@
                             {% endfor %}
                         </tbody>
                     </table>
-                    {% else %}
-                    <p class="text-muted" style="text-align: center; padding: 1.5rem 0; margin: 0; font-size: 0.9rem;">
+                    {% endif %}
+                    <p id="emptyPendentesOraisMsg" class="text-muted {% if pendentes %}hidden{% endif %}" style="text-align: center; padding: 1.5rem 0; margin: 0; font-size: 0.9rem;">
                         ✓ Nenhuma correção manual pendente no momento.
                     </p>
-                    {% endif %}
                 </div>
             </div>
         </div>
@@ -1401,7 +1430,7 @@
                 <div class="table-card-header avaliacoes-table-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                     <div class="table-header-left" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
                         <h3 class="table-title" style="margin: 0;">Avaliações Cadastradas</h3>
-                        <span class="badge-count" style="font-size: 0.78rem; padding: 4px 12px; border-radius: 999px; background: #F3F4F6; color: #374151; font-weight: 700;">
+                        <span class="badge-count" id="badgeTotalAvaliacoesTabela" style="font-size: 0.78rem; padding: 4px 12px; border-radius: 999px; background: #F3F4F6; color: #374151; font-weight: 700;">
                             {{ avaliacoes|length if avaliacoes else 0 }} avaliações
                         </span>
                         <span class="text-muted" style="font-size: 0.82rem; font-weight: 600;" id="infoFiltroAtivoTexto"></span>
@@ -1446,9 +1475,12 @@
                                 data-turma-id="{{ a.turma_id or '' }}"
                                 data-tipo="{{ a.tipo }}"
                                 data-titulo="{{ a.titulo|lower }}"
+                                data-titulo-raw="{{ a.titulo|e }}"
                                 data-prazo="{{ a.data_limite or '' }}"
                                 data-status-prazo="{{ 'encerrado' if a.prazo_encerrado else 'aberto' }}"
-                                data-engajamento="{{ a.total_submissoes or 0 }}">
+                                data-engajamento="{{ a.total_submissoes or 0 }}"
+                                data-entrega-pct="{{ a.taxa_entrega_pct or 0 }}"
+                                data-acerto="{{ a.taxa_acerto_pct if a.taxa_acerto_pct is not none else 999 }}">
                                 <td style="text-align: center; font-weight: 700; color: #6B7280;">#{{ a.id }}</td>
                                 <td style="text-align: left;">
                                     <div style="font-weight: 700; color: #14213D;" class="celula-titulo-avaliacao">{{ a.titulo }}</div>
@@ -1475,7 +1507,9 @@
                                         <div class="engajamento-bar-track" title="{{ a.taxa_entrega_pct or 0 }}% da turma respondeu">
                                             <div class="engajamento-bar-fill" style="width: {{ [a.taxa_entrega_pct or 0, 100]|min }}%;"></div>
                                         </div>
-                                        <span style="font-size: 0.7rem; color: #6B7280; font-weight: 600;">{{ a.total_submissoes or 0 }} resp. enviadas</span>
+                                        <span style="font-size: 0.7rem; color: #6B7280; font-weight: 600;">
+                                            {{ a.total_submissoes or 0 }} resp.{% if a.taxa_acerto_pct is not none %} • Acerto: {{ a.taxa_acerto_pct }}%{% endif %}
+                                        </span>
                                     </div>
                                 </td>
                                 <td style="text-align: center;">
@@ -1497,7 +1531,7 @@
                                 </td>
                                 <td style="text-align: center;">
                                     <div style="display: inline-flex; align-items: center; gap: 4px; flex-wrap: wrap; justify-content: center;">
-                                        <button type="button" class="btn-action-editorial" onclick="verResultadosProva({{ a.id }}, '{{ a.titulo | e }}')" title="Ver submissões, alunos pendentes, estatísticas e exportar CSV">
+                                        <button type="button" class="btn-action-editorial" data-titulo="{{ a.titulo | e }}" onclick="verResultadosProva({{ a.id }}, this.getAttribute('data-titulo'))" title="Ver submissões, alunos pendentes, estatísticas e exportar CSV">
                                             <svg class="line-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                                             <span>Resultados</span>
                                         </button>
@@ -1507,10 +1541,10 @@
                                         <button type="button" class="btn-icon-editorial" onclick="abrirModalEditarAvaliacao({{ a.id }})" title="Editar título, prazo, turma ou questões">
                                             ✏️
                                         </button>
-                                        <button type="button" class="btn-icon-editorial" onclick="abrirModalDuplicarAvaliacao({{ a.id }}, '{{ a.titulo | e }}', {{ a.turma_id or 1 }})" title="Duplicar avaliação para outra turma">
+                                        <button type="button" class="btn-icon-editorial" data-titulo="{{ a.titulo | e }}" onclick="abrirModalDuplicarAvaliacao({{ a.id }}, this.getAttribute('data-titulo'), {{ a.turma_id or 1 }})" title="Duplicar avaliação para outra turma">
                                             📑
                                         </button>
-                                        <button type="button" class="btn-icon-editorial danger" onclick="excluirAvaliacao({{ a.id }}, '{{ a.titulo | e }}')" title="Excluir avaliação">
+                                        <button type="button" class="btn-icon-editorial danger" data-titulo="{{ a.titulo | e }}" onclick="excluirAvaliacao({{ a.id }}, this.getAttribute('data-titulo'))" title="Excluir avaliação">
                                             🗑️
                                         </button>
                                     </div>
@@ -1685,7 +1719,7 @@
                     </button>
                 </div>
 
-                <div style="display: flex; justify-content: space-between; align-items: center; margin: 1.2rem 0 0.8rem 0; flex-wrap: wrap; gap: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin: 1.2rem 0 0.6rem 0; flex-wrap: wrap; gap: 10px;">
                     <span style="font-weight: 700; font-size: 0.95rem;">2. Questões da Avaliação:</span>
                     <div style="display: flex; gap: 8px;">
                         <button type="button" id="btnGerarQuestoesModal" class="btn-action-editorial" onclick="gerarQuestoesModalIA()">
@@ -1696,6 +1730,13 @@
                             + Questão Manual
                         </button>
                     </div>
+                </div>
+
+                <div class="fle-char-toolbar" role="toolbar" aria-label="Inserir caractere francês no campo ativo" style="margin-bottom: 12px;">
+                    <span style="font-size: 0.72rem; font-weight: 700; color: #6B7280; margin-right: 4px;">Acentos FLE (questão ativa):</span>
+                    {% for ch_f in ['é','è','ê','ë','à','â','ç','ù','û','î','ï','ô','œ','«','»'] %}
+                    <button type="button" class="fle-char-btn" onmousedown="event.preventDefault()" onclick="inserirCharFrancesQuestaoModal('{{ ch_f }}')" lang="fr">{{ ch_f }}</button>
+                    {% endfor %}
                 </div>
 
                 <div id="containerQuestoesModal" style="display: flex; flex-direction: column; gap: 12px; min-height: 110px;">
@@ -1784,6 +1825,9 @@
                             <button type="button" id="btnPublicarTurmaExercicios" class="btn-action-editorial hidden" onclick="publicarExerciciosParaTurma()">
                                 <span>🚀 Publicar para os Alunos</span>
                             </button>
+                            <button type="button" id="btnAbrirNoEditorAvaliacao" class="docente-chip-btn hidden" onclick="abrirExerciciosCopilotoNoEditor()" title="Transferir exercícios para o editor completo para ajustar prazo, pontos e tipos">
+                                <span>🛠️ Abrir no Editor de Avaliação</span>
+                            </button>
                             <button type="button" id="btnSalvarExercicios" class="docente-chip-btn hidden" onclick="salvarExerciciosNoBanco()">
                                 <span>💾 Salvar no Banco Geral</span>
                             </button>
@@ -1829,8 +1873,8 @@
 
 <!-- 4. MODAL: CORREÇÃO RÁPIDA DE PROVA ORAL -->
 <div id="modalCorrecaoRapida" class="modal hidden">
-    <div class="modal-dialog" style="max-width: 620px;">
-        <div class="modal-content" style="display: flex; flex-direction: column;">
+    <div class="modal-dialog" style="max-width: 680px;">
+        <div class="modal-content" style="max-height: calc(100vh - 60px); display: flex; flex-direction: column;">
             <div class="modal-header">
                 <div>
                     <span class="badge-tipo-avaliacao badge-prova" style="margin-bottom: 4px;">⚡ Correção Rápida Oral</span>
@@ -1839,17 +1883,28 @@
                 </div>
                 <button class="btn-close-modal" onclick="fecharModalCorrecaoRapida()">&times;</button>
             </div>
-            <div style="padding: 20px 24px; display: flex; flex-direction: column; gap: 14px;">
+            <div style="padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; overflow-y: auto; flex: 1;">
                 <input type="hidden" id="cr_submissao_id" value="">
 
                 <div style="background: #F7F7F8; border: 1px solid #ECECEC; border-radius: 16px; padding: 12px 16px;">
-                    <div style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; color: #6B7280; margin-bottom: 4px;">Frase / Enunciado de Referência FLE</div>
-                    <div id="cr_texto_referencia" style="font-size: 0.92rem; font-weight: 700; color: #14213D; font-style: italic;">-</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px;">
+                        <span style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; color: #6B7280;">Frase / Enunciado de Referência FLE</span>
+                        <button type="button" id="btnOuvirRefCorrecaoRapida" class="docente-chip-btn" style="padding: 3px 10px; font-size: 0.74rem;" onclick="ouvirReferenciaCorrecaoRapidaTTS()" title="Ouvir modelo nativo em francês (fr-FR)">
+                            🔊 Ouvir Referência (fr-FR)
+                        </button>
+                    </div>
+                    <div id="cr_enunciado_questao" class="hidden" style="font-size: 0.82rem; color: #4B5563; margin-bottom: 4px;"></div>
+                    <div id="cr_texto_referencia" style="font-size: 0.94rem; font-weight: 700; color: #14213D; font-style: italic;">-</div>
                 </div>
 
                 <div style="background: #F7F7F8; border: 1px solid #ECECEC; border-radius: 16px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
                     <span style="font-size: 0.82rem; font-weight: 700; color: #374151;">🎧 Gravação do Aluno:</span>
                     <div id="cr_audio_container"></div>
+                </div>
+
+                <div id="cr_box_feedback_ia" class="cr-ia-box hidden">
+                    <div style="font-size: 0.74rem; font-weight: 800; text-transform: uppercase; color: #B45309; margin-bottom: 4px;">🤖 Análise Prévia da IA (Gemini)</div>
+                    <div id="cr_texto_feedback_ia" style="font-size: 0.84rem; line-height: 1.45; color: #1F2937;"></div>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 140px 1fr; gap: 12px; align-items: end;">
@@ -1871,6 +1926,22 @@
                 <div>
                     <label class="form-label" for="cr_feedback" style="font-weight: 700; font-size: 0.82rem; display: block; margin-bottom: 6px;">Feedback Pedagógico do Professor:</label>
                     <textarea id="cr_feedback" class="form-textarea" rows="3" style="width: 100%; box-sizing: border-box;" placeholder="Ex: Très bonne prononciation ! Attention à la liaison dans « les amis »..."></textarea>
+
+                    <div class="fle-char-toolbar" role="toolbar" aria-label="Caracteres franceses para feedback">
+                        <span style="font-size: 0.72rem; font-weight: 700; color: #6B7280; margin-right: 4px;">Acentos:</span>
+                        {% for ch_f in ['é','è','ê','ë','à','â','ç','ù','û','î','ï','ô','œ','«','»'] %}
+                        <button type="button" class="fle-char-btn" onmousedown="event.preventDefault()" onclick="inserirCharFrancesCorrecaoRapida('{{ ch_f }}')" lang="fr">{{ ch_f }}</button>
+                        {% endfor %}
+                    </div>
+
+                    <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 8px;" aria-label="Sugestões rápidas de parecer fonético FLE">
+                        <span style="font-size: 0.72rem; font-weight: 700; color: #6B7280;">Parecer rápido:</span>
+                        <button type="button" class="fle-feedback-chip" onclick="inserirChipCorrecaoRapida('Excelente articulação e ritmo natural em francês!')">+ Excelente articulação</button>
+                        <button type="button" class="fle-feedback-chip" onclick="inserirChipCorrecaoRapida('Atenção à liaison e ao encadeamento entre as palavras.')">+ Liaison / ritmo</button>
+                        <button type="button" class="fle-feedback-chip" onclick="inserirChipCorrecaoRapida('Pratique as vogais nasais (an/en/on/in) para maior precisão.')">+ Vogais nasais</button>
+                        <button type="button" class="fle-feedback-chip" onclick="inserirChipCorrecaoRapida('Dê atenção às vogais orais (/y/ vs /u/) e às consoantes finais silenciosas.')">+ Vogais [y]/[u]</button>
+                        <button type="button" class="fle-feedback-chip" onclick="inserirChipCorrecaoRapida('Revise a concordância gramatical (accord du participe / genre).')">+ Accord grammatical</button>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px;">
@@ -1960,6 +2031,23 @@
         if (drop) drop.classList.remove('open');
     }
 
+    function normalizarTextoAvaliacao(str) {
+        return String(str || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    }
+
+    function inserirCharNoElemento(el, ch) {
+        if (!el || !ch) return;
+        const start = typeof el.selectionStart === 'number' ? el.selectionStart : el.value.length;
+        const end = typeof el.selectionEnd === 'number' ? el.selectionEnd : el.value.length;
+        el.value = el.value.slice(0, start) + ch + el.value.slice(end);
+        el.focus();
+        if (typeof el.setSelectionRange === 'function') {
+            const pos = start + ch.length;
+            el.setSelectionRange(pos, pos);
+        }
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+
     function atualizarAutocompleteAvaliacoes(termo) {
         const drop = document.getElementById('autocompleteDropdownAvaliacoes');
         if (!drop) return;
@@ -1969,16 +2057,17 @@
             return;
         }
 
-        const q = termo.toLowerCase();
+        const q = normalizarTextoAvaliacao(termo);
         const linhas = Array.from(document.querySelectorAll('#corpoTabelaAvaliacoes .linha-avaliacao'));
         const matches = [];
 
         linhas.forEach(tr => {
             const id = tr.getAttribute('data-id') || '';
-            const titulo = tr.children[1] ? tr.children[1].textContent.trim() : '';
+            const tituloEl = tr.querySelector('.celula-titulo-avaliacao');
+            const titulo = tituloEl ? tituloEl.textContent.trim() : (tr.getAttribute('data-titulo-raw') || '');
             const tipo = tr.getAttribute('data-tipo') || '';
             const turma = tr.getAttribute('data-turma') || '';
-            if (titulo.toLowerCase().includes(q) || turma.toLowerCase().includes(q) || tipo.toLowerCase().includes(q)) {
+            if (normalizarTextoAvaliacao(titulo).includes(q) || normalizarTextoAvaliacao(turma).includes(q) || normalizarTextoAvaliacao(tipo).includes(q)) {
                 matches.push({ id, titulo, tipo, turma });
             }
         });
@@ -1990,7 +2079,7 @@
         }
 
         drop.innerHTML = matches.slice(0, 6).map(m => `
-            <div class="docente-ac-item" onclick="selecionarItemAutocompleteAvaliacao('${escapeHtml(m.titulo)}')">
+            <div class="docente-ac-item" data-titulo="${escapeHtml(m.titulo)}" onclick="selecionarItemAutocompleteAvaliacao(this.getAttribute('data-titulo'))">
                 <div>
                     <div class="docente-ac-title">${escapeHtml(m.titulo)}</div>
                     <div class="docente-ac-sub">${escapeHtml(m.turma)} • #${escapeHtml(m.id)}</div>
@@ -2071,11 +2160,34 @@
     /* =====================================================================
        PAGINAÇÃO & FILTRAGEM DINÂMICA DA TABELA DE AVALIAÇÕES
        ===================================================================== */
+    function filtrarPendentesOrais() {
+        const q = normalizarTextoAvaliacao(filtroBuscaAtual);
+        const linhas = Array.from(document.querySelectorAll('#tabelaPendentesOrais .linha-pendente-oral'));
+        let visiveis = 0;
+        linhas.forEach(tr => {
+            const aluno = normalizarTextoAvaliacao(tr.getAttribute('data-aluno') || '');
+            const av = normalizarTextoAvaliacao(tr.getAttribute('data-avaliacao') || '');
+            const enun = normalizarTextoAvaliacao(tr.getAttribute('data-enunciado') || '');
+            const ref = normalizarTextoAvaliacao(tr.getAttribute('data-referencia') || '');
+            const match = !q || aluno.includes(q) || av.includes(q) || enun.includes(q) || ref.includes(q);
+            tr.style.display = match ? '' : 'none';
+            if (match) visiveis++;
+        });
+        const badgePend = document.getElementById('badgePendentesOraisCount');
+        if (badgePend && linhas.length > 0) {
+            if (q) {
+                badgePend.textContent = `${visiveis} de ${linhas.length} pendência${linhas.length !== 1 ? 's' : ''}`;
+            } else {
+                badgePend.textContent = `${linhas.length} pendência${linhas.length !== 1 ? 's' : ''}`;
+            }
+        }
+    }
+
     function aplicarFiltrosAvaliacoes() {
         filtroTurmaAtual = (document.getElementById('filtroTurma')?.value || 'todas').trim();
         filtroTipoAtual = (document.getElementById('filtroTipo')?.value || 'todos').trim();
         filtroStatusPrazoAtual = (document.getElementById('filtroStatusPrazo')?.value || 'todos').trim();
-        filtroBuscaAtual = (document.getElementById('filtroBusca')?.value || '').trim().toLowerCase();
+        filtroBuscaAtual = (document.getElementById('filtroBusca')?.value || '').trim();
 
         document.querySelectorAll('#avaliacoesQuickChips [data-chip-tipo]').forEach(btn => {
             btn.classList.toggle('active', btn.getAttribute('data-chip-tipo') === filtroTipoAtual && filtroStatusPrazoAtual === 'todos');
@@ -2100,6 +2212,7 @@
             }
         }
 
+        filtrarPendentesOrais();
         paginaAtual = 1;
         renderizarTabelaPaginada();
     }
@@ -2108,13 +2221,16 @@
         const sTurma = document.getElementById('filtroTurma');
         const sTipo = document.getElementById('filtroTipo');
         const sPrazo = document.getElementById('filtroStatusPrazo');
+        const sOrd = document.getElementById('ordenacaoAvaliacoes');
         const sBusca = document.getElementById('filtroBusca');
         const btnClear = document.getElementById('btnLimparBuscaAvaliacoes');
         if (sTurma) sTurma.value = 'todas';
         if (sTipo) sTipo.value = 'todos';
         if (sPrazo) sPrazo.value = 'todos';
+        if (sOrd) sOrd.value = 'padrao';
         if (sBusca) sBusca.value = '';
         if (btnClear) btnClear.classList.remove('visible');
+        aplicarOrdenacaoDropdown();
         aplicarFiltrosAvaliacoes();
     }
 
@@ -2141,19 +2257,20 @@
 
     function obterLinhasFiltradas() {
         const todasLinhas = Array.from(document.querySelectorAll('#corpoTabelaAvaliacoes .linha-avaliacao'));
+        const qNorm = normalizarTextoAvaliacao(filtroBuscaAtual);
         return todasLinhas.filter(linha => {
             const tNome = linha.getAttribute('data-turma') || '';
-            const tTipo = (linha.getAttribute('data-tipo') || '').toLowerCase();
-            const tTitulo = (linha.getAttribute('data-titulo') || '').toLowerCase();
+            const tTipo = normalizarTextoAvaliacao(linha.getAttribute('data-tipo') || '');
+            const tTitulo = normalizarTextoAvaliacao(linha.getAttribute('data-titulo-raw') || linha.getAttribute('data-titulo') || '');
             const tStatusPrazo = (linha.getAttribute('data-status-prazo') || 'aberto').toLowerCase();
 
             const matchTurma = (filtroTurmaAtual === 'todas' || tNome.trim() === filtroTurmaAtual);
             let matchTipo = true;
             if (filtroTipoAtual !== 'todos') {
-                matchTipo = tTipo.includes(filtroTipoAtual.toLowerCase());
+                matchTipo = tTipo.includes(normalizarTextoAvaliacao(filtroTipoAtual));
             }
             const matchPrazo = (filtroStatusPrazoAtual === 'todos' || tStatusPrazo === filtroStatusPrazoAtual);
-            const matchBusca = (!filtroBuscaAtual || tTitulo.includes(filtroBuscaAtual) || tNome.toLowerCase().includes(filtroBuscaAtual));
+            const matchBusca = (!qNorm || tTitulo.includes(qNorm) || normalizarTextoAvaliacao(tNome).includes(qNorm) || tTipo.includes(qNorm));
 
             return matchTurma && matchTipo && matchPrazo && matchBusca;
         });
@@ -2206,17 +2323,38 @@
     });
 
     /* =====================================================================
-       ORDENAÇÃO DE COLUNAS NA TABELA DE AVALIAÇÕES
+       ORDENAÇÃO & CONTADORES DINÂMICOS DA TABELA DE AVALIAÇÕES
        ===================================================================== */
     let colunaOrdenacaoAtual = 'id';
     let direcaoOrdenacaoAsc = false;
+
+    function aplicarOrdenacaoDropdown() {
+        const val = document.getElementById('ordenacaoAvaliacoes')?.value || 'padrao';
+        if (val === 'padrao') {
+            colunaOrdenacaoAtual = 'id';
+            direcaoOrdenacaoAsc = true;
+            ordenarTabelaAvaliacoes('id');
+        } else if (val === 'prazo_asc') {
+            colunaOrdenacaoAtual = 'prazo';
+            direcaoOrdenacaoAsc = false;
+            ordenarTabelaAvaliacoes('prazo');
+        } else if (val === 'entregas_desc') {
+            colunaOrdenacaoAtual = 'engajamento';
+            direcaoOrdenacaoAsc = true;
+            ordenarTabelaAvaliacoes('engajamento');
+        } else if (val === 'acerto_asc') {
+            colunaOrdenacaoAtual = 'acerto';
+            direcaoOrdenacaoAsc = false;
+            ordenarTabelaAvaliacoes('acerto');
+        }
+    }
 
     function ordenarTabelaAvaliacoes(coluna) {
         if (colunaOrdenacaoAtual === coluna) {
             direcaoOrdenacaoAsc = !direcaoOrdenacaoAsc;
         } else {
             colunaOrdenacaoAtual = coluna;
-            direcaoOrdenacaoAsc = (coluna === 'titulo' || coluna === 'turma');
+            direcaoOrdenacaoAsc = (coluna === 'titulo' || coluna === 'turma' || coluna === 'prazo' || coluna === 'acerto');
         }
 
         ['id', 'titulo', 'turma', 'engajamento', 'prazo'].forEach(c => {
@@ -2238,15 +2376,18 @@
             } else if (coluna === 'engajamento') {
                 va = parseInt(a.getAttribute('data-engajamento') || '0', 10);
                 vb = parseInt(b.getAttribute('data-engajamento') || '0', 10);
+            } else if (coluna === 'acerto') {
+                va = parseFloat(a.getAttribute('data-acerto') || '999');
+                vb = parseFloat(b.getAttribute('data-acerto') || '999');
             } else if (coluna === 'titulo') {
-                va = (a.getAttribute('data-titulo') || '').toLowerCase();
-                vb = (b.getAttribute('data-titulo') || '').toLowerCase();
+                va = normalizarTextoAvaliacao(a.getAttribute('data-titulo') || '');
+                vb = normalizarTextoAvaliacao(b.getAttribute('data-titulo') || '');
             } else if (coluna === 'turma') {
-                va = (a.getAttribute('data-turma') || '').toLowerCase();
-                vb = (b.getAttribute('data-turma') || '').toLowerCase();
+                va = normalizarTextoAvaliacao(a.getAttribute('data-turma') || '');
+                vb = normalizarTextoAvaliacao(b.getAttribute('data-turma') || '');
             } else if (coluna === 'prazo') {
-                va = a.getAttribute('data-prazo') || '';
-                vb = b.getAttribute('data-prazo') || '';
+                va = a.getAttribute('data-prazo') || '9999-12-31';
+                vb = b.getAttribute('data-prazo') || '9999-12-31';
             }
             if (va < vb) return direcaoOrdenacaoAsc ? -1 : 1;
             if (va > vb) return direcaoOrdenacaoAsc ? 1 : -1;
@@ -2256,6 +2397,63 @@
         linhas.forEach(tr => tbody.appendChild(tr));
         paginaAtual = 1;
         renderizarTabelaPaginada();
+    }
+
+    function atualizarContadoresAvaliacoesDOM() {
+        const linhasAv = Array.from(document.querySelectorAll('#corpoTabelaAvaliacoes .linha-avaliacao'));
+        let provas = 0, exercicios = 0, testes = 0, abertas = 0, encerradas = 0;
+        linhasAv.forEach(tr => {
+            const t = normalizarTextoAvaliacao(tr.getAttribute('data-tipo') || '');
+            if (t.includes('prova')) provas++;
+            else if (t.includes('exerc')) exercicios++;
+            else if (t.includes('teste')) testes++;
+            const st = (tr.getAttribute('data-status-prazo') || 'aberto').toLowerCase();
+            if (st === 'encerrado') encerradas++; else abertas++;
+        });
+        const total = linhasAv.length;
+        const elKpiTotal = document.getElementById('kpiTotalAvaliacoes');
+        const elKpiPT = document.getElementById('kpiProvasTestes');
+        const elKpiPTSub = document.getElementById('kpiProvasTestesSub');
+        const elKpiEx = document.getElementById('kpiListasExercicios');
+        const elBadgeTab = document.getElementById('badgeTotalAvaliacoesTabela');
+        if (elKpiTotal) elKpiTotal.textContent = total;
+        if (elKpiPT) elKpiPT.textContent = provas + testes;
+        if (elKpiPTSub) elKpiPTSub.textContent = `${provas} provas • ${testes} testes`;
+        if (elKpiEx) elKpiEx.textContent = exercicios;
+        if (elBadgeTab) elBadgeTab.textContent = `${total} ${total === 1 ? 'avaliação' : 'avaliações'}`;
+
+        const cTodas = document.getElementById('chipTodasAvaliacoes');
+        const cProvas = document.getElementById('chipProvasAvaliacoes');
+        const cEx = document.getElementById('chipExerciciosAvaliacoes');
+        const cTestes = document.getElementById('chipTestesAvaliacoes');
+        const cAbertas = document.getElementById('chipAbertasAvaliacoes');
+        const cEnc = document.getElementById('chipEncerradasAvaliacoes');
+        if (cTodas) cTodas.textContent = `Todas (${total})`;
+        if (cProvas) cProvas.textContent = `Provas (${provas})`;
+        if (cEx) cEx.textContent = `Exercícios (${exercicios})`;
+        if (cTestes) cTestes.textContent = `Testes (${testes})`;
+        if (cAbertas) cAbertas.textContent = `🟢 Em aberto (${abertas})`;
+        if (cEnc) cEnc.textContent = `🔴 Encerradas (${encerradas})`;
+
+        const linhasPend = Array.from(document.querySelectorAll('#tabelaPendentesOrais .linha-pendente-oral'));
+        const qtdPend = linhasPend.length;
+        const elKpiPend = document.getElementById('kpiRevisoesOrais');
+        const elKpiPendTrend = document.getElementById('kpiRevisoesOraisTrend');
+        const elBadgePend = document.getElementById('badgePendentesOraisCount');
+        const elChipPend = document.getElementById('chipRevisoesManuais');
+        const tabPend = document.getElementById('tabelaPendentesOrais');
+        const emptyPend = document.getElementById('emptyPendentesOraisMsg');
+        if (elKpiPend) elKpiPend.textContent = qtdPend;
+        if (elKpiPendTrend) {
+            elKpiPendTrend.textContent = qtdPend > 0 ? 'Pendentes !' : 'Em dia ✓';
+            elKpiPendTrend.style.color = qtdPend > 0 ? '#E11D48' : '#16A34A';
+        }
+        if (elBadgePend) elBadgePend.textContent = `${qtdPend} pendência${qtdPend !== 1 ? 's' : ''}`;
+        if (elChipPend) elChipPend.textContent = `⏳ Revisão Manual (${qtdPend})`;
+        if (qtdPend === 0) {
+            if (tabPend) tabPend.classList.add('hidden');
+            if (emptyPend) emptyPend.classList.remove('hidden');
+        }
     }
 
     /* =====================================================================
@@ -2305,9 +2503,10 @@
                 opcoes: q.opcoes || [],
                 resposta_correta: q.resposta_correta || '',
                 texto_referencia: q.texto_referencia || '',
-                pontuacao_maxima: 2.5
+                pontuacao_maxima: (q.pontuacao_maxima !== undefined && q.pontuacao_maxima !== null && !isNaN(parseFloat(q.pontuacao_maxima)))
+                    ? parseFloat(q.pontuacao_maxima)
+                    : 2.5
             }));
-            distribuirPontosIgualmente(10.0, false);
             renderizarQuestoesModal();
 
             const btnSalvar = document.getElementById('btnSalvarNovaAvaliacao');
@@ -2613,12 +2812,31 @@
         atualizarControlesPontuacao();
     }
 
-    function ouvirPronunciaFrancesTTS(idx) {
-        const q = questoesNovaAvaliacao[idx];
-        if (!q) return;
-        const texto = (q.texto_referencia || q.enunciado || '').trim();
-        if (!texto) {
-            mostrarToast('Digite primeiro a frase em francês para ouvir a pronúncia.', 'erro');
+    let ultimoInputQuestaoFocado = null;
+    document.addEventListener('focusin', function(e) {
+        const modalNA = document.getElementById('modalNovaAvaliacao');
+        if (modalNA && modalNA.contains(e.target) && (e.target.tagName === 'TEXTAREA' || (e.target.tagName === 'INPUT' && e.target.type === 'text'))) {
+            ultimoInputQuestaoFocado = e.target;
+        }
+    });
+
+    function inserirCharFrancesQuestaoModal(ch) {
+        let alvo = ultimoInputQuestaoFocado;
+        if (!alvo || !document.body.contains(alvo)) {
+            alvo = document.querySelector('#containerQuestoesModal textarea.exercise-editable-textarea') || document.getElementById('na_titulo');
+        }
+        inserirCharNoElemento(alvo, ch);
+    }
+
+    function reproduzirAudioFrancesLocal(texto) {
+        const limpo = String(texto || '').trim();
+        if (!limpo) {
+            mostrarToast('Digite ou selecione primeiro uma frase em francês para ouvir a pronúncia.', 'erro');
+            return;
+        }
+        if (typeof falarTextoFrancesBase === 'function') {
+            falarTextoFrancesBase(limpo);
+            mostrarToast('🔊 Reproduzindo pronúncia em francês (fr-FR)...', 'info');
             return;
         }
         if (!('speechSynthesis' in window)) {
@@ -2626,7 +2844,7 @@
             return;
         }
         window.speechSynthesis.cancel();
-        const utter = new SpeechSynthesisUtterance(texto);
+        const utter = new SpeechSynthesisUtterance(limpo);
         utter.lang = 'fr-FR';
         utter.rate = 0.92;
         const vozes = window.speechSynthesis.getVoices() || [];
@@ -2634,6 +2852,13 @@
         if (vozFr) utter.voice = vozFr;
         window.speechSynthesis.speak(utter);
         mostrarToast('🔊 Reproduzindo pronúncia em francês (fr-FR)...', 'info');
+    }
+
+    function ouvirPronunciaFrancesTTS(idx) {
+        const q = questoesNovaAvaliacao[idx];
+        if (!q) return;
+        const texto = (q.texto_referencia || q.enunciado || '').trim();
+        reproduzirAudioFrancesLocal(texto);
     }
 
     async function salvarNovaAvaliacaoFinal() {
@@ -2785,6 +3010,7 @@
             if (resp.ok && data.status === "sucesso") {
                 const tr = document.getElementById(`linhaAvaliacao-${avaliacaoId}`);
                 if (tr) tr.remove();
+                atualizarContadoresAvaliacoesDOM();
                 renderizarTabelaPaginada();
                 mostrarToast(`Avaliação "${titulo}" excluída com sucesso.`, "sucesso");
             } else {
@@ -2799,6 +3025,63 @@
     /* =====================================================================
        MODAL DE CORREÇÃO RÁPIDA (PROVAS ORAIS)
        ===================================================================== */
+    let referenciaAtualCorrecaoRapida = '';
+
+    function preencherFeedbackIAeReferenciaCorrecaoRapida(enunciado, referencia, feedbackIa, fallbackRefLabel) {
+        const elEnun = document.getElementById('cr_enunciado_questao');
+        const elRef = document.getElementById('cr_texto_referencia');
+        const elBoxIa = document.getElementById('cr_box_feedback_ia');
+        const elTxtIa = document.getElementById('cr_texto_feedback_ia');
+        const btnOuvir = document.getElementById('btnOuvirRefCorrecaoRapida');
+
+        referenciaAtualCorrecaoRapida = (referencia || enunciado || '').trim();
+        if (btnOuvir) {
+            btnOuvir.disabled = !referenciaAtualCorrecaoRapida;
+        }
+        if (elEnun) {
+            if (enunciado && referencia && enunciado.trim() !== referencia.trim()) {
+                elEnun.textContent = enunciado;
+                elEnun.classList.remove('hidden');
+            } else {
+                elEnun.textContent = '';
+                elEnun.classList.add('hidden');
+            }
+        }
+        if (elRef) {
+            elRef.textContent = referencia ? `« ${referencia} »` : (fallbackRefLabel || enunciado || 'Expressão Oral FLE');
+        }
+        if (elBoxIa && elTxtIa) {
+            if (feedbackIa && feedbackIa.trim() && !feedbackIa.includes('Aguardando Revisão')) {
+                elTxtIa.textContent = feedbackIa;
+                elBoxIa.classList.remove('hidden');
+            } else {
+                elTxtIa.textContent = '';
+                elBoxIa.classList.add('hidden');
+            }
+        }
+    }
+
+    function ouvirReferenciaCorrecaoRapidaTTS() {
+        reproduzirAudioFrancesLocal(referenciaAtualCorrecaoRapida);
+    }
+
+    function inserirCharFrancesCorrecaoRapida(ch) {
+        const ta = document.getElementById('cr_feedback');
+        inserirCharNoElemento(ta, ch);
+    }
+
+    function inserirChipCorrecaoRapida(texto) {
+        const ta = document.getElementById('cr_feedback');
+        if (!ta || !texto) return;
+        const atual = ta.value.trim();
+        if (!atual) {
+            ta.value = texto;
+        } else if (!atual.includes(texto)) {
+            ta.value = `${atual} ${texto}`;
+        }
+        ta.focus();
+    }
+
     function abrirModalCorrecaoRapida(btn) {
         const subId = btn.getAttribute('data-sub-id');
         const aluno = btn.getAttribute('data-aluno') || 'Aluno';
@@ -2811,9 +3094,11 @@
         document.getElementById('cr_submissao_id').value = subId;
         document.getElementById('cr_titulo_aluno').textContent = `Aluno: ${aluno}`;
         document.getElementById('cr_subtitulo_avaliacao').textContent = avaliacao;
-        document.getElementById('cr_texto_referencia').textContent = referencia ? `« ${referencia} »` : (enunciado || 'Expressão Oral FLE');
+        preencherFeedbackIAeReferenciaCorrecaoRapida(enunciado, referencia, feedbackIa, '');
         document.getElementById('cr_nota').value = '8.5';
-        document.getElementById('cr_feedback').value = feedbackIa && !feedbackIa.includes('Aguardando') ? feedbackIa : 'Très bonne prononciation et bon rythme en français !';
+        document.getElementById('cr_feedback').value = (feedbackIa && !feedbackIa.includes('Aguardando'))
+            ? feedbackIa
+            : 'Très bonne prononciation et bon rythme en français !';
 
         const audioContainer = document.getElementById('cr_audio_container');
         if (audioContainer) {
@@ -2835,7 +3120,8 @@
         const m = document.getElementById('modalCorrecaoRapida');
         if (m) {
             m.classList.add('hidden');
-            document.body.style.overflow = '';
+            const mRes = document.getElementById('modalResultadosProva');
+            document.body.style.overflow = (mRes && !mRes.classList.contains('hidden')) ? 'hidden' : '';
         }
     }
 
@@ -2875,6 +3161,7 @@
                 fecharModalCorrecaoRapida();
                 const tr = document.getElementById(`linhaPendenteOral-${subId}`);
                 if (tr) tr.remove();
+                atualizarContadoresAvaliacoesDOM();
                 const mRes = document.getElementById('modalResultadosProva');
                 if (mRes && !mRes.classList.contains('hidden') && resultadosProvaAtual.id) {
                     verResultadosProva(resultadosProvaAtual.id, resultadosProvaAtual.titulo);
@@ -2996,6 +3283,7 @@
                     `;
                 }
                 mostrarToast(`Prazo prorrogado por +${dias} dias (${data.nova_data_br})!`, "sucesso");
+                atualizarContadoresAvaliacoesDOM();
                 aplicarFiltrosAvaliacoes();
             } else {
                 mostrarToast(data.mensagem || "Erro ao prorrogar prazo.", "erro");
@@ -3176,9 +3464,10 @@
         document.getElementById('cr_submissao_id').value = s.submissao_id || s.id;
         document.getElementById('cr_titulo_aluno').textContent = `Aluno: ${s.aluno_nome}`;
         document.getElementById('cr_subtitulo_avaliacao').textContent = `${resultadosProvaAtual.titulo} • ${s.tipo_questao || 'Questão'}`;
-        document.getElementById('cr_texto_referencia').textContent = s.texto_referencia
+        const fallbackLabel = s.texto_referencia
             ? `${s.enunciado || ''} — Ref: « ${s.texto_referencia} »`
             : `${s.enunciado || 'Questão FLE'} (Resposta do aluno: « ${s.resposta_aluno || '-'} »)`;
+        preencherFeedbackIAeReferenciaCorrecaoRapida(s.enunciado || '', s.texto_referencia || '', s.feedback_ia || '', fallbackLabel);
         document.getElementById('cr_nota').value = (s.nota_professor !== null && s.nota_professor !== undefined)
             ? Number(s.nota_professor).toFixed(1)
             : (s.status_resposta === 'Correto' ? '10.0' : '6.0');
@@ -3244,7 +3533,7 @@
                                 <div style="display: inline-flex; align-items: center; gap: 6px; background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 999px; padding: 3px 6px 3px 10px; font-size: 0.76rem;">
                                     <span style="font-weight: 700; color: #14213D;">${escapeHtml(al.nome_completo)}</span>
                                     <span style="color: #6B7280;">(${escapeHtml(al.nivel_cefr || 'A1')})</span>
-                                    <button type="button" class="btn-icon-editorial" style="padding: 2px 8px !important; font-size: 0.7rem !important;" onclick="enviarLembreteAvaliacaoAluno(${al.id}, '${escapeHtml(al.nome_completo)}', this)">
+                                    <button type="button" class="btn-icon-editorial" style="padding: 2px 8px !important; font-size: 0.7rem !important;" data-aluno-nome="${escapeHtml(al.nome_completo)}" onclick="enviarLembreteAvaliacaoAluno(${al.id}, this.getAttribute('data-aluno-nome'), this)">
                                         📩 Lembrar
                                     </button>
                                 </div>
@@ -3368,10 +3657,10 @@
     }
 
     function filtrarResultadosProvaModal() {
-        const q = (document.getElementById('buscaAlunoResultadosModal')?.value || '').trim().toLowerCase();
+        const q = normalizarTextoAvaliacao(document.getElementById('buscaAlunoResultadosModal')?.value || '').trim();
         const st = document.getElementById('filtroStatusResultadosModal')?.value || 'todos';
         document.querySelectorAll('#tabelaSubmissoesModal .linha-resultado-modal').forEach(tr => {
-            const b = tr.getAttribute('data-busca') || '';
+            const b = normalizarTextoAvaliacao(tr.getAttribute('data-busca') || '');
             const s = tr.getAttribute('data-status') || '';
             const matchQ = !q || b.includes(q);
             const matchSt = (st === 'todos') || s.includes(st);
@@ -3453,6 +3742,7 @@
         const listaCards = document.getElementById("listaCardsExercicios");
         const btnSalvar = document.getElementById("btnSalvarExercicios");
         const btnPublicar = document.getElementById("btnPublicarTurmaExercicios");
+        const btnEditor = document.getElementById("btnAbrirNoEditorAvaliacao");
         const countBadge = document.getElementById("previewCountBadge");
 
         const tema = temaSelect ? temaSelect.value : "";
@@ -3504,6 +3794,7 @@
 
                 if (btnSalvar) btnSalvar.classList.remove("hidden");
                 if (btnPublicar) btnPublicar.classList.remove("hidden");
+                if (btnEditor) btnEditor.classList.remove("hidden");
 
                 mostrarToast(`${data.exercicios.length} exercícios gerados com sucesso pelo Gemini!`, "sucesso");
             } else {
@@ -3519,6 +3810,54 @@
         }
     }
 
+    function abrirExerciciosCopilotoNoEditor() {
+        const textareas = document.querySelectorAll("#listaCardsExercicios .exercise-editable-textarea");
+        const enunciados = [];
+        textareas.forEach(t => {
+            const val = t.value.trim();
+            if (val) enunciados.push(val);
+        });
+        if (enunciados.length === 0) {
+            mostrarToast("Gere e mantenha pelo menos um exercício antes de abrir no editor.", "erro");
+            return;
+        }
+        const copTemaSel = document.getElementById("copiloto_tema");
+        const copTemaNome = copTemaSel && copTemaSel.selectedIndex >= 0
+            ? (copTemaSel.options[copTemaSel.selectedIndex].getAttribute("data-nome") || copTemaSel.options[copTemaSel.selectedIndex].text || "Grammaire")
+            : "Grammaire";
+        const copNivel = document.getElementById("copiloto_nivel")?.value || "A2";
+        const copTurmaId = document.getElementById("copiloto_turma")?.value || "";
+
+        fecharModalCopiloto();
+        abrirModalNovaAvaliacao();
+        selecionarTipoAvaliacao("Exercícios");
+
+        const naTema = document.getElementById("na_tema");
+        if (naTema) {
+            const matchOpt = Array.from(naTema.options).find(o => o.value === copTemaNome);
+            if (matchOpt) {
+                naTema.value = copTemaNome;
+                aoMudarTemaModal();
+            }
+        }
+        const naNivel = document.getElementById("na_nivel");
+        if (naNivel) naNivel.value = copNivel;
+        const naTurma = document.getElementById("na_turma_id");
+        if (naTurma && copTurmaId) naTurma.value = copTurmaId;
+        const naTitulo = document.getElementById("na_titulo");
+        if (naTitulo) naTitulo.value = `Exercícios: ${copTemaNome}`;
+
+        questoesNovaAvaliacao = enunciados.map(en => ({
+            tipo_questao: "exercicio",
+            enunciado: en,
+            texto_referencia: "",
+            pontuacao_maxima: 2.5
+        }));
+        distribuirPontosIgualmente(10.0, false);
+        renderizarQuestoesModal();
+        mostrarToast(`${questoesNovaAvaliacao.length} exercício(s) transferido(s) para o Editor de Avaliação!`, "sucesso");
+    }
+
     function removerExercicioPreview(btn) {
         const card = btn.closest(".exercise-editable-item");
         if (card) {
@@ -3527,6 +3866,7 @@
             const countBadge = document.getElementById("previewCountBadge");
             const btnSalvar = document.getElementById("btnSalvarExercicios");
             const btnPublicar = document.getElementById("btnPublicarTurmaExercicios");
+            const btnEditor = document.getElementById("btnAbrirNoEditorAvaliacao");
             const items = listaCards ? listaCards.querySelectorAll(".exercise-editable-item") : [];
 
             if (countBadge) {
@@ -3536,6 +3876,7 @@
             if (items.length === 0) {
                 if (btnSalvar) btnSalvar.classList.add("hidden");
                 if (btnPublicar) btnPublicar.classList.add("hidden");
+                if (btnEditor) btnEditor.classList.add("hidden");
             }
         }
     }
