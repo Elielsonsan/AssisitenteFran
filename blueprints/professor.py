@@ -879,15 +879,21 @@ def api_editar_aluno(aluno_id):
 @professor_bp.route("/api/alunos/<int:aluno_id>/excluir", methods=["POST", "DELETE"])
 @login_required_prof
 def api_excluir_aluno(aluno_id):
-    """Exclui o aluno e suas submissões/reforços associados."""
+    """Exclui o aluno e seus registros acadêmicos vinculados (submissões, reforços, presenças e fórum)."""
     try:
         conn = get_db()
         cursor = conn.cursor()
         cursor.execute("DELETE FROM submissoes WHERE aluno_id = ?;", (aluno_id,))
-        try:
-            cursor.execute("DELETE FROM reforcos_individuais WHERE aluno_id = ?;", (aluno_id,))
-        except Exception:
-            pass
+        for tbl_sql in (
+            "DELETE FROM reforcos_individuais WHERE aluno_id = ?;",
+            "DELETE FROM presencas_aula WHERE aluno_id = ?;",
+            "DELETE FROM forum_mensagens WHERE autor_tipo = 'Aluno' AND autor_id = ?;",
+            "DELETE FROM forum_topicos WHERE criador_tipo = 'Aluno' AND autor_aluno_id = ?;",
+        ):
+            try:
+                cursor.execute(tbl_sql, (aluno_id,))
+            except Exception:
+                pass
         cursor.execute("DELETE FROM alunos WHERE id = ?;", (aluno_id,))
         conn.commit()
         conn.close()
@@ -1566,11 +1572,15 @@ def api_cadastrar_plano():
 @professor_bp.route("/api/planos-aula/gerar-ia", methods=["POST"])
 @login_required_prof
 def api_gerar_plano_ia():
-    dados = request.get_json() if request.is_json else request.form
-    tema = dados.get("tema", "").strip()
-    nivel = dados.get("nivel", "A2").strip().upper()
-    duracao = dados.get("duracao", "50 min").strip()
-    foco = dados.get("foco", "").strip()
+    dados = (request.get_json(silent=True) or {}) if request.is_json else request.form
+    tema = (dados.get("tema") or "").strip()
+    nivel = (dados.get("nivel") or "A2").strip().upper()
+    duracao = (dados.get("duracao") or "50 min").strip()
+    foco = (dados.get("foco") or "").strip()
+    turma_raw = dados.get("turma_id")
+    turma_id = int(turma_raw) if turma_raw is not None and str(turma_raw).strip().isdigit() else None
+    aula_raw = dados.get("aula_numero")
+    apenas_rascunho = str(dados.get("apenas_rascunho") or "").strip().lower() in ("1", "true", "sim", "yes") or (dados.get("apenas_rascunho") is True)
 
     if not tema:
         return jsonify({"status": "erro", "mensagem": "Informe o tema da aula para a IA."}), 400
@@ -1637,19 +1647,36 @@ Retorne EXATAMENTE um JSON válido com a estrutura abaixo (sem texto fora do JSO
             "reforco": "Prática de exercícios adicionais e escuta atenta dos áudios de referência no Assistente Fran."
         }
 
-    # Salva automaticamente como novo plano
+    if apenas_rascunho:
+        return jsonify({
+            "status": "sucesso",
+            "apenas_rascunho": True,
+            "mensagem": f"Estrutura P.P.P. para '{tema}' preenchida pela IA! Revise os campos antes de salvar.",
+            "plano": plano_gerado
+        })
+
     conn = get_db()
     cursor = conn.cursor()
+    if aula_raw is not None and str(aula_raw).strip().isdigit() and int(aula_raw) > 0:
+        aula_numero_val = int(aula_raw)
+    else:
+        cursor.execute(
+            "SELECT COALESCE(MAX(aula_numero), 0) FROM planos_aula WHERE nivel = ? AND aula_numero < 90",
+            (nivel,)
+        )
+        max_num = cursor.fetchone()[0] or 0
+        aula_numero_val = int(max_num) + 1
+
     cursor.execute("""
         INSERT INTO planos_aula (
             aula_numero, tema, nivel, duracao, objetivos, habilidades,
             conteudos, metodologia, recursos, etapa_aquecimento,
             etapa_apresentacao, etapa_pratica, etapa_producao,
             etapa_fechamento, avaliacao_formativa, avaliacao_somativa,
-            dever_casa, reforco, criador_id
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            dever_casa, reforco, turma_id, criador_id
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (
-        99,
+        aula_numero_val,
         plano_gerado.get("tema", tema),
         plano_gerado.get("nivel", nivel),
         plano_gerado.get("duracao", duracao),
@@ -1667,6 +1694,7 @@ Retorne EXATAMENTE um JSON válido com a estrutura abaixo (sem texto fora do JSO
         plano_gerado.get("avaliacao_somativa", ""),
         plano_gerado.get("dever_casa", ""),
         plano_gerado.get("reforco", ""),
+        turma_id,
         session.get("prof_id", 1)
     ))
     plano_id = cursor.lastrowid
@@ -1674,6 +1702,8 @@ Retorne EXATAMENTE um JSON válido com a estrutura abaixo (sem texto fora do JSO
     conn.close()
 
     plano_gerado["id"] = plano_id
+    plano_gerado["aula_numero"] = aula_numero_val
+    plano_gerado["turma_id"] = turma_id
     return jsonify({
         "status": "sucesso",
         "mensagem": f"Plano de aula '{tema}' gerado com sucesso pela IA e salvo no catálogo!",
@@ -1773,6 +1803,10 @@ def api_excluir_plano(plano_id):
         conn.close()
         return jsonify({"status": "erro", "mensagem": "Plano não encontrado."}), 404
 
+    try:
+        cursor.execute("DELETE FROM presencas_aula WHERE plano_id = ?", (plano_id,))
+    except Exception:
+        pass
     cursor.execute("DELETE FROM planos_aula WHERE id = ?", (plano_id,))
     conn.commit()
     conn.close()

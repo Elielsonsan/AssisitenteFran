@@ -764,6 +764,61 @@
     border-color: #FCA311;
     color: #000000;
 }
+
+.btn-topic-prof-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    border: 1px solid #E2E8F0;
+    background: #F8FAFC;
+    color: #14213D;
+    font-size: 0.76rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.16s ease;
+}
+
+.btn-topic-prof-action:hover {
+    background: #18191E;
+    border-color: #18191E;
+    color: #FCA311;
+}
+
+.btn-topic-prof-action.danger:hover {
+    background: #E11D48;
+    border-color: #E11D48;
+    color: #FFFFFF;
+}
+
+.btn-del-msg-forum {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 8px;
+    border-radius: 9999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    background: #F3F4F6;
+    color: #6B7280;
+    border: 1px solid #E5E7EB;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btn-del-msg-forum:hover {
+    background: #E11D48;
+    border-color: #E11D48;
+    color: #FFFFFF;
+}
+
+[data-theme="dark"] .btn-topic-prof-action,
+[data-theme="dark"] .btn-del-msg-forum {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.14);
+    color: #F8FAFC;
+}
 </style>
 {% endblock %}
 
@@ -850,9 +905,21 @@
                 </div>
                 <div class="topic-actions-bar">
                     <span class="topic-subtitle-italic" style="font-size: 0.85rem;">Tutoria Socrática Ativa</span>
+                    {% if is_prof %}
+                    <button type="button" id="btnAcionarFranTopico" class="btn-topic-prof-action" onclick="solicitarIntervencaoIAForum()" title="Gerar intervenção socrática da Assistente Fran nesta discussão">
+                        🤖 Acionar Tutora Fran (IA)
+                    </button>
+                    <button type="button" class="btn-topic-prof-action" onclick="abrirModalEditarTopicoAtual()" title="Editar título, descrição, categoria ou turma">
+                        ✏️ Editar Tópico
+                    </button>
+                    <button type="button" class="btn-topic-prof-action danger" onclick="excluirTopicoAtualForum()" title="Excluir tópico do fórum">
+                        🗑️ Excluir Tópico
+                    </button>
+                    {% else %}
                     <a href="/pratica?tema={{ topico['titulo'] | urlencode }}" class="btn-praticar-topico">
                         ⚡ Praticar este Tema &rarr;
                     </a>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -892,6 +959,9 @@
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
                             <span>Ouvir</span>
                         </button>
+                        {% if is_prof %}
+                        <button type="button" class="btn-del-msg-forum" onclick="excluirMensagemForum({{ msg['id'] }}, this)" title="Remover esta mensagem da discussão" aria-label="Excluir mensagem">🗑️</button>
+                        {% endif %}
                         <span class="msg-time">{{ msg['data_envio'][11:16] }}</span>
                     </div>
                 </div>
@@ -921,12 +991,19 @@
                 </label>
                 <textarea id="conteudo" class="form-input" rows="3" placeholder="Escreva sua mensagem em francês ou português. A Assistente Fran poderá dar feedbacks pedagógicos!" required style="resize: vertical;"></textarea>
 
-                <!-- Pílulas de Conectores Lógicos & Expressões de Debate em Francês -->
+                <!-- Pílulas de Conectores Lógicos & Mediação Docente em Francês -->
                 <div class="forum-connecteurs-bar" role="group" aria-label="Conectores lógicos e expressões em francês">
+                    {% if is_prof %}
+                    <span class="forum-connecteurs-label">🎓 Mediação Docente FLE:</span>
+                    {% for expr in ['Excellente réflexion ! ', "Attention à l'accord : ", 'Qui peut donner un exemple ? ', 'Observez la règle : ', 'À mon avis, ', 'Par exemple, '] %}
+                    <button type="button" class="connecteur-pill" data-expr="{{ expr|e }}" onclick="inserirConectorForum(this)" lang="fr">{{ expr|trim }}</button>
+                    {% endfor %}
+                    {% else %}
                     <span class="forum-connecteurs-label">💡 Connecteurs FLE:</span>
                     {% for expr in ['À mon avis, ', 'Je pense que ', "Je suis d'accord parce que ", 'Cependant, ', 'Par exemple, ', "J'ai une question sur ", 'En conclusion, '] %}
                     <button type="button" class="connecteur-pill" data-expr="{{ expr|e }}" onclick="inserirConectorForum(this)" lang="fr">{{ expr|trim }}</button>
                     {% endfor %}
+                    {% endif %}
                 </div>
 
                 <!-- Barra de Caracteres Especiais Franceses & Voz -->
@@ -994,6 +1071,51 @@
         </form>
     </div>
 </div>
+{% if is_prof %}
+<div id="modalEditarTopicoDetalhe" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalEditarTopicoDetalheTitulo">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content" style="border-radius: 26px; padding: 1.5rem; background: #FFFFFF;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid #ECECEC; padding-bottom: 0.75rem;">
+                <h3 id="modalEditarTopicoDetalheTitulo" style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #14213D;">✏️ Editar Tópico do Fórum</h3>
+                <button type="button" class="btn-close-modal" onclick="fecharModalEditarTopicoAtual()">&times;</button>
+            </div>
+            <form onsubmit="salvarEdicaoTopicoAtual(event)">
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label class="form-label" for="editTopicoDetTitulo">Título *</label>
+                    <input type="text" id="editTopicoDetTitulo" class="form-input" value="{{ topico['titulo']|e }}" required>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; margin-bottom: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label" for="editTopicoDetTurma">Turma / Escopo</label>
+                        <select id="editTopicoDetTurma" class="form-input">
+                            <option value="geral" {% if not topico['turma_id'] %}selected{% endif %}>🌐 Fórum Geral</option>
+                            {% for t in turmas %}
+                            <option value="{{ t.id }}" {% if topico['turma_id'] == t.id %}selected{% endif %}>👥 {{ t.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="editTopicoDetCategoria">Categoria</label>
+                        <select id="editTopicoDetCategoria" class="form-input">
+                            {% for ck, cl in [('geral','💬 Conversação'),('gramatica','📖 Gramática'),('vocabulario','📝 Vocabulário'),('dicas','💡 Fonética & Dicas'),('duvidas','❓ Dúvidas'),('cultura','🎬 Cultura & Mídia'),('debate','🗣️ Debate B2')] %}
+                            <option value="{{ ck }}" {% if topico['categoria'] == ck %}selected{% endif %}>{{ cl }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom: 1.25rem;">
+                    <label class="form-label" for="editTopicoDetDescricao">Contexto / Descrição</label>
+                    <textarea id="editTopicoDetDescricao" class="form-input" rows="4" required>{{ topico['descricao'] or '' }}</textarea>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                    <button type="button" class="btn btn-secondary" onclick="fecharModalEditarTopicoAtual()" style="border-radius: 999px; padding: 8px 16px;">Cancelar</button>
+                    <button type="submit" id="btnSalvarEdicaoTopicoDet" class="btn-enviar-msg">💾 Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
 {% endblock %}
 
 {% block extra_js %}
@@ -1030,6 +1152,7 @@
 
     let ultimoMsgId = {{ mensagens[-1]['id'] if mensagens and mensagens[-1]['id'] else 0 }};
     let totalMensagensAtual = {{ mensagens|length }};
+    const IS_PROF_FORUM = {{ 'true' if is_prof else 'false' }};
     let isMajForum = false;
     let recognitionForum = null;
     let ditandoForum = false;
@@ -1242,6 +1365,7 @@
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
                             <span>Ouvir</span>
                         </button>
+                        ${IS_PROF_FORUM && msg.id ? `<button type="button" class="btn-del-msg-forum" onclick="excluirMensagemForum(${msg.id}, this)" title="Remover esta mensagem da discussão" aria-label="Excluir mensagem">🗑️</button>` : ''}
                         <span class="msg-time">${escapeHtmlForum(horaTexto)}</span>
                     </div>
                 </div>
@@ -1394,5 +1518,132 @@
             btn.disabled = false;
         }
     });
+
+    // ===================== MODERAÇÃO E TUTORIA IA SOB DEMANDA (DOCENTE) =====================
+    async function solicitarIntervencaoIAForum() {
+        const btn = document.getElementById('btnAcionarFranTopico');
+        const topicoId = document.getElementById('topico_id')?.value;
+        if (!topicoId) return;
+        const original = btn ? btn.innerHTML : '';
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = '🤖 Gerando orientação...';
+        }
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            const res = await fetch(`/api/forum/topico/${topicoId}/intervencao_ia`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken }
+            });
+            const data = await res.json();
+            if (res.ok && data.status === 'sucesso' && data.mensagem_ia) {
+                const chatContainer = document.getElementById('chatContainer');
+                const emptyMsg = chatContainer?.querySelector('.forum-empty-messages');
+                if (emptyMsg) emptyMsg.remove();
+                const m = data.mensagem_ia;
+                if (chatContainer && (!m.id || !document.querySelector(`.message-wrapper[data-msg-id="${m.id}"]`))) {
+                    chatContainer.appendChild(criarElementoMensagem(m));
+                }
+                if (m.id && Number(m.id) > ultimoMsgId) ultimoMsgId = Number(m.id);
+                if (typeof data.total_mensagens === 'number') atualizarContadorMensagens(data.total_mensagens);
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                showToast('Assistente Fran adicionou uma intervenção socrática!', 'sucesso');
+            } else {
+                showToast(data.mensagem || 'Não foi possível acionar a Tutora Fran.', 'erro');
+            }
+        } catch (err) {
+            showToast('Erro de comunicação ao acionar a Tutora Fran.', 'erro');
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = original;
+            }
+        }
+    }
+
+    async function excluirMensagemForum(msgId, btn) {
+        if (!msgId || !confirm('Deseja remover esta mensagem da discussão?')) return;
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            const res = await fetch(`/api/forum/mensagem/${msgId}/excluir`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken }
+            });
+            const data = await res.json();
+            if (res.ok && data.status === 'sucesso') {
+                const wrap = btn ? btn.closest('.message-wrapper') : document.querySelector(`.message-wrapper[data-msg-id="${msgId}"]`);
+                if (wrap) wrap.remove();
+                if (typeof data.total_mensagens === 'number') atualizarContadorMensagens(data.total_mensagens);
+                showToast(data.mensagem || 'Mensagem removida.', 'sucesso');
+            } else {
+                showToast(data.mensagem || 'Erro ao remover mensagem.', 'erro');
+            }
+        } catch (err) {
+            showToast('Erro de conexão ao excluir mensagem.', 'erro');
+        }
+    }
+
+    function abrirModalEditarTopicoAtual() {
+        const m = document.getElementById('modalEditarTopicoDetalhe');
+        if (m) {
+            m.classList.remove('hidden');
+            m.style.display = 'flex';
+        }
+    }
+
+    function fecharModalEditarTopicoAtual() {
+        const m = document.getElementById('modalEditarTopicoDetalhe');
+        if (m) {
+            m.classList.add('hidden');
+            m.style.display = 'none';
+        }
+    }
+
+    async function salvarEdicaoTopicoAtual(ev) {
+        ev.preventDefault();
+        const topicoId = document.getElementById('topico_id')?.value;
+        const titulo = document.getElementById('editTopicoDetTitulo')?.value.trim();
+        const descricao = document.getElementById('editTopicoDetDescricao')?.value.trim();
+        const turma_id = document.getElementById('editTopicoDetTurma')?.value;
+        const categoria = document.getElementById('editTopicoDetCategoria')?.value;
+        if (!topicoId || !titulo) return;
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            const res = await fetch(`/api/forum/topico/${topicoId}/editar`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+                body: JSON.stringify({ titulo, descricao, turma_id, categoria })
+            });
+            const data = await res.json();
+            if (res.ok && data.status === 'sucesso') {
+                showToast('Tópico atualizado!', 'sucesso');
+                window.location.reload();
+            } else {
+                showToast(data.mensagem || 'Erro ao editar tópico.', 'erro');
+            }
+        } catch (err) {
+            showToast('Erro de conexão ao editar tópico.', 'erro');
+        }
+    }
+
+    async function excluirTopicoAtualForum() {
+        const topicoId = document.getElementById('topico_id')?.value;
+        if (!topicoId || !confirm('Deseja realmente excluir este tópico e todas as mensagens?')) return;
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            const res = await fetch(`/api/forum/topico/${topicoId}/excluir`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken }
+            });
+            const data = await res.json();
+            if (res.ok && data.status === 'sucesso') {
+                window.location.href = '/forum';
+            } else {
+                showToast(data.mensagem || 'Erro ao excluir tópico.', 'erro');
+            }
+        } catch (err) {
+            showToast('Erro de conexão ao excluir tópico.', 'erro');
+        }
+    }
 </script>
 {% endblock %}

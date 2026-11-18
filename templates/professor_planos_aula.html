@@ -186,7 +186,7 @@
 
 .docente-kpi-top-row {
     display: grid;
-    grid-template-columns: 1fr 104px;
+    grid-template-columns: 1fr;
     align-items: center;
     gap: 0.5rem;
 }
@@ -1560,6 +1560,68 @@
 @media (max-width: 768px) {
     .detalhes-grid-2 { grid-template-columns: 1fr; }
 }
+
+.fle-char-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 7px 10px;
+    background: #F7F7F8;
+    border: 1px solid #ECECEC;
+    border-radius: 12px;
+    margin-top: 6px;
+}
+
+[data-theme="dark"] .fle-char-toolbar {
+    background: #121318;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.fle-char-btn {
+    border: 1px solid #E5E7EB;
+    background: #FFFFFF;
+    color: #14213D;
+    border-radius: 8px;
+    padding: 3px 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.14s ease;
+}
+
+.fle-char-btn:hover {
+    background: #18191E;
+    color: #FCA311;
+    border-color: #18191E;
+}
+
+[data-theme="dark"] .fle-char-btn {
+    background: #1E202B;
+    border-color: rgba(255, 255, 255, 0.14);
+    color: #F9FAFB;
+}
+
+.plano-toast-feedback {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 3200;
+    background: #18191E;
+    color: #FFFFFF;
+    padding: 0.85rem 1.35rem;
+    border-radius: 999px;
+    font-size: 0.86rem;
+    font-weight: 600;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.25);
+    display: none;
+    align-items: center;
+    gap: 8px;
+}
+
+.plano-toast-feedback.show {
+    display: inline-flex;
+}
 </style>
 {% endblock %}
 
@@ -1578,7 +1640,7 @@
             </p>
         </header>
 
-        <!-- 2. Grid dos 4 Mini-KPIs no Topo (Design de Ondas + Botão Pill #18191E) -->
+        <!-- 2. Grid dos 4 Mini-KPIs no Topo -->
         <section class="docente-kpis-grid no-print" aria-label="Indicadores de Planos de Aula por Ciclo">
             <!-- Card 1: Catálogo Completo + Progresso Ministradas -->
             <article class="docente-kpi-card active-cycle" id="popCardCicloTodos" onclick="filtrarPorCiclo('TODOS')">
@@ -1587,27 +1649,10 @@
                         <span class="docente-kpi-label">Catálogo Completo</span>
                         <div class="docente-kpi-primary" id="countTotal">{{ total_planos }}</div>
                     </div>
-                    <svg class="docente-kpi-wave-svg" viewBox="0 0 120 46" fill="none" aria-hidden="true">
-                        <defs>
-                            <linearGradient id="plWaveAmber" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#FCA311" stop-opacity="0.34"/>
-                                <stop offset="100%" stop-color="#FCA311" stop-opacity="0.0"/>
-                            </linearGradient>
-                        </defs>
-                        <path d="M2 36 C 24 32, 38 14, 62 18 C 84 22, 98 8, 118 10 L 118 44 L 2 44 Z" fill="url(#plWaveAmber)"/>
-                        <path d="M2 36 C 24 32, 38 14, 62 18 C 84 22, 98 8, 118 10" stroke="#FCA311" stroke-width="2.4" stroke-linecap="round"/>
-                        <circle cx="98" cy="11" r="3.5" fill="#FFFFFF" stroke="#FCA311" stroke-width="2.2"/>
-                    </svg>
                 </div>
                 <div class="docente-kpi-mid-row">
                     <span class="docente-kpi-subval" id="kpiResumoMinistradas">{{ total_ministradas or 0 }}/{{ total_planos }} ministradas</span>
                     <span class="docente-kpi-trend" id="kpiPctMinistradas">{{ pct_ministradas or 0 }}% concluído ↗</span>
-                </div>
-                <div class="docente-kpi-cta-row">
-                    <button type="button" class="docente-pill-btn" onclick="event.stopPropagation(); filtrarPorCiclo('TODOS')">
-                        <span>Ver Todos os Planos</span>
-                        <span>→</span>
-                    </button>
                 </div>
             </article>
 
@@ -1618,27 +1663,10 @@
                         <span class="docente-kpi-label">Iniciante (A1–A2)</span>
                         <div class="docente-kpi-primary" id="countIniciante">{{ total_iniciante }}</div>
                     </div>
-                    <svg class="docente-kpi-wave-svg" viewBox="0 0 120 46" fill="none" aria-hidden="true">
-                        <defs>
-                            <linearGradient id="plWaveTeal" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#10B981" stop-opacity="0.30"/>
-                                <stop offset="100%" stop-color="#10B981" stop-opacity="0.0"/>
-                            </linearGradient>
-                        </defs>
-                        <path d="M2 34 C 24 22, 46 28, 70 14 C 90 6, 104 16, 118 8 L 118 44 L 2 44 Z" fill="url(#plWaveTeal)"/>
-                        <path d="M2 34 C 24 22, 46 28, 70 14 C 90 6, 104 16, 118 8" stroke="#10B981" stroke-width="2.4" stroke-linecap="round"/>
-                        <circle cx="70" cy="14" r="3.5" fill="#FFFFFF" stroke="#10B981" stroke-width="2.2"/>
-                    </svg>
                 </div>
                 <div class="docente-kpi-mid-row">
                     <span class="docente-kpi-subval">Ciclo introdutório</span>
                     <span class="docente-kpi-trend" style="color: #059669;">Débutant ✓</span>
-                </div>
-                <div class="docente-kpi-cta-row">
-                    <button type="button" class="docente-pill-btn" onclick="event.stopPropagation(); filtrarPorCiclo('INICIANTE')">
-                        <span>Filtrar Ciclo A1–A2</span>
-                        <span>→</span>
-                    </button>
                 </div>
             </article>
 
@@ -1649,27 +1677,10 @@
                         <span class="docente-kpi-label">Intermediário (B1–B2)</span>
                         <div class="docente-kpi-primary" id="countIntermediario">{{ total_intermediario }}</div>
                     </div>
-                    <svg class="docente-kpi-wave-svg" viewBox="0 0 120 46" fill="none" aria-hidden="true">
-                        <defs>
-                            <linearGradient id="plWaveNavy" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#2563EB" stop-opacity="0.28"/>
-                                <stop offset="100%" stop-color="#2563EB" stop-opacity="0.0"/>
-                            </linearGradient>
-                        </defs>
-                        <path d="M2 35 C 26 26, 46 30, 68 18 C 88 8, 104 14, 118 9 L 118 44 L 2 44 Z" fill="url(#plWaveNavy)"/>
-                        <path d="M2 35 C 26 26, 46 30, 68 18 C 88 8, 104 14, 118 9" stroke="#2563EB" stroke-width="2.4" stroke-linecap="round"/>
-                        <circle cx="88" cy="11" r="3.5" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.2"/>
-                    </svg>
                 </div>
                 <div class="docente-kpi-mid-row">
                     <span class="docente-kpi-subval">Ciclo autonomia</span>
                     <span class="docente-kpi-trend" style="color: #2563EB;">Indépendant ↗</span>
-                </div>
-                <div class="docente-kpi-cta-row">
-                    <button type="button" class="docente-pill-btn" onclick="event.stopPropagation(); filtrarPorCiclo('INTERMEDIARIO')">
-                        <span>Filtrar Ciclo B1–B2</span>
-                        <span>→</span>
-                    </button>
                 </div>
             </article>
 
@@ -1680,27 +1691,10 @@
                         <span class="docente-kpi-label">Avançado (C1–C2)</span>
                         <div class="docente-kpi-primary" id="countAvancado">{{ total_avancado }}</div>
                     </div>
-                    <svg class="docente-kpi-wave-svg" viewBox="0 0 120 46" fill="none" aria-hidden="true">
-                        <defs>
-                            <linearGradient id="plWavePurple" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#7C3AED" stop-opacity="0.28"/>
-                                <stop offset="100%" stop-color="#7C3AED" stop-opacity="0.0"/>
-                            </linearGradient>
-                        </defs>
-                        <path d="M2 34 C 22 30, 44 16, 66 20 C 88 24, 102 10, 118 8 L 118 44 L 2 44 Z" fill="url(#plWavePurple)"/>
-                        <path d="M2 34 C 22 30, 44 16, 66 20 C 88 24, 102 10, 118 8" stroke="#7C3AED" stroke-width="2.4" stroke-linecap="round"/>
-                        <circle cx="102" cy="10" r="3.5" fill="#FFFFFF" stroke="#7C3AED" stroke-width="2.2"/>
-                    </svg>
                 </div>
                 <div class="docente-kpi-mid-row">
                     <span class="docente-kpi-subval">Ciclo maestria</span>
                     <span class="docente-kpi-trend" style="color: #7C3AED;">Expérimenté ↗</span>
-                </div>
-                <div class="docente-kpi-cta-row">
-                    <button type="button" class="docente-pill-btn" onclick="event.stopPropagation(); filtrarPorCiclo('AVANCADO')">
-                        <span>Filtrar Ciclo C1–C2</span>
-                        <span>→</span>
-                    </button>
                 </div>
             </article>
         </section>
@@ -1775,10 +1769,10 @@
             <div class="docente-filters-row">
                 <div class="docente-filter-group" id="tabCiclos">
                     <span class="docente-filter-label">Ciclo:</span>
-                    <button type="button" class="btn-tab active" data-ciclo="TODOS" onclick="setTabCiclo(this, 'TODOS')">Todos ({{ total_planos }})</button>
-                    <button type="button" class="btn-tab" data-ciclo="INICIANTE" onclick="setTabCiclo(this, 'INICIANTE')">A1–A2 ({{ total_iniciante }})</button>
-                    <button type="button" class="btn-tab" data-ciclo="INTERMEDIARIO" onclick="setTabCiclo(this, 'INTERMEDIARIO')">B1–B2 ({{ total_intermediario }})</button>
-                    <button type="button" class="btn-tab" data-ciclo="AVANCADO" onclick="setTabCiclo(this, 'AVANCADO')">C1–C2 ({{ total_avancado }})</button>
+                    <button type="button" class="btn-tab active" id="chipCicloTodos" data-ciclo="TODOS" onclick="setTabCiclo(this, 'TODOS')">Todos ({{ total_planos }})</button>
+                    <button type="button" class="btn-tab" id="chipCicloIniciante" data-ciclo="INICIANTE" onclick="setTabCiclo(this, 'INICIANTE')">A1–A2 ({{ total_iniciante }})</button>
+                    <button type="button" class="btn-tab" id="chipCicloIntermediario" data-ciclo="INTERMEDIARIO" onclick="setTabCiclo(this, 'INTERMEDIARIO')">B1–B2 ({{ total_intermediario }})</button>
+                    <button type="button" class="btn-tab" id="chipCicloAvancado" data-ciclo="AVANCADO" onclick="setTabCiclo(this, 'AVANCADO')">C1–C2 ({{ total_avancado }})</button>
                 </div>
 
                 <div class="docente-filter-group" id="tabSubniveis">
@@ -1887,7 +1881,7 @@
                 <div class="plano-conteudo-box">
                     <span class="plano-conteudo-label">
                         <span>Conteúdo Principal</span>
-                        <button type="button" onclick="ouvirTextoFrancesTTS('{{ p.tema | e }}. {{ p.conteudos | e }}', event)" style="border:none; background:transparent; cursor:pointer; font-size:0.78rem; color:#2563EB;" title="Ouvir pronúncia em francês (fr-FR)">🔊 Ouvir</button>
+                        <button type="button" data-texto="{{ (p.tema ~ '. ' ~ (p.conteudos or ''))|e }}" onclick="ouvirTextoFrancesDeElemento(this, event)" style="border:none; background:transparent; cursor:pointer; font-size:0.78rem; color:#2563EB;" title="Ouvir pronúncia em francês (fr-FR)">🔊 Ouvir</button>
                     </span>
                     <span class="conteudo-snippet">{{ p.conteudos }}</span>
                 </div>
@@ -1895,20 +1889,20 @@
                 <!-- Ferramentas Rápidas do Card: Chamada, Editar, Duplicar, Enviar Dever, Ficha Aluno, Excluir -->
                 <div class="plano-card-quick-tools no-print">
                     <div style="display: flex; gap: 4px; flex-wrap: wrap;">
-                        <button type="button" class="btn-icon-tool" onclick="abrirModalChamadaPlano({{ p.id }}, '{{ p.tema | e }}', '{{ p.turma_id or '' }}')" title="Registrar Chamada / Frequência da Turma" style="border-color: rgba(16, 185, 129, 0.45); color: #059669; font-weight: 700;">📋 Chamada</button>
+                        <button type="button" class="btn-icon-tool" data-plano-id="{{ p.id }}" data-tema="{{ p.tema|e }}" data-turma-id="{{ p.turma_id or '' }}" onclick="abrirModalChamadaDeElemento(this)" title="Registrar Chamada / Frequência da Turma" style="border-color: rgba(16, 185, 129, 0.45); color: #059669; font-weight: 700;">📋 Chamada</button>
                         <button type="button" class="btn-icon-tool" onclick="abrirModalEditarPlano({{ p.id }})" title="Editar este plano de aula">✏️ Editar</button>
-                        <button type="button" class="btn-icon-tool" onclick="abrirModalDuplicarPlano({{ p.id }}, '{{ p.tema | e }}', '{{ p.nivel }}', '{{ p.turma_id or '' }}')" title="Duplicar plano para outra turma/nível">📋 Duplicar</button>
+                        <button type="button" class="btn-icon-tool" data-plano-id="{{ p.id }}" data-tema="{{ p.tema|e }}" data-nivel="{{ p.nivel|e }}" data-turma-id="{{ p.turma_id or '' }}" onclick="abrirModalDuplicarDeElemento(this)" title="Duplicar plano para outra turma/nível">📋 Duplicar</button>
                         <button type="button" class="btn-icon-tool" onclick="abrirModalEnviarDever({{ p.id }})" title="Enviar resumo da aula e dever de casa para a turma">📤 Dever</button>
                         <button type="button" class="btn-icon-tool" onclick="imprimirPlanoDiretoPorId({{ p.id }}, 'aluno')" title="Imprimir Ficha do Aluno (Handout A4)">📄 Ficha</button>
                     </div>
-                    <button type="button" class="btn-icon-tool danger" onclick="excluirPlanoAula({{ p.id }}, '{{ p.tema | e }}')" title="Excluir plano de aula">🗑️</button>
+                    <button type="button" class="btn-icon-tool danger" data-plano-id="{{ p.id }}" data-tema="{{ p.tema|e }}" onclick="excluirPlanoDeElemento(this)" title="Excluir plano de aula">🗑️</button>
                 </div>
 
                 <div class="plano-card-footer no-print">
                     <button type="button" class="btn-card-primary" onclick="abrirDetalhesPlano({{ p.id }})">
                         <span>Ver Plano (P.P.P.)</span>
                     </button>
-                    <button type="button" class="btn-card-secondary" title="Criar avaliação vinculada a este plano" onclick="abrirModalGerarProvaPlano({{ p.id }}, '{{ p.tema | e }}', '{{ p.nivel }}')">
+                    <button type="button" class="btn-card-secondary" title="Criar avaliação vinculada a este plano" data-plano-id="{{ p.id }}" data-tema="{{ p.tema|e }}" data-nivel="{{ p.nivel|e }}" data-turma-id="{{ p.turma_id or '' }}" onclick="abrirModalGerarProvaDeElemento(this)">
                         <span>✨ Gerar Prova</span>
                     </button>
                 </div>
@@ -1949,8 +1943,10 @@
                             data-nivel="{{ p.nivel }}"
                             data-tema="{{ p.tema|lower }}"
                             data-conteudo="{{ p.conteudos|lower }}"
+                            data-objetivos="{{ p.objetivos }}"
                             data-skills="{{ p.habilidades|upper }}"
                             data-turma-id="{{ p.turma_id or '' }}"
+                            data-turma-nome="{{ p.turma_nome or '' }}"
                             data-ministrada="{{ is_min }}"
                         >
                             <td data-sort="{{ p.aula_numero or 99 }}">
@@ -1986,13 +1982,13 @@
                                 </button>
                             </td>
                             <td style="text-align: right; white-space: nowrap;">
-                                <button type="button" class="btn-icon-tool" onclick="abrirModalChamadaPlano({{ p.id }}, '{{ p.tema | e }}', '{{ p.turma_id or '' }}')" title="Fazer Chamada / Frequência" style="color: #059669; font-weight: 700;">📋 Chamada</button>
+                                <button type="button" class="btn-icon-tool" data-plano-id="{{ p.id }}" data-tema="{{ p.tema|e }}" data-turma-id="{{ p.turma_id or '' }}" onclick="abrirModalChamadaDeElemento(this)" title="Fazer Chamada / Frequência" style="color: #059669; font-weight: 700;">📋 Chamada</button>
                                 <button type="button" class="btn-icon-tool" onclick="abrirDetalhesPlano({{ p.id }})" title="Ver sequência P.P.P.">👁️ P.P.P.</button>
                                 <button type="button" class="btn-icon-tool" onclick="abrirModalEditarPlano({{ p.id }})" title="Editar">✏️</button>
-                                <button type="button" class="btn-icon-tool" onclick="abrirModalDuplicarPlano({{ p.id }}, '{{ p.tema | e }}', '{{ p.nivel }}', '{{ p.turma_id or '' }}')" title="Duplicar">📋</button>
+                                <button type="button" class="btn-icon-tool" data-plano-id="{{ p.id }}" data-tema="{{ p.tema|e }}" data-nivel="{{ p.nivel|e }}" data-turma-id="{{ p.turma_id or '' }}" onclick="abrirModalDuplicarDeElemento(this)" title="Duplicar">📋</button>
                                 <button type="button" class="btn-icon-tool" onclick="abrirModalEnviarDever({{ p.id }})" title="Enviar Dever à Turma">📤</button>
-                                <button type="button" class="btn-icon-tool" onclick="abrirModalGerarProvaPlano({{ p.id }}, '{{ p.tema | e }}', '{{ p.nivel }}')" title="Gerar Prova">✨ Prova</button>
-                                <button type="button" class="btn-icon-tool danger" onclick="excluirPlanoAula({{ p.id }}, '{{ p.tema | e }}')" title="Excluir">🗑️</button>
+                                <button type="button" class="btn-icon-tool" data-plano-id="{{ p.id }}" data-tema="{{ p.tema|e }}" data-nivel="{{ p.nivel|e }}" data-turma-id="{{ p.turma_id or '' }}" onclick="abrirModalGerarProvaDeElemento(this)" title="Gerar Prova">✨ Prova</button>
+                                <button type="button" class="btn-icon-tool danger" data-plano-id="{{ p.id }}" data-tema="{{ p.tema|e }}" onclick="excluirPlanoDeElemento(this)" title="Excluir">🗑️</button>
                             </td>
                         </tr>
                         {% endfor %}
@@ -2261,9 +2257,32 @@
                         </div>
                     </div>
 
-                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <div class="form-row-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label" for="ia_turma_id">Turma (Opcional):</label>
+                            <select id="ia_turma_id" class="form-input">
+                                <option value="">Catálogo Geral (Todas)</option>
+                                {% for t in turmas %}
+                                <option value="{{ t.id }}">{{ t.nome }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="ia_aula_numero">Nº da Aula (Opcional):</label>
+                            <input type="number" id="ia_aula_numero" class="form-input" min="1" max="99" placeholder="Auto (próxima do nível)">
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 1rem;">
                         <label class="form-label">Foco / Ênfase Específica (Opcional):</label>
                         <input type="text" id="ia_foco" class="form-input" placeholder="Ex: Foco em conversação oral, preparação DELF, falsos cognatos...">
+                    </div>
+
+                    <div class="fle-char-toolbar" role="toolbar" aria-label="Caracteres franceses no gerador IA" style="margin-bottom: 1.25rem;">
+                        <span style="font-size: 0.72rem; font-weight: 700; color: #6B7280; margin-right: 4px;">Acentos FLE:</span>
+                        {% for ch_f in ['é','è','ê','ë','à','â','ç','ù','û','î','ï','ô','œ','«','»'] %}
+                        <button type="button" class="fle-char-btn" onmousedown="event.preventDefault()" onclick="inserirCharFrancesPlanoModal('modalGerarPlanoIA', '{{ ch_f }}')" lang="fr">{{ ch_f }}</button>
+                        {% endfor %}
                     </div>
 
                     <button type="submit" id="btnSubmitIA" class="docente-pill-btn" style="width: 100%;">
@@ -2284,10 +2303,21 @@
                     <h3 class="modal-title" id="tituloModalCriarEditarPlano">+ Novo Plano de Aula Manual</h3>
                     <p class="modal-subtitle text-muted" style="margin: 0; font-size: 0.85rem;">Preencha ou atualize os elementos do template pedagógico P.P.P.</p>
                 </div>
-                <button type="button" class="btn-close-modal" onclick="fecharModalCriarPlano()">&times;</button>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <button type="button" id="btnAutopreencherPlanoIA" class="docente-chip-btn" onclick="autopreencherPlanoComIA()" title="Preencher estrutura P.P.P. com IA a partir do tema e nível digitados">
+                        <span>✨ Autopreencher P.P.P. com IA</span>
+                    </button>
+                    <button type="button" class="btn-close-modal" onclick="fecharModalCriarPlano()">&times;</button>
+                </div>
             </div>
             <form onsubmit="salvarPlanoManual(event)" style="display: flex; flex-direction: column; flex: 1; overflow: hidden;">
                 <input type="hidden" id="plano_edit_id" value="">
+                <div class="fle-char-toolbar no-print" role="toolbar" aria-label="Inserir caractere francês no campo ativo" style="margin: 0.65rem 1.5rem 0;">
+                    <span style="font-size: 0.72rem; font-weight: 700; color: #6B7280; margin-right: 4px;">Acentos FLE (campo ativo):</span>
+                    {% for ch_f in ['é','è','ê','ë','à','â','ç','ù','û','î','ï','ô','œ','«','»'] %}
+                    <button type="button" class="fle-char-btn" onmousedown="event.preventDefault()" onclick="inserirCharFrancesPlanoModal('modalCriarPlano', '{{ ch_f }}')" lang="fr">{{ ch_f }}</button>
+                    {% endfor %}
+                </div>
                 <div class="modal-body" style="overflow-y: auto; flex: 1; padding: 1.5rem;">
                     <div class="form-row-2" style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
                         <div class="form-group">
@@ -2522,6 +2552,12 @@
                 <div class="form-group" style="margin-bottom: 1.4rem;">
                     <label class="form-label">Mensagem (Resumo do Conteúdo + Dever de Casa):</label>
                     <textarea id="dever_corpo" class="form-textarea" rows="6" required></textarea>
+                    <div class="fle-char-toolbar" role="toolbar" aria-label="Caracteres franceses no dever de casa">
+                        <span style="font-size: 0.72rem; font-weight: 700; color: #6B7280; margin-right: 4px;">Acentos FLE:</span>
+                        {% for ch_f in ['é','è','ê','ë','à','â','ç','ù','û','î','ï','ô','œ','«','»'] %}
+                        <button type="button" class="fle-char-btn" onmousedown="event.preventDefault()" onclick="inserirCharFrancesPlanoModal('modalEnviarDeverTurma', '{{ ch_f }}')" lang="fr">{{ ch_f }}</button>
+                        {% endfor %}
+                    </div>
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 8px;">
                     <button type="button" class="docente-chip-btn" onclick="fecharModalEnviarDever()">Cancelar</button>
@@ -2636,6 +2672,8 @@
     </div>
 </div>
 
+<div id="planoToastFeedback" class="plano-toast-feedback" role="status" aria-live="polite"></div>
+
 <script>
 let planoAtualCarregado = null;
 let cicloAtual = 'TODOS';
@@ -2644,12 +2682,110 @@ let skillAtual = 'TODAS';
 let statusExecucaoAtual = 'TODOS';
 let modoVisualizacaoPlanos = 'cards';
 let ordemCronogramaAsc = true;
+const ultimoInputPlanoModalFocado = {};
 
 // Estado do Cronômetro P.P.P.
 let pppTimerInterval = null;
 let pppTimerSeconds = 600;
 let pppTimerInitialSeconds = 600;
 let pppTimerRunning = false;
+
+function normalizarTextoPlano(str) {
+    return String(str || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+}
+
+function escapeHtmlPlano(text) {
+    return String(text || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function mostrarToastPlano(mensagem, isErro = false) {
+    const t = document.getElementById('planoToastFeedback');
+    if (!t) return;
+    t.textContent = (isErro ? '⚠️ ' : '✅ ') + mensagem;
+    t.style.background = isErro ? '#DC2626' : '#18191E';
+    t.classList.add('show');
+    clearTimeout(window._planoToastTimer);
+    window._planoToastTimer = setTimeout(() => t.classList.remove('show'), 3600);
+}
+
+document.addEventListener('focusin', function(e) {
+    if (!e.target || !['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
+    if (e.target.tagName === 'INPUT' && !['text', 'search'].includes(e.target.type)) return;
+    const modal = e.target.closest('#modalCriarPlano, #modalGerarPlanoIA, #modalEnviarDeverTurma');
+    if (modal && modal.id) {
+        ultimoInputPlanoModalFocado[modal.id] = e.target;
+    }
+});
+
+function inserirCharFrancesPlanoModal(modalId, ch) {
+    let alvo = ultimoInputPlanoModalFocado[modalId];
+    const modal = document.getElementById(modalId);
+    if (!alvo || !modal || !modal.contains(alvo)) {
+        const fallbackMap = {
+            modalCriarPlano: '#novo_tema',
+            modalGerarPlanoIA: '#ia_tema',
+            modalEnviarDeverTurma: '#dever_corpo'
+        };
+        alvo = document.querySelector(fallbackMap[modalId]);
+    }
+    if (!alvo) return;
+    const start = typeof alvo.selectionStart === 'number' ? alvo.selectionStart : alvo.value.length;
+    const end = typeof alvo.selectionEnd === 'number' ? alvo.selectionEnd : alvo.value.length;
+    alvo.value = alvo.value.slice(0, start) + ch + alvo.value.slice(end);
+    alvo.focus();
+    if (typeof alvo.setSelectionRange === 'function') {
+        const pos = start + ch.length;
+        alvo.setSelectionRange(pos, pos);
+    }
+}
+
+function ouvirTextoFrancesDeElemento(btn, event) {
+    if (event) event.stopPropagation();
+    const texto = btn ? (btn.getAttribute('data-texto') || '') : '';
+    if (texto) ouvirTextoFrancesTTS(texto, event);
+}
+
+function abrirModalChamadaDeElemento(btn) {
+    if (!btn) return;
+    abrirModalChamadaPlano(
+        btn.getAttribute('data-plano-id'),
+        btn.getAttribute('data-tema') || 'Aula',
+        btn.getAttribute('data-turma-id') || ''
+    );
+}
+
+function abrirModalDuplicarDeElemento(btn) {
+    if (!btn) return;
+    abrirModalDuplicarPlano(
+        btn.getAttribute('data-plano-id'),
+        btn.getAttribute('data-tema') || '',
+        btn.getAttribute('data-nivel') || 'A1',
+        btn.getAttribute('data-turma-id') || ''
+    );
+}
+
+function excluirPlanoDeElemento(btn) {
+    if (!btn) return;
+    excluirPlanoAula(
+        btn.getAttribute('data-plano-id'),
+        btn.getAttribute('data-tema') || ''
+    );
+}
+
+function abrirModalGerarProvaDeElemento(btn) {
+    if (!btn) return;
+    abrirModalGerarProvaPlano(
+        btn.getAttribute('data-plano-id'),
+        btn.getAttribute('data-tema') || '',
+        btn.getAttribute('data-nivel') || 'A2',
+        btn.getAttribute('data-turma-id') || ''
+    );
+}
 
 // ===================== BUSCA COM AUTOCOMPLETE EM TEMPO REAL =====================
 
@@ -2666,7 +2802,7 @@ function atualizarAutocompletePlanos(termoBruto) {
     const dropdown = document.getElementById('autocompleteDropdownPlanos');
     if (!dropdown) return;
 
-    const termo = (termoBruto || '').trim().toLowerCase();
+    const termo = normalizarTextoPlano((termoBruto || '').trim());
     if (!termo) {
         dropdown.classList.remove('open');
         dropdown.innerHTML = '';
@@ -2675,10 +2811,12 @@ function atualizarAutocompletePlanos(termoBruto) {
 
     const cards = Array.from(document.querySelectorAll('.plano-card'));
     const matches = cards.filter(card => {
-        const tema = card.getAttribute('data-tema') || '';
-        const conteudo = card.getAttribute('data-conteudo') || '';
-        const nivel = (card.getAttribute('data-nivel') || '').toLowerCase();
-        return tema.includes(termo) || conteudo.includes(termo) || nivel.includes(termo);
+        const tema = normalizarTextoPlano(card.getAttribute('data-tema-original') || card.getAttribute('data-tema') || '');
+        const conteudo = normalizarTextoPlano(card.getAttribute('data-conteudo-original') || card.getAttribute('data-conteudo') || '');
+        const objetivos = normalizarTextoPlano(card.getAttribute('data-objetivos') || '');
+        const nivel = normalizarTextoPlano(card.getAttribute('data-nivel') || '');
+        const turma = normalizarTextoPlano(card.getAttribute('data-turma-nome') || '');
+        return tema.includes(termo) || conteudo.includes(termo) || objetivos.includes(termo) || nivel.includes(termo) || turma.includes(termo);
     }).slice(0, 6);
 
     if (matches.length === 0) {
@@ -2693,12 +2831,12 @@ function atualizarAutocompletePlanos(termoBruto) {
         const nivel = card.getAttribute('data-nivel') || '';
         const skills = card.getAttribute('data-skills') || '';
         return `
-            <div class="docente-autocomplete-item" onclick="selecionarItemAutocompletePlano('${temaOriginal.replace(/'/g, "\\'")}', ${id})">
+            <div class="docente-autocomplete-item" data-tema="${escapeHtmlPlano(temaOriginal)}" data-plano-id="${escapeHtmlPlano(id)}" onclick="selecionarItemAutocompletePlano(this.getAttribute('data-tema'), this.getAttribute('data-plano-id'))">
                 <div>
-                    <div class="docente-autocomplete-title">${temaOriginal}</div>
-                    <div class="docente-autocomplete-meta">Competências: ${skills}</div>
+                    <div class="docente-autocomplete-title">${escapeHtmlPlano(temaOriginal)}</div>
+                    <div class="docente-autocomplete-meta">Competências: ${escapeHtmlPlano(skills)}</div>
                 </div>
-                <span class="badge-nivel badge-nivel-${nivel}">${nivel}</span>
+                <span class="badge-nivel badge-nivel-${escapeHtmlPlano(nivel)}">${escapeHtmlPlano(nivel)}</span>
             </div>
         `;
     }).join('');
@@ -2846,8 +2984,10 @@ function setFiltroSkill(btn, skill) {
 
 function avaliarMatchElementoPlano(el, termo, turmaFiltro) {
     const nivel = el.getAttribute('data-nivel') || '';
-    const tema = el.getAttribute('data-tema') || '';
-    const conteudo = el.getAttribute('data-conteudo') || '';
+    const tema = normalizarTextoPlano(el.getAttribute('data-tema-original') || el.getAttribute('data-tema') || '');
+    const conteudo = normalizarTextoPlano(el.getAttribute('data-conteudo-original') || el.getAttribute('data-conteudo') || '');
+    const objetivos = normalizarTextoPlano(el.getAttribute('data-objetivos') || '');
+    const turmaNome = normalizarTextoPlano(el.getAttribute('data-turma-nome') || '');
     const cardSkills = (el.getAttribute('data-skills') || '').toUpperCase();
     const turmaId = el.getAttribute('data-turma-id') || '';
     const isMin = el.getAttribute('data-ministrada') === '1';
@@ -2872,7 +3012,8 @@ function avaliarMatchElementoPlano(el, termo, turmaFiltro) {
 
     let matchTexto = true;
     if (termo) {
-        matchTexto = tema.includes(termo) || conteudo.includes(termo) || nivel.toLowerCase().includes(termo);
+        const q = normalizarTextoPlano(termo);
+        matchTexto = tema.includes(q) || conteudo.includes(q) || objetivos.includes(q) || turmaNome.includes(q) || normalizarTextoPlano(nivel).includes(q);
     }
 
     return matchCiclo && matchSubnivel && matchSkill && matchStatus && matchTurma && matchTexto;
@@ -2971,6 +3112,47 @@ function resetarFiltros() {
 
 // ===================== STATUS MINISTRADA / PLANEJADA (1 CLIQUE) =====================
 
+function atualizarContadoresPlanosDOM() {
+    const cards = Array.from(document.querySelectorAll('.plano-card'));
+    const total = cards.length;
+    let ini = 0, inter = 0, avan = 0, mins = 0;
+    cards.forEach(c => {
+        const nv = (c.getAttribute('data-nivel') || '').toUpperCase();
+        if (nv === 'A1' || nv === 'A2') ini++;
+        else if (nv === 'B1' || nv === 'B2') inter++;
+        else if (nv === 'C1' || nv === 'C2') avan++;
+        if (c.getAttribute('data-ministrada') === '1') mins++;
+    });
+    const pct = total > 0 ? Math.round((mins / total) * 100) : 0;
+
+    const elTot = document.getElementById('countTotal');
+    const elIni = document.getElementById('countIniciante');
+    const elInt = document.getElementById('countIntermediario');
+    const elAv = document.getElementById('countAvancado');
+    if (elTot) elTot.textContent = total;
+    if (elIni) elIni.textContent = ini;
+    if (elInt) elInt.textContent = inter;
+    if (elAv) elAv.textContent = avan;
+
+    const cTodos = document.getElementById('chipCicloTodos');
+    const cIni = document.getElementById('chipCicloIniciante');
+    const cInt = document.getElementById('chipCicloIntermediario');
+    const cAv = document.getElementById('chipCicloAvancado');
+    if (cTodos) cTodos.textContent = `Todos (${total})`;
+    if (cIni) cIni.textContent = `A1–A2 (${ini})`;
+    if (cInt) cInt.textContent = `B1–B2 (${inter})`;
+    if (cAv) cAv.textContent = `C1–C2 (${avan})`;
+
+    const txtProg = document.getElementById('textoProgressoExecucao');
+    const barProg = document.getElementById('barraProgressoExecucao');
+    const kpiSub = document.getElementById('kpiResumoMinistradas');
+    const kpiPct = document.getElementById('kpiPctMinistradas');
+    if (txtProg) txtProg.innerText = `${mins} de ${total} aulas ministradas (${pct}%)`;
+    if (barProg) barProg.style.width = `${pct}%`;
+    if (kpiSub) kpiSub.innerText = `${mins}/${total} ministradas`;
+    if (kpiPct) kpiPct.innerText = `${pct}% concluído ↗`;
+}
+
 async function toggleStatusMinistrada(planoId, event) {
     if (event) event.stopPropagation();
     try {
@@ -2981,7 +3163,7 @@ async function toggleStatusMinistrada(planoId, event) {
         });
         const data = await resp.json();
         if (data.status !== 'sucesso') {
-            alert('Erro ao atualizar status: ' + (data.mensagem || ''));
+            mostrarToastPlano('Erro ao atualizar status: ' + (data.mensagem || ''), true);
             return;
         }
 
@@ -3221,14 +3403,23 @@ document.addEventListener('keydown', function(e) {
 
 function ouvirTextoFrancesTTS(texto, event) {
     if (event) event.stopPropagation();
+    const limpo = String(texto || '').trim();
+    if (!limpo) return;
+    if (typeof window.falarTextoFrancesBase === 'function') {
+        window.falarTextoFrancesBase(limpo);
+        return;
+    }
     if (!('speechSynthesis' in window)) {
-        alert('Seu navegador não suporta síntese de voz (Web Speech API).');
+        mostrarToastPlano('Seu navegador não suporta síntese de voz (Web Speech API).', true);
         return;
     }
     window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(texto);
+    const utter = new SpeechSynthesisUtterance(limpo);
     utter.lang = 'fr-FR';
     utter.rate = 0.92;
+    const vozes = window.speechSynthesis.getVoices() || [];
+    const vozFr = vozes.find(v => (v.lang || '').toLowerCase().startsWith('fr'));
+    if (vozFr) utter.voice = vozFr;
     window.speechSynthesis.speak(utter);
 }
 
@@ -3322,17 +3513,17 @@ function imprimirFolhaPlanoA4(modo) {
 
     const isAluno = (modo === 'aluno');
     const tituloDoc = isAluno
-        ? `Fiche de Cours FLE — ${p.tema} (${p.nivel})`
-        : `Plano Docente P.P.P. — ${p.tema} (${p.nivel})`;
+        ? `Fiche de Cours FLE — ${escapeHtmlPlano(p.tema)} (${escapeHtmlPlano(p.nivel)})`
+        : `Plano Docente P.P.P. — ${escapeHtmlPlano(p.tema)} (${escapeHtmlPlano(p.nivel)})`;
 
     const blocoProfessorPPP = isAluno ? `
         <div class="box">
             <h3>3. Atividade Comunicativa em Aula</h3>
-            <p>${p.etapa_producao || 'Prática comunicativa orientada em sala.'}</p>
+            <p>${escapeHtmlPlano(p.etapa_producao || 'Prática comunicativa orientada em sala.')}</p>
         </div>
         <div class="box highlight">
             <h3>4. Exercício de Fixação (Devoir à la maison)</h3>
-            <p><strong>Tarefa:</strong> ${p.dever_casa || 'Revisar as estruturas estudadas e elaborar 5 frases autênticas.'}</p>
+            <p><strong>Tarefa:</strong> ${escapeHtmlPlano(p.dever_casa || 'Revisar as estruturas estudadas e elaborar 5 frases autênticas.')}</p>
         </div>
         <div class="box">
             <h3>5. Espaço para Anotações &amp; Vocabulário Pessoal</h3>
@@ -3345,29 +3536,29 @@ function imprimirFolhaPlanoA4(modo) {
     ` : `
         <div class="box">
             <h3>3. Metodologia &amp; Recursos Didáticos</h3>
-            <p><strong>Metodologia:</strong> ${p.metodologia || '-'}</p>
-            <p><strong>Recursos:</strong> ${p.recursos || '-'}</p>
+            <p><strong>Metodologia:</strong> ${escapeHtmlPlano(p.metodologia || '-')}</p>
+            <p><strong>Recursos:</strong> ${escapeHtmlPlano(p.recursos || '-')}</p>
         </div>
         <div class="box">
-            <h3>4. Sequência Didática P.P.P. (${p.duracao})</h3>
+            <h3>4. Sequência Didática P.P.P. (${escapeHtmlPlano(p.duracao)})</h3>
             <ul>
-                <li><strong>1. Aquecimento (5–10 min):</strong> ${p.etapa_aquecimento || '-'}</li>
-                <li><strong>2. Apresentação (15–20 min):</strong> ${p.etapa_apresentacao || '-'}</li>
-                <li><strong>3. Prática Guiada (15–20 min):</strong> ${p.etapa_pratica || '-'}</li>
-                <li><strong>4. Produção Livre (15–20 min):</strong> ${p.etapa_producao || '-'}</li>
-                <li><strong>5. Fechamento (5–10 min):</strong> ${p.etapa_fechamento || '-'}</li>
+                <li><strong>1. Aquecimento (5–10 min):</strong> ${escapeHtmlPlano(p.etapa_aquecimento || '-')}</li>
+                <li><strong>2. Apresentação (15–20 min):</strong> ${escapeHtmlPlano(p.etapa_apresentacao || '-')}</li>
+                <li><strong>3. Prática Guiada (15–20 min):</strong> ${escapeHtmlPlano(p.etapa_pratica || '-')}</li>
+                <li><strong>4. Produção Livre (15–20 min):</strong> ${escapeHtmlPlano(p.etapa_producao || '-')}</li>
+                <li><strong>5. Fechamento (5–10 min):</strong> ${escapeHtmlPlano(p.etapa_fechamento || '-')}</li>
             </ul>
         </div>
         <div class="grid2">
             <div class="box">
                 <h3>5. Avaliação Formativa &amp; Somativa</h3>
-                <p><strong>Formativa:</strong> ${p.avaliacao_formativa || '-'}</p>
-                <p><strong>Somativa:</strong> ${p.avaliacao_somativa || '-'}</p>
+                <p><strong>Formativa:</strong> ${escapeHtmlPlano(p.avaliacao_formativa || '-')}</p>
+                <p><strong>Somativa:</strong> ${escapeHtmlPlano(p.avaliacao_somativa || '-')}</p>
             </div>
             <div class="box">
                 <h3>6. Dever de Casa &amp; Remediação</h3>
-                <p><strong>Casa:</strong> ${p.dever_casa || '-'}</p>
-                <p><strong>Reforço:</strong> ${p.reforco || '-'}</p>
+                <p><strong>Casa:</strong> ${escapeHtmlPlano(p.dever_casa || '-')}</p>
+                <p><strong>Reforço:</strong> ${escapeHtmlPlano(p.reforco || '-')}</p>
             </div>
         </div>
     `;
@@ -3397,20 +3588,20 @@ function imprimirFolhaPlanoA4(modo) {
     <div class="header">
         <div>
             <span class="tag">${isAluno ? 'FICHA DO ALUNO • HANDOUT FLE' : 'ENGENHARIA PEDAGÓGICA P.P.P. • DOCENTE'}</span>
-            <h1 class="title">${p.tema}</h1>
+            <h1 class="title">${escapeHtmlPlano(p.tema)}</h1>
         </div>
         <div style="text-align: right; font-size: 13px;">
-            <div><strong>Nível QECR:</strong> ${p.nivel}</div>
-            <div><strong>Duração:</strong> ${p.duracao} • <strong>Habilidades:</strong> ${p.habilidades || 'FLE'}</div>
+            <div><strong>Nível QECR:</strong> ${escapeHtmlPlano(p.nivel)}</div>
+            <div><strong>Duração:</strong> ${escapeHtmlPlano(p.duracao)} • <strong>Habilidades:</strong> ${escapeHtmlPlano(p.habilidades || 'FLE')}</div>
         </div>
     </div>
     <div class="box">
         <h3>1. Objetivos Comunicativos de Aprendizagem</h3>
-        <p>${p.objetivos || '-'}</p>
+        <p>${escapeHtmlPlano(p.objetivos || '-')}</p>
     </div>
     <div class="box">
         <h3>2. Conteúdos Essenciais (Gramática, Léxico &amp; Cultura)</h3>
-        <p>${p.conteudos || '-'}</p>
+        <p>${escapeHtmlPlano(p.conteudos || '-')}</p>
     </div>
     ${blocoProfessorPPP}
 </body>
@@ -3421,7 +3612,7 @@ function imprimirFolhaPlanoA4(modo) {
 function dispararProvaDoPlanoAtual() {
     if (!planoAtualCarregado) return;
     fecharModalDetalhes();
-    abrirModalGerarProvaPlano(planoAtualCarregado.id, planoAtualCarregado.tema, planoAtualCarregado.nivel);
+    abrirModalGerarProvaPlano(planoAtualCarregado.id, planoAtualCarregado.tema, planoAtualCarregado.nivel, planoAtualCarregado.turma_id || '');
 }
 
 function editarPlanoDoDetalhe() {
@@ -3440,9 +3631,20 @@ function enviarDeverDoDetalhe() {
 
 // ===================== GERAÇÃO DE PROVA A PARTIR DO PLANO =====================
 
-function abrirModalGerarProvaPlano(planoId, tema, nivel) {
+function abrirModalGerarProvaPlano(planoId, tema, nivel, turmaIdSugerida) {
     document.getElementById('prova_plano_id').value = planoId;
     document.getElementById('prova_plano_tema').value = `${tema} (${nivel})`;
+    const selTurma = document.getElementById('prova_turma_id');
+    if (selTurma && turmaIdSugerida) {
+        selTurma.value = String(turmaIdSugerida);
+    }
+    const dlInput = document.getElementById('prova_data_limite');
+    if (dlInput) {
+        const d = new Date();
+        d.setDate(d.getDate() + 7);
+        d.setHours(23, 59, 0, 0);
+        dlInput.value = d.toISOString().slice(0, 16);
+    }
     document.getElementById('modalGerarProvaPlano').classList.remove('hidden');
 }
 
@@ -3470,16 +3672,16 @@ async function confirmarCriarProvaDoPlano() {
         });
         const data = await resp.json();
         if (data.status === 'sucesso') {
-            alert("Sucesso! " + data.mensagem);
+            mostrarToastPlano(data.mensagem || 'Prova gerada com sucesso!');
             fecharModalGerarProvaPlano();
             if (confirm("Deseja ir para a tela de Avaliações para ver a prova criada?")) {
                 window.location.href = "/professor/avaliacoes";
             }
         } else {
-            alert("Erro: " + data.mensagem);
+            mostrarToastPlano("Erro: " + (data.mensagem || 'Falha ao gerar prova.'), true);
         }
     } catch (e) {
-        alert("Erro de conexão: " + e);
+        mostrarToastPlano("Erro de conexão: " + e, true);
     } finally {
         btn.disabled = false;
         btn.innerHTML = '<span>✨ Gerar Avaliação Alinhada</span>';
@@ -3491,6 +3693,10 @@ async function confirmarCriarProvaDoPlano() {
 function abrirModalGerarIA() {
     document.getElementById('ia_tema').value = '';
     document.getElementById('ia_foco').value = '';
+    const iaTurma = document.getElementById('ia_turma_id');
+    const iaAula = document.getElementById('ia_aula_numero');
+    if (iaTurma) iaTurma.value = '';
+    if (iaAula) iaAula.value = '';
     document.getElementById('modalGerarPlanoIA').classList.remove('hidden');
 }
 
@@ -3513,10 +3719,12 @@ async function gerarPlanoIA(event) {
     const nivel = document.getElementById('ia_nivel').value;
     const duracao = document.getElementById('ia_duracao').value;
     const foco = document.getElementById('ia_foco').value.trim();
+    const turma_id = document.getElementById('ia_turma_id')?.value || '';
+    const aula_numero = document.getElementById('ia_aula_numero')?.value || '';
     const btn = document.getElementById('btnSubmitIA');
 
     if (!tema) {
-        alert("Por favor, informe o tema da aula.");
+        mostrarToastPlano("Por favor, informe o tema da aula.", true);
         return;
     }
 
@@ -3527,21 +3735,74 @@ async function gerarPlanoIA(event) {
         const resp = await fetch("/api/planos-aula/gerar-ia", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ tema, nivel, duracao, foco })
+            body: JSON.stringify({ tema, nivel, duracao, foco, turma_id, aula_numero })
         });
         const data = await resp.json();
         if (data.status === "sucesso") {
-            alert(data.mensagem);
+            mostrarToastPlano(data.mensagem || 'Plano gerado com sucesso!');
             fecharModalGerarIA();
-            window.location.reload();
+            setTimeout(() => window.location.reload(), 600);
         } else {
-            alert("Erro na IA: " + data.mensagem);
+            mostrarToastPlano("Erro na IA: " + (data.mensagem || 'Falha'), true);
         }
     } catch (e) {
-        alert("Erro de conexão: " + e);
+        mostrarToastPlano("Erro de conexão: " + e, true);
     } finally {
         btn.disabled = false;
         btn.innerHTML = '<span>✨ Gerar Sequência Didática Completa</span>';
+    }
+}
+
+async function autopreencherPlanoComIA() {
+    const tema = (document.getElementById('novo_tema')?.value || '').trim();
+    const nivel = document.getElementById('novo_nivel')?.value || 'A2';
+    const duracao = (document.getElementById('novo_duracao')?.value || '50 min').trim();
+    const btn = document.getElementById('btnAutopreencherPlanoIA');
+
+    if (!tema) {
+        mostrarToastPlano('Digite primeiro o Tema da Aula antes de autopreencher com IA.', true);
+        document.getElementById('novo_tema')?.focus();
+        return;
+    }
+
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span>⏳ Gerando P.P.P. com IA...</span>';
+    }
+    try {
+        const resp = await fetch('/api/planos-aula/gerar-ia', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tema, nivel, duracao, apenas_rascunho: true })
+        });
+        const data = await resp.json();
+        if (resp.ok && data.status === 'sucesso' && data.plano) {
+            const p = data.plano;
+            if (p.habilidades) document.getElementById('novo_habilidades').value = p.habilidades;
+            if (p.objetivos) document.getElementById('novo_objetivos').value = p.objetivos;
+            if (p.conteudos) document.getElementById('novo_conteudos').value = p.conteudos;
+            if (p.metodologia) document.getElementById('novo_metodologia').value = p.metodologia;
+            if (p.recursos) document.getElementById('novo_recursos').value = p.recursos;
+            if (p.etapa_aquecimento) document.getElementById('novo_aquecimento').value = p.etapa_aquecimento;
+            if (p.etapa_apresentacao) document.getElementById('novo_apresentacao').value = p.etapa_apresentacao;
+            if (p.etapa_pratica) document.getElementById('novo_pratica').value = p.etapa_pratica;
+            if (p.etapa_producao) document.getElementById('novo_producao').value = p.etapa_producao;
+            if (p.etapa_fechamento) document.getElementById('novo_fechamento').value = p.etapa_fechamento;
+            if (p.avaliacao_formativa) document.getElementById('novo_aval_formativa').value = p.avaliacao_formativa;
+            if (p.avaliacao_somativa) document.getElementById('novo_aval_somativa').value = p.avaliacao_somativa;
+            if (p.dever_casa) document.getElementById('novo_dever_casa').value = p.dever_casa;
+            if (p.reforco) document.getElementById('novo_reforco').value = p.reforco;
+            mostrarToastPlano(data.mensagem || 'Campos P.P.P. preenchidos com IA!');
+        } else {
+            mostrarToastPlano(data.mensagem || 'Não foi possível preencher com IA.', true);
+        }
+    } catch (e) {
+        mostrarToastPlano('Erro de conexão ao consultar a IA: ' + e, true);
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<span>✨ Autopreencher P.P.P. com IA</span>';
+        }
     }
 }
 
@@ -3651,14 +3912,14 @@ async function salvarPlanoManual(event) {
         });
         const data = await resp.json();
         if (data.status === "sucesso") {
-            alert(data.mensagem);
+            mostrarToastPlano(data.mensagem || 'Plano salvo com sucesso!');
             fecharModalCriarPlano();
-            window.location.reload();
+            setTimeout(() => window.location.reload(), 600);
         } else {
-            alert("Erro: " + data.mensagem);
+            mostrarToastPlano("Erro: " + (data.mensagem || 'Falha ao salvar plano.'), true);
         }
     } catch (e) {
-        alert("Erro de conexão: " + e);
+        mostrarToastPlano("Erro de conexão: " + e, true);
     } finally {
         btn.disabled = false;
         btn.innerHTML = '<span>💾 Salvar Plano no Catálogo</span>';
@@ -3694,14 +3955,14 @@ async function confirmarDuplicarPlano(event) {
         });
         const data = await resp.json();
         if (data.status === 'sucesso') {
-            alert(data.mensagem);
+            mostrarToastPlano(data.mensagem || 'Plano duplicado!');
             fecharModalDuplicarPlano();
-            window.location.reload();
+            setTimeout(() => window.location.reload(), 600);
         } else {
-            alert('Erro ao duplicar: ' + data.mensagem);
+            mostrarToastPlano('Erro ao duplicar: ' + (data.mensagem || ''), true);
         }
     } catch (e) {
-        alert('Erro de conexão: ' + e);
+        mostrarToastPlano('Erro de conexão: ' + e, true);
     }
 }
 
@@ -3714,12 +3975,16 @@ async function excluirPlanoAula(planoId, tema) {
         });
         const data = await resp.json();
         if (data.status === 'sucesso') {
-            window.location.reload();
+            document.querySelector(`.plano-card[data-id="${planoId}"]`)?.remove();
+            document.querySelector(`tr.cronograma-row[data-id="${planoId}"]`)?.remove();
+            atualizarContadoresPlanosDOM();
+            filtrarCardsLocalmente();
+            mostrarToastPlano(data.mensagem || 'Plano de aula excluído!');
         } else {
-            alert('Erro ao excluir: ' + data.mensagem);
+            mostrarToastPlano('Erro ao excluir: ' + (data.mensagem || ''), true);
         }
     } catch (e) {
-        alert('Erro de conexão: ' + e);
+        mostrarToastPlano('Erro de conexão: ' + e, true);
     }
 }
 
@@ -3931,10 +4196,10 @@ function renderizarListaChamada() {
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding: 0.75rem 1rem; border: 1px solid #ECECEC; border-radius: 14px; background: #FFFFFF;">
                 <div style="min-width: 180px; flex: 1;">
                     <div style="font-weight: 700; color: #14213D; font-size: 0.9rem;">
-                        ${al.nome_completo}
-                        <span class="badge-nivel badge-nivel-${al.nivel_cefr}" style="font-size: 0.65rem; padding: 1px 6px; margin-left: 6px;">${al.nivel_cefr}</span>
+                        ${escapeHtmlPlano(al.nome_completo)}
+                        <span class="badge-nivel badge-nivel-${escapeHtmlPlano(al.nivel_cefr)}" style="font-size: 0.65rem; padding: 1px 6px; margin-left: 6px;">${escapeHtmlPlano(al.nivel_cefr)}</span>
                     </div>
-                    <div style="font-size: 0.75rem; color: #6B7280;">Matrícula: ${al.matricula}</div>
+                    <div style="font-size: 0.75rem; color: #6B7280;">Matrícula: ${escapeHtmlPlano(al.matricula)}</div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
                     <button type="button" onclick="selecionarStatusPresenca(${idx}, 'Presente')" style="padding: 5px 12px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; cursor: pointer; border: 1px solid ${isPres ? '#059669' : '#E5E7EB'}; background: ${isPres ? '#059669' : '#F7F7F8'}; color: ${isPres ? '#FFFFFF' : '#374151'};">
@@ -3946,7 +4211,7 @@ function renderizarListaChamada() {
                     <button type="button" onclick="selecionarStatusPresenca(${idx}, 'Justificado')" style="padding: 5px 12px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; cursor: pointer; border: 1px solid ${isJust ? '#D97706' : '#E5E7EB'}; background: ${isJust ? '#D97706' : '#F7F7F8'}; color: ${isJust ? '#FFFFFF' : '#374151'};">
                         ⚑ Justificado
                     </button>
-                    <input type="text" placeholder="Observação (opcional)..." value="${(al.observacao || '').replace(/"/g, '&quot;')}" oninput="atualizarObsPresenca(${idx}, this.value)" style="padding: 5px 10px; border: 1px solid #E5E7EB; border-radius: 8px; font-size: 0.76rem; width: 150px;">
+                    <input type="text" placeholder="Observação (opcional)..." value="${escapeHtmlPlano(al.observacao || '')}" oninput="atualizarObsPresenca(${idx}, this.value)" style="padding: 5px 10px; border: 1px solid #E5E7EB; border-radius: 8px; font-size: 0.76rem; width: 150px;">
                 </div>
             </div>
         `;
@@ -4008,17 +4273,35 @@ async function salvarChamadaPlano() {
         });
         const data = await resp.json();
         if (data.status === 'sucesso') {
-            if (typeof showToast === 'function') showToast(data.mensagem, 'sucesso');
-            else alert(data.mensagem);
+            if (marcarMin) {
+                const pid = parseInt(planoId, 10);
+                const card = document.querySelector(`.plano-card[data-id="${pid}"]`);
+                if (card) {
+                    card.setAttribute('data-ministrada', '1');
+                    card.classList.add('card-ministrada');
+                }
+                const row = document.querySelector(`tr.cronograma-row[data-id="${pid}"]`);
+                if (row) row.setAttribute('data-ministrada', '1');
+                const btnCard = document.getElementById(`btnMinCard_${pid}`);
+                if (btnCard) {
+                    btnCard.classList.add('is-ministrada');
+                    btnCard.innerText = '✓ Ministrada';
+                }
+                const btnRow = document.getElementById(`btnMinRow_${pid}`);
+                if (btnRow) {
+                    btnRow.classList.add('is-ministrada');
+                    btnRow.innerText = '✓ Ministrada';
+                }
+                atualizarContadoresPlanosDOM();
+                filtrarCardsLocalmente();
+            }
+            mostrarToastPlano(data.mensagem || 'Chamada registrada com sucesso!');
             fecharModalChamadaPlano();
-            setTimeout(() => window.location.reload(), 600);
         } else {
-            if (typeof showToast === 'function') showToast('Erro: ' + data.mensagem, 'erro');
-            else alert('Erro: ' + data.mensagem);
+            mostrarToastPlano('Erro: ' + (data.mensagem || 'Falha ao salvar chamada.'), true);
         }
     } catch (e) {
-        if (typeof showToast === 'function') showToast('Erro de conexão: ' + e, 'erro');
-        else alert('Erro de conexão: ' + e);
+        mostrarToastPlano('Erro de conexão: ' + e, true);
     } finally {
         btn.disabled = false;
         btn.innerText = '💾 Salvar Chamada';

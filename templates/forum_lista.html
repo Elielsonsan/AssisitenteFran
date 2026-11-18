@@ -1062,6 +1062,84 @@
 [data-theme="dark"] .forum-modal-footer {
     border-top-color: rgba(255, 255, 255, 0.1);
 }
+
+.badge-pendente-prof {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: rgba(225, 29, 72, 0.1);
+    color: #BE123C;
+    border: 1px solid rgba(225, 29, 72, 0.25);
+}
+
+[data-theme="dark"] .badge-pendente-prof {
+    color: #FDA4AF;
+}
+
+.btn-forum-mod {
+    border: 1px solid #E5E7EB;
+    background: #F7F7F8;
+    color: #374151;
+    border-radius: 999px;
+    padding: 4px 9px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.16s ease;
+}
+
+.btn-forum-mod:hover {
+    background: #18191E;
+    color: #FCA311;
+    border-color: #18191E;
+}
+
+.btn-forum-mod.danger:hover {
+    background: #E11D48;
+    border-color: #E11D48;
+    color: #FFFFFF;
+}
+
+[data-theme="dark"] .btn-forum-mod {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.14);
+    color: #E5E7EB;
+}
+
+.fle-char-toolbar-compact {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 7px 10px;
+    background: #F7F7F8;
+    border: 1px solid #ECECEC;
+    border-radius: 12px;
+    margin-top: 8px;
+}
+
+[data-theme="dark"] .fle-char-toolbar-compact {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.fle-char-btn-compact {
+    border: 1px solid #E5E7EB;
+    background: #FFFFFF;
+    color: #14213D;
+    border-radius: 8px;
+    padding: 3px 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.fle-char-btn-compact:hover {
+    background: #18191E;
+    color: #FCA311;
+    border-color: #18191E;
+}
 </style>
 {% endblock %}
 
@@ -1238,6 +1316,11 @@
                             <button type="button" class="forum-scope-pill" id="btnFiltroParticipados" onclick="alternarFiltroParticipados(this)">
                                 ✓ Já Participei
                             </button>
+                            {% if is_prof %}
+                            <button type="button" class="forum-scope-pill" id="btnFiltroPendenteProf" onclick="alternarFiltroPendenteProf(this)">
+                                ⏳ Aguardando Docente ({{ total_pendentes_prof|default(0) }})
+                            </button>
+                            {% endif %}
                         </div>
 
                         <button type="button" class="btn-forum-novo-topico" onclick="abrirModalCriarTopico()">
@@ -1276,12 +1359,13 @@
                              data-id="{{ topico.id }}"
                              data-turma="{{ topico.turma_id if topico.turma_id else 'geral' }}"
                              data-titulo="{{ topico.titulo|lower }}"
-                             data-titulo-raw="{{ topico.titulo }}"
+                             data-titulo-raw="{{ topico.titulo|e }}"
                              data-desc="{{ (topico.descricao or '')|lower }}"
                              data-categoria="{{ topico.categoria|lower if topico.categoria else 'geral' }}"
-                             data-autor="{{ topico.criador_nome }}"
+                             data-autor="{{ topico.criador_nome|e }}"
                              data-msgs="{{ topico.total_mensagens }}"
-                             data-participou="{{ '1' if topico.aluno_participou else '0' }}">
+                             data-participou="{{ '1' if topico.aluno_participou else '0' }}"
+                             data-pendente-prof="{{ '1' if topico.sem_resposta_prof else '0' }}">
                             <a href="/forum/topico/{{ topico.id }}" class="forum-card-inner">
                                 <div>
                                     <!-- Cabeçalho do Card: Badges de Escopo, Categoria, IA, Participação e Mensagens -->
@@ -1322,6 +1406,10 @@
                                             {% if topico.aluno_participou %}
                                             <span class="badge-participou" title="Você já contribuiu neste tópico">✓ Você participou</span>
                                             {% endif %}
+
+                                            {% if is_prof and topico.sem_resposta_prof %}
+                                            <span class="badge-pendente-prof" title="Dúvida de estudante aguardando resposta do professor">⏳ Aguardando docente</span>
+                                            {% endif %}
                                         </div>
 
                                         <div style="display: inline-flex; align-items: center; gap: 6px;">
@@ -1352,10 +1440,27 @@
                                         <span class="author-dot">•</span>
                                         <span>{{ topico.data_criacao[:10] if topico.data_criacao else '' }}</span>
                                     </div>
-                                    <span class="forum-cta-link">
-                                        Participar
-                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                                    </span>
+                                    <div style="display:inline-flex; align-items:center; gap:6px;">
+                                        {% if is_prof %}
+                                        <button type="button" class="btn-forum-mod"
+                                                data-topico-id="{{ topico.id }}"
+                                                data-titulo="{{ topico.titulo|e }}"
+                                                data-desc="{{ (topico.descricao or '')|e }}"
+                                                data-turma="{{ topico.turma_id if topico.turma_id else 'geral' }}"
+                                                data-cat="{{ topico.categoria or 'geral' }}"
+                                                onclick="event.preventDefault(); event.stopPropagation(); abrirModalEditarTopico(this)"
+                                                title="Editar tópico">✏️</button>
+                                        <button type="button" class="btn-forum-mod danger"
+                                                data-topico-id="{{ topico.id }}"
+                                                data-titulo="{{ topico.titulo|e }}"
+                                                onclick="event.preventDefault(); event.stopPropagation(); excluirTopicoListaForum(this)"
+                                                title="Excluir tópico">🗑️</button>
+                                        {% endif %}
+                                        <span class="forum-cta-link">
+                                            Participar
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                        </span>
+                                    </div>
                                 </div>
                             </a>
                         </div>
@@ -1417,6 +1522,7 @@
                 </div>
 
                 <form id="formCriarTopico" style="padding: 1.5rem;">
+                    <input type="hidden" id="editTopicoId" value="">
                     <div class="form-group" style="margin-bottom: 1.25rem;">
                         <label class="form-label" for="novoTopicoTitulo" style="font-weight: 600; font-size: 0.88rem;">Título do Tópico ou Dúvida: *</label>
                         <input type="text" id="novoTopicoTitulo" class="form-input" placeholder="Ex: Dúvida sobre Passé Composé com Être..." required>
@@ -1459,6 +1565,12 @@
                     <div class="form-group" style="margin-bottom: 1.5rem;">
                         <label class="form-label" for="novoTopicoDescricao" style="font-weight: 600; font-size: 0.88rem;">Sua Pergunta ou Contexto da Discussão: *</label>
                         <textarea id="novoTopicoDescricao" class="form-input" rows="4" placeholder="Escreva sua frase em francês ou explique sua dúvida..." required style="resize: vertical;"></textarea>
+                        <div class="fle-char-toolbar-compact" role="toolbar" aria-label="Caracteres especiais franceses">
+                            <span style="font-size: 0.72rem; font-weight: 700; color: #6B7280; margin-right: 4px;">Acentos FLE:</span>
+                            {% for ch_f in ['é','è','ê','ë','à','â','ç','ù','û','î','ï','ô','œ','«','»'] %}
+                            <button type="button" class="fle-char-btn-compact" onmousedown="event.preventDefault()" onclick="inserirCharModalTopico('{{ ch_f }}')" lang="fr">{{ ch_f }}</button>
+                            {% endfor %}
+                        </div>
                     </div>
 
                     <div class="forum-modal-footer">
@@ -1482,7 +1594,44 @@
 // ==========================================
 let categoriaAtiva = 'todas';
 let somenteParticipados = false;
+let somentePendentesProf = false;
 let indiceAutocompleteForum = -1;
+let ultimoCampoTopicoFocado = null;
+
+function normalizarTextoForum(str) {
+    return String(str || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+}
+
+function escapeHtmlForumLista(text) {
+    return String(text || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+document.addEventListener('focusin', (e) => {
+    const m = document.getElementById('modalCriarTopico');
+    if (m && m.contains(e.target) && (e.target.id === 'novoTopicoTitulo' || e.target.id === 'novoTopicoDescricao')) {
+        ultimoCampoTopicoFocado = e.target;
+    }
+});
+
+function inserirCharModalTopico(ch) {
+    const alvo = (ultimoCampoTopicoFocado && document.body.contains(ultimoCampoTopicoFocado))
+        ? ultimoCampoTopicoFocado
+        : document.getElementById('novoTopicoDescricao');
+    if (!alvo) return;
+    const start = typeof alvo.selectionStart === 'number' ? alvo.selectionStart : alvo.value.length;
+    const end = typeof alvo.selectionEnd === 'number' ? alvo.selectionEnd : alvo.value.length;
+    alvo.value = alvo.value.slice(0, start) + ch + alvo.value.slice(end);
+    alvo.focus();
+    if (typeof alvo.setSelectionRange === 'function') {
+        const pos = start + ch.length;
+        alvo.setSelectionRange(pos, pos);
+    }
+}
 
 const CATEGORIA_NOMES_FORUM = {
     'todas': 'Todas',
@@ -1506,6 +1655,12 @@ function falarCardTopicoForum(btn) {
 function alternarFiltroParticipados(btn) {
     somenteParticipados = !somenteParticipados;
     if (btn) btn.classList.toggle('active', somenteParticipados);
+    filtrarCardsLocalmente();
+}
+
+function alternarFiltroPendenteProf(btn) {
+    somentePendentesProf = !somentePendentesProf;
+    if (btn) btn.classList.toggle('active', somentePendentesProf);
     filtrarCardsLocalmente();
 }
 
@@ -1547,7 +1702,7 @@ function atualizarAutocompleteForum(valor) {
     const dropdown = document.getElementById('autocompleteDropdownForum');
     if (!dropdown) return;
 
-    const termo = (valor || '').trim().toLowerCase();
+    const termo = normalizarTextoForum((valor || '').trim());
     if (!termo) {
         fecharAutocompleteForum();
         return;
@@ -1559,19 +1714,19 @@ function atualizarAutocompleteForum(valor) {
     cards.forEach(card => {
         const id = card.getAttribute('data-id');
         const tituloRaw = card.getAttribute('data-titulo-raw') || '';
-        const titulo = card.getAttribute('data-titulo') || '';
-        const desc = card.getAttribute('data-desc') || '';
-        const cat = card.getAttribute('data-categoria') || 'geral';
+        const titulo = normalizarTextoForum(tituloRaw || card.getAttribute('data-titulo') || '');
+        const desc = normalizarTextoForum(card.getAttribute('data-desc') || '');
+        const cat = normalizarTextoForum(card.getAttribute('data-categoria') || 'geral');
         const autor = card.getAttribute('data-autor') || 'Docente';
         const msgs = card.getAttribute('data-msgs') || '0';
 
-        if (titulo.includes(termo) || desc.includes(termo) || cat.includes(termo)) {
-            sugestoes.push({ id, tituloRaw, cat, autor, msgs });
+        if (titulo.includes(termo) || desc.includes(termo) || cat.includes(termo) || normalizarTextoForum(autor).includes(termo)) {
+            sugestoes.push({ id, tituloRaw, cat: card.getAttribute('data-categoria') || 'geral', autor, msgs });
         }
     });
 
     if (sugestoes.length === 0) {
-        dropdown.innerHTML = `<div style="padding: 0.9rem; text-align: center; font-size: 0.84rem; color: #6B7280;">Nenhuma discussão encontrada para "<strong>${valor}</strong>"</div>`;
+        dropdown.innerHTML = `<div style="padding: 0.9rem; text-align: center; font-size: 0.84rem; color: #6B7280;">Nenhuma discussão encontrada para "<strong>${escapeHtmlForumLista(valor)}</strong>"</div>`;
         dropdown.classList.add('open');
         indiceAutocompleteForum = -1;
         return;
@@ -1587,11 +1742,11 @@ function atualizarAutocompleteForum(valor) {
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                     </span>
                     <div class="forum-ac-text">
-                        <span class="forum-ac-title">${destacarTermoForum(item.tituloRaw, valor.trim())}</span>
-                        <span class="forum-ac-sub">${catLabel} • Por ${item.autor}</span>
+                        <span class="forum-ac-title">${destacarTermoForum(escapeHtmlForumLista(item.tituloRaw), escapeHtmlForumLista(valor.trim()))}</span>
+                        <span class="forum-ac-sub">${catLabel} • Por ${escapeHtmlForumLista(item.autor)}</span>
                     </div>
                 </div>
-                <span class="forum-ac-badge">${item.msgs} msgs</span>
+                <span class="forum-ac-badge">${escapeHtmlForumLista(item.msgs)} msgs</span>
             </a>
         `;
     });
@@ -1633,22 +1788,25 @@ document.getElementById('inputBuscaForum')?.addEventListener('keydown', (e) => {
 });
 
 function filtrarCardsLocalmente() {
-    const termo = (document.getElementById('inputBuscaForum')?.value || '').toLowerCase().trim();
+    const termo = normalizarTextoForum((document.getElementById('inputBuscaForum')?.value || '').trim());
     const cards = document.querySelectorAll('.forum-card');
     const emptySearch = document.getElementById('emptySearchForum');
     let visiveis = 0;
 
     cards.forEach(card => {
-        const titulo = card.getAttribute('data-titulo') || '';
-        const desc = card.getAttribute('data-desc') || '';
+        const titulo = normalizarTextoForum(card.getAttribute('data-titulo-raw') || card.getAttribute('data-titulo') || '');
+        const desc = normalizarTextoForum(card.getAttribute('data-desc') || '');
+        const autor = normalizarTextoForum(card.getAttribute('data-autor') || '');
         const cat = card.getAttribute('data-categoria') || '';
         const participou = card.getAttribute('data-participou') === '1';
+        const pendenteProf = card.getAttribute('data-pendente-prof') === '1';
 
-        const matchTermo = !termo || titulo.includes(termo) || desc.includes(termo);
+        const matchTermo = !termo || titulo.includes(termo) || desc.includes(termo) || autor.includes(termo);
         const matchCat = (categoriaAtiva === 'todas') || (cat === categoriaAtiva);
         const matchParticipou = !somenteParticipados || participou;
+        const matchPendente = !somentePendentesProf || pendenteProf;
 
-        if (matchTermo && matchCat && matchParticipou) {
+        if (matchTermo && matchCat && matchParticipou && matchPendente) {
             card.style.display = 'flex';
             visiveis++;
         } else {
@@ -1671,8 +1829,11 @@ function limparBuscaLocal() {
     if (btnClear) btnClear.style.display = 'none';
 
     somenteParticipados = false;
+    somentePendentesProf = false;
     const btnPart = document.getElementById('btnFiltroParticipados');
     if (btnPart) btnPart.classList.remove('active');
+    const btnPend = document.getElementById('btnFiltroPendenteProf');
+    if (btnPend) btnPend.classList.remove('active');
 
     fecharAutocompleteForum();
 
@@ -1686,14 +1847,71 @@ function limparBuscaLocal() {
 }
 
 // ==========================================
-// MODAL DE NOVO TÓPICO / DÚVIDA FLE
+// MODAL DE NOVO TÓPICO / EDIÇÃO & MODERAÇÃO DOCENTE
 // ==========================================
 function abrirModalCriarTopico() {
     const modal = document.getElementById('modalCriarTopico');
+    const editId = document.getElementById('editTopicoId');
+    const tituloH = document.getElementById('modalCriarTopicoTitulo');
+    const btn = document.getElementById('btnSalvarTopico');
+    if (editId) editId.value = '';
+    if (document.getElementById('novoTopicoTitulo')) document.getElementById('novoTopicoTitulo').value = '';
+    if (document.getElementById('novoTopicoDescricao')) document.getElementById('novoTopicoDescricao').value = '';
+    if (tituloH) {
+        tituloH.innerHTML = `<svg class="line-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg><span>{% if is_prof %}Novo Tópico de Discussão{% else %}Nova Dúvida ou Discussão FLE{% endif %}</span>`;
+    }
+    if (btn) btn.querySelector('span').textContent = 'Publicar Tópico';
     if (modal) {
         modal.classList.remove('hidden');
         modal.style.display = 'flex';
         setTimeout(() => document.getElementById('novoTopicoTitulo')?.focus(), 100);
+    }
+}
+
+function abrirModalEditarTopico(btn) {
+    if (!btn) return;
+    const modal = document.getElementById('modalCriarTopico');
+    const editId = document.getElementById('editTopicoId');
+    const tituloH = document.getElementById('modalCriarTopicoTitulo');
+    const btnSalvar = document.getElementById('btnSalvarTopico');
+
+    if (editId) editId.value = btn.getAttribute('data-topico-id') || '';
+    if (document.getElementById('novoTopicoTitulo')) document.getElementById('novoTopicoTitulo').value = btn.getAttribute('data-titulo') || '';
+    if (document.getElementById('novoTopicoDescricao')) document.getElementById('novoTopicoDescricao').value = btn.getAttribute('data-desc') || '';
+    if (document.getElementById('novoTopicoTurma')) document.getElementById('novoTopicoTurma').value = btn.getAttribute('data-turma') || 'geral';
+    if (document.getElementById('novoTopicoCategoria')) document.getElementById('novoTopicoCategoria').value = btn.getAttribute('data-cat') || 'geral';
+    if (tituloH) tituloH.innerText = '✏️ Editar Tópico de Discussão';
+    if (btnSalvar) btnSalvar.querySelector('span').textContent = 'Salvar Alterações';
+
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+    }
+}
+
+async function excluirTopicoListaForum(btn) {
+    if (!btn) return;
+    const id = btn.getAttribute('data-topico-id');
+    const titulo = btn.getAttribute('data-titulo') || 'este tópico';
+    if (!confirm(`Deseja realmente excluir o tópico "${titulo}" e todas as suas mensagens?`)) return;
+    try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        const res = await fetch(`/api/forum/topico/${id}/excluir`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken }
+        });
+        const data = await res.json();
+        if (data.status === 'sucesso') {
+            const card = document.querySelector(`.forum-card[data-id="${id}"]`);
+            if (card) card.remove();
+            filtrarCardsLocalmente();
+            if (typeof showToast === 'function') showToast(data.mensagem || 'Tópico excluído!', 'sucesso');
+        } else {
+            if (typeof showToast === 'function') showToast(data.mensagem || 'Erro ao excluir tópico.', 'erro');
+            else alert(data.mensagem || 'Erro ao excluir tópico.');
+        }
+    } catch (e) {
+        if (typeof showToast === 'function') showToast('Erro de conexão ao excluir.', 'erro');
     }
 }
 
@@ -1719,6 +1937,7 @@ document.getElementById('modalCriarTopico')?.addEventListener('click', (e) => {
 document.getElementById('formCriarTopico')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = document.getElementById('btnSalvarTopico');
+    const editId = (document.getElementById('editTopicoId')?.value || '').trim();
     const titulo = document.getElementById('novoTopicoTitulo').value.trim();
     const descricao = document.getElementById('novoTopicoDescricao').value.trim();
     const turma_id = document.getElementById('novoTopicoTurma').value;
@@ -1731,11 +1950,12 @@ document.getElementById('formCriarTopico')?.addEventListener('submit', async (e)
 
     const originalHtml = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = 'Publicando...';
+    btn.innerHTML = editId ? 'Salvando...' : 'Publicando...';
 
+    const endpoint = editId ? `/api/forum/topico/${editId}/editar` : '/api/forum/criar_topico';
     try {
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-        const res = await fetch('/api/forum/criar_topico', {
+        const res = await fetch(endpoint, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -1749,12 +1969,12 @@ document.getElementById('formCriarTopico')?.addEventListener('submit', async (e)
             })
         });
         const data = await res.json();
-        if (data.status === 'sucesso' && data.topico_id) {
+        if (data.status === 'sucesso' && !editId && data.topico_id) {
             window.location.href = `/forum/topico/${data.topico_id}`;
         } else if (data.status === 'sucesso') {
             window.location.reload();
         } else {
-            alert('Erro ao criar tópico: ' + (data.mensagem || 'Tente novamente.'));
+            alert('Erro ao salvar tópico: ' + (data.mensagem || 'Tente novamente.'));
             btn.innerHTML = originalHtml;
             btn.disabled = false;
         }

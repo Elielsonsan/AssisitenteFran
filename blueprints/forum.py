@@ -189,6 +189,10 @@ def forum_lista():
                 (t_item.get("minhas_respostas") or 0) > 0
                 or (t_item.get("criador_tipo") == "Professor" and t_item.get("criador_id") == prof_id)
             )
+            t_item["sem_resposta_prof"] = bool(
+                (t_item.get("minhas_respostas") or 0) == 0
+                and t_item.get("criador_tipo") == "Aluno"
+            )
             topicos.append(t_item)
 
         cursor.execute("SELECT COUNT(*) as c FROM forum_mensagens WHERE autor_tipo = 'Professor' AND autor_id = ?", (prof_id,))
@@ -196,6 +200,7 @@ def forum_lista():
         cursor.execute("SELECT COUNT(*) as c FROM forum_topicos WHERE COALESCE(criador_tipo, 'Professor') = 'Professor' AND criador_id = ?", (prof_id,))
         tops_user = cursor.fetchone()["c"] or 0
         minhas_participacoes = msgs_user + tops_user
+        total_pendentes_prof = sum(1 for t in topicos if t.get("sem_resposta_prof"))
 
     else:
         # Visão do Aluno: restrito à sua turma e ao Fórum Geral
@@ -268,6 +273,7 @@ def forum_lista():
         cursor.execute("SELECT COUNT(*) as c FROM forum_topicos WHERE criador_tipo = 'Aluno' AND autor_aluno_id = ?", (aluno_id,))
         tops_user = cursor.fetchone()["c"] or 0
         minhas_participacoes = msgs_user + tops_user
+        total_pendentes_prof = 0
 
     total_mensagens_forum = sum((t.get("total_mensagens") or 0) for t in topicos)
     total_intervencoes_ia = sum((t.get("total_ia") or 0) for t in topicos)
@@ -286,6 +292,7 @@ def forum_lista():
         total_mensagens_forum=total_mensagens_forum,
         total_intervencoes_ia=total_intervencoes_ia,
         minhas_participacoes=minhas_participacoes,
+        total_pendentes_prof=total_pendentes_prof,
         aluno_turma_id=aluno_turma_id,
         aluno_turma_nome=aluno_turma_nome,
         filtro_ativo=filtro_turma,
@@ -348,6 +355,10 @@ def forum_topico(topico_id):
     """, (topico_id,))
     
     mensagens = [dict(row) for row in cursor.fetchall()]
+    turmas_prof = []
+    if prof_id:
+        cursor.execute("SELECT id, nome FROM turmas ORDER BY nome ASC")
+        turmas_prof = [dict(r) for r in cursor.fetchall()]
     conn.close()
     
     active_page = "aluno_forum" if aluno_id else "prof_forum"
@@ -355,6 +366,7 @@ def forum_topico(topico_id):
         "forum_topico.html",
         topico=dict(topico),
         mensagens=mensagens,
+        turmas=turmas_prof,
         is_prof=bool(prof_id),
         active_page=active_page
     )
@@ -621,6 +633,160 @@ def api_forum_criar_topico():
                 processar_resposta_ia(novo_id, texto_inicial, ext.DB_PATH)
 
         return jsonify({"status": "sucesso", "topico_id": novo_id})
+    except Exception as e:
+        return jsonify({"status": "erro", "mensagem": str(e)}), 500
+
+
+@forum_bp.route("/api/forum/topico/<int:topico_id>/editar", methods=["POST"])
+@login_required_prof
+def api_forum_editar_topico(topico_id):
+    dados = (request.get_json(silent=True) or {}) if request.is_json else request.form
+    titulo = (dados.get("titulo") or "").strip()
+    descricao = (dados.get("descricao") or "").strip()
+    categoria = (dados.get("categoria") or "geral").strip().lower() or "geral"
+    turma_id = dados.get("turma_id")
+
+    if not titulo:
+        return jsonify({"status": "erro", "mensagem": "O título do tópico é obrigatório."}), 400
+
+    turma_id_val = None
+    if turma_id and str(turma_id).strip().lower() not in ["geral", "", "none"]:
+        try:
+            turma_id_val = int(turma_id)
+        except ValueError:
+            turma_id_val = None
+
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM forum_topicos WHERE id = ?", (topico_id,))
+        if not cursor.fetchone():
+            conn.close()
+            return jsonify({"status": "erro", "mensagem": "Tópico não encontrado."}), 404
+
+        cursor.execute(
+            """
+            UPDATE forum_topicos
+            SET titulo = ?, descricao = ?, categoria = ?, turma_id = ?
+            WHERE id = ?
+            """,
+            (titulo, descricao, categoria, turma_id_val, topico_id),
+        )
+        conn.commit()
+        conn.close()
+        return jsonify({
+            "status": "sucesso",
+            "mensagem": "Tópico atualizado com sucesso!",
+            "topico": {
+                "id": topico_id,
+                "titulo": titulo,
+                "descricao": descricao,
+                "categoria": categoria,
+                "turma_id": turma_id_val
+            }
+        })
+    except Exception as e:
+        return jsonify({"status": "erro", "mensagem": str(e)}), 500
+
+
+@forum_bp.route("/api/forum/topico/<int:topico_id>/excluir", methods=["POST", "DELETE"])
+@login_required_prof
+def api_forum_excluir_topico(topico_id):
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, titulo FROM forum_topicos WHERE id = ?", (topico_id,))
+        row = cursor.fetchone()
+        if not row:
+            conn.close()
+            return jsonify({"status": "erro", "mensagem": "Tópico não encontrado."}), 404
+
+        cursor.execute("DELETE FROM forum_mensagens WHERE topico_id = ?", (topico_id,))
+        cursor.execute("DELETE FROM forum_topicos WHERE id = ?", (topico_id,))
+        conn.commit()
+        conn.close()
+        return jsonify({"status": "sucesso", "mensagem": f"Tópico '{row['titulo']}' excluído com sucesso."})
+    except Exception as e:
+        return jsonify({"status": "erro", "mensagem": str(e)}), 500
+
+
+@forum_bp.route("/api/forum/mensagem/<int:msg_id>/excluir", methods=["POST", "DELETE"])
+@login_required_prof
+def api_forum_excluir_mensagem(msg_id):
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, topico_id FROM forum_mensagens WHERE id = ?", (msg_id,))
+        row = cursor.fetchone()
+        if not row:
+            conn.close()
+            return jsonify({"status": "erro", "mensagem": "Mensagem não encontrada."}), 404
+
+        topico_id = row["topico_id"]
+        cursor.execute("DELETE FROM forum_mensagens WHERE id = ?", (msg_id,))
+        conn.commit()
+
+        cursor.execute("SELECT COUNT(*) as total FROM forum_mensagens WHERE topico_id = ?", (topico_id,))
+        total_row = cursor.fetchone()
+        total_mensagens = total_row["total"] if total_row else 0
+        conn.close()
+        return jsonify({
+            "status": "sucesso",
+            "mensagem": "Mensagem removida da discussão.",
+            "topico_id": topico_id,
+            "total_mensagens": total_mensagens
+        })
+    except Exception as e:
+        return jsonify({"status": "erro", "mensagem": str(e)}), 500
+
+
+@forum_bp.route("/api/forum/topico/<int:topico_id>/intervencao_ia", methods=["POST"])
+@login_required_prof
+def api_forum_intervencao_ia(topico_id):
+    """Permite ao professor acionar a Assistente Fran sob demanda em qualquer discussão."""
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, titulo, descricao, categoria FROM forum_topicos WHERE id = ?", (topico_id,))
+        top = cursor.fetchone()
+        if not top:
+            conn.close()
+            return jsonify({"status": "erro", "mensagem": "Tópico não encontrado."}), 404
+
+        cursor.execute("""
+            SELECT conteudo FROM forum_mensagens
+            WHERE topico_id = ? AND autor_tipo != 'IA'
+            ORDER BY id DESC LIMIT 1
+        """, (topico_id,))
+        ult_msg = cursor.fetchone()
+        conn.close()
+
+        texto_contexto = (ult_msg["conteudo"] if ult_msg else "") or f"{top['titulo']}. {top['descricao'] or ''}".strip()
+        processar_resposta_ia(topico_id, texto_contexto, ext.DB_PATH)
+
+        conn2 = get_db()
+        c2 = conn2.cursor()
+        c2.execute("""
+            SELECT fm.id, fm.topico_id, fm.autor_id, fm.autor_tipo, fm.conteudo, fm.data_envio,
+                   'Assistente Fran' as autor_nome
+            FROM forum_mensagens fm
+            WHERE fm.topico_id = ? AND fm.autor_tipo = 'IA'
+            ORDER BY fm.id DESC LIMIT 1
+        """, (topico_id,))
+        nova_msg = c2.fetchone()
+        c2.execute("SELECT COUNT(*) as total FROM forum_mensagens WHERE topico_id = ?", (topico_id,))
+        total_row = c2.fetchone()
+        total_mensagens = total_row["total"] if total_row else 0
+        conn2.close()
+
+        msg_dict = dict(nova_msg) if nova_msg else None
+        if msg_dict:
+            msg_dict["is_me"] = False
+        return jsonify({
+            "status": "sucesso",
+            "mensagem_ia": msg_dict,
+            "total_mensagens": total_mensagens
+        })
     except Exception as e:
         return jsonify({"status": "erro", "mensagem": str(e)}), 500
 
