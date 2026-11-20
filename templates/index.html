@@ -1972,8 +1972,7 @@
             <!-- Card de Retorno do Feedback da IA -->
             <div id="resultContainer" class="result-container hidden" style="display: flex; gap: 15px; margin-top: 25px;" role="region" aria-live="polite" aria-label="Resultado da Avaliação da Assistente Fran">
                 <div class="fran-chat-avatar" style="flex-shrink: 0; margin-top: 5px;">
-                    <img src="/imagens/logo_fran_escuro.png?v=2" class="fran-logo-dark" alt="Fran" style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); object-fit: contain; padding: 5px; background: rgba(15, 23, 42, 0.85); box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
-                    <img src="/imagens/logo_fran_claro.png?v=2" class="fran-logo-light" alt="Fran" style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); object-fit: contain; padding: 5px; background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+                    <img src="{{ url_for('static', filename='../imagens/logo_fran1.png') }}" alt="Fran" style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
                 </div>
                 <div class="result-card">
                     <div class="result-header">

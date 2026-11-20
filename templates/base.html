@@ -8,7 +8,6 @@
     <meta property="og:title" content="Assistente Fran — Tutor IA">
     <meta property="og:description" content="Aprenda francês com inteligência artificial e feedback em tempo real.">
     <meta property="og:image" content="{{ url_for('static', filename='img/logo_fran.jpg') }}">
-    <link rel="icon" type="image/png" href="/imagens/logo_fran_claro.png?v=2">
     <title>{% block title %}Assistente Fran — Tutor de Língua Francesa com IA{% endblock %}</title>
     <!-- Google Fonts: Inter + Roboto + JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -243,20 +242,6 @@
             transform: translateY(-1px);
             background: rgba(46, 196, 182, 0.24);
         }
-
-        /* Troca automática da Logo entre Modo Escuro e Modo Claro */
-        .fran-logo-light {
-            display: none;
-        }
-        .fran-logo-dark {
-            display: block;
-        }
-        html[data-theme="light"] .fran-logo-light {
-            display: block;
-        }
-        html[data-theme="light"] .fran-logo-dark {
-            display: none;
-        }
     </style>
 </head>
 <body>
@@ -280,8 +265,7 @@
             <!-- 1. Marca / Logotipo -->
             <a href="/" class="nav-brand" title="Assistente Fran — Início">
                 <div class="nav-logo-icon" style="background: transparent; border: none; box-shadow: none; padding: 0;">
-                    <img src="/imagens/logo_fran_escuro.png?v=2" class="fran-logo-dark" style="width: 100%; height: 100%; object-fit: contain;" alt="Logo Fran">
-                    <img src="/imagens/logo_fran_claro.png?v=2" class="fran-logo-light" style="width: 100%; height: 100%; object-fit: contain;" alt="Logo Fran">
+                    <img src="/imagens/logo_fran1.png" style="width: 100%; height: 100%; object-fit: contain;" alt="Logo Fran">
                 </div>
                 <div class="nav-brand-text">
                     <span class="nav-title">Assistente Fran</span>
@@ -522,8 +506,7 @@
         <div class="drawer-header">
             <div class="drawer-brand">
                 <div class="nav-logo-icon small" style="background: transparent; border: none; box-shadow: none; padding: 0;">
-                    <img src="/imagens/logo_fran_escuro.png?v=2" class="fran-logo-dark" style="width: 100%; height: 100%; object-fit: contain;" alt="Logo Fran">
-                    <img src="/imagens/logo_fran_claro.png?v=2" class="fran-logo-light" style="width: 100%; height: 100%; object-fit: contain;" alt="Logo Fran">
+                    <img src="/imagens/logo_fran1.png" style="width: 100%; height: 100%; object-fit: contain;" alt="Logo Fran">
                 </div>
                 <span class="drawer-title">Assistente Fran</span>
             </div>
